@@ -35,6 +35,9 @@ data class Animation(
     val elapsedTicks: Int
 ) : Component {
   companion object {
+    /**
+     * The [Animation] component of this entity, or `null` if it doesn't have an animation.
+     */
     val Entity.animation: Animation?
       get() = get()
   }
@@ -46,6 +49,9 @@ data class Animation(
     }
   }
 
+  /**
+   * The total duration in ticks of the animation [frames].
+   */
   val durationInTicks: Int
     get() = frames.sumBy { frame -> frame.durationInTicks }
 
