@@ -23,7 +23,7 @@ package algostorm.assets
  */
 data class FontSet(private val fonts: Map<FontId, Font>) {
   /**
-   * Returns the font with the given id.
+   * Returns the font with the given [id].
    *
    * @param id the id of the font
    * @return the requested font, or `null` if it doesn't exist
@@ -31,10 +31,10 @@ data class FontSet(private val fonts: Map<FontId, Font>) {
   operator fun get(id: FontId): Font? = fonts[id]
 
   /**
-   * Returns whether this font set contains the font with the given id.
+   * Returns whether this font set contains the font with the given [id].
    *
    * @param id the id of the font
    * @return `true` if the given font [id] is contained in this font set, `false` otherwise
    */
-  operator fun contains(id: FontId): Boolean = get(id) != null
+  operator fun contains(id: FontId): Boolean = id in fonts
 }

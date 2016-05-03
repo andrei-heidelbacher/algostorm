@@ -16,19 +16,25 @@
 
 package algostorm.assets
 
-import com.fasterxml.jackson.annotation.JsonValue
-
 /**
- * A type-safe non-negative [Font] identifier.
+ * A container that maps non-negative sound ids to sounds.
  *
- * Two ids are equal if and only if they have the same [id] value. This id is serialized as a single
- * integer and is deserialized from a single integer, there is no wrapper object.
- *
- * @property id the font id
- * @throws IllegalArgumentException if the given [id] is negative
+ * @property sounds the map that maps ids to sounds
  */
-data class FontId(@get:JsonValue private val id: Int) {
-  init {
-    require(id >= 0) { "Font id can't be negative!" }
-  }
+data class SoundSet(private val sounds: Map<SoundId, Sound>) {
+  /**
+   * Returns the sound with the given [id].
+   *
+   * @param id the id of the sound
+   * @return the requested sound, or `null` if it doesn't exist
+   */
+  operator fun get(id: SoundId): Sound? = sounds[id]
+
+  /**
+   * Returns whether this sound set contains the sound with the given [id].
+   *
+   * @param id the id of the sound
+   * @return `true` if the given sound [id] is contained in this sound set, `false` otherwise
+   */
+  operator fun contains(id: SoundId): Boolean = id in sounds
 }

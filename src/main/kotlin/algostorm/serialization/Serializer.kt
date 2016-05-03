@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import algostorm.assets.FontSet
+import algostorm.assets.SoundSet
 import algostorm.assets.TileSet
 import algostorm.ecs.Component
 import algostorm.ecs.EntityId
@@ -105,6 +106,13 @@ object Serializer {
 
   @JvmStatic fun readFontSet(src: InputStream): FontSet =
       objectMapper.readValue(src, FontSet::class.java)
+
+  @JvmStatic fun writeSoundSet(out: OutputStream, soundSet: SoundSet) {
+    objectMapper.writeValue(out, soundSet)
+  }
+
+  @JvmStatic fun readSoundSet(src: InputStream): SoundSet =
+      objectMapper.readValue(src, SoundSet::class.java)
 
   @JvmStatic fun <T : Any> writeValue(out: OutputStream, value: T) {
     objectMapper.writeValue(out, value)

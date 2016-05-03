@@ -6,7 +6,7 @@ be adapted for real-time with a little effort.
 * an entity-component-system framework
 * event-based inter-system communication
 * engine that runs on its private thread
-* default turn-based physics, entity lifecycle and graphics management
+* default turn-based physics, entity lifecycle, graphics and sounds management
 * thread-safe input bridge between raw user input and game-specific commands
 * JSON serialization utilities
 

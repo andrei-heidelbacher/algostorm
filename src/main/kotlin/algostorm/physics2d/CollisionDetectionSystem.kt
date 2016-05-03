@@ -50,5 +50,5 @@ class CollisionDetectionSystem(
   /**
    * This system handles [TranslateIntent] events.
    */
-  override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
+  final override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
 }

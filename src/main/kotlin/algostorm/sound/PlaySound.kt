@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.sound
 
-import com.fasterxml.jackson.annotation.JsonValue
+import algostorm.assets.SoundId
+import algostorm.event.Event
 
 /**
- * A type-safe non-negative [Font] identifier.
+ * An event that requests a sound to be played on the given [frequency].
  *
- * Two ids are equal if and only if they have the same [id] value. This id is serialized as a single
- * integer and is deserialized from a single integer, there is no wrapper object.
- *
- * @property id the font id
- * @throws IllegalArgumentException if the given [id] is negative
+ * @property soundId the id of the sound that should be played
+ * @property frequency the frequency on which the sound should be played
+ * @property loop `true` if the given sound should be looped, `false` otherwise
  */
-data class FontId(@get:JsonValue private val id: Int) {
-  init {
-    require(id >= 0) { "Font id can't be negative!" }
-  }
-}
+data class PlaySound(val soundId: SoundId, val frequency: Int, val loop: Boolean) : Event

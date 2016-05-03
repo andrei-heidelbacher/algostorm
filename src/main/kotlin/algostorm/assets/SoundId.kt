@@ -19,16 +19,16 @@ package algostorm.assets
 import com.fasterxml.jackson.annotation.JsonValue
 
 /**
- * A type-safe non-negative [Font] identifier.
+ * A type-safe non-negative [Sound] identifier.
  *
  * Two ids are equal if and only if they have the same [id] value. This id is serialized as a single
  * integer and is deserialized from a single integer, there is no wrapper object.
  *
- * @property id the font id
+ * @property id the sound id
  * @throws IllegalArgumentException if the given [id] is negative
  */
-data class FontId(@get:JsonValue private val id: Int) {
+data class SoundId(@get:JsonValue private val id: Int) {
   init {
-    require(id >= 0) { "Font id can't be negative!" }
+    require(id >= 0) { "Sound id can't be negative!" }
   }
 }

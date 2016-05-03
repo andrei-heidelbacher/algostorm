@@ -24,5 +24,7 @@ import algostorm.ecs.Component
  *
  * @property text the text that should be rendered
  * @property fontId the font that should be used
+ * @property size the size of the text
+ * @property color the color of the text
  */
-data class Text(val text: String, val fontId: FontId) : Component
+data class Text(val text: String, val fontId: FontId, val size: Int, val color: Color) : Component

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonValue
  * Two ids are equal if and only if they have the same [id] value. This id is serialized as a single
  * integer and is deserialized from a single integer, there is no wrapper object.
  *
- * @property id the entity id
+ * @property id the tile id
  * @throws IllegalArgumentException if the given [id] is negative
  */
 data class TileId(@get:JsonValue internal val id: Int) {
