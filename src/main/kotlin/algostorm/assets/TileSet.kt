@@ -39,15 +39,15 @@ data class TileSet(
     val tileHeight: Int,
     val spacing: Int,
     val margins: Int,
-    val firstId: TileId,
-    val lastId: TileId,
+    val firstId: Int,
+    val lastId: Int,
     val image: Image
 ) {
   init {
     require(tileWidth >= 0 && tileHeight >= 0) { "Tile dimensions must be non-negative!" }
     require(spacing >= 0) { "Spacing between tiles must be non-negative!" }
     require(margins >= 0) { "Margins must be non-negative!" }
-    require(firstId.id <= lastId.id) { "Tile ids must make a compact interval!" }
+    require(firstId <= lastId) { "Tile ids must make a compact interval!" }
     require(
         (image.width - 2 * margins + spacing) % (tileWidth + spacing) == 0 &&
         (image.height - 2 * margins + spacing) % (tileHeight + spacing) == 0
@@ -66,10 +66,10 @@ data class TileSet(
    * @param tileId the id of the requested tile
    * @return the viewport on the tileset [image] corresponding to the requested tile
    */
-  fun getViewport(tileId: TileId): Viewport {
-    require(tileId.id in firstId.id..lastId.id) { "Invalid tile id!" }
-    val row = (tileId.id - firstId.id) / tilesPerRow
-    val column = (tileId.id - firstId.id) % tilesPerRow
+  fun getViewport(tileId: Int): Viewport {
+    require(firstId <= tileId && tileId <= lastId) { "Invalid tile id!" }
+    val row = (tileId - firstId) / tilesPerRow
+    val column = (tileId - firstId) % tilesPerRow
     return Viewport(
         x = margins + column * (tileWidth + spacing),
         y = margins + row * (tileHeight + spacing),
@@ -84,5 +84,5 @@ data class TileSet(
    * @param tileId the id of the given tile
    * @return `true` if [tileId] is in the range [[firstId], [lastId]], `false` otherwise
    */
-  operator fun contains(tileId: TileId): Boolean = tileId.id in firstId.id..lastId.id
+  operator fun contains(tileId: Int): Boolean = firstId <= tileId && tileId <= lastId
 }

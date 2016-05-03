@@ -17,18 +17,18 @@
 package algostorm.assets
 
 /**
- * A container that maps non-negative font ids to fonts.
+ * A container that maps font ids to fonts.
  *
  * @property fonts the map that maps ids to fonts
  */
-data class FontSet(private val fonts: Map<FontId, Font>) {
+data class FontSet(private val fonts: Map<Int, Font>) {
   /**
    * Returns the font with the given [id].
    *
    * @param id the id of the font
    * @return the requested font, or `null` if it doesn't exist
    */
-  operator fun get(id: FontId): Font? = fonts[id]
+  operator fun get(id: Int): Font? = fonts[id]
 
   /**
    * Returns whether this font set contains the font with the given [id].
@@ -36,5 +36,5 @@ data class FontSet(private val fonts: Map<FontId, Font>) {
    * @param id the id of the font
    * @return `true` if the given font [id] is contained in this font set, `false` otherwise
    */
-  operator fun contains(id: FontId): Boolean = id in fonts
+  operator fun contains(id: Int): Boolean = id in fonts
 }

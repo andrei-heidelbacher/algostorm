@@ -16,7 +16,6 @@
 
 package algostorm.lifecycle
 
-import algostorm.ecs.EntityId
 import algostorm.ecs.MutableEntityManager
 import algostorm.ecs.PublisherSystem
 import algostorm.engine.Tick
@@ -46,7 +45,7 @@ class LifecycleSystem(
    *
    * @property entityId the id of the entity which should be deleted
    */
-  private data class DeleteEntity(val entityId: EntityId) : Event
+  private data class DeleteEntity(val entityId: Int) : Event
 
   private val createHandler = Subscriber(CreateEntity::class) { event ->
     post(Spawn(entityManager.create(event.components).id))

@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
  *
  * @property id the unique identifier of the entity
  */
-abstract class Entity(val id: EntityId) {
+abstract class Entity(val id: Int) {
   /**
    * All components owned by this entity at the time of calling.
    */
@@ -71,5 +71,5 @@ abstract class Entity(val id: EntityId) {
 
   final override fun equals(other: Any?): Boolean = other is Entity && id == other.id
 
-  final override fun hashCode(): Int = id.hashCode()
+  final override fun hashCode(): Int = id
 }

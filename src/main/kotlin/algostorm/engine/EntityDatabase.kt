@@ -17,7 +17,6 @@
 package algostorm.engine
 
 import algostorm.ecs.Component
-import algostorm.ecs.EntityId
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
 import algostorm.graphics2d.ScreenPosition
@@ -35,7 +34,7 @@ import kotlin.reflect.KClass
  * A concrete implementation of a [MutableEntityManager].
  */
 class EntityDatabase : MutableEntityManager {
-  private class EntityRecord(id: EntityId, components: Iterable<Component>) : MutableEntity(id) {
+  private class EntityRecord(id: Int, components: Iterable<Component>) : MutableEntity(id) {
     private companion object {
       private var componentIndex = 0
       private val componentMapper = hashMapOf(
@@ -88,11 +87,11 @@ class EntityDatabase : MutableEntityManager {
     }
   }
 
-  private val entitySet = hashMapOf<EntityId, MutableEntity>()
+  private val entitySet = hashMapOf<Int, MutableEntity>()
   private val nextId: Int = 0
     get() {
       check(entitySet.size < Int.MAX_VALUE) { "Too many entities!" }
-      while (EntityId(field) in entitySet) {
+      while (field in entitySet) {
         field = if (field == Int.MAX_VALUE) 0 else field + 1
       }
       return field
@@ -101,7 +100,7 @@ class EntityDatabase : MutableEntityManager {
   override val entities: Sequence<MutableEntity>
     get() = entitySet.values.asSequence()
 
-  override fun get(entityId: EntityId): MutableEntity? = entitySet[entityId]
+  override fun get(entityId: Int): MutableEntity? = entitySet[entityId]
 
   override fun <T : Component> getEntitiesWithComponentType(
       type: KClass<T>
@@ -109,14 +108,14 @@ class EntityDatabase : MutableEntityManager {
       entities.filter { entity -> type in entity }
 
   override fun create(components: Iterable<Component>): MutableEntity =
-      create(EntityId(nextId), components)
+      create(nextId, components)
 
-  override fun create(entityId: EntityId, components: Iterable<Component>): MutableEntity {
+  override fun create(entityId: Int, components: Iterable<Component>): MutableEntity {
     require(entityId !in entitySet) { "Entity id is already used!" }
     val entity = EntityRecord(entityId, components)
     entitySet[entityId] = entity
     return entity
   }
 
-  override fun delete(entityId: EntityId): Boolean = entitySet.remove(entityId)?.clear() != null
+  override fun delete(entityId: Int): Boolean = entitySet.remove(entityId)?.clear() != null
 }

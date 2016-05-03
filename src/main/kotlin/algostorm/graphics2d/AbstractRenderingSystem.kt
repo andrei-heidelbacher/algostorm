@@ -17,7 +17,6 @@
 package algostorm.graphics2d
 
 import algostorm.assets.FontSet
-import algostorm.assets.TileId
 import algostorm.assets.TileSet
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
@@ -45,8 +44,7 @@ abstract class AbstractRenderingSystem(
    * @param tileId the unique identifier of the tile
    * @return the tileset that contains the given tile, or `null` if no tileset contains it
    */
-  protected fun getTileSet(tileId: TileId): TileSet? =
-      tileSets.find { tileSet -> tileId in tileSet }
+  protected fun getTileSet(tileId: Int): TileSet? = tileSets.find { tileSet -> tileId in tileSet }
 
   /**
    * This method is called when a [RenderAll] event is received.

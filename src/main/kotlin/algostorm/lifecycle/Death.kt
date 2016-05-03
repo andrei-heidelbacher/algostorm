@@ -16,7 +16,6 @@
 
 package algostorm.lifecycle
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -26,4 +25,4 @@ import algostorm.event.Event
  *
  * @property entityId the id of the deleted entity
  */
-data class Death(val entityId: EntityId) : Event
+data class Death(val entityId: Int) : Event

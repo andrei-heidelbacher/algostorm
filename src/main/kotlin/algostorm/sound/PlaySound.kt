@@ -16,7 +16,6 @@
 
 package algostorm.sound
 
-import algostorm.assets.SoundId
 import algostorm.event.Event
 
 /**
@@ -26,4 +25,4 @@ import algostorm.event.Event
  * @property frequency the frequency on which the sound should be played
  * @property loop `true` if the given sound should be looped, `false` otherwise
  */
-data class PlaySound(val soundId: SoundId, val frequency: Int, val loop: Boolean) : Event
+data class PlaySound(val soundId: Int, val frequency: Int, val loop: Boolean) : Event

@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d
 
-import algostorm.assets.FontId
 import algostorm.ecs.Component
 
 /**
@@ -25,6 +24,6 @@ import algostorm.ecs.Component
  * @property text the text that should be rendered
  * @property fontId the font that should be used
  * @property size the size of the text
- * @property color the color of the text
+ * @property color the color of the text in ARGB32 format
  */
-data class Text(val text: String, val fontId: FontId, val size: Int, val color: Color) : Component
+data class Text(val text: String, val fontId: Int, val size: Int, val color: Int) : Component

@@ -17,18 +17,18 @@
 package algostorm.assets
 
 /**
- * A container that maps non-negative sound ids to sounds.
+ * A container that maps sound ids to sounds.
  *
  * @property sounds the map that maps ids to sounds
  */
-data class SoundSet(private val sounds: Map<SoundId, Sound>) {
+data class SoundSet(private val sounds: Map<Int, Sound>) {
   /**
    * Returns the sound with the given [id].
    *
    * @param id the id of the sound
    * @return the requested sound, or `null` if it doesn't exist
    */
-  operator fun get(id: SoundId): Sound? = sounds[id]
+  operator fun get(id: Int): Sound? = sounds[id]
 
   /**
    * Returns whether this sound set contains the sound with the given [id].
@@ -36,5 +36,5 @@ data class SoundSet(private val sounds: Map<SoundId, Sound>) {
    * @param id the id of the sound
    * @return `true` if the given sound [id] is contained in this sound set, `false` otherwise
    */
-  operator fun contains(id: SoundId): Boolean = id in sounds
+  operator fun contains(id: Int): Boolean = id in sounds
 }

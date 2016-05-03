@@ -28,7 +28,6 @@ import algostorm.assets.FontSet
 import algostorm.assets.SoundSet
 import algostorm.assets.TileSet
 import algostorm.ecs.Component
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 import java.io.InputStream
@@ -69,12 +68,12 @@ object Serializer {
   @JvmStatic fun readComponents(src: InputStream): List<Component> =
       objectMapper.readValue(src, object : TypeReference<List<Component>>() {})
 
-  @JvmStatic fun writeEntities(out: OutputStream, entities: Map<EntityId, List<Component>>) {
+  @JvmStatic fun writeEntities(out: OutputStream, entities: Map<Int, List<Component>>) {
     objectMapper.writeValue(out, entities)
   }
 
-  @JvmStatic fun readEntitiesWithIds(src: InputStream): Map<EntityId, List<Component>> =
-      objectMapper.readValue(src, object : TypeReference<Map<EntityId, List<Component>>>() {})
+  @JvmStatic fun readEntitiesWithIds(src: InputStream): Map<Int, List<Component>> =
+      objectMapper.readValue(src, object : TypeReference<Map<Int, List<Component>>>() {})
 
   @JvmStatic fun writeEntities(out: OutputStream, entities: List<List<Component>>) {
     objectMapper.writeValue(out, entities)

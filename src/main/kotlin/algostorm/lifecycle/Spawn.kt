@@ -16,7 +16,6 @@
 
 package algostorm.lifecycle
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -27,4 +26,4 @@ import algostorm.event.Event
  *
  * @property entityId the id of the created entity
  */
-data class Spawn internal constructor(val entityId: EntityId) : Event
+data class Spawn internal constructor(val entityId: Int) : Event

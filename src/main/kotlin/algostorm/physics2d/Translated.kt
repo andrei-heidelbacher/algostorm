@@ -16,7 +16,6 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -28,4 +27,4 @@ import algostorm.event.Event
  * @property dx the amount the entity translated on the x-axis
  * @property dy the amount the entity translated on the y-axis
  */
-data class Translated internal constructor(val entityId: EntityId, val dx: Int, val dy: Int) : Event
+data class Translated internal constructor(val entityId: Int, val dx: Int, val dy: Int) : Event

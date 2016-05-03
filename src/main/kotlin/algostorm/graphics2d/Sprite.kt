@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d
 
-import algostorm.assets.TileId
 import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
@@ -31,7 +30,7 @@ import algostorm.ecs.Entity
  * @property flippedDiagonally whether the sprite should be flipped diagonally
  */
 data class Sprite(
-    val tileId: TileId,
+    val tileId: Int,
     val flippedHorizontally: Boolean,
     val flippedVertically: Boolean,
     val flippedDiagonally: Boolean

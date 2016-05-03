@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 /**
  * A mutable view of an [Entity] that allows setting or removing components.
  */
-abstract class MutableEntity(id: EntityId) : Entity(id) {
+abstract class MutableEntity(id: Int) : Entity(id) {
   /**
    * Even if a component is removed, added or replaced after retrieving the components, the returned
    * list will not change.

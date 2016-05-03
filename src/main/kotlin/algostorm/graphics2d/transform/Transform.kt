@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d.transform
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -27,10 +26,7 @@ import algostorm.event.Event
  * @property transformations the transformation sequence that must be applied
  * @throws IllegalArgumentException if [transformations] is empty
  */
-data class Transform(
-    val entityId: EntityId,
-    val transformations: List<TimedTransformation>
-) : Event {
+data class Transform(val entityId: Int, val transformations: List<TimedTransformation>) : Event {
   init {
     require(transformations.isNotEmpty()) { "Transformation sequence can't be empty!" }
   }

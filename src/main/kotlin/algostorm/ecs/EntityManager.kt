@@ -38,7 +38,7 @@ interface EntityManager {
    * @param entityId the id of the requested entity
    * @return the entity with the given id, or `null` if it doesn't exist
    */
-  operator fun get(entityId: EntityId): Entity?
+  operator fun get(entityId: Int): Entity?
 
   /**
    * Returns all entities that have a component of the given [type].
@@ -63,7 +63,7 @@ interface EntityManager {
    * @param entityId the id of the given entity
    * @return `true` if the given entity is contained in the manager, `false` otherwise
    */
-  operator fun contains(entityId: EntityId): Boolean = get(entityId) != null
+  operator fun contains(entityId: Int): Boolean = get(entityId) != null
 
   /**
    * Returns an immutable and frozen (unchanging over time) view of all entities currently present
@@ -71,6 +71,6 @@ interface EntityManager {
    *
    * @return the frozen state of the entity manager
    */
-  fun snapshot(): Map<EntityId, List<Component>> =
+  fun snapshot(): Map<Int, List<Component>> =
       entities.associate { entity -> entity.id to entity.components }
 }

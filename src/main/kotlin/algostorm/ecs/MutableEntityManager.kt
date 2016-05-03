@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
 interface MutableEntityManager : EntityManager {
   override val entities: Sequence<MutableEntity>
 
-  override operator fun get(entityId: EntityId): MutableEntity?
+  override operator fun get(entityId: Int): MutableEntity?
 
   override fun <T : Component> getEntitiesWithComponentType(
       type: KClass<T>
@@ -57,7 +57,7 @@ interface MutableEntityManager : EntityManager {
    * @return the created entity
    * @throws IllegalStateException if there are too many entities in this manager
    */
-  fun create(entityId: EntityId, components: Iterable<Component>): MutableEntity
+  fun create(entityId: Int, components: Iterable<Component>): MutableEntity
 
   /**
    * Removes the given entity from this manager.
@@ -67,7 +67,7 @@ interface MutableEntityManager : EntityManager {
    * manager
    * @throws IllegalArgumentException if the given [entityId] is negative
    */
-  fun delete(entityId: EntityId): Boolean
+  fun delete(entityId: Int): Boolean
 
   /**
    * Deletes all the entities in the manager.

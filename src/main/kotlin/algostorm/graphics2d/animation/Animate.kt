@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d.animation
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -25,4 +24,4 @@ import algostorm.event.Event
  * @property entityId the id of the entity that is to be animated
  * @property animation the name of the animation
  */
-data class Animate(val entityId: EntityId, val animation: String) : Event
+data class Animate(val entityId: Int, val animation: String) : Event

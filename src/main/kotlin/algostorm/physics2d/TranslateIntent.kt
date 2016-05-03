@@ -16,7 +16,6 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.EntityId
 import algostorm.event.Event
 
 /**
@@ -26,4 +25,4 @@ import algostorm.event.Event
  * @property dx the amount the entity intends to translate on the x-axis
  * @property dy the amount the entity intends to translate on the y-axis
  */
-data class TranslateIntent(val entityId: EntityId, val dx: Int, val dy: Int) : Event
+data class TranslateIntent(val entityId: Int, val dx: Int, val dy: Int) : Event

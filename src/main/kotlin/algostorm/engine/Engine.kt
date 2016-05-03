@@ -17,7 +17,6 @@
 package algostorm.engine
 
 import algostorm.ecs.Component
-import algostorm.ecs.EntityId
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
@@ -198,7 +197,7 @@ class Engine(
   /**
    * Retrieves the current game state.
    */
-  fun save(): Map<EntityId, List<Component>> =
+  fun save(): Map<Int, List<Component>> =
       synchronized(stateLock) { state.entityManager.snapshot() }
 
   /**
@@ -218,7 +217,7 @@ class Engine(
    *
    * @param entities a mapping from entity ids to [Component] lists.
    */
-  fun load(entities: Map<EntityId, Iterable<Component>>) {
+  fun load(entities: Map<Int, Iterable<Component>>) {
     synchronized(stateLock) {
       clearState()
       entities.forEach { entity -> state.entityManager.create(entity.key, entity.value) }
