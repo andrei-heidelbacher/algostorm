@@ -21,6 +21,7 @@ import algostorm.ecs.EntityId
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
+import algostorm.event.PublishAll
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -167,7 +168,7 @@ class Engine(
    */
   fun clearState() {
     synchronized(stateLock) {
-      state.eventBus.publishAll()
+      state.eventBus.post(PublishAll)
       state.entityManager.clear()
     }
   }

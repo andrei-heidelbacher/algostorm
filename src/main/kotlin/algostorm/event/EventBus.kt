@@ -33,7 +33,8 @@ interface EventBus {
   fun subscribe(subscriber: Subscriber<*>): Subscription
 
   /**
-   * Posts the given [event] to the event bus and notifies the interested subscribers.
+   * Posts the given [event] to the event bus and notifies the interested subscribers, or waits
+   * until all other events have been handled by the subscribers if the given `event`.
    *
    * @param event the event that should be posted to the event bus.
    */
@@ -47,9 +48,4 @@ interface EventBus {
   fun postAll(vararg events: Event) {
     events.forEach { event -> post(event) }
   }
-
-  /**
-   * This is a blocking call until all subscribers have handled all the events posted so far.
-   */
-  fun publishAll(): Unit
 }

@@ -18,6 +18,7 @@ package algostorm.engine
 
 import algostorm.event.Event
 import algostorm.event.EventBus
+import algostorm.event.PublishAll
 import algostorm.event.Subscriber
 import algostorm.event.Subscription
 
@@ -49,10 +50,14 @@ class EventQueue : EventBus {
   }
 
   override fun post(event: Event) {
-    eventQueue.add(event)
+    if (event is PublishAll) {
+      publishAll()
+    } else {
+      eventQueue.add(event)
+    }
   }
 
-  override fun publishAll() {
+  private fun publishAll() {
     do {
       val event = eventQueue.poll()
       if (event != null) {
