@@ -16,11 +16,11 @@
 
 package algostorm.lifecycle
 
+import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
-import algostorm.ecs.PublisherSystem
 import algostorm.engine.Tick
 import algostorm.event.Event
-import algostorm.event.EventBus
+import algostorm.event.Publisher
 import algostorm.event.Subscriber
 
 /**
@@ -35,8 +35,8 @@ import algostorm.event.Subscriber
  */
 class LifecycleSystem(
     private val entityManager: MutableEntityManager,
-    eventBus: EventBus
-) : PublisherSystem(eventBus) {
+    private val publisher: Publisher
+) : EntitySystem() {
   /**
    * Requests the deletion of the given [entityId].
    *
@@ -48,7 +48,7 @@ class LifecycleSystem(
   private data class DeleteEntity(val entityId: Int) : Event
 
   private val createHandler = Subscriber(CreateEntity::class) { event ->
-    post(Spawn(entityManager.create(event.components).id))
+    publisher.post(Spawn(entityManager.create(event.components).id))
   }
 
   private val deleteHandler = Subscriber(DeleteEntity::class) { event ->
@@ -56,14 +56,14 @@ class LifecycleSystem(
   }
 
   private val deathHandler = Subscriber(Death::class) { event ->
-    post(DeleteEntity(event.entityId))
+    publisher.post(DeleteEntity(event.entityId))
   }
 
   private val tickHandler = Subscriber(Tick::class) { event ->
     entityManager.getEntitiesWithComponentType(DeathTimer::class).forEach { entity ->
       entity.get<DeathTimer>()?.let { timer ->
         if (timer.remainingTicks == 1) {
-          post(Death(entity.id))
+          publisher.post(Death(entity.id))
         } else {
           entity.set(timer.tick())
         }
@@ -74,7 +74,7 @@ class LifecycleSystem(
   /**
    * This system handles [CreateEntity], [DeleteEntity], [Death] and [Tick] events.
    */
-  final override val handlers: List<Subscriber<*>> = listOf(
+  override val handlers: List<Subscriber<*>> = listOf(
       createHandler,
       deleteHandler,
       deathHandler,

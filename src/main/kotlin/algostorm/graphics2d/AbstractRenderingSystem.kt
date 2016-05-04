@@ -16,8 +16,9 @@
 
 package algostorm.graphics2d
 
-import algostorm.assets.FontSet
-import algostorm.assets.TileSet
+import algostorm.assets.AssetCollection
+import algostorm.assets.Font
+import algostorm.assets.Tile
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
 import algostorm.event.Subscriber
@@ -28,24 +29,16 @@ import algostorm.event.Subscriber
  * @property entityManager an entity manager which can be queried to fetch renderable entities
  * @property tileWidth the width of a single tile in pixels
  * @property tileHeight the height of a single tile in pixels
- * @property tileSets the tilesets used for rendering
+ * @property tiles the tile collection used for rendering
  * @property fonts the fonts used for rendering
  */
 abstract class AbstractRenderingSystem(
     protected val entityManager: EntityManager,
     protected val tileWidth: Int,
     protected val tileHeight: Int,
-    private val tileSets: Iterable<TileSet>,
-    protected val fonts: FontSet
+    private val tiles: AssetCollection<Tile>,
+    protected val fonts: AssetCollection<Font>
 ) : EntitySystem() {
-  /**
-   * Returns the tileset that contains the given [tileId].
-   *
-   * @param tileId the unique identifier of the tile
-   * @return the tileset that contains the given tile, or `null` if no tileset contains it
-   */
-  protected fun getTileSet(tileId: Int): TileSet? = tileSets.find { tileSet -> tileId in tileSet }
-
   /**
    * This method is called when a [RenderAll] event is received.
    *

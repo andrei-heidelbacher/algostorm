@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.script
+
+import algostorm.event.Event
 
 /**
- * An object representing a sound.
+ * An event which requests the execution of a script.
  *
- * @property source the location of the sound
+ * @property scriptId the id of the script that should be executed
+ * @property args the arguments of the script function
  */
-data class Sound(val source: String) : Asset
+data class RunScript(val scriptId: Int, val args: List<*>) : Event {
+  constructor(scriptId: Int, vararg args: Any?) : this(scriptId, args.asList())
+}

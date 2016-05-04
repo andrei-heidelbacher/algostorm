@@ -36,7 +36,7 @@ import kotlin.reflect.KClass
 class EntityDatabase : MutableEntityManager {
   private class EntityRecord(id: Int, components: Iterable<Component>) : MutableEntity(id) {
     private companion object {
-      private var componentIndex = 0
+      private var componentIndex = 8
       private val componentMapper = hashMapOf(
           ScreenPosition::class to 0,
           Sprite::class to 1,
@@ -87,7 +87,7 @@ class EntityDatabase : MutableEntityManager {
     }
   }
 
-  private val entitySet = hashMapOf<Int, MutableEntity>()
+  private val entitySet = hashMapOf<Int, EntityRecord>()
   private val nextId: Int = 0
     get() {
       check(entitySet.size < Int.MAX_VALUE) { "Too many entities!" }

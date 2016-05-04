@@ -28,7 +28,7 @@ data class Image(
     val source: String,
     val width: Int,
     val height: Int
-) {
+) : Asset {
   /**
    * A viewport projected over an image.
    *

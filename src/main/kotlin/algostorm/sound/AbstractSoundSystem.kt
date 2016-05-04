@@ -16,8 +16,8 @@
 
 package algostorm.sound
 
+import algostorm.assets.AssetCollection
 import algostorm.assets.Sound
-import algostorm.assets.SoundSet
 import algostorm.ecs.EntitySystem
 import algostorm.event.Subscriber
 
@@ -30,7 +30,7 @@ import algostorm.event.Subscriber
  *
  * @property sounds the sounds used in the game
  */
-abstract class AbstractSoundSystem(protected val sounds: SoundSet) : EntitySystem() {
+abstract class AbstractSoundSystem(protected val sounds: AssetCollection<Sound>) : EntitySystem() {
   /**
    * This method is called when a [PlaySound] event occurs and the given sound id exists in the
    * sound set. If another sound is already playing on the given [frequency], that sound should be
@@ -38,9 +38,8 @@ abstract class AbstractSoundSystem(protected val sounds: SoundSet) : EntitySyste
    *
    * @param sound the sound which should be played
    * @param frequency the frequency on which the sound should be played
-   * @param loop whether the sound should be looped or not
    */
-  protected abstract fun playSound(sound: Sound, frequency: Int, loop: Boolean): Unit
+  protected abstract fun playSound(sound: Sound, frequency: Int): Unit
 
   /**
    * This method is called when a [StopSound] event occurs.
@@ -50,7 +49,7 @@ abstract class AbstractSoundSystem(protected val sounds: SoundSet) : EntitySyste
   protected abstract fun stopSound(frequency: Int): Unit
 
   private val playHandler = Subscriber(PlaySound::class) { event ->
-    sounds[event.soundId]?.let { sound -> playSound(sound, event.frequency, event.loop) }
+    playSound(sounds[event.soundId] ?: error("Sound id doesn't exist!"), event.frequency)
   }
 
   private val stopHandler = Subscriber(StopSound::class) { event ->

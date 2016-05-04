@@ -77,12 +77,4 @@ data class TileSet(
         height = tileHeight
     )
   }
-
-  /**
-   * Returns whether the given tile is present in the tileset.
-   *
-   * @param tileId the id of the given tile
-   * @return `true` if [tileId] is in the range [[firstId], [lastId]], `false` otherwise
-   */
-  operator fun contains(tileId: Int): Boolean = firstId <= tileId && tileId <= lastId
 }

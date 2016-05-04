@@ -17,7 +17,7 @@
 package algostorm.event
 
 /**
- * Provides posting functionality to an associated [EventBus].
+ * Provides posting functionality to an associated event bus.
  */
 interface Publisher {
   /**
@@ -32,7 +32,22 @@ interface Publisher {
    *
    * @param events the events that should be posted
    */
-  fun postAll(vararg events: Event) {
+  fun post(events: Iterable<Event>) {
     events.forEach { event -> post(event) }
   }
+
+  /**
+   * Calls [post] for each given event.
+   *
+   * @param events the events that should be posted
+   */
+  fun post(vararg events: Event) {
+    events.forEach { event -> post(event) }
+  }
+
+  /**
+   * Blocks until all other events in the associated event bus have been handled by their
+   * subscribers.
+   */
+  fun publishAll(): Unit
 }

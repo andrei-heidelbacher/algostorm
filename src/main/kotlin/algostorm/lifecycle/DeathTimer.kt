@@ -21,6 +21,8 @@ import algostorm.ecs.Component
 /**
  * A component which indicates that the current entity should die within [remainingTicks] ticks.
  *
+ * This component should be used for creating transient entities whose ids are not available.
+ *
  * @property remainingTicks the number of ticks after which the entity dies
  * @throws IllegalArgumentException if [remainingTicks] is not positive
  */

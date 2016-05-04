@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.time
+
+import algostorm.event.Event
 
 /**
- * An object representing a sound.
+ * An event which requests the creation of a [timer].
  *
- * @property source the location of the sound
+ * @property timer the timer that must be registered
  */
-data class Sound(val source: String) : Asset
+data class RegisterTimer(val timer: Timer) : Event

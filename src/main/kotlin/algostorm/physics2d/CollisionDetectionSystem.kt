@@ -17,8 +17,8 @@
 package algostorm.physics2d
 
 import algostorm.ecs.EntityManager
-import algostorm.ecs.PublisherSystem
-import algostorm.event.EventBus
+import algostorm.ecs.EntitySystem
+import algostorm.event.Publisher
 import algostorm.event.Subscriber
 import algostorm.physics2d.Box.Companion.box
 
@@ -32,8 +32,8 @@ import algostorm.physics2d.Box.Companion.box
  */
 class CollisionDetectionSystem(
     private val entityManager: EntityManager,
-    eventBus: EventBus
-) : PublisherSystem(eventBus) {
+    private val publisher: Publisher
+) : EntitySystem() {
   private val translateIntentHandler = Subscriber(TranslateIntent::class) { event ->
     val translatedEntity = entityManager[event.entityId] ?: error(
         "Translating non-existent entity!"
@@ -44,11 +44,11 @@ class CollisionDetectionSystem(
     entityManager
         .getEntitiesWithComponentTypes(Collidable::class, Box::class)
         .filter { entity -> entity != translatedEntity && entity.box?.overlaps(newBox) ?: false }
-        .forEach { entity -> post(Collision(event.entityId, entity.id)) }
+        .forEach { entity -> publisher.post(Collision(event.entityId, entity.id)) }
   }
 
   /**
    * This system handles [TranslateIntent] events.
    */
-  final override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
+  override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
 }

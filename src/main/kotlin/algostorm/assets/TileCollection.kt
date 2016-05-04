@@ -17,24 +17,23 @@
 package algostorm.assets
 
 /**
- * A container that maps font ids to fonts.
- *
- * @property fonts the map that maps ids to fonts
+ * Factory object for tile collections.
  */
-data class FontSet(private val fonts: Map<Int, Font>) {
+object TileCollection {
   /**
-   * Returns the font with the given [id].
+   * Returns a tile collection created from the given [tileSets].
    *
-   * @param id the id of the font
-   * @return the requested font, or `null` if it doesn't exist
+   * @param tileSets the tilesets in the tile collection
+   * @return a tile collection that maps ids to tiles
    */
-  operator fun get(id: Int): Font? = fonts[id]
-
-  /**
-   * Returns whether this font set contains the font with the given [id].
-   *
-   * @param id the id of the font
-   * @return `true` if the given font [id] is contained in this font set, `false` otherwise
-   */
-  operator fun contains(id: Int): Boolean = id in fonts
+  @JvmStatic fun invoke(tileSets: Iterable<TileSet>): AssetCollection<Tile> {
+    val container = hashMapOf<Int, Tile>()
+    for (tileSet in tileSets) {
+      for (tileId in tileSet.firstId..tileSet.lastId) {
+        require(tileId !in container) { "Tile id is contained in multiple tilesets!" }
+        container[tileId] = Tile(tileSet.image, tileSet.getViewport(tileId))
+      }
+    }
+    return AssetCollection(container)
+  }
 }

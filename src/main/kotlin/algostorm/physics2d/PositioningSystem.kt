@@ -16,9 +16,9 @@
 
 package algostorm.physics2d
 
+import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
-import algostorm.ecs.PublisherSystem
-import algostorm.event.EventBus
+import algostorm.event.Publisher
 import algostorm.event.Subscriber
 import algostorm.physics2d.Box.Companion.box
 
@@ -31,8 +31,8 @@ import algostorm.physics2d.Box.Companion.box
  */
 class PositioningSystem(
     private val entityManager: MutableEntityManager,
-    eventBus: EventBus
-) : PublisherSystem(eventBus) {
+    private val publisher: Publisher
+) : EntitySystem() {
   private val translateIntentHandler = Subscriber(TranslateIntent::class) { event ->
     val translatedEntity = entityManager[event.entityId] ?: error(
         "Translating non-existent entity!"
@@ -45,12 +45,12 @@ class PositioningSystem(
         .any { entity -> entity != translatedEntity && entity.box?.overlaps(newBox) ?: false }
     if (!isBlocked) {
       translatedEntity.set(newBox)
-      post(Translated(event.entityId, event.dx, event.dy))
+      publisher.post(Translated(event.entityId, event.dx, event.dy))
     }
   }
 
   /**
    * This system handles [TranslateIntent] events.
    */
-  final override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
+  override val handlers: List<Subscriber<*>> = listOf(translateIntentHandler)
 }

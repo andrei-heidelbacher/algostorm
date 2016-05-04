@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package algostorm.ecs
-
-import algostorm.event.Event
-import algostorm.event.EventBus
-import algostorm.event.Publisher
+package algostorm.assets
 
 /**
- * A system that may emit other events to the [eventBus] through the [Publisher] interface as a
- * means of communication with other systems.
+ * An object representing a script.
  *
- * @property eventBus the event bus to which the system may post events
+ * @property source the location of this script
  */
-abstract class PublisherSystem(private val eventBus: EventBus) : EntitySystem(), Publisher {
-  final override fun post(event: Event) {
-    eventBus.post(event)
-  }
-}
+data class Script(val source: String) : Asset

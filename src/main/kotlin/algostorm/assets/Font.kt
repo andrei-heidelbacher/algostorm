@@ -21,4 +21,4 @@ package algostorm.assets
  *
  * @property source the location of the font
  */
-data class Font(val source: String)
+data class Font(val source: String) : Asset

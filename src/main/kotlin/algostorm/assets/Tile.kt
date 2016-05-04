@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package algostorm.event
+package algostorm.assets
 
 /**
- * An event which signals the event bus to block until all other events have been handled.
+ * An object representing a tile.
+ *
+ * @property image the originating image of the tile
+ * @property viewport the area of the image on which the tile is placed
  */
-object PublishAll : Event
+data class Tile(val image: Image, val viewport: Image.Viewport) : Asset

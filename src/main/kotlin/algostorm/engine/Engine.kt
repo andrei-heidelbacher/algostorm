@@ -20,7 +20,6 @@ import algostorm.ecs.Component
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
-import algostorm.event.PublishAll
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -167,7 +166,7 @@ class Engine(
    */
   fun clearState() {
     synchronized(stateLock) {
-      state.eventBus.post(PublishAll)
+      state.eventBus.publishAll()
       state.entityManager.clear()
     }
   }
@@ -197,7 +196,7 @@ class Engine(
   /**
    * Retrieves the current game state.
    */
-  fun save(): Map<Int, List<Component>> =
+  fun saveState(): Map<Int, List<Component>> =
       synchronized(stateLock) { state.entityManager.snapshot() }
 
   /**
@@ -205,7 +204,7 @@ class Engine(
    *
    * @param entities a list of [Component] lists, leaving the engine to assign ids to the entities.
    */
-  fun load(entities: Iterable<Iterable<Component>>) {
+  fun loadState(entities: Iterable<Iterable<Component>>) {
     synchronized(stateLock) {
       clearState()
       entities.forEach { entity -> state.entityManager.create(entity.toList()) }
@@ -217,7 +216,7 @@ class Engine(
    *
    * @param entities a mapping from entity ids to [Component] lists.
    */
-  fun load(entities: Map<Int, Iterable<Component>>) {
+  fun loadState(entities: Map<Int, Iterable<Component>>) {
     synchronized(stateLock) {
       clearState()
       entities.forEach { entity -> state.entityManager.create(entity.key, entity.value) }

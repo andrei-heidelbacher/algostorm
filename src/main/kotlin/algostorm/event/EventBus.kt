@@ -19,33 +19,16 @@ package algostorm.event
 /**
  * An event bus which allows a [Subscriber] to [subscribe] and unsubscribe from certain topics
  * through the returned [Subscription] and allows to [post] an [Event] to the bus and notify its
- * subscribers.
+ * subscribers through the [Publisher] interface.
  *
  * It should preserve the order of submitted events (if an event A is posted before an event B, then
  * subscribers will be notified for A before they are notified for B).
  */
-interface EventBus {
+interface EventBus : Publisher {
   /**
    * Registers the given [subscriber] to the specified topic.
    *
    * @param subscriber the object that subscribes for events to this event bus.
    */
   fun subscribe(subscriber: Subscriber<*>): Subscription
-
-  /**
-   * Posts the given [event] to the event bus and notifies the interested subscribers, or waits
-   * until all other events have been handled by the subscribers if the given `event`.
-   *
-   * @param event the event that should be posted to the event bus.
-   */
-  fun post(event: Event): Unit
-
-  /**
-   * Calls the [post] method for each provided event.
-   *
-   * @param events the events that should be posted to the event bus.
-   */
-  fun postAll(vararg events: Event) {
-    events.forEach { event -> post(event) }
-  }
 }
