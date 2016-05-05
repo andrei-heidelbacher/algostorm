@@ -20,7 +20,6 @@ import algostorm.assets.AssetCollection
 import algostorm.assets.Script
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
-import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
 import algostorm.event.Subscriber
 
@@ -38,17 +37,10 @@ abstract class ScriptingSystem(
    * The context of every executed script. This should be passed as the first argument to every
    * executed script.
    *
-   * @property mutableEntityManager the mutable view of the entity manager which handles the game
-   * entities
+   * @property entityManager a read-only view of the entity manager which handles the game entities
    * @property publisher a publisher which provides posting functionality to the game event bus
    */
-  data class Context(val mutableEntityManager: MutableEntityManager, val publisher: Publisher) {
-    /**
-     * A read-only view of the entity manager.
-     */
-    val entityManager: EntityManager
-      get() = mutableEntityManager
-  }
+  data class Context(val entityManager: EntityManager, val publisher: Publisher)
 
   /**
    * This method should run the given script and return its result, or `null` if it doesn't return

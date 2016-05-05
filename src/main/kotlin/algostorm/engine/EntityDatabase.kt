@@ -66,7 +66,7 @@ class EntityDatabase : MutableEntityManager {
 
     override operator fun <T : Component> get(type: KClass<T>): T? =
         getIndex(type).let { index ->
-          @Suppress("UNCHECKED_CAST") if (index < fields.size) fields[index] as T else null
+          if (index < fields.size) type.java.cast(fields[index]) else null
         }
 
     override operator fun <T : Component> set(type: KClass<T>, value: T) {

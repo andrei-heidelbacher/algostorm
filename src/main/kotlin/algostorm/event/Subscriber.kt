@@ -33,8 +33,8 @@ class Subscriber<T : Event>(val topic: KClass<T>, private val handler: (T) -> Un
    * @param event the event for which the subscriber is notified
    */
   fun notify(event: Event) {
-    if (event.javaClass.kotlin == topic) {
-      @Suppress("UNCHECKED_CAST") handler(event as T)
+    if (topic.java.isInstance(event)) {
+      handler(topic.java.cast(event))
     }
   }
 }
