@@ -17,6 +17,7 @@
 package algostorm.graphics2d
 
 import algostorm.ecs.Component
+import algostorm.ecs.Entity
 
 /**
  * A component that contains text information that should be rendered.
@@ -26,4 +27,12 @@ import algostorm.ecs.Component
  * @property size the size of the text
  * @property color the color of the text in ARGB32 format
  */
-data class Text(val text: String, val fontId: Int, val size: Int, val color: Int) : Component
+data class TextBox(val text: String, val fontId: Int, val size: Int, val color: Int) : Component {
+  companion object {
+    /**
+     * The [TextBox] component of this entity, or `null` if it doesn't contain such a component.
+     */
+    val Entity.textBox: TextBox?
+      get() = get()
+  }
+}
