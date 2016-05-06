@@ -81,12 +81,11 @@ data class Animation(
    *
    * @return the animation information after a tick
    */
-  fun tick(): Animation {
-    return if (elapsedTicks + 1 < durationInTicks) copy(elapsedTicks = elapsedTicks + 1)
-    else copy(
-        frames = animationSheet.idle,
-        elapsedTicks = (elapsedTicks + 1 - durationInTicks) %
-            animationSheet.idle.sumBy { frame -> frame.durationInTicks }
-    )
-  }
+  fun tick(): Animation =
+      if (elapsedTicks + 1 < durationInTicks) copy(elapsedTicks = elapsedTicks + 1)
+      else copy(
+          frames = animationSheet.idle,
+          elapsedTicks = (elapsedTicks + 1 - durationInTicks) %
+              animationSheet.idle.sumBy { frame -> frame.durationInTicks }
+      )
 }

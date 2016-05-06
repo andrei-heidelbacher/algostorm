@@ -45,7 +45,7 @@ interface MutableEntityManager : EntityManager {
    *
    * @param components the components the created entity must contain
    * @return the created entity
-   * @throws IllegalStateException if there are too many entities in the manager
+   * @throws IllegalStateException if there are too many entities in this manager
    */
   fun create(components: Iterable<Component>): MutableEntity
 
@@ -65,7 +65,6 @@ interface MutableEntityManager : EntityManager {
    * @param entityId the id of the entity to be deleted
    * @return `true` if the entity was successfully deleted, or `false` if it doesn't exist in this
    * manager
-   * @throws IllegalArgumentException if the given [entityId] is negative
    */
   fun delete(entityId: Int): Boolean
 

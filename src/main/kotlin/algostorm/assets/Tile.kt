@@ -19,7 +19,7 @@ package algostorm.assets
 /**
  * An object representing a tile.
  *
- * @property image the originating image of the tile
- * @property viewport the area of the image on which the tile is placed
+ * @property image the originating image of this tile
+ * @property viewport the area of the image on which this tile is placed
  */
 data class Tile(val image: Image, val viewport: Image.Viewport) : Asset

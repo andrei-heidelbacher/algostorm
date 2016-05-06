@@ -25,13 +25,14 @@ import algostorm.event.Subscriber
 
 /**
  * A system that handles the creation and deletion of entities through [CreateEntity] and [Death]
- * events to allow notifying other systems and handles [DeathTimer] components.
+ * events to allow notifying other systems and to avoid concurrent modification exceptions. Also
+ * handles [DeathTimer] components.
  *
- * After receiving a [CreateEntity] request, it publishes a [Spawn] event. After receiving a [Death]
- * event, it publishes a [DeleteEntity] request. Only the [LifecycleSystem] should listen for
- * [DeleteEntity] events, as the specified entity may not be accessible any longer at the moment of
- * notification. After receiving a [Tick] event, it ticks all entities that have a [DeathTimer] and
- * publishes a [Death] event for the entities whose timers reach `0`.
+ * After receiving a [CreateEntity] request, it publishes a [Spawned] event. After receiving a
+ * [Death] event, it publishes a [DeleteEntity] request. Only the [LifecycleSystem] should listen
+ * for [DeleteEntity] events, as the specified entity may not be accessible any longer at the moment
+ * of notification. After receiving a [Tick] event, it ticks all entities that have a [DeathTimer]
+ * and publishes a [Death] event for the entities whose timers reach `0`.
  */
 class LifecycleSystem(
     private val entityManager: MutableEntityManager,
@@ -40,15 +41,15 @@ class LifecycleSystem(
   /**
    * Requests the deletion of the given [entityId].
    *
-   * Should only be listened to by the [LifecycleSystem]. At the time of notification, the entity may
-   * already be deleted.
+   * Should only be listened to by the [LifecycleSystem]. At the time of notification, the entity
+   * may already be deleted.
    *
    * @property entityId the id of the entity which should be deleted
    */
   private data class DeleteEntity(val entityId: Int) : Event
 
   private val createHandler = Subscriber(CreateEntity::class) { event ->
-    publisher.post(Spawn(entityManager.create(event.components).id))
+    publisher.post(Spawned(entityManager.create(event.components).id))
   }
 
   private val deleteHandler = Subscriber(DeleteEntity::class) { event ->

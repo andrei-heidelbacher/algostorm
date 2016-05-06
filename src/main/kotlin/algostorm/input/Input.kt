@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.input
 
 /**
- * An object representing a font.
+ * Base type for all possible user inputs.
  *
- * @property source the location of this font
+ * Every user input should be an immutable data class.
  */
-data class Font(val source: String) : Asset
+interface Input

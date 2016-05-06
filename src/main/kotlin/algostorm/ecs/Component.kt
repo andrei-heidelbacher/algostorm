@@ -16,15 +16,10 @@
 
 package algostorm.ecs
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
-
 /**
  * Base type for all components.
  *
  * All components should be immutable data classes that contain only properties, without any
  * associated behaviour. The type of a component is denoted by its kotlin class object.
  */
-@JsonTypeInfo(use = Id.MINIMAL_CLASS, include = As.PROPERTY, property = "class")
 interface Component

@@ -43,11 +43,11 @@ data class Box(val x: Int, val y: Int, val width: Int, val height: Int) : Compon
   }
 
   /**
-   * Returns whether the given tile lies inside the box.
+   * Returns whether the given tile lies inside this box.
    *
    * @param x the x-axis coordinate of the tile
    * @param y the y-axis coordinate of the tile
-   * @return `true` if the given tile is inside the box, `false` otherwise
+   * @return `true` if the given tile is inside this box, `false` otherwise
    */
   fun contains(x: Int, y: Int): Boolean =
       this.x <= x && x <= this.x + this.width && this.y <= y && y <= this.y + this.height

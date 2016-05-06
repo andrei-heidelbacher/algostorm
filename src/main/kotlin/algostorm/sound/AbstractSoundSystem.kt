@@ -32,9 +32,8 @@ import algostorm.event.Subscriber
  */
 abstract class AbstractSoundSystem(protected val sounds: AssetCollection<Sound>) : EntitySystem() {
   /**
-   * This method is called when a [PlaySound] event occurs and the given sound id exists in the
-   * sound set. If another sound is already playing on the given [frequency], that sound should be
-   * stopped first.
+   * This method is called when a [PlaySound] event occurs. If another sound is already playing on
+   * the given [frequency], that sound should be stopped first.
    *
    * @param sound the sound which should be played
    * @param frequency the frequency on which the sound should be played

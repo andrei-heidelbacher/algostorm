@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
  * [publishAll] is called.
  */
 class EventQueue : EventBus {
-  private val subscribers = hashMapOf<KClass<*>, MutableSet<Subscriber<*>>>()
+  private val subscribers = hashMapOf<KClass<out Event>, MutableSet<Subscriber<*>>>()
   private val eventQueue = LinkedList<Event>()
 
   override fun subscribe(subscriber: Subscriber<*>): Subscription {

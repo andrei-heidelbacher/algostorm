@@ -18,8 +18,13 @@ package algostorm.input
 
 /**
  * Thread-safe input source which allows setting and retrieving actor inputs.
+ *
+ * This is a mutable and serializable object, however, it may be used in other components, as the
+ * internal state of the source is transient.
+ *
+ * @param T the user input type
  */
-class InputSource<T : Any> {
+class InputSource<T : Input> {
   @Transient private val lock = Any()
 
   /**
@@ -30,8 +35,9 @@ class InputSource<T : Any> {
   @Transient var input: T? = null
     get() = synchronized(lock) {
       val value = field
-      if (value != null)
+      if (value != null) {
         field = null
+      }
       value
     }
     set(value) {
@@ -46,7 +52,7 @@ class InputSource<T : Any> {
    * The enabled property of the source.
    *
    * If the source is disabled, no input can be received. Upon enabling or disabling the source, the
-   * last input is flushed and set to `null`.
+   * last [input] is flushed and set to `null`.
    */
   @Transient var isEnabled: Boolean = false
     get() = synchronized(lock) { field }

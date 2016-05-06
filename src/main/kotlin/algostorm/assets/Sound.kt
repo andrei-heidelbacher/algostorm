@@ -19,6 +19,6 @@ package algostorm.assets
 /**
  * An object representing a sound.
  *
- * @property source the location of the sound
+ * @property source the location of this sound
  */
 data class Sound(val source: String) : Asset

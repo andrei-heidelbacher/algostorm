@@ -161,8 +161,8 @@ class Engine(
   }
 
   /**
-   * Deletes all entities from the entity manager and blocks until all events have been handled,
-   * such that the event bus becomes empty.
+   * Blocks until all events have been handled and the event bus becomes empty and deletes all
+   * entities from the entity manager.
    */
   fun clearState() {
     synchronized(stateLock) {
@@ -195,6 +195,9 @@ class Engine(
 
   /**
    * Retrieves the current game state.
+   *
+   * @return a frozen (unchanging in time) read-only view of all entities in the game at the time of
+   * calling
    */
   fun saveState(): Map<Int, List<Component>> =
       synchronized(stateLock) { state.entityManager.snapshot() }
