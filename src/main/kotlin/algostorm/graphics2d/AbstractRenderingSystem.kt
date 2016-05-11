@@ -17,7 +17,6 @@
 package algostorm.graphics2d
 
 import algostorm.assets.AssetCollection
-import algostorm.assets.Font
 import algostorm.assets.Tile
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
@@ -30,14 +29,12 @@ import algostorm.event.Subscriber
  * @property tileWidth the width of a single tile in pixels
  * @property tileHeight the height of a single tile in pixels
  * @property tiles the tile collection used for rendering
- * @property fonts the fonts used for rendering
  */
 abstract class AbstractRenderingSystem(
     protected val entityManager: EntityManager,
     protected val tileWidth: Int,
     protected val tileHeight: Int,
-    private val tiles: AssetCollection<Tile>,
-    protected val fonts: AssetCollection<Font>
+    private val tiles: AssetCollection<Tile>
 ) : EntitySystem() {
   /**
    * This method is called when a [RenderAll] event is received.

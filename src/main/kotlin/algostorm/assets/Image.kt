@@ -24,11 +24,7 @@ package algostorm.assets
  * @property height the height of this image in pixels
  * @throws IllegalArgumentException if the width or height are negative
  */
-data class Image(
-    val source: String,
-    val width: Int,
-    val height: Int
-) : Asset {
+data class Image(val source: String, val width: Int, val height: Int) : Asset {
   /**
    * A viewport projected over an image.
    *

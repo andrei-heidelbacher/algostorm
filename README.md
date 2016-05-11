@@ -8,7 +8,7 @@ be adapted for real-time with a little effort.
 * engine that runs on its own private thread
 * default turn-based physics, entity lifecycle management, in-game timers
 * graphics and animation utilities
-* asset management (tilesets, fonts, sounds, scripts)
+* asset management (tilesets, sounds, scripts)
 * thread-safe input bridge between raw user input and game-specific commands
 * JSON serialization utilities
 
