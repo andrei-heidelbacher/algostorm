@@ -9,8 +9,8 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 buildscript {
-    ext.kotlin_version = '1.0.1-2'
-    ext.dokka_version = '0.9.7'
+    ext.kotlin_version = '1.0.2'
+    ext.dokka_version = '0.9.8'
 
     repositories {
         mavenCentral()
