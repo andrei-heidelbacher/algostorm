@@ -34,7 +34,7 @@ abstract class AbstractRenderingSystem(
     protected val entityManager: EntityManager,
     protected val tileWidth: Int,
     protected val tileHeight: Int,
-    private val tiles: AssetCollection<Tile>
+    protected val tiles: AssetCollection<Tile>
 ) : EntitySystem() {
   /**
    * This method is called when a [RenderAll] event is received.

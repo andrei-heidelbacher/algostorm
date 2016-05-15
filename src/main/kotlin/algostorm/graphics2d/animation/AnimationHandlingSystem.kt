@@ -19,9 +19,9 @@ package algostorm.graphics2d.animation
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
-import algostorm.engine.Tick
 import algostorm.event.Subscriber
 import algostorm.graphics2d.animation.Animation.Companion.animation
+import algostorm.time.Tick
 
 /**
  * A system that manages the animation information of entities.

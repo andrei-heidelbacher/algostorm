@@ -19,7 +19,6 @@ package algostorm.time
 import algostorm.ecs.Component
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
-import algostorm.engine.Tick
 import algostorm.event.Publisher
 import algostorm.event.Subscriber
 

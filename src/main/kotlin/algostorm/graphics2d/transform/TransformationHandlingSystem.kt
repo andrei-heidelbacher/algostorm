@@ -18,10 +18,10 @@ package algostorm.graphics2d.transform
 
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
-import algostorm.engine.Tick
 import algostorm.event.Subscriber
 import algostorm.graphics2d.transform.Transformation.Companion.apply
 import algostorm.graphics2d.transform.Transformation.Companion.transformation
+import algostorm.time.Tick
 
 /**
  * A system that manages the transformations applied to entities.

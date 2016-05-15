@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package algostorm.engine
+package algostorm.script
 
-import algostorm.event.Event
+import algostorm.assets.Script
 
 /**
- * An event which signals an atomic time unit has passed.
+ * An object that can execute scripts.
  */
-object Tick : Event
+interface ScriptEngine {
+  /**
+   * This method should run the given script and return its result, or `null` if it doesn't return
+   * anything.
+   *
+   * @param script the script that should be executed
+   * @param context the context of the script which should be available as the first parameter to
+   * the script function
+   * @param args the remaining script parameters
+   */
+  fun runScript(script: Script, context: ScriptContext, vararg args: Any?): Any?
+}

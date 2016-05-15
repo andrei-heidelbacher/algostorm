@@ -18,10 +18,10 @@ package algostorm.lifecycle
 
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
-import algostorm.engine.Tick
 import algostorm.event.Event
 import algostorm.event.Publisher
 import algostorm.event.Subscriber
+import algostorm.time.Tick
 
 /**
  * A system that handles the creation and deletion of entities through [CreateEntity] and [Death]
