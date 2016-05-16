@@ -24,16 +24,19 @@ import algostorm.event.Subscriber
 /**
  * A system that handles script execution requests.
  *
- * @property context the context of the executed scripts
+ * @property scriptEngine the engine that will execute the script requests
+ * @property context the context of the executed scripts, which should be available as the first
+ * parameter to every executed script
  * @property scripts the script collection
  */
-abstract class ScriptingSystem(
+class ScriptingSystem(
+    private val scriptEngine: ScriptEngine,
     private val context: ScriptContext,
     private val scripts: AssetCollection<Script>
-) : EntitySystem(), ScriptEngine {
+) : EntitySystem() {
   private val scriptHandler = Subscriber(RunScript::class) { event ->
     val script = scripts[event.scriptId] ?: error("Script id doesn't exist!")
-    runScript(script, context, *event.args.toTypedArray())
+    scriptEngine.runScript(script, context, *event.args.toTypedArray())
   }
 
   /**

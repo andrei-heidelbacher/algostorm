@@ -27,9 +27,7 @@ interface ScriptEngine {
    * anything.
    *
    * @param script the script that should be executed
-   * @param context the context of the script which should be available as the first parameter to
-   * the script function
-   * @param args the remaining script parameters
+   * @param args the script parameters
    */
-  fun runScript(script: Script, context: ScriptContext, vararg args: Any?): Any?
+  fun runScript(script: Script, vararg args: Any?): Any?
 }

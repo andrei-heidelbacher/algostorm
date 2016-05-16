@@ -20,8 +20,8 @@ import algostorm.ecs.EntityManager
 import algostorm.event.Publisher
 
 /**
- * The context of every executed script. This should be passed as the first argument to every
- * executed script.
+ * The context of every executed script through a [RunScript] request. This should be passed as the
+ * first argument to the executed scripts.
  *
  * @property entityManager a read-only view of the entity manager which handles the game entities
  * @property publisher a publisher which provides posting functionality to the game event bus
