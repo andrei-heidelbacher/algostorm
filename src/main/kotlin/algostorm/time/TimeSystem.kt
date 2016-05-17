@@ -27,17 +27,46 @@ import algostorm.event.Subscriber
  *
  * For every [Tick] event, it ticks every timer which is saved on a special entity that contains
  * a single [Timeline] component.
+ *
+ * When this system is created, the timeline owner entity is fetched from the entity manager. If it
+ * doesn't exist, a new entity is created; however, the CreateEntity - Spawned process is skipped.
+ * Because this system should be created before the engine is started and before any processing
+ * begins, a concurrent modification exception can't occur.
+ *
+ * The system handlers will throw an [IllegalStateException] if the timeline entity is deleted from
+ * the entity manager.
+ *
+ * @throws IllegalStateException if, at the time of creation, the entity manager contains more than
+ * one timeline entities
  */
 class TimeSystem(
     private val entityManager: MutableEntityManager,
     private val publisher: Publisher
 ) : EntitySystem() {
-  private data class Timeline(val timers: List<Timer>) : Component
+  /**
+   * A special component which is attached to a unique entity and contains all the timers in the
+   * game.
+   *
+   * At most one such component should exist at any point in time, and at most one entity should
+   * contain this component at any point in time.
+   *
+   * @property timers a list which contains all the active timers in the game
+   */
+  data class Timeline(val timers: List<Timer>) : Component
 
   private val timelineEntity = entityManager
       .getEntitiesWithComponentType(Timeline::class)
-      .singleOrNull() ?:
-      entityManager.create(listOf(Timeline(emptyList())))
+      .toList()
+      .let { entities ->
+        check(entities.size <= 1) {
+          "The timeline component can't be contained by multiple entities!"
+        }
+        entities
+      }.singleOrNull() ?: entityManager.create(listOf(Timeline(emptyList())))
+    get() {
+      check(timelineEntity.id in entityManager) { "Timeline entity can't be deleted!" }
+      return field
+    }
 
   private val timeline: Timeline
     get() = timelineEntity.get<Timeline>() ?: error(

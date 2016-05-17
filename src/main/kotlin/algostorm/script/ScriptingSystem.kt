@@ -16,8 +16,6 @@
 
 package algostorm.script
 
-import algostorm.assets.AssetCollection
-import algostorm.assets.Script
 import algostorm.ecs.EntitySystem
 import algostorm.event.Subscriber
 
@@ -27,16 +25,13 @@ import algostorm.event.Subscriber
  * @property scriptEngine the engine that will execute the script requests
  * @property context the context of the executed scripts, which should be available as the first
  * parameter to every executed script
- * @property scripts the script collection
  */
 class ScriptingSystem(
     private val scriptEngine: ScriptEngine,
-    private val context: ScriptContext,
-    private val scripts: AssetCollection<Script>
+    private val context: ScriptContext
 ) : EntitySystem() {
   private val scriptHandler = Subscriber(RunScript::class) { event ->
-    val script = scripts[event.scriptId] ?: error("Script id doesn't exist!")
-    scriptEngine.runScript(script, context, *event.args.toTypedArray())
+    scriptEngine.runScript(event.scriptId, context, *event.args.toTypedArray())
   }
 
   /**

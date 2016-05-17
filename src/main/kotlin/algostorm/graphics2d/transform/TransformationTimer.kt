@@ -47,6 +47,7 @@ data class TransformationTimer(
 
   /**
    * The interpolated transformation that should be applied to the entity at the time of calling.
+   * Linear interpolation is used.
    */
   val transformation: Transformation
     get() {

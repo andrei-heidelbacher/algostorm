@@ -34,17 +34,17 @@ class CollisionDetectionSystem(
     private val entityManager: EntityManager,
     private val publisher: Publisher
 ) : EntitySystem() {
-  private val translateIntentHandler = Subscriber(TranslateIntent::class) { event ->
-    val translatedEntity = entityManager[event.entityId] ?: error(
-        "Translating non-existent entity!"
-    )
-    val newBox = translatedEntity.box?.translate(event.dx, event.dy) ?: error(
-        "Translating an entity without a location!"
-    )
+  private fun collide(sourceId: Int, box: Box) {
     entityManager
         .getEntitiesWithComponentTypes(Collidable::class, Box::class)
-        .filter { entity -> entity != translatedEntity && entity.box?.overlaps(newBox) ?: false }
-        .forEach { entity -> publisher.post(Collision(event.entityId, entity.id)) }
+        .filter { entity -> entity.id != sourceId && entity.box?.overlaps(box) ?: false }
+        .forEach { entity -> publisher.post(Collision(sourceId, entity.id)) }
+  }
+
+  private val translateIntentHandler = Subscriber(TranslateIntent::class) { event ->
+    val entity = entityManager[event.entityId] ?: error("Translating non-existent entity!")
+    val newBox = entity.box ?: error("Translating an entity without a location!")
+    collide(entity.id, newBox)
   }
 
   /**

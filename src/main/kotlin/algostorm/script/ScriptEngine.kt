@@ -16,18 +16,31 @@
 
 package algostorm.script
 
+import algostorm.assets.AssetCollection
 import algostorm.assets.Script
 
 /**
  * An object that can execute scripts.
+ *
+ * @property scripts the collection which contains all the scripts that can be executed
  */
-interface ScriptEngine {
+abstract class ScriptEngine(private val scripts: AssetCollection<Script>) {
   /**
-   * This method should run the given script and return its result, or `null` if it doesn't return
-   * anything.
+   * This method should run the given script and return its result.
    *
    * @param script the script that should be executed
    * @param args the script parameters
+   * @return the script result, or `null` if it doesn't return anything.
    */
-  fun runScript(script: Script, vararg args: Any?): Any?
+  protected abstract fun runScript(script: Script, vararg args: Any?): Any?
+
+  /**
+   * Executes the given script and returns its result.
+   *
+   * @param scriptId the id of the script that should be executed
+   * @param args the script parameters
+   * @return the script result, or `null` if it doesn't return anything
+   */
+  fun runScript(scriptId: Int, vararg args: Any?): Any? =
+      runScript(scripts[scriptId] ?: error("Script id doesn't exist!!"), *args)
 }

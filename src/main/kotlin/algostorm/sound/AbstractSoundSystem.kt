@@ -30,7 +30,7 @@ import algostorm.event.Subscriber
  *
  * @property sounds the sounds used in the game
  */
-abstract class AbstractSoundSystem(protected val sounds: AssetCollection<Sound>) : EntitySystem() {
+abstract class AbstractSoundSystem(private val sounds: AssetCollection<Sound>) : EntitySystem() {
   /**
    * This method is called when a [PlaySound] event occurs. If another sound is already playing on
    * the given [frequency], that sound should be stopped first.
