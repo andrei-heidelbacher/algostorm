@@ -47,7 +47,7 @@ interface EventBus {
    * @param events the events that should be posted
    */
   fun post(events: List<Event>) {
-    events.forEach { event -> post(event) }
+    events.forEach { post(it) }
   }
 
   /**
@@ -56,7 +56,7 @@ interface EventBus {
    * @param events the events that should be posted
    */
   fun post(vararg events: Event) {
-    events.forEach { event -> post(event) }
+    events.forEach { post(it) }
   }
 
   /**

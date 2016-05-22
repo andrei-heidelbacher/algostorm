@@ -29,7 +29,7 @@ import algostorm.event.Subscriber
 class ScriptingSystem(
     private val scriptEngine: ScriptEngine,
     private val context: ScriptContext
-) : EntitySystem() {
+) : EntitySystem {
   private val scriptHandler = Subscriber(RunScript::class) { event ->
     scriptEngine.runScript(event.scriptId, context, *event.args.toTypedArray())
   }

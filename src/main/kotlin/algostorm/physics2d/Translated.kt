@@ -21,7 +21,7 @@ import algostorm.event.Event
 /**
  * An event which signals that the given entity has translated by the given amount.
  *
- * Only the [PositioningSystem] should post this event.
+ * Only the [PhysicsSystem] should post this event.
  *
  * @property entityId the id of the translated entity
  * @property dx the amount the entity translated on the x-axis

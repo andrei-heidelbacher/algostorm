@@ -23,9 +23,9 @@ import algostorm.event.Subscriber
  *
  * All processing occurs when it is notified for an event one of its [handlers] subscribed for.
  */
-abstract class EntitySystem {
+interface  EntitySystem {
   /**
    * The event handlers of the system.
    */
-  abstract val handlers: List<Subscriber<*>>
+  val handlers: List<Subscriber<*>>
 }

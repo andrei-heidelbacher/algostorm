@@ -55,9 +55,7 @@ class EntityDatabase : MutableEntityManager {
     private var fields = run {
       val maxIndex = components.map { getIndex(it.javaClass.kotlin) }.max() ?: 0
       val fieldsArray = arrayOfNulls<Component>(maxIndex + 1)
-      components.forEach { component ->
-        fieldsArray[getIndex(component.javaClass.kotlin)] = component
-      }
+      components.forEach { fieldsArray[getIndex(it.javaClass.kotlin)] = it }
       fieldsArray
     }
 
@@ -105,7 +103,7 @@ class EntityDatabase : MutableEntityManager {
   override fun <T : Component> getEntitiesWithComponentType(
       type: KClass<T>
   ): Sequence<MutableEntity> =
-      entities.filter { entity -> type in entity }
+      entities.filter { type in it }
 
   override fun create(components: Iterable<Component>): MutableEntity =
       create(nextId, components)

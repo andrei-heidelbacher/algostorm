@@ -56,9 +56,7 @@ class EventQueue : EventBus {
     do {
       val event = eventQueue.poll()
       if (event != null) {
-        subscribers[event.javaClass.kotlin].orEmpty().forEach { subscriber ->
-          subscriber.notify(event)
-        }
+        subscribers[event.javaClass.kotlin].orEmpty().forEach { it.notify(event) }
       }
     } while (event != null)
   }

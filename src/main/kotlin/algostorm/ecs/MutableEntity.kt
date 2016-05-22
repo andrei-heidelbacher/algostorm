@@ -70,6 +70,6 @@ abstract class MutableEntity(id: Int) : Entity(id) {
    * Removes all the components from this entity.
    */
   fun clear() {
-    components.forEach { component -> remove(component.javaClass.kotlin) }
+    components.forEach { remove(it.javaClass.kotlin) }
   }
 }

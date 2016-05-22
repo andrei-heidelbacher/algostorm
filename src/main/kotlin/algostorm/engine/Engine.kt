@@ -189,7 +189,7 @@ class Engine(
     }
     synchronized(stateLock) {
       clearState()
-      subscriptions.forEach { subscription -> subscription.unsubscribe() }
+      subscriptions.forEach { it.unsubscribe() }
     }
   }
 
@@ -210,7 +210,7 @@ class Engine(
   fun loadState(entities: Iterable<Iterable<Component>>) {
     synchronized(stateLock) {
       clearState()
-      entities.forEach { entity -> state.entityManager.create(entity.toList()) }
+      entities.forEach { state.entityManager.create(it.toList()) }
     }
   }
 
@@ -222,7 +222,7 @@ class Engine(
   fun loadState(entities: Map<Int, Iterable<Component>>) {
     synchronized(stateLock) {
       clearState()
-      entities.forEach { entity -> state.entityManager.create(entity.key, entity.value) }
+      entities.forEach { state.entityManager.create(it.key, it.value) }
     }
   }
 }

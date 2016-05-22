@@ -72,5 +72,5 @@ interface EntityManager {
    * @return the frozen state of the entity manager
    */
   fun snapshot(): Map<Int, List<Component>> =
-      entities.associate { entity -> entity.id to entity.components }
+      entities.associate { it.id to it.components }
 }

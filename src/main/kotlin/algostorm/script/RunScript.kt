@@ -21,6 +21,8 @@ import algostorm.event.Event
 /**
  * An event which requests the execution of a script.
  *
+ * The first argument of every executed script through this request should be the [ScriptContext].
+ *
  * @property scriptId the id of the script that should be executed
  * @property args the arguments of the script function
  */

@@ -37,7 +37,7 @@ import algostorm.time.Tick
 class LifecycleSystem(
     private val entityManager: MutableEntityManager,
     private val publisher: Publisher
-) : EntitySystem() {
+) : EntitySystem {
   /**
    * Requests the deletion of the given [entityId].
    *

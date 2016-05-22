@@ -72,6 +72,6 @@ interface MutableEntityManager : EntityManager {
    * Deletes all the entities in the manager.
    */
   fun clear() {
-    entities.toList().forEach { entity -> delete(entity.id) }
+    entities.toList().forEach { delete(it.id) }
   }
 }
