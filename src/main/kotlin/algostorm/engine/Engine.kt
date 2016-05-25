@@ -20,6 +20,7 @@ import algostorm.ecs.Component
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
+import algostorm.event.Publisher
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -40,8 +41,8 @@ import kotlin.system.measureTimeMillis
  * an atomic time unit
  */
 abstract class Engine protected constructor(
-    protected val state: State,
-    protected val millisPerTick: Int
+    private val state: State,
+    private val millisPerTick: Int
 ) {
   companion object {
     /**
@@ -98,8 +99,13 @@ abstract class Engine protected constructor(
   /**
    * This method is invoked at most once every [millisPerTick] from this engine's thread while this
    * engine is running. The call to this method is synchronized with the `state` lock.
+   *
+   * It is the entry point into the game logic code.
+   *
+   * @param entityManager the entity manager in this engine's [state]
+   * @param publisher the publisher view of this engine's event bus
    */
-  protected abstract fun handleTick(): Unit
+  protected abstract fun handleTick(entityManager: MutableEntityManager, publisher: Publisher): Unit
 
   /**
    * Sets the [status] to [Status.RUNNING] and starts the engine thread. The engine `status` must be
@@ -125,7 +131,7 @@ abstract class Engine protected constructor(
           while (status == Status.RUNNING) {
             val elapsedTime = measureTimeMillis {
               synchronized(stateLock) {
-                handleTick()
+                handleTick(state.entityManager, Publisher(state.eventBus))
               }
             }
             val sleepTime = millisPerTick - elapsedTime
