@@ -46,8 +46,9 @@ interface ScriptingEngine {
    * @param scriptId the id of the script that should be executed
    * @param args the script parameters
    * @return the script result, or `null` if it doesn't return anything
-   * @throws IllegalStateException if the given script id doesn't exist in the [scripts] collection
+   * @throws IllegalArgumentException if the given script id doesn't exist in the [scripts]
+   * collection
    */
   fun runScript(scriptId: Int, vararg args: Any?): Any? =
-      runScript(scripts[scriptId] ?: error("Script id doesn't exist!!"), *args)
+      runScript(requireNotNull(scripts[scriptId]) { "Script id doesn't exist!!" }, *args)
 }

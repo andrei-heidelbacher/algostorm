@@ -51,10 +51,11 @@ interface AudioEngine {
    * @param soundId the id of the sound which should be played
    * @param frequency the frequency on which the sound should be played
    * @param loop whether the sound should be looped or not
-   * @throws IllegalStateException if the given [soundId] doesn't exist in the [sounds] collection
+   * @throws IllegalArgumentException if the given [soundId] doesn't exist in the [sounds]
+   * collection
    */
   fun playSound(soundId: Int, frequency: Int, loop: Boolean = false) {
-    playSound(sounds[soundId] ?: error("Sound id doesn't exist!"), frequency, loop)
+    playSound(requireNotNull(sounds[soundId]) { "Sound id doesn't exist!" }, frequency, loop)
   }
 
   /**

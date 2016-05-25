@@ -22,8 +22,8 @@ import kotlin.reflect.KClass
  * A game object containing a set of [components].
  *
  * It can only contain one component of a specific type. Two entities are equal if and only if they
- * have the same [id]. Raw entities should not be serialized; instead, serialize the id and
- * components.
+ * have the same [id]. Raw entities should not be serialized; instead, serialize the `id` and
+ * `components`.
  *
  * This is a read-only view, but the underlying implementation might be mutable.
  *

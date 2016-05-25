@@ -47,9 +47,9 @@ interface RenderingEngine {
    *
    * @param tileId the id of the requested tile
    * @return the requested tile
-   * @throws IllegalStateException if the given id doesn't exist in the tile collection
+   * @throws IllegalArgumentException if the given id doesn't exist in the tile collection
    */
-  fun getTile(tileId: Int): Tile = tiles[tileId] ?: error("Tile id doesn't exist!")
+  fun getTile(tileId: Int): Tile = requireNotNull(tiles[tileId]) { "Tile id doesn't exist!" }
 
   /**
    * Draws the screen using the data from the received [entities]. This should be a blocking call.

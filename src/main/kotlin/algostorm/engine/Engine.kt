@@ -30,24 +30,18 @@ import kotlin.system.measureTimeMillis
 /**
  * An asynchronous engine that runs the game loop on its own private thread.
  *
- * All changes made to the [state] outside the engine are not thread safe and may lead to
- * inconsistent state.
+ * All the systems passed in the state will have their handlers subscribed to the event bus upon the
+ * creation of the engine. All the engine methods are thread-safe.
  *
- * Upon creation, all the systems passed in the state will have their handlers subscribed to the
- * event bus.
- *
- * All the engine methods are thread-safe.
- *
- * @property state the state of the game
+ * @property state the state of this engine. All changes made to the `state` outside of this
+ * engine's thread may lead to inconsistent state and concurrency issues. Thus, the engine state
+ * should remain private to the engine.
  * @property millisPerTick the number of milliseconds spent in an update cycle and the resolution of
  * an atomic time unit
- * @property tickHandler the handler that is invoked at most once every [millisPerTick] while this
- * engine is running
  */
-class Engine(
-    private val state: State,
-    private val millisPerTick: Int,
-    private val tickHandler: Engine.(State) -> Unit
+abstract class Engine protected constructor(
+    protected val state: State,
+    protected val millisPerTick: Int
 ) {
   companion object {
     /**
@@ -76,6 +70,7 @@ class Engine(
       val systems: List<EntitySystem>
   )
 
+
   private val stateLock = Any()
   private val subscriptions = synchronized(stateLock) {
     state.systems.flatMap { system ->
@@ -100,6 +95,11 @@ class Engine(
   val isShutdown: Boolean
     get() = internalShutdownStatus.get()
 
+  /**
+   * This method is invoked at most once every [millisPerTick] from this engine's thread while this
+   * engine is running. The call to this method is synchronized with the `state` lock.
+   */
+  protected abstract fun handleTick(): Unit
 
   /**
    * Sets the [status] to [Status.RUNNING] and starts the engine thread. The engine `status` must be
@@ -109,7 +109,7 @@ class Engine(
    * normally or exceptionally).
    *
    * While this engine is running, at most once every [millisPerTick] milliseconds, it will invoke
-   * the [tickHandler]. The call to `tickHandler` is synchronized with the `state` lock.
+   * the [handleTick] method. The call to `handleTick` is synchronized with the `state` lock.
    *
    * @throws IllegalStateException if the `status` is not `Status.STOPPED` or if this engine has
    * been shutdown
@@ -125,7 +125,7 @@ class Engine(
           while (status == Status.RUNNING) {
             val elapsedTime = measureTimeMillis {
               synchronized(stateLock) {
-                tickHandler(state)
+                handleTick()
               }
             }
             val sleepTime = millisPerTick - elapsedTime

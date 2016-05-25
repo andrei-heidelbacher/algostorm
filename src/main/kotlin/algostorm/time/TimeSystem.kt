@@ -29,20 +29,20 @@ import algostorm.event.Subscriber
  * a single [Timeline] component.
  *
  * When this system is created, the timeline owner entity is fetched from the entity manager. If it
- * doesn't exist, a new entity is created; however, the CreateEntity - Spawned process is skipped.
- * Because this system should be created before the engine is started and before any processing
- * begins, a concurrent modification exception can't occur.
+ * doesn't exist, a new entity is created; however, the `CreateEntity` - `Spawned` process is
+ * skipped. Because this system should be created before the engine is started and before any
+ * processing begins, a concurrent modification exception can't occur.
  *
  * The system handlers will throw an [IllegalStateException] if the timeline entity is deleted from
  * the entity manager.
  *
  * @throws IllegalStateException if, at the time of creation, the entity manager contains more than
- * one timeline entities
+ * one timeline entity
  */
 class TimeSystem(
     private val entityManager: MutableEntityManager,
     private val publisher: Publisher
-) : EntitySystem() {
+) : EntitySystem {
   /**
    * A special component which is attached to a unique entity and contains all the timers in the
    * game.

@@ -25,7 +25,7 @@ import algostorm.event.Subscriber
  */
 interface  EntitySystem {
   /**
-   * The event handlers of the system.
+   * The event handlers of this system.
    */
   val handlers: List<Subscriber<*>>
 }
