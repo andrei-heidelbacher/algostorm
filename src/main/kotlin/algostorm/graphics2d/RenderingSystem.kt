@@ -16,37 +16,28 @@
 
 package algostorm.graphics2d
 
-import algostorm.assets.AssetCollection
-import algostorm.assets.Tile
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
 import algostorm.event.Subscriber
 
 /**
- * A system which handles the rendering of all entities in the game upon [RenderAll] events.
+ * A system which handles the rendering of all entities in the game.
  *
+ * When a [RenderAll] event is received, the [RenderingEngine.render] method is called.
+ *
+ * @property renderingEngine the engine that will render the game entities to the screen
  * @property entityManager an entity manager which can be queried to fetch renderable entities
- * @property tileWidth the width of a single tile in pixels
- * @property tileHeight the height of a single tile in pixels
- * @property tiles the tile collection used for rendering
  */
-abstract class AbstractRenderingSystem(
-    protected val entityManager: EntityManager,
-    protected val tileWidth: Int,
-    protected val tileHeight: Int,
-    protected val tiles: AssetCollection<Tile>
-) : EntitySystem() {
-  /**
-   * This method is called when a [RenderAll] event is received.
-   *
-   * It should implement the rendering of all entities in the game.
-   */
-  protected abstract fun renderAll(): Unit
-
-  private val renderHandler = Subscriber(RenderAll::class) { event -> renderAll() }
+class RenderingSystem(
+    private val renderingEngine: RenderingEngine,
+    private val entityManager: EntityManager
+) : EntitySystem {
+  private val renderHandler = Subscriber(RenderAll::class) { event ->
+    renderingEngine.render(entityManager.entities)
+  }
 
   /**
    * This system handles [RenderAll] events.
    */
-  final override val handlers: List<Subscriber<*>> = listOf(renderHandler)
+  override val handlers: List<Subscriber<*>> = listOf(renderHandler)
 }

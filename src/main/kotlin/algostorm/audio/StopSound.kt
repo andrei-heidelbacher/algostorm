@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.sound
+package algostorm.audio
 
 import algostorm.event.Event
 

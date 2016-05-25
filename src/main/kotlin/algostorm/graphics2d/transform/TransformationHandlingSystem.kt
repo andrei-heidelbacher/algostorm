@@ -31,9 +31,7 @@ import algostorm.time.Tick
  * receiving a [Transform] event, it flushes the current `TransformationTimer` and applies it, then
  * sets the new transformation timer to the event transformation.
  */
-class TransformationHandlingSystem(
-    private val entityManager: MutableEntityManager
-) : EntitySystem() {
+class TransformationHandlingSystem(private val entityManager: MutableEntityManager) : EntitySystem {
   private val tickHandler = Subscriber(Tick::class) { event ->
     entityManager
         .getEntitiesWithComponentTypes(TransformationTimer::class)

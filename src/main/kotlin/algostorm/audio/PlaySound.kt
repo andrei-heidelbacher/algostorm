@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.sound
+package algostorm.audio
 
 import algostorm.event.Event
 
@@ -23,5 +23,6 @@ import algostorm.event.Event
  *
  * @property soundId the id of the sound that should be played
  * @property frequency the frequency on which the sound should be played
+ * @property loop whether the sound should be looped or not
  */
-data class PlaySound(val soundId: Int, val frequency: Int) : Event
+data class PlaySound(val soundId: Int, val frequency: Int, val loop: Boolean = false) : Event

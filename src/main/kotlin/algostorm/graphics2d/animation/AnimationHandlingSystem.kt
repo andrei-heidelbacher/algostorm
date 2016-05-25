@@ -30,7 +30,7 @@ import algostorm.time.Tick
  * completes, they are continued with the associated idle animations. Upon receiving an [Animate]
  * event, it overwrites the current animation with the indicated animation.
  */
-class AnimationHandlingSystem(private val entityManager: MutableEntityManager) : EntitySystem() {
+class AnimationHandlingSystem(private val entityManager: MutableEntityManager) : EntitySystem {
   private fun update(entity: MutableEntity, animation: Animation?) {
     animation ?: error("Can't animate an entity without an animation component!")
     entity.set(animation)

@@ -22,24 +22,31 @@ import algostorm.assets.Script
 /**
  * An object that can execute scripts.
  *
- * @property scripts the collection which contains all the scripts that can be executed
+ * Methods on this object will be called from the private engine thread. All method calls should be
+ * thread-safe.
  */
-abstract class ScriptEngine(private val scripts: AssetCollection<Script>) {
+interface ScriptingEngine {
   /**
-   * This method should run the given script and return its result.
+   * The collection which contains all the scripts that can be executed.
+   */
+  val scripts: AssetCollection<Script>
+
+  /**
+   * Executes the given [script] with the specified arguments and returns its result.
    *
    * @param script the script that should be executed
    * @param args the script parameters
    * @return the script result, or `null` if it doesn't return anything.
    */
-  protected abstract fun runScript(script: Script, vararg args: Any?): Any?
+  fun runScript(script: Script, vararg args: Any?): Any?
 
   /**
-   * Executes the given script and returns its result.
+   * Fetches the script with the given [scriptId] and calls [runScript] with the found [Script].
    *
    * @param scriptId the id of the script that should be executed
    * @param args the script parameters
    * @return the script result, or `null` if it doesn't return anything
+   * @throws IllegalStateException if the given script id doesn't exist in the [scripts] collection
    */
   fun runScript(scriptId: Int, vararg args: Any?): Any? =
       runScript(scripts[scriptId] ?: error("Script id doesn't exist!!"), *args)
