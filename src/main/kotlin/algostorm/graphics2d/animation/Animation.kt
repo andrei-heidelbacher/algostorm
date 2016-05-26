@@ -23,69 +23,74 @@ import algostorm.graphics2d.Sprite
 /**
  * A component which contains all information required to animate an entity.
  *
- * @property animationSheet a map with all the animations associated with the entity
+ * @property animationSheet a map with all the animations associated with the
+ * entity
  * @property frames the current animation applied to the entity
  * @property elapsedTicks how many ticks have elapsed from the current animation
- * @throws IllegalArgumentException if the current animation has less than 2 frames or if
+ * @throws IllegalArgumentException if the current animation has less than two
+ * frames or if
  * [elapsedTicks] is negative or greater than [durationInTicks]
  */
 data class Animation(
-    val animationSheet: AnimationSheet,
-    val frames: List<Frame>,
-    val elapsedTicks: Int
+        val animationSheet: AnimationSheet,
+        val frames: List<Frame>,
+        val elapsedTicks: Int
 ) : Component {
-  companion object {
-    /**
-     * The [Animation] component of this entity, or `null` if it doesn't have an animation.
-     */
-    val Entity.animation: Animation?
-      get() = get()
-  }
-
-  init {
-    require(frames.size > 1) { "Animation must contain at least two frames!" }
-    require(0 <= elapsedTicks && elapsedTicks <= durationInTicks) {
-      "Elapsed ticks can't be negative or greater than the duration in ticks!"
+    companion object {
+        /**
+         * The [Animation] component of this entity, or `null` if it doesn't have an animation.
+         */
+        val Entity.animation: Animation?
+            get() = get()
     }
-  }
 
-  /**
-   * The total duration in ticks of the animation [frames].
-   */
-  val durationInTicks: Int
-    get() = frames.sumBy { frame -> frame.durationInTicks }
-
-  /**
-   * Returns the sprite that should be rendered at the time of calling.
-   *
-   * @return the sprite that should be rendered
-   */
-  val sprite: Sprite
-    get() {
-      var remainingTicks = elapsedTicks
-      for ((sprite, durationInTicks) in frames) {
-        if (durationInTicks <= remainingTicks) {
-          remainingTicks -= durationInTicks
-        } else {
-          return sprite
+    init {
+        require(frames.size > 1) {
+            "Animation must contain at least two frames!"
         }
-      }
-      return frames.last().sprite
+        require(0 <= elapsedTicks && elapsedTicks <= durationInTicks) {
+            "Elapsed ticks can't be negative or greater than the duration!"
+        }
     }
 
-  /**
-   * Returns a copy of the animation information after a tick has passed.
-   *
-   * If the current animation finishes, it continues with the idle animation in the
-   * [animationSheet].
-   *
-   * @return the animation information after a tick
-   */
-  fun tick(): Animation =
-      if (elapsedTicks + 1 < durationInTicks) copy(elapsedTicks = elapsedTicks + 1)
-      else copy(
-          frames = animationSheet.idle,
-          elapsedTicks = (elapsedTicks + 1 - durationInTicks) %
-              animationSheet.idle.sumBy { frame -> frame.durationInTicks }
-      )
+    /**
+     * The total duration in ticks of the animation [frames].
+     */
+    val durationInTicks: Int
+        get() = frames.sumBy { it.durationInTicks }
+
+    /**
+     * Returns the sprite that should be rendered at the time of calling.
+     *
+     * @return the sprite that should be rendered
+     */
+    val sprite: Sprite
+        get() {
+            var remainingTicks = elapsedTicks
+            for ((sprite, durationInTicks) in frames) {
+                if (durationInTicks <= remainingTicks) {
+                    remainingTicks -= durationInTicks
+                } else {
+                    return sprite
+                }
+            }
+            return frames.last().sprite
+        }
+
+    /**
+     * Returns a copy of the animation information after a tick has passed.
+     *
+     * If the current animation finishes, it continues with the idle animation in the
+     * [animationSheet].
+     *
+     * @return the animation information after a tick
+     */
+    fun tick(): Animation {
+        val newElapsedTicks = (elapsedTicks + 1 - durationInTicks) %
+                animationSheet.idle.sumBy { it.durationInTicks }
+        return if (elapsedTicks + 1 < durationInTicks)
+            copy(elapsedTicks = elapsedTicks + 1)
+        else
+            copy(frames = animationSheet.idle, elapsedTicks = newElapsedTicks)
+    }
 }

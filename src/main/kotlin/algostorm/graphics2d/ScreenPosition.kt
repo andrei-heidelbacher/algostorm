@@ -22,20 +22,21 @@ import algostorm.ecs.Entity
 /**
  * A component which contains the rendering position.
  *
- * Entities should be rendered in ascending order by their [z] coordinate. In case of equality, the
- * user can define a custom ordering according to [x] and [y] coordinates.
+ * Entities should be rendered in ascending order by their [z] coordinate. In
+ * case of equality, the user can define a custom ordering according to [x] and
+ * [y] coordinates.
  *
  * @property x the x-coordinate of the current entity in tiles
  * @property y the y-coordinate of the current entity in tiles
  * @property z the z-coordinate of the current entity
  */
 data class ScreenPosition(val x: Float, val y: Float, val z: Int) : Component {
-  companion object {
-    /**
-     * The [ScreenPosition] component of this entity, or `null` if it doesn't have a screen
-     * position.
-     */
-    val Entity.screenPosition: ScreenPosition?
-      get() = get()
-  }
+    companion object {
+        /**
+         * The [ScreenPosition] component of this entity, or `null` if it
+         * doesn't have a screen position.
+         */
+        val Entity.screenPosition: ScreenPosition?
+            get() = get()
+    }
 }

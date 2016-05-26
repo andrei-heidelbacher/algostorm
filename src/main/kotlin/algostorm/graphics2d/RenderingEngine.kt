@@ -23,38 +23,41 @@ import algostorm.ecs.Entity
 /**
  * An object that handles rendering to the screen.
  *
- * Methods on this object will be called from the private engine thread. All method calls should be
- * thread-safe.
+ * Methods on this object will be called from the private engine thread. All
+ * method calls should be thread-safe.
  */
 interface RenderingEngine {
-  /**
-   * The width of a tile in pixels.
-   */
-  val tileWidth: Int
+    /**
+     * The width of a tile in pixels.
+     */
+    val tileWidth: Int
 
-  /**
-   * The height of a tile in pixels.
-   */
-  val tileHeight: Int
+    /**
+     * The height of a tile in pixels.
+     */
+    val tileHeight: Int
 
-  /**
-   * The tile collection used for rendering.
-   */
-  val tiles: AssetCollection<Tile>
+    /**
+     * The tile collection used for rendering.
+     */
+    val tiles: AssetCollection<Tile>
 
-  /**
-   * Returns the tile with the given [tileId].
-   *
-   * @param tileId the id of the requested tile
-   * @return the requested tile
-   * @throws IllegalArgumentException if the given id doesn't exist in the tile collection
-   */
-  fun getTile(tileId: Int): Tile = requireNotNull(tiles[tileId]) { "Tile id doesn't exist!" }
+    /**
+     * Returns the tile with the given [tileId].
+     *
+     * @param tileId the id of the requested tile
+     * @return the requested tile
+     * @throws IllegalArgumentException if the given id doesn't exist in the
+     * tile collection
+     */
+    fun getTile(tileId: Int): Tile =
+            requireNotNull(tiles[tileId]) { "Tile id doesn't exist!" }
 
-  /**
-   * Draws the screen using the data from the received [entities]. This should be a blocking call.
-   *
-   * @param entities the lazy view of the current game state
-   */
-  fun render(entities: Sequence<Entity>): Unit
+    /**
+     * Draws the screen using the data from the received [entities]. This should
+     * be a blocking call.
+     *
+     * @param entities the lazy view of the current game state
+     */
+    fun render(entities: Sequence<Entity>): Unit
 }

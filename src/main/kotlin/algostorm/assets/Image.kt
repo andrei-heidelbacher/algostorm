@@ -25,22 +25,31 @@ package algostorm.assets
  * @throws IllegalArgumentException if the width or height are negative
  */
 data class Image(val source: String, val width: Int, val height: Int) : Asset {
-  /**
-   * A viewport projected over an image.
-   *
-   * @property x the lower-left corner x-coordinate of this viewport
-   * @property y the lower-left corner y-coordinate of this viewport
-   * @property width the width of this viewport in pixels
-   * @property height the height of this viewport in pixels
-   * @throws IllegalArgumentException if the width or height are negative
-   */
-  data class Viewport(val x: Int, val y: Int, val width: Int, val height: Int) {
-    init {
-      require(width >= 0 && height >= 0) { "Viewport dimensions must be non-negative!" }
+    /**
+     * A viewport projected over an image.
+     *
+     * @property x the lower-left corner x-coordinate of this viewport
+     * @property y the lower-left corner y-coordinate of this viewport
+     * @property width the width of this viewport in pixels
+     * @property height the height of this viewport in pixels
+     * @throws IllegalArgumentException if the width or height are negative
+     */
+    data class Viewport(
+            val x: Int,
+            val y: Int,
+            val width: Int,
+            val height: Int
+    ) {
+        init {
+            require(width >= 0 && height >= 0) {
+                "Viewport dimensions must be non-negative!"
+            }
+        }
     }
-  }
 
-  init {
-    require(width >= 0 && height >= 0) { "Image dimensions must be non-negative!" }
-  }
+    init {
+        require(width >= 0 && height >= 0) {
+            "Image dimensions must be non-negative!"
+        }
+    }
 }

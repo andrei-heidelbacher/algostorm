@@ -23,19 +23,22 @@ package algostorm.assets
  * @property assets the underlying map that associates ids to assets
  */
 data class AssetCollection<T : Asset>(private val assets: Map<Int, T>) {
-  /**
-   * Returns the asset with the given [id].
-   *
-   * @param id the id of the requested asset
-   * @return the requested asset, or `null` if the given [id] doesn't exist in this container
-   */
-  operator fun get(id: Int): T? = assets[id]
+    /**
+     * Returns the asset with the given [id].
+     *
+     * @param id the id of the requested asset
+     * @return the requested asset, or `null` if the given [id] doesn't exist in
+     * this container
+    */
+    operator fun get(id: Int): T? = assets[id]
 
-  /**
-   * Returns whether this asset collection contains the asset with the given [id].
-   *
-   * @param id the id of the asset
-   * @return `true` if the given asset [id] is contained in this collection, `false` otherwise
-   */
-  operator fun contains(id: Int): Boolean = id in assets
+    /**
+     * Returns whether this asset collection contains the asset with the given
+     * [id].
+     *
+     * @param id the id of the asset
+     * @return `true` if the given asset [id] is contained in this collection,
+     * `false` otherwise
+     */
+    operator fun contains(id: Int): Boolean = id in assets
 }

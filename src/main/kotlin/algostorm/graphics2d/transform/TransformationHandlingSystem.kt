@@ -26,35 +26,40 @@ import algostorm.time.Tick
 /**
  * A system that manages the transformations applied to entities.
  *
- * Upon receiving a [Tick] event, it updates all [TransformationTimer] components. If any of them
- * completes, it applies the final transformation to the entity and removes the timer. Upon
- * receiving a [Transform] event, it flushes the current `TransformationTimer` and applies it, then
- * sets the new transformation timer to the event transformation.
+ * Upon receiving a [Tick] event, it updates all [TransformationTimer]
+ * components. If any of them completes, it applies the final transformation to
+ * the entity and removes the timer. Upon receiving a [Transform] event, it
+ * flushes the current `TransformationTimer` and applies it, then sets the new
+ * transformation timer to the event transformation.
  */
-class TransformationHandlingSystem(private val entityManager: MutableEntityManager) : EntitySystem {
-  private val tickHandler = Subscriber(Tick::class) { event ->
-    entityManager
-        .getEntitiesWithComponentTypes(TransformationTimer::class)
-        .forEach { entity ->
-          entity.get<TransformationTimer>()?.tick()?.let { timer ->
-            if (timer.elapsedTicks < timer.durationInTicks) {
-              entity.set(timer)
-            } else {
-              entity.apply(timer.transformation)
-              entity.remove<TransformationTimer>()
-            }
-          }
-        }
-  }
+class TransformationHandlingSystem(
+        private val entityManager: MutableEntityManager
+) : EntitySystem {
+    private val tickHandler = Subscriber(Tick::class) { event ->
+        entityManager.getEntitiesWithComponentTypes(TransformationTimer::class)
+                .forEach { entity ->
+                    entity.get<TransformationTimer>()?.tick()?.let { timer ->
+                        if (timer.elapsedTicks < timer.durationInTicks) {
+                            entity.set(timer)
+                        } else {
+                            entity.apply(timer.transformation)
+                            entity.remove<TransformationTimer>()
+                        }
+                    }
+                }
+    }
 
-  private val transformHandler = Subscriber(Transform::class) { event ->
-    val entity = entityManager[event.entityId] ?: error("Transforming non-existent entity!")
-    entity.apply(entity.transformation)
-    entity.set(TransformationTimer(event.transformations, 0))
-  }
+    private val transformHandler = Subscriber(Transform::class) { event ->
+        val entity = entityManager[event.entityId] ?: error(
+                "Transforming non-existent entity!"
+        )
+        entity.apply(entity.transformation)
+        entity.set(TransformationTimer(event.transformations, 0))
+    }
 
-  /**
-   * This system handles [Tick] and [Transform] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(tickHandler, transformHandler)
+    /**
+     * This system handles [Tick] and [Transform] events.
+     */
+    override val handlers: List<Subscriber<*>> =
+            listOf(tickHandler, transformHandler)
 }

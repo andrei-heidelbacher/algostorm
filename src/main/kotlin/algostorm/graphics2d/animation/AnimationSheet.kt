@@ -17,32 +17,37 @@
 package algostorm.graphics2d.animation
 
 /**
- * A container that maps animation names to frame sequences. It must contain the [idle] animation.
+ * A container that maps animation names to frame sequences. It must contain the
+ * [idle] animation.
  *
  * Every animation must contain at least two frames.
  *
- * @throws IllegalArgumentException if one of the animations has less than two frames or if the
- * `idle` animation is missing
+ * @throws IllegalArgumentException if one of the animations has less than two
+ * frames or if the `idle` animation is missing
  */
 data class AnimationSheet(private val animations: Map<String, List<Frame>>) {
-  init {
-    require(AnimationSheet::idle.name in animations) { "Idle animation is missing!" }
-    require(animations.all { animation -> animation.value.size > 1 }) {
-      "Animation must contain at least two frames!"
+    init {
+        require(AnimationSheet::idle.name in animations) {
+            "Idle animation is missing!"
+        }
+        require(animations.all { animation -> animation.value.size > 1 }) {
+            "Animation must contain at least two frames!"
+        }
     }
-  }
 
-  /**
-   * The default animation that is to be displayed if no other animation is active. The name of this
-   * animation is "idle" (without quotes).
-   */
-  val idle: List<Frame> by animations
+    /**
+     * The default animation that is to be displayed if no other animation is
+     * active. The name of this animation is "idle" (without quotes).
+     */
+    val idle: List<Frame> by animations
 
-  /**
-   * Returns the frame sequence associated to the given [animation].
-   *
-   * @param animation the name of the requested animation
-   * @return the requested animation, or the [idle] animation if it isn't contained in the sheet
-   */
-  operator fun get(animation: String): List<Frame> = animations[animation] ?: idle
+    /**
+     * Returns the frame sequence associated to the given [animation].
+     *
+     * @param animation the name of the requested animation
+     * @return the requested animation, or the [idle] animation if it isn't
+     * contained in the sheet
+     */
+    operator fun get(animation: String): List<Frame> =
+            animations[animation] ?: idle
 }

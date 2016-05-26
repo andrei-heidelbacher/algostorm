@@ -25,71 +25,78 @@ import algostorm.event.Subscriber
 /**
  * A system that triggers every registered [Timer] when it expires.
  *
- * For every [Tick] event, it ticks every timer which is saved on a special entity that contains
- * a single [Timeline] component.
+ * For every [Tick] event, it ticks every timer which is saved on a special
+ * entity that contains a single [Timeline] component.
  *
- * When this system is created, the timeline owner entity is fetched from the entity manager. If it
- * doesn't exist, a new entity is created; however, the `CreateEntity` - `Spawned` process is
- * skipped. Because this system should be created before the engine is started and before any
- * processing begins, a concurrent modification exception can't occur.
+ * When this system is created, the timeline owner entity is fetched from the
+ * entity manager. If it doesn't exist, a new entity is created; however, the
+ * `CreateEntity` - `Spawned` process is skipped. Because this system should be
+ * created before the engine is started and before any processing begins, a
+ * `ConcurrentModificationException` can't occur.
  *
- * The system handlers will throw an [IllegalStateException] if the timeline entity is deleted from
- * the entity manager.
+ * The system handlers will throw an [IllegalStateException] if the timeline
+ * entity is deleted from the entity manager.
  *
- * @throws IllegalStateException if, at the time of creation, the entity manager contains more than
- * one timeline entity
+ * @throws IllegalStateException if, at the time of creation, the entity manager
+ * contains more than one timeline entity
  */
 class TimeSystem(
-    private val entityManager: MutableEntityManager,
-    private val publisher: Publisher
+        private val entityManager: MutableEntityManager,
+        private val publisher: Publisher
 ) : EntitySystem {
-  /**
-   * A special component which is attached to a unique entity and contains all the timers in the
-   * game.
-   *
-   * At most one such component should exist at any point in time, and at most one entity should
-   * contain this component at any point in time.
-   *
-   * @property timers a list which contains all the active timers in the game
-   */
-  data class Timeline(val timers: List<Timer>) : Component
+    /**
+     * A special component which is attached to a unique entity and contains all
+     * the timers in the game.
+     *
+     * At most one such component should exist at any point in time, and at most
+     * one entity should contain this component at any point in time.
+     *
+     * @property timers a list which contains all the active timers in the game
+     */
+    data class Timeline(val timers: List<Timer>) : Component
 
-  private val timelineEntity = entityManager
-      .getEntitiesWithComponentType(Timeline::class)
-      .toList()
-      .let { entities ->
-        check(entities.size <= 1) {
-          "The timeline component can't be contained by multiple entities!"
+    private val timelineEntity = entityManager
+            .getEntitiesWithComponentType(Timeline::class)
+            .toList()
+            .let { entities ->
+                check(entities.size <= 1) {
+                    "The timeline can't be contained by multiple entities!"
+                }
+                entities
+            }.singleOrNull()
+            ?: entityManager.create(listOf(Timeline(emptyList())))
+        get() {
+            check(timelineEntity.id in entityManager) {
+                "Timeline entity can't be deleted!"
+            }
+            return field
         }
-        entities
-      }.singleOrNull() ?: entityManager.create(listOf(Timeline(emptyList())))
-    get() {
-      check(timelineEntity.id in entityManager) { "Timeline entity can't be deleted!" }
-      return field
+
+    private val timeline: Timeline
+        get() = timelineEntity.get<Timeline>() ?: error(
+                "Timeline entity must contain the timeline component!"
+        )
+
+    private val registerHandler = Subscriber(RegisterTimer::class) { event ->
+        if (event.timer.remainingTicks == 0) {
+            publisher.post(event.timer.events)
+        } else {
+            timelineEntity.set(Timeline(timeline.timers + event.timer))
+        }
     }
 
-  private val timeline: Timeline
-    get() = timelineEntity.get<Timeline>() ?: error(
-        "Timeline entity must contain the timeline component!"
-    )
-
-  private val registerHandler = Subscriber(RegisterTimer::class) { event ->
-    if (event.timer.remainingTicks == 0) {
-      publisher.post(event.timer.events)
-    } else {
-      timelineEntity.set(Timeline(timeline.timers + event.timer))
+    private val tickHandler = Subscriber(Tick::class) { event ->
+        val newTimers = timeline.timers.map { it.tick() }
+        val (expired, notExpired) = newTimers.partition {
+            it.remainingTicks == 0
+        }
+        expired.forEach { publisher.post(it.events) }
+        timelineEntity.set(Timeline(notExpired))
     }
-  }
 
-  private val tickHandler = Subscriber(Tick::class) { event ->
-    val newTimers = timeline.timers.map { timer -> timer.tick() }
-    val (expired, notExpired) = newTimers.partition { timer -> timer.remainingTicks == 0 }
-    expired.forEach { timer -> publisher.post(timer.events) }
-    timelineEntity.set(Timeline(notExpired))
-  }
-
-  /**
-   * This system handles [RegisterTimer] and [Tick] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(registerHandler, tickHandler)
+    /**
+     * This system handles [RegisterTimer] and [Tick] events.
+     */
+    override val handlers: List<Subscriber<*>> =
+            listOf(registerHandler, tickHandler)
 }

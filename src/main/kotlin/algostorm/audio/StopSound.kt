@@ -19,7 +19,8 @@ package algostorm.audio
 import algostorm.event.Event
 
 /**
- * An event which signals that the sound played on the given [frequency] should be stopped.
+ * An event which signals that the sound played on the given [frequency] should
+ * be stopped.
  *
  * @property frequency the frequency of the sound that should be stopped
  */

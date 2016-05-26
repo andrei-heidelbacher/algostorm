@@ -19,6 +19,7 @@ package algostorm.graphics2d
 import algostorm.event.Event
 
 /**
- * An event which signals the fact that all existing entities should be rendered to the screen.
+ * An event which signals the fact that all existing entities should be rendered
+ * to the screen.
  */
 object RenderAll : Event

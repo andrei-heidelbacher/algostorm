@@ -19,7 +19,8 @@ package algostorm.physics2d
 import algostorm.event.Event
 
 /**
- * An event which signals that the given entity has translated by the given amount.
+ * An event which signals that the given entity has translated by the given
+ * amount.
  *
  * Only the [PhysicsSystem] should post this event.
  *
@@ -27,4 +28,8 @@ import algostorm.event.Event
  * @property dx the amount the entity translated on the x-axis
  * @property dy the amount the entity translated on the y-axis
  */
-data class Translated internal constructor(val entityId: Int, val dx: Int, val dy: Int) : Event
+data class Translated internal constructor(
+        val entityId: Int,
+        val dx: Int,
+        val dy: Int
+) : Event

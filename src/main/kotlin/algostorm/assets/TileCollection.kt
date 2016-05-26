@@ -20,20 +20,25 @@ package algostorm.assets
  * Factory object for tile collections.
  */
 object TileCollection {
-  /**
-   * Returns a tile collection created from the given [tileSets].
-   *
-   * @param tileSets the tilesets in the tile collection
-   * @return a tile collection that maps ids to tiles
-   */
-  @JvmStatic fun invoke(tileSets: Iterable<TileSet>): AssetCollection<Tile> {
-    val container = hashMapOf<Int, Tile>()
-    for (tileSet in tileSets) {
-      for (tileId in tileSet.firstId..tileSet.lastId) {
-        require(tileId !in container) { "Tile id is contained in multiple tilesets!" }
-        container[tileId] = Tile(tileSet.image, tileSet.getViewport(tileId))
-      }
+    /**
+     * Returns a tile collection created from the given [tileSets].
+     *
+     * @param tileSets the tilesets in the tile collection
+     * @return a tile collection that maps ids to tiles
+     */
+    @JvmStatic fun invoke(tileSets: Iterable<TileSet>): AssetCollection<Tile> {
+        val container = hashMapOf<Int, Tile>()
+        for (tileSet in tileSets) {
+            for (tileId in tileSet.firstId..tileSet.lastId) {
+                require(tileId !in container) {
+                    "Tile id is contained in multiple tilesets!"
+                }
+                container[tileId] = Tile(
+                        image = tileSet.image,
+                        viewport = tileSet.getViewport(tileId)
+                )
+            }
+        }
+        return AssetCollection(container)
     }
-    return AssetCollection(container)
-  }
 }

@@ -19,22 +19,26 @@ package algostorm.lifecycle
 import algostorm.ecs.Component
 
 /**
- * A component which indicates that the current entity should die within [remainingTicks] ticks.
+ * A component which indicates that the current entity should die within
+ * [remainingTicks] ticks.
  *
- * This component should be used for creating transient entities whose ids are not available.
+ * This component should be used for creating transient entities whose ids are
+ * not available.
  *
  * @property remainingTicks the number of ticks after which the entity dies
  * @throws IllegalArgumentException if [remainingTicks] is not positive
  */
 data class DeathTimer(val remainingTicks: Int) : Component {
-  init {
-    require(remainingTicks > 0) { "Death timer must have positive remaining ticks!" }
-  }
+    init {
+        require(remainingTicks > 0) {
+            "Death timer must have positive remaining ticks!"
+        }
+    }
 
-  /**
-   * Returns a copy of the death timer after a tick has passed.
-   *
-   * @return the timer information after another tick has elapsed
-   */
-  fun tick(): DeathTimer = copy(remainingTicks = remainingTicks - 1)
+    /**
+     * Returns a copy of the death timer after a tick has passed.
+     *
+     * @return the timer information after another tick has elapsed
+     */
+    fun tick(): DeathTimer = copy(remainingTicks = remainingTicks - 1)
 }

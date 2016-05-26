@@ -23,21 +23,24 @@ import algostorm.event.Subscriber
 /**
  * A system which handles the rendering of all entities in the game.
  *
- * When a [RenderAll] event is received, the [RenderingEngine.render] method is called.
+ * When a [RenderAll] event is received, the [RenderingEngine.render] method is
+ * called.
  *
- * @property renderingEngine the engine that will render the game entities to the screen
- * @property entityManager an entity manager which can be queried to fetch renderable entities
+ * @property renderingEngine the engine that will render the game entities to
+ * the screen
+ * @property entityManager an entity manager which can be queried to fetch
+ * renderable entities
  */
 class RenderingSystem(
-    private val renderingEngine: RenderingEngine,
-    private val entityManager: EntityManager
+        private val renderingEngine: RenderingEngine,
+        private val entityManager: EntityManager
 ) : EntitySystem {
-  private val renderHandler = Subscriber(RenderAll::class) { event ->
-    renderingEngine.render(entityManager.entities)
-  }
+    private val renderHandler = Subscriber(RenderAll::class) { event ->
+        renderingEngine.render(entityManager.entities)
+    }
 
-  /**
-   * This system handles [RenderAll] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(renderHandler)
+    /**
+     * This system handles [RenderAll] events.
+     */
+    override val handlers: List<Subscriber<*>> = listOf(renderHandler)
 }

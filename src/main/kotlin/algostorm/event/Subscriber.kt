@@ -23,18 +23,25 @@ import kotlin.reflect.KClass
  *
  * @param T the type of events in which the subscriber is interested
  * @property topic the [KClass] object of the event type which defines the topic
- * @property handler the event handler which is called by the [notify] method when this subscriber
- * is notified of an event it subscribed for
+ * @property handler the event handler which is called by the [notify] method
+ * when this subscriber is notified of an event it subscribed for
  */
-class Subscriber<T : Event>(val topic: KClass<T>, private val handler: (T) -> Unit) {
-  /**
-   * This method is called by the event bus to notify this subscriber of an [event].
-   *
-   * @param event the event for which the subscriber is notified
-   */
-  fun notify(event: Event) {
-    if (topic.java.isInstance(event)) {
-      handler(topic.java.cast(event))
+class Subscriber<T : Event>(
+        val topic: KClass<T>,
+        private val handler: (T) -> Unit
+) {
+    /**
+     * This method is called by the event bus to notify this subscriber of an
+     * [event].
+     *
+     * If the given event belongs to the [topic], then it is forwarded to the
+     * [handler].
+     *
+     * @param event the event for which the subscriber is notified
+     */
+    fun notify(event: Event) {
+        if (topic.java.isInstance(event)) {
+            handler(topic.java.cast(event))
+        }
     }
-  }
 }

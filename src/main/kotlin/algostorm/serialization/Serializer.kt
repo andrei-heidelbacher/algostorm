@@ -43,48 +43,103 @@ import kotlin.reflect.KClass
  * Serialization and deserialization utility methods.
  */
 object Serializer {
-  /**
-   * The serialization format.
-   */
-  const val FORMAT: String = "json"
+    /**
+     * The serialization format.
+     */
+    const val FORMAT: String = "json"
 
-  private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
-    enable(SerializationFeature.INDENT_OUTPUT)
-    setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-    setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-    enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
-  }
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+        enable(SerializationFeature.INDENT_OUTPUT)
+        setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+        enableDefaultTyping(
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        )
+    }
 
-  @Throws(IOException::class, JsonGenerationException::class, JsonMappingException::class)
-  @JvmStatic fun writeValue(out: OutputStream, value: Any) {
-    objectMapper.writeValue(out, value)
-  }
+    @Throws(
+            IOException::class,
+            JsonGenerationException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun writeValue(out: OutputStream, value: Any) {
+        objectMapper.writeValue(out, value)
+    }
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun readComponents(src: InputStream): List<Component> =
-      objectMapper.readValue(src, object : TypeReference<List<Component>>() {})
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readComponents(
+            src: InputStream
+    ): List<Component> = objectMapper.readValue(
+            src,
+            object : TypeReference<List<Component>>() {}
+    )
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun readEntitiesWithIds(src: InputStream): Map<Int, List<Component>> =
-      objectMapper.readValue(src, object : TypeReference<Map<Int, List<Component>>>() {})
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readEntitiesWithIds(
+            src: InputStream
+    ): Map<Int, List<Component>> = objectMapper.readValue(
+            src,
+            object : TypeReference<Map<Int, List<Component>>>() {}
+    )
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun readEntities(src: InputStream): List<List<Component>> =
-      objectMapper.readValue(src, object : TypeReference<List<List<Component>>>() {})
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readEntities(
+            src: InputStream
+    ): List<List<Component>> = objectMapper.readValue(
+            src,
+            object : TypeReference<List<List<Component>>>() {}
+    )
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun <T : Event> readEvent(src: InputStream, type: KClass<T>): T =
-      objectMapper.readValue(src, type.java)
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun <T : Event> readEvent(src: InputStream, type: KClass<T>): T =
+            objectMapper.readValue(src, type.java)
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic inline fun <reified T : Event> readEvent(src: InputStream): T =
-      readEvent(src, T::class)
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic inline fun <reified T : Event> readEvent(src: InputStream): T =
+            readEvent(src, T::class)
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun readTileSets(src: InputStream): List<TileSet> =
-      objectMapper.readValue(src, object : TypeReference<List<TileSet>>() {})
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readTileSets(
+            src: InputStream
+    ): List<TileSet> = objectMapper.readValue(
+            src,
+            object : TypeReference<List<TileSet>>() {}
+    )
 
-  @Throws(IOException::class, JsonParseException::class, JsonMappingException::class)
-  @JvmStatic fun readSoundCollection(src: InputStream): AssetCollection<Sound> =
-      objectMapper.readValue(src, object : TypeReference<AssetCollection<Sound>>() {})
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readSoundCollection(
+            src: InputStream
+    ): AssetCollection<Sound> = objectMapper.readValue(
+            src,
+            object : TypeReference<AssetCollection<Sound>>() {}
+    )
 }

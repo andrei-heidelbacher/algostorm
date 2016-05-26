@@ -19,7 +19,7 @@ package algostorm.event
 /**
  * Base type of an event.
  *
- * All events should be immutable data classes. The type of an event is denoted by its kotlin class
- * object.
+ * All events should be immutable data classes. The type of an event is denoted
+ * by its kotlin class object.
  */
 interface Event

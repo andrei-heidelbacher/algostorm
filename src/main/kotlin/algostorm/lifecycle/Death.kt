@@ -21,7 +21,8 @@ import algostorm.event.Event
 /**
  * Signals the deletion of the given entity to other game systems.
  *
- * The deletion didn't occur yet, so access to the entity and its components is still possible.
+ * The deletion didn't occur yet, so access to the entity and its components is
+ * still possible.
  *
  * @property entityId the id of the deleted entity
  */

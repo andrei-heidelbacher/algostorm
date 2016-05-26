@@ -24,14 +24,15 @@ import algostorm.assets.Image.Viewport
  * @property name the name of this tileset
  * @property tileWidth the width of a single tile in pixels
  * @property tileHeight the height of a single tile in pixels
- * @property spacing the empty space between successive rows or columns in the tileset in pixels
+ * @property spacing the empty space between successive rows or columns in the
+ * tileset in pixels
  * @property margins the empty space around the borders in pixels
  * @property firstId the first tile id present in this tileset
  * @property lastId the last tile id present in this tileset
  * @property image the image associated to this tileset
- * @throws IllegalArgumentException if [tileWidth], [tileHeight], [spacing] or [margins] are
- * negative, if [lastId] is less than [firstId], or if the [image] dimensions are incompatible with
- * the given properties
+ * @throws IllegalArgumentException if [tileWidth], [tileHeight], [spacing] or
+ * [margins] are negative, if [lastId] is less than [firstId], or if the [image]
+ * dimensions are incompatible with the given properties
  */
 data class TileSet(
     val name: String,
@@ -43,38 +44,43 @@ data class TileSet(
     val lastId: Int,
     val image: Image
 ) {
-  init {
-    require(tileWidth >= 0 && tileHeight >= 0) { "Tile dimensions must be non-negative!" }
-    require(spacing >= 0) { "Spacing between tiles must be non-negative!" }
-    require(margins >= 0) { "Margins must be non-negative!" }
-    require(firstId <= lastId) { "Tile ids must make a compact interval!" }
-    require(
-        (image.width - 2 * margins + spacing) % (tileWidth + spacing) == 0 &&
-        (image.height - 2 * margins + spacing) % (tileHeight + spacing) == 0
-    ) { "Tile set dimensions, spacing and margins don't match the image dimensions!" }
-  }
+    init {
+        require(tileWidth >= 0) { "Tile width must be non-negative!" }
+        require(tileHeight >= 0) { "Tile height must be non-negative!" }
+        require(spacing >= 0) { "Spacing between tiles must be non-negative!" }
+        require(margins >= 0) { "Margins must be non-negative!" }
+        require(firstId <= lastId) { "Tile ids must make a compact interval!" }
+        val widthOffset = (image.width - 2 * margins + spacing) %
+                (tileWidth + spacing)
+        val heightOffset = (image.height - 2 * margins + spacing) %
+                (tileHeight + spacing)
+        require(widthOffset == 0 && heightOffset == 0) {
+            "Tile size, spacing and margins don't match image size!"
+        }
+    }
 
-  /**
-   * The number of tiles on a single row in the tileset.
-   */
-  val tilesPerRow: Int
-    get() = (image.width - 2 * margins + spacing) / (tileWidth + spacing)
+    /**
+     * The number of tiles on a single row in the tileset.
+     */
+    val tilesPerRow: Int
+        get() = (image.width - 2 * margins + spacing) / (tileWidth + spacing)
 
-  /**
-   * Returns the viewport corresponding to the given tile.
-   *
-   * @param tileId the id of the requested tile
-   * @return the viewport on the tileset [image] corresponding to the requested tile
-   */
-  fun getViewport(tileId: Int): Viewport {
-    require(firstId <= tileId && tileId <= lastId) { "Invalid tile id!" }
-    val row = (tileId - firstId) / tilesPerRow
-    val column = (tileId - firstId) % tilesPerRow
-    return Viewport(
-        x = margins + column * (tileWidth + spacing),
-        y = margins + row * (tileHeight + spacing),
-        width = tileWidth,
-        height = tileHeight
-    )
-  }
+    /**
+     * Returns the viewport corresponding to the given tile.
+     *
+     * @param tileId the id of the requested tile
+     * @return the viewport on the tileset [image] corresponding to the
+     * requested tile
+     */
+    fun getViewport(tileId: Int): Viewport {
+        require(firstId <= tileId && tileId <= lastId) { "Invalid tile id!" }
+        val row = (tileId - firstId) / tilesPerRow
+        val column = (tileId - firstId) % tilesPerRow
+        return Viewport(
+                x = margins + column * (tileWidth + spacing),
+                y = margins + row * (tileHeight + spacing),
+                width = tileWidth,
+                height = tileHeight
+        )
+    }
 }

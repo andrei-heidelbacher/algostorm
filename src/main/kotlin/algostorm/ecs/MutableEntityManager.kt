@@ -19,59 +19,63 @@ package algostorm.ecs
 import kotlin.reflect.KClass
 
 /**
- * A mutable view of an [EntityManager] that manages the creation and deletion of all [entities] in
- * the game.
+ * A mutable view of an [EntityManager] that manages the creation and deletion
+ * of all [entities] in the game.
  *
  * Entities should not be created manually, but through a mutable entity manager.
  */
 interface MutableEntityManager : EntityManager {
-  override val entities: Sequence<MutableEntity>
+    override val entities: Sequence<MutableEntity>
 
-  override operator fun get(entityId: Int): MutableEntity?
+    override operator fun get(entityId: Int): MutableEntity?
 
-  override fun <T : Component> getEntitiesWithComponentType(
-      type: KClass<T>
-  ): Sequence<MutableEntity>
+    override fun <T : Component> getEntitiesWithComponentType(
+            type: KClass<T>
+    ): Sequence<MutableEntity>
 
-  override fun getEntitiesWithComponentTypes(
-      vararg types: KClass<out Component>
-  ): Sequence<MutableEntity> =
-      entities.filter { entity -> types.all { type -> type in entity } }
+    override fun getEntitiesWithComponentTypes(
+            vararg types: KClass<out Component>
+    ): Sequence<MutableEntity> =
+            entities.filter { entity -> types.all { type -> type in entity } }
 
-  /**
-   * Creates an entity with the given [components] and adds it to this manager.
-   *
-   * The generated id must be unique among all other entities in this manager.
-   *
-   * @param components the components the created entity must contain
-   * @return the created entity
-   * @throws IllegalStateException if there are too many entities in this manager
+    /**
+     * Creates an entity with the given [components] and adds it to this
+     * manager.
+     *
+     * The generated id must be unique among all other entities in this manager.
+     *
+     * @param components the components the created entity must contain
+     * @return the created entity
+     * @throws IllegalStateException if there are too many entities in this
+     * manager
+     */
+    fun create(components: Iterable<Component>): MutableEntity
+
+    /**
+     * Creates an entity with the given id and [components] and adds it to this
+     * manager.
+     *
+     * @param entityId the id the created entity must have
+     * @param components the components the created entity must contain
+     * @return the created entity
+     * @throws IllegalStateException if there are too many entities in this
+     * manager
+     */
+    fun create(entityId: Int, components: Iterable<Component>): MutableEntity
+
+    /**
+     * Removes the given entity from this manager.
+     *
+     * @param entityId the id of the entity to be deleted
+     * @return `true` if the entity was successfully deleted, or `false` if it
+     * doesn't exist in this manager
    */
-  fun create(components: Iterable<Component>): MutableEntity
+    fun delete(entityId: Int): Boolean
 
-  /**
-   * Creates an entity with the given id and [components] and adds it to this manager.
-   *
-   * @param entityId the id the created entity must have
-   * @param components the components the created entity must contain
-   * @return the created entity
-   * @throws IllegalStateException if there are too many entities in this manager
-   */
-  fun create(entityId: Int, components: Iterable<Component>): MutableEntity
-
-  /**
-   * Removes the given entity from this manager.
-   *
-   * @param entityId the id of the entity to be deleted
-   * @return `true` if the entity was successfully deleted, or `false` if it doesn't exist in this
-   * manager
-   */
-  fun delete(entityId: Int): Boolean
-
-  /**
-   * Deletes all the entities in the manager.
-   */
-  fun clear() {
-    entities.toList().forEach { delete(it.id) }
-  }
+    /**
+     * Deletes all the entities in the manager.
+     */
+    fun clear() {
+        entities.toList().forEach { delete(it.id) }
+    }
 }

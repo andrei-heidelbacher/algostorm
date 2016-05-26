@@ -23,9 +23,10 @@ import algostorm.ecs.Entity
  * A component which tells that the owner entity will block translations.
  */
 object Rigid : Component {
-  /**
-   * Returns `true` if this entity contains the [Rigid] component, `false` otherwise.
-   */
-  val Entity.isRigid: Boolean
-    get() = contains<Rigid>()
+    /**
+     * Returns `true` if this entity contains the [Rigid] component, `false`
+     * otherwise.
+     */
+    val Entity.isRigid: Boolean
+        get() = contains<Rigid>()
 }

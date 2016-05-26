@@ -21,8 +21,8 @@ import algostorm.event.Event
 /**
  * Signals the creation of the given [entityId] to other game systems.
  *
- * Should only be published by the [LifecycleSystem] after it has successfully completed a
- * [CreateEntity] request.
+ * Should only be published by the [LifecycleSystem] after it has successfully
+ * completed a [CreateEntity] request.
  *
  * @property entityId the id of the created entity
  */

@@ -23,9 +23,10 @@ import algostorm.ecs.Entity
  * A component which tells that the owner entity will trigger collisions.
  */
 object Collidable : Component {
-  /**
-   * Returns `true` if this entity contains the [Collidable] component, `false` otherwise.
-   */
-  val Entity.isCollidable: Boolean
-    get() = contains<Collidable>()
+    /**
+     * Returns `true` if this entity contains the [Collidable] component,
+     * `false` otherwise.
+     */
+    val Entity.isCollidable: Boolean
+        get() = contains<Collidable>()
 }

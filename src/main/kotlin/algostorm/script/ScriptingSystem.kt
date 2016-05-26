@@ -24,35 +24,41 @@ import algostorm.event.Subscriber
 /**
  * A system that handles script execution requests.
  *
- * Upon receiving a [RunScript] event, the [ScriptingEngine.runScript] method will be called. The
- * first script parameter is a [Context], and following are the parameters indicated in the
- * `RunScript` event.
+ * Upon receiving a [RunScript] event, the [ScriptingEngine.runScript] method
+ * will be called. The first script parameter is a [Context], and following are
+ * the parameters indicated in the `RunScript` event.
  *
  * @property scriptingEngine the engine that will execute the script requests
- * @property context the context of the executed scripts, which should be available as the first
- * parameter to every executed script
+ * @property context the context of the executed scripts, which should be
+ * available as the first parameter to every executed script
  */
 class ScriptingSystem(
-    private val scriptingEngine: ScriptingEngine,
-    private val entityManager: EntityManager,
-    private val publisher: Publisher
+        private val scriptingEngine: ScriptingEngine,
+        private val entityManager: EntityManager,
+        private val publisher: Publisher
 ) : EntitySystem {
-  /**
-   * The context of every script executed through a [RunScript] request. This should be passed as
-   * the first argument to the executed scripts.
-   *
-   * @property entityManager a read-only view of the entity manager which handles the game entities
-   * @property publisher a publisher which provides posting functionality to the game event bus
-   */
-  data class Context(val entityManager: EntityManager, val publisher: Publisher)
+    /**
+     * The context of every script executed through a [RunScript] request. This
+     * will be passed as the first argument to the executed scripts.
+     *
+     * @property entityManager a read-only view of the entity manager which
+     * handles the game entities
+     * @property publisher a publisher which provides posting functionality to
+     * the game event bus
+     */
+    data class Context(
+            val entityManager: EntityManager,
+            val publisher: Publisher
+    )
 
-  private val context = Context(entityManager, publisher)
-  private val scriptHandler = Subscriber(RunScript::class) { event ->
-    scriptingEngine.runScript(event.scriptId, context, *event.args.toTypedArray())
-  }
+    private val context = Context(entityManager, publisher)
+    private val scriptHandler = Subscriber(RunScript::class) { event ->
+        val args = event.args.toTypedArray()
+        scriptingEngine.runScript(event.scriptId, context, *args)
+    }
 
-  /**
-   * This system handles [RunScript] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(scriptHandler)
+    /**
+     * This system handles [RunScript] events.
+     */
+    override val handlers: List<Subscriber<*>> = listOf(scriptHandler)
 }

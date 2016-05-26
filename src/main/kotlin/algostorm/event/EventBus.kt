@@ -17,50 +17,20 @@
 package algostorm.event
 
 /**
- * An event bus which allows a [Subscriber] to [subscribe] and unsubscribe from certain topics
- * through the returned [Subscription] and allows to [post] an [Event] to the bus and notify its
- * subscribers.
- *
- * It should preserve the order of submitted events (if an event A is posted before an event B, then
- * subscribers will be notified for A before they are notified for B).
+ * An event bus which allows a [Subscriber] to [subscribe] and unsubscribe from
+ * certain topics through the returned [Subscription] and allows to [post] an
+ * [Event] to the bus and notify its subscribers.
  */
-interface EventBus {
-  /**
-   * Registers the given [subscriber] to the specified topic and returns the subscription.
-   *
-   * @param subscriber the object that subscribes for events to this event bus.
-   * @return the subscription which allows the subscriber to unsubscribe and stop listening for
-   * events of the specified topic which are posted to this event bus
-   */
-  fun subscribe(subscriber: Subscriber<*>): Subscription
-
-  /**
-   * Posts the given [event] to this event bus.
-   *
-   * @param event the event that should be posted
-   */
-  fun post(event: Event): Unit
-
-  /**
-   * Calls [post] for each given event.
-   *
-   * @param events the events that should be posted
-   */
-  fun post(events: List<Event>) {
-    events.forEach { post(it) }
-  }
-
-  /**
-   * Calls [post] for each given event.
-   *
-   * @param events the events that should be posted
-   */
-  fun post(vararg events: Event) {
-    events.forEach { post(it) }
-  }
-
-  /**
-   * Blocks until all other events in this event bus have been handled by their subscribers.
-   */
-  fun publishAll(): Unit
+interface EventBus : Publisher {
+    /**
+     * Registers the given [subscriber] to the specified topic and returns the
+     * subscription.
+     *
+     * @param subscriber the object that subscribes for events to this event
+     * bus.
+     * @return the subscription which allows the subscriber to unsubscribe and
+     * stop listening for events of the specified topic which are posted to this
+     * event bus
+     */
+    fun subscribe(subscriber: Subscriber<*>): Subscription
 }

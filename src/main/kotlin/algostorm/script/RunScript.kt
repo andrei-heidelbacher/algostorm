@@ -21,11 +21,16 @@ import algostorm.event.Event
 /**
  * An event which requests the execution of a script.
  *
- * The first argument of every executed script through this request should be the [ScriptContext].
+ * The first argument of every executed script through this request will be the
+ * [ScriptingSystem.Context], and the following arguments will be the given
+ * [args].
  *
  * @property scriptId the id of the script that should be executed
  * @property args the arguments of the script function
  */
 data class RunScript(val scriptId: Int, val args: List<*>) : Event {
-  constructor(scriptId: Int, vararg args: Any?) : this(scriptId, args.asList())
+    constructor(scriptId: Int, vararg args: Any?) : this(
+            scriptId = scriptId,
+            args = args.asList()
+    )
 }

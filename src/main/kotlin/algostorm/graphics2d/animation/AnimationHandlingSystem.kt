@@ -26,37 +26,46 @@ import algostorm.time.Tick
 /**
  * A system that manages the animation information of entities.
  *
- * Upon receiving a [Tick] event, it updates all the [Animation] components. If any of them
- * completes, they are continued with the associated idle animations. Upon receiving an [Animate]
- * event, it overwrites the current animation with the indicated animation.
+ * Upon receiving a [Tick] event, it updates all the [Animation] components. If
+ * any of them completes, they are continued with the associated idle
+ * animations. Upon receiving an [Animate] event, it overwrites the current
+ * animation with the indicated animation.
  */
-class AnimationHandlingSystem(private val entityManager: MutableEntityManager) : EntitySystem {
-  private fun update(entity: MutableEntity, animation: Animation?) {
-    animation ?: error("Can't animate an entity without an animation component!")
-    entity.set(animation)
-    entity.set(animation.sprite)
-  }
+class AnimationHandlingSystem(
+        private val entityManager: MutableEntityManager
+) : EntitySystem {
+    private fun update(entity: MutableEntity, animation: Animation?) {
+        animation ?: error(
+                "Can't animate an entity without an animation component!"
+        )
+        entity.set(animation)
+        entity.set(animation.sprite)
+      }
 
-  private val tickHandler = Subscriber(Tick::class) { event ->
-    entityManager.getEntitiesWithComponentType(Animation::class).forEach { entity ->
-      val animation = entity.animation?.tick()
-      update(entity, animation)
+    private val tickHandler = Subscriber(Tick::class) { event ->
+        entityManager.getEntitiesWithComponentType(Animation::class)
+                .forEach { entity ->
+                    val animation = entity.animation?.tick()
+                    update(entity, animation)
+                }
     }
-  }
 
-  private val animateHandler = Subscriber(Animate::class) { event ->
-    val entity = entityManager[event.entityId] ?: error("Animating non-existent entity!")
-    val animation = entity.animation?.let { animation ->
-      animation.copy(
-          frames = animation.animationSheet[event.animation],
-          elapsedTicks = 0
-      )
+    private val animateHandler = Subscriber(Animate::class) { event ->
+        val entity = entityManager[event.entityId] ?: error(
+                "Animating non-existent entity!"
+        )
+        val animation = entity.animation?.let { animation ->
+            animation.copy(
+                    frames = animation.animationSheet[event.animation],
+                    elapsedTicks = 0
+            )
+        }
+        update(entity, animation)
     }
-    update(entity, animation)
-  }
 
-  /**
-   * This system handles [Tick] and [Animate] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(tickHandler, animateHandler)
+    /**
+     * This system handles [Tick] and [Animate] events.
+     */
+    override val handlers: List<Subscriber<*>> =
+            listOf(tickHandler, animateHandler)
 }

@@ -19,7 +19,8 @@ package algostorm.ecs
 /**
  * Base type for all components.
  *
- * All components should be immutable data classes that contain only properties, without any
- * associated behaviour. The type of a component is denoted by its kotlin class object.
+ * All components should be immutable data classes that contain only properties,
+ * without any associated behaviour. The type of a component is denoted by its
+ * kotlin class object.
  */
 interface Component

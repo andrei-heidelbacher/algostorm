@@ -19,7 +19,8 @@ package algostorm.physics2d
 import algostorm.event.Event
 
 /**
- * An event which signals that the given entity intends to translate itself by the given amount.
+ * An event which signals that the given entity intends to translate itself by
+ * the given amount.
  *
  * @property entityId the id of the entity which intends to translate itself
  * @property dx the amount the entity intends to translate on the x-axis

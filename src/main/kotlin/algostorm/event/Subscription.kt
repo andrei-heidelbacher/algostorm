@@ -17,13 +17,15 @@
 package algostorm.event
 
 /**
- * Allows a [Subscriber] to cancel its subscription at an [EventBus] to the associated topic.
+ * Allows a [Subscriber] to cancel its subscription at an [EventBus] to the
+ * associated topic.
  */
 interface Subscription {
-  /**
-   * Cancels the subscription. Can only be called once.
-   *
-   * @throws IllegalStateException if the subscription is cancelled more than once
-   */
-  fun unsubscribe(): Unit
+    /**
+     * Cancels the subscription. Can only be called once.
+     *
+     * @throws IllegalStateException if the subscription is cancelled more than
+     * once
+     */
+    fun unsubscribe(): Unit
 }

@@ -19,56 +19,60 @@ package algostorm.graphics2d.transform
 import algostorm.ecs.Component
 
 /**
- * A component that indicates a sequence of [transformations] that should be applied to the current
- * entity.
+ * A component that indicates a sequence of [transformations] that should be
+ * applied to the current entity.
  *
  * @property transformations the transformation sequence that is to be applied
- * @property elapsedTicks the number of ticks that have elapsed since the beginning of the
- * transformation
- * @throws IllegalArgumentException if [elapsedTicks] is negative or greater than [durationInTicks]
- * or if [transformations] is empty
+ * @property elapsedTicks the number of ticks that have elapsed since the
+ * beginning of the transformation
+ * @throws IllegalArgumentException if [elapsedTicks] is negative or greater
+ * than [durationInTicks] or if [transformations] is empty
  */
 data class TransformationTimer(
-    val transformations: List<TimedTransformation>,
-    val elapsedTicks: Int
+        val transformations: List<TimedTransformation>,
+        val elapsedTicks: Int
 ) : Component {
-  init {
-    require(transformations.isNotEmpty()) { "Transformation sequence can't be empty!" }
-    require(0 <= elapsedTicks && elapsedTicks <= durationInTicks) {
-      "Elapsed ticks must be non-negative and less than the duration in ticks!"
-    }
-  }
-
-  /**
-   * The total duration in ticks of the [transformations].
-   */
-  val durationInTicks: Int
-    get() = transformations.sumBy { transformation -> transformation.durationInTicks }
-
-  /**
-   * The interpolated transformation that should be applied to the entity at the time of calling.
-   * Linear interpolation is used.
-   */
-  val transformation: Transformation
-    get() {
-      var current = Transformation.identity
-      var remainingTicks = elapsedTicks
-      for ((transformation, durationInTicks) in transformations) {
-        if (remainingTicks >= durationInTicks) {
-          current += transformation
-          remainingTicks -= durationInTicks
-        } else {
-          current += transformation * (remainingTicks.toFloat() / durationInTicks.toFloat())
-          break
+    init {
+        require(transformations.isNotEmpty()) {
+            "Transformation sequence can't be empty!"
         }
-      }
-      return current
+        require(0 <= elapsedTicks && elapsedTicks <= durationInTicks) {
+            "Elapsed ticks must be non-negative and less than the duration!"
+        }
     }
 
-  /**
-   * Returns a copy of the transformation information after a tick has passed.
-   *
-   * @return the transformation information after another ticks has elapsed
-   */
-  fun tick(): TransformationTimer = copy(elapsedTicks = elapsedTicks + 1)
+    /**
+     * The total duration in ticks of the [transformations].
+     */
+    val durationInTicks: Int
+        get() = transformations.sumBy { it.durationInTicks }
+
+    /**
+     * The interpolated transformation that should be applied to the entity at
+     * the time of calling. Linear interpolation is used.
+     */
+    val transformation: Transformation
+        get() {
+            var current = Transformation.identity
+            var remainingTicks = elapsedTicks
+            for ((transformation, durationInTicks) in transformations) {
+                if (remainingTicks >= durationInTicks) {
+                    current += transformation
+                    remainingTicks -= durationInTicks
+                } else {
+                    val relativeElapsed = remainingTicks.toFloat() /
+                            durationInTicks.toFloat()
+                    current += transformation * relativeElapsed
+                    break
+                }
+            }
+            return current
+        }
+
+    /**
+     * Returns a copy of the transformation information after a tick has passed.
+     *
+     * @return the transformation information after another ticks has elapsed
+     */
+    fun tick(): TransformationTimer = copy(elapsedTicks = elapsedTicks + 1)
 }

@@ -22,22 +22,24 @@ import algostorm.event.Subscriber
 /**
  * A system which handles playing and stopping sounds.
  *
- * After receiving a [PlaySound] event, the [AudioEngine.playSound] method is called. After
- * receiving a [StopSound] event, the [AudioEngine.stopSound] method is called.
+ * After receiving a [PlaySound] event, the [AudioEngine.playSound] method is
+ * called. After receiving a [StopSound] event, the [AudioEngine.stopSound]
+ * method is called.
  *
  * @property audioEngine the engine that will play the sounds
  */
 class AudioSystem(private val audioEngine: AudioEngine) : EntitySystem {
-  private val playHandler = Subscriber(PlaySound::class) { event ->
-    audioEngine.playSound(event.soundId, event.frequency, event.loop)
-  }
+    private val playHandler = Subscriber(PlaySound::class) { event ->
+        audioEngine.playSound(event.soundId, event.frequency, event.loop)
+    }
 
-  private val stopHandler = Subscriber(StopSound::class) { event ->
-    audioEngine.stopSound(event.frequency)
-  }
+    private val stopHandler = Subscriber(StopSound::class) { event ->
+        audioEngine.stopSound(event.frequency)
+    }
 
-  /**
-   * This system handles [PlaySound] and [StopSound] events.
-   */
-  override val handlers: List<Subscriber<*>> = listOf(playHandler, stopHandler)
+    /**
+     * This system handles [PlaySound] and [StopSound] events.
+     */
+    override val handlers: List<Subscriber<*>> =
+            listOf(playHandler, stopHandler)
 }

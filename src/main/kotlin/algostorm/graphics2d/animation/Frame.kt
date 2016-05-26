@@ -26,7 +26,7 @@ import algostorm.graphics2d.Sprite
  * @throws IllegalArgumentException if [durationInTicks] is not positive
  */
 data class Frame(val sprite: Sprite, val durationInTicks: Int) {
-  init {
-    require(durationInTicks > 0) { "Frame duration must be positive!" }
-  }
+    init {
+        require(durationInTicks > 0) { "Frame duration must be positive!" }
+    }
 }

@@ -19,21 +19,23 @@ package algostorm.time
 import algostorm.event.Event
 
 /**
- * A timer which will post the associated [events] when [remainingTicks] ticks have elapsed.
+ * A timer which will post the associated [events] when [remainingTicks] ticks
+ * have elapsed.
  *
- * @property remainingTicks the number of ticks that need to pass until the timer expires
+ * @property remainingTicks the number of ticks that need to pass until the
+ * timer expires
  * @property events the events which will be posted when the timer expires
  * @throws IllegalArgumentException if [remainingTicks] is negative
  */
 data class Timer(val remainingTicks: Int, val events: List<Event>) {
-  init {
-    require(remainingTicks >= 0) { "Timer duration can't be negative!" }
-  }
+    init {
+        require(remainingTicks >= 0) { "Timer duration can't be negative!" }
+    }
 
-  /**
-   * Returns a copy of the timer after a tick has elapsed.
-   *
-   * @return the new timer after a tick has passed
-   */
-  fun tick(): Timer = copy(remainingTicks = remainingTicks - 1)
+    /**
+     * Returns a copy of the timer after a tick has elapsed.
+     *
+     * @return the new timer after a tick has passed
+     */
+    fun tick(): Timer = copy(remainingTicks = remainingTicks - 1)
 }

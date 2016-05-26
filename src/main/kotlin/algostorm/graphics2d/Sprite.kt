@@ -25,21 +25,23 @@ import algostorm.ecs.Entity
  * A sprite is represented as a tile and is identified through its [tileId].
  *
  * @property tileId the unique identifier of the sprite
- * @property flippedHorizontally whether the sprite should be flipped horizontally
+ * @property flippedHorizontally whether the sprite should be flipped
+ * horizontally
  * @property flippedVertically whether the sprite should be flipped vertically
  * @property flippedDiagonally whether the sprite should be flipped diagonally
  */
 data class Sprite(
-    val tileId: Int,
-    val flippedHorizontally: Boolean,
-    val flippedVertically: Boolean,
-    val flippedDiagonally: Boolean
+        val tileId: Int,
+        val flippedHorizontally: Boolean,
+        val flippedVertically: Boolean,
+        val flippedDiagonally: Boolean
 ) : Component {
-  companion object {
-    /**
-     * The [Sprite] component of this entity, or `null` if it doesn't have a sprite.
-     */
-    val Entity.sprite: Sprite?
-      get() = get()
-  }
+    companion object {
+        /**
+         * The [Sprite] component of this entity, or `null` if it doesn't have a
+         * sprite.
+         */
+        val Entity.sprite: Sprite?
+            get() = get()
+    }
 }

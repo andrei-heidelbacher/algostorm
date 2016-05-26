@@ -17,41 +17,41 @@
 package algostorm.event
 
 /**
- * Provides posting functionality to an associated event bus.
+ * Provides functionality to post events and notify subscribers.
+ *
+ * It should preserve the order of submitted events (if an event A is posted
+ * before an event B, then subscribers will be notified for A before they are
+ * notified for B).
  */
-class Publisher(private val eventBus: EventBus) {
-  /**
-   * Posts the given [event] to the associated event bus.
-   *
-   * @param event the event that should be posted
-   */
-  fun post(event: Event) {
-    eventBus.post(event)
-  }
+interface Publisher {
+    /**
+     * Posts the given [event] and notifies all subscribers which subscribed at
+     * this publisher for this `event` type.
+     *
+     * @param event the event that should be posted
+     */
+    fun post(event: Event): Unit
 
-  /**
-   * Calls [post] for each given event.
-   *
-   * @param events the events that should be posted
-   */
-  fun post(events: List<Event>) {
-    eventBus.post(events)
-  }
+    /**
+     * Calls [post] for each given event.
+     *
+     * @param events the events that should be posted
+     */
+    fun post(events: List<Event>) {
+        events.forEach { post(it) }
+    }
 
-  /**
-   * Calls [post] for each given event.
-   *
-   * @param events the events that should be posted
-   */
-  fun post(vararg events: Event) {
-    eventBus.post(*events)
-  }
+    /**
+     * Calls [post] for each given event.
+     *
+     * @param events the events that should be posted
+     */
+    fun post(vararg events: Event) {
+        events.forEach { post(it) }
+    }
 
-  /**
-   * Blocks until all other events in the associated event bus have been handled by their
-   * subscribers.
-   */
-  fun publishAll() {
-    eventBus.publishAll()
-  }
+    /**
+     * Blocks until all other events have been handled by their subscribers.
+     */
+    fun publishAll(): Unit
 }

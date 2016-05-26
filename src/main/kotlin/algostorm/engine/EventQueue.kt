@@ -28,36 +28,41 @@ import kotlin.reflect.KClass
 /**
  * An asynchronous implementation of an [EventBus].
  *
- * The [post] method adds the event to the event queue and it will be processed only when
- * [publishAll] is called.
+ * The [post] method adds the event to the event queue and it will be processed
+ * only when [publishAll] is called.
  */
 class EventQueue : EventBus {
-  private val subscribers = hashMapOf<KClass<out Event>, MutableSet<Subscriber<*>>>()
-  private val eventQueue = LinkedList<Event>()
+    private val subscribers =
+            hashMapOf<KClass<out Event>, MutableSet<Subscriber<*>>>()
+    private val eventQueue = LinkedList<Event>()
 
-  override fun subscribe(subscriber: Subscriber<*>): Subscription {
-    subscribers.getOrPut(subscriber.topic) { linkedSetOf() }.add(subscriber)
-    return object : Subscription {
-      private var isCancelled = false
+    override fun subscribe(subscriber: Subscriber<*>): Subscription {
+        subscribers.getOrPut(subscriber.topic) { linkedSetOf() }.add(subscriber)
+        return object : Subscription {
+            private var isCancelled = false
 
-      override fun unsubscribe() {
-        check(!isCancelled) { "Can't cancel the same subscription multiple times!" }
-        isCancelled = true
-        subscribers[subscriber.topic]?.remove(subscriber)
-      }
+            override fun unsubscribe() {
+                check(!isCancelled) {
+                    "Can't cancel the same subscription multiple times!"
+                }
+                isCancelled = true
+                subscribers[subscriber.topic]?.remove(subscriber)
+            }
+        }
     }
-  }
 
-  override fun post(event: Event) {
-    eventQueue.add(event)
-  }
+    override fun post(event: Event) {
+        eventQueue.add(event)
+    }
 
-  override fun publishAll() {
-    do {
-      val event = eventQueue.poll()
-      if (event != null) {
-        subscribers[event.javaClass.kotlin].orEmpty().forEach { it.notify(event) }
-      }
-    } while (event != null)
-  }
+    override fun publishAll() {
+        do {
+            val event = eventQueue.poll()
+            if (event != null) {
+                subscribers[event.javaClass.kotlin].orEmpty().forEach {
+                    it.notify(event)
+                }
+            }
+        } while (event != null)
+    }
 }

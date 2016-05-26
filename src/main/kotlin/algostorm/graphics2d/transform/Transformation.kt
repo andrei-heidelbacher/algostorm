@@ -27,42 +27,44 @@ import algostorm.graphics2d.ScreenPosition.Companion.screenPosition
  * @property dy the translation amount on the y-axis in tiles
  */
 data class Transformation(val dx: Float, val dy: Float) {
-  companion object {
-    /**
-     * The identity transformation which leaves the entity on which it is applied unchanged.
-     */
-    val identity: Transformation = Transformation(0F, 0F)
+    companion object {
+        /**
+         * The identity transformation which leaves the entity on which it is
+         * applied unchanged.
+         */
+        val identity: Transformation = Transformation(0F, 0F)
 
-    /**
-     * The [Transformation] applied on this entity, or [identity] if no transformation is applied.
-     */
-    val Entity.transformation: Transformation
-      get() = this.get<TransformationTimer>()?.transformation ?: identity
+        /**
+         * The [Transformation] applied on this entity, or [identity] if no
+         * transformation is applied.
+         */
+        val Entity.transformation: Transformation
+            get() = this.get<TransformationTimer>()?.transformation ?: identity
 
-    /**
-     * Applies the given [transformation] to this entity.
-     *
-     * @param transformation the transformation that is to be applied
-     */
-    fun MutableEntity.apply(transformation: Transformation) {
-      screenPosition?.let { screenPosition ->
-        val newScreenPosition = screenPosition.copy (
-            x = screenPosition.x + transformation.dx,
-            y = screenPosition.y + transformation.dy
-        )
-        set(newScreenPosition)
-      }
+        /**
+         * Applies the given [transformation] to this entity.
+         *
+         * @param transformation the transformation that is to be applied
+         */
+        fun MutableEntity.apply(transformation: Transformation) {
+            screenPosition?.let { screenPosition ->
+                val newScreenPosition = screenPosition.copy(
+                        x = screenPosition.x + transformation.dx,
+                        y = screenPosition.y + transformation.dy
+                )
+                set(newScreenPosition)
+            }
+        }
     }
-  }
 
-  operator fun unaryMinus(): Transformation = Transformation(-dx, -dy)
+    operator fun unaryMinus(): Transformation = Transformation(-dx, -dy)
 
-  operator fun plus(other: Transformation): Transformation =
-      Transformation(dx + other.dx, dy + other.dy)
+    operator fun plus(other: Transformation): Transformation =
+            Transformation(dx + other.dx, dy + other.dy)
 
-  operator fun minus(other: Transformation): Transformation =
-      Transformation(dx - other.dx, dy - other.dy)
+    operator fun minus(other: Transformation): Transformation =
+            Transformation(dx - other.dx, dy - other.dy)
 
-  operator fun times(other: Float): Transformation =
-      Transformation(dx * other, dy * other)
+    operator fun times(other: Float): Transformation =
+            Transformation(dx * other, dy * other)
 }

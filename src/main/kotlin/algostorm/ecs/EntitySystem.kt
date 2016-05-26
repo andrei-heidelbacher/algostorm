@@ -21,11 +21,12 @@ import algostorm.event.Subscriber
 /**
  * An object that implements the behaviour of a core concept of the game.
  *
- * All processing occurs when it is notified for an event one of its [handlers] subscribed for.
+ * All processing occurs when it is notified for an event one of its [handlers]
+ * subscribed for.
  */
 interface  EntitySystem {
-  /**
-   * The event handlers of this system.
-   */
-  val handlers: List<Subscriber<*>>
+    /**
+     * The event handlers of this system.
+     */
+    val handlers: List<Subscriber<*>>
 }
