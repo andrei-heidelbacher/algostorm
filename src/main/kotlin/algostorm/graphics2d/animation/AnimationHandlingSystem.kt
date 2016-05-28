@@ -30,6 +30,9 @@ import algostorm.time.Tick
  * any of them completes, they are continued with the associated idle
  * animations. Upon receiving an [Animate] event, it overwrites the current
  * animation with the indicated animation.
+ *
+ * @property entityManager the entity manager used to retrieve and update entity
+ * animations
  */
 class AnimationHandlingSystem(
         private val entityManager: MutableEntityManager
@@ -51,16 +54,15 @@ class AnimationHandlingSystem(
     }
 
     private val animateHandler = Subscriber(Animate::class) { event ->
-        val entity = entityManager[event.entityId] ?: error(
-                "Animating non-existent entity!"
-        )
-        val animation = entity.animation?.let { animation ->
-            animation.copy(
-                    frames = animation.animationSheet[event.animation],
-                    elapsedTicks = 0
-            )
+        entityManager[event.entityId]?.let { entity ->
+            val animation = entity.animation?.let { animation ->
+                animation.copy(
+                        frames = animation.animationSheet[event.animation],
+                        elapsedTicks = 0
+                )
+            }
+            update(entity, animation)
         }
-        update(entity, animation)
     }
 
     /**

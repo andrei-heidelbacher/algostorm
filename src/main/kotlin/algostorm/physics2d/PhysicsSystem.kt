@@ -42,28 +42,34 @@ import algostorm.physics2d.Rigid.isRigid
  * having this entity as the source and the overlapping entity as the target is
  * published. The translated entity box is allowed to overlap with itself, as it
  * will not trigger a collision with itself.
+ *
+ * @property entityManager the entity manager used to retrieve and update the
+ * entities
+ * @property publisher the publisher used to post `Translated` and `Collision`
+ * events
  */
 class PhysicsSystem(
         private val entityManager: MutableEntityManager,
         private val publisher: Publisher
 ) : EntitySystem {
     private val translateHandler = Subscriber(TranslateIntent::class) { event ->
-        val entity = entityManager[event.entityId] ?: error(
-                "Translated entity doesn't exist!"
-        )
-        val newBox = entity.box?.translate(event.dx, event.dy) ?: error(
-                "Can't translate an entity without a location!"
-        )
-        val overlappingEntities = entityManager
-                .getEntitiesWithComponentType(Box::class)
-                .filter { it != entity && it.box?.overlaps(newBox) ?: false }
-        if (!entity.isRigid || overlappingEntities.none { it.isRigid }) {
-            entity.set(newBox)
-            publisher.post(Translated(event.entityId, event.dx, event.dy))
-        }
-        if (entity.isCollidable) {
-            overlappingEntities.filter { it.isCollidable }.forEach {
-                publisher.post(Collision(event.entityId, it.id))
+        entityManager[event.entityId]?.let { entity ->
+            val newBox = entity.box?.translate(event.dx, event.dy) ?: error(
+                    "Can't translate an entity without a location!"
+            )
+            val overlappingEntities = entityManager
+                    .getEntitiesWithComponentType(Box::class)
+                    .filter {
+                        it != entity && it.box?.overlaps(newBox) ?: false
+                    }
+            if (!entity.isRigid || overlappingEntities.none { it.isRigid }) {
+                entity.set(newBox)
+                publisher.post(Translated(event.entityId, event.dx, event.dy))
+            }
+            if (entity.isCollidable) {
+                overlappingEntities.filter { it.isCollidable }.forEach {
+                    publisher.post(Collision(event.entityId, it.id))
+                }
             }
         }
     }

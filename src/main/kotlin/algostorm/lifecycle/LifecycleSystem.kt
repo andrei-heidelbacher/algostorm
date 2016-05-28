@@ -21,7 +21,8 @@ import algostorm.ecs.MutableEntityManager
 import algostorm.event.Event
 import algostorm.event.Publisher
 import algostorm.event.Subscriber
-import algostorm.time.Tick
+import algostorm.time.RegisterTimer
+import algostorm.time.Timer
 
 /**
  * A system that handles the creation and deletion of entities through
@@ -33,9 +34,13 @@ import algostorm.time.Tick
  * After receiving a [Death] event, it publishes a [DeleteEntity] request. Only
  * the [LifecycleSystem] should listen for [DeleteEntity] events, as the
  * specified entity may not be accessible any longer at the moment of
- * notification. After receiving a [Tick] event, it ticks all entities that have
- * a [DeathTimer] and publishes a [Death] event for the entities whose timers
- * reach `0`.
+ * notification. After receiving a [Spawned] event with an entity that contains
+ * a [DeathTimer], it publishes a [RegisterTimer] event which will trigger the
+ * entity's [Death] when the timer expires.
+ *
+ * @property entityManager the entity manager which supports the creation and
+ * deletion of entities
+ * @property publisher the publisher used to post events
  */
 class LifecycleSystem(
         private val entityManager: MutableEntityManager,
@@ -63,27 +68,26 @@ class LifecycleSystem(
         publisher.post(DeleteEntity(event.entityId))
     }
 
-    private val tickHandler = Subscriber(Tick::class) { event ->
-        entityManager.getEntitiesWithComponentType(DeathTimer::class)
-                .forEach { entity ->
-                    entity.get<DeathTimer>()?.let { timer ->
-                        if (timer.remainingTicks == 1) {
-                            publisher.post(Death(entity.id))
-                        } else {
-                            entity.set(timer.tick())
-                        }
-                    }
-                }
+    private val spawnedHandler = Subscriber(Spawned::class) { event ->
+        entityManager[event.entityId]?.let { entity ->
+            entity.get<DeathTimer>()?.let { timer ->
+                entity.remove<DeathTimer>()
+                publisher.post(RegisterTimer(Timer(
+                        remainingTicks = timer.remainingTicks,
+                        event = Death(entity.id)
+                )))
+            }
+        }
     }
 
     /**
-     * This system handles [CreateEntity], [DeleteEntity], [Death] and [Tick]
+     * This system handles [CreateEntity], [DeleteEntity], [Death] and [Spawned]
      * events.
      */
     override val handlers: List<Subscriber<*>> = listOf(
             createHandler,
             deleteHandler,
             deathHandler,
-            tickHandler
+            spawnedHandler
     )
 }

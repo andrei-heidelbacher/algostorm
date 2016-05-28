@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import algostorm.assets.AssetCollection
+import algostorm.assets.Script
 import algostorm.assets.Sound
 import algostorm.assets.TileSet
 import algostorm.ecs.Component
@@ -141,5 +142,17 @@ object Serializer {
     ): AssetCollection<Sound> = objectMapper.readValue(
             src,
             object : TypeReference<AssetCollection<Sound>>() {}
+    )
+
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun readScriptCollection(
+            src: InputStream
+    ): AssetCollection<Sound> = objectMapper.readValue(
+            src,
+            object : TypeReference<AssetCollection<Script>>() {}
     )
 }

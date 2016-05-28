@@ -22,5 +22,8 @@ package algostorm.ecs
  * All components should be immutable data classes that contain only properties,
  * without any associated behaviour. The type of a component is denoted by its
  * kotlin class object.
+ *
+ * Concrete components should not be generic, otherwise they may not be
+ * serializable.
  */
 interface Component

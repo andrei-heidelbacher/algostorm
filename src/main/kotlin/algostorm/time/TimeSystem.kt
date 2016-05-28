@@ -37,6 +37,8 @@ import algostorm.event.Subscriber
  * The system handlers will throw an [IllegalStateException] if the timeline
  * entity is deleted from the entity manager.
  *
+ * @property entityManager the entity manager of the game
+ * @property publisher the publisher used to post expired timer events
  * @throws IllegalStateException if, at the time of creation, the entity manager
  * contains more than one timeline entity
  */
@@ -79,7 +81,7 @@ class TimeSystem(
 
     private val registerHandler = Subscriber(RegisterTimer::class) { event ->
         if (event.timer.remainingTicks == 0) {
-            publisher.post(event.timer.events)
+            publisher.post(event.timer.event)
         } else {
             timelineEntity.set(Timeline(timeline.timers + event.timer))
         }
@@ -90,7 +92,7 @@ class TimeSystem(
         val (expired, notExpired) = newTimers.partition {
             it.remainingTicks == 0
         }
-        expired.forEach { publisher.post(it.events) }
+        expired.forEach { publisher.post(it.event) }
         timelineEntity.set(Timeline(notExpired))
     }
 

@@ -29,8 +29,10 @@ import algostorm.event.Subscriber
  * the parameters indicated in the `RunScript` event.
  *
  * @property scriptingEngine the engine that will execute the script requests
- * @property context the context of the executed scripts, which should be
- * available as the first parameter to every executed script
+ * @property entityManager the entity manager which will be provided in the context
+ * of every executed script
+ * @property publisher the publisher which will be provided in the context of every
+ * executed script
  */
 class ScriptingSystem(
         private val scriptingEngine: ScriptingEngine,

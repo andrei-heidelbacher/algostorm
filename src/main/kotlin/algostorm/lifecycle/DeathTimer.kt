@@ -23,22 +23,15 @@ import algostorm.ecs.Component
  * [remainingTicks] ticks.
  *
  * This component should be used for creating transient entities whose ids are
- * not available.
+ * not available at the time of creation.
  *
  * @property remainingTicks the number of ticks after which the entity dies
- * @throws IllegalArgumentException if [remainingTicks] is not positive
+ * @throws IllegalArgumentException if [remainingTicks] is negative
  */
 data class DeathTimer(val remainingTicks: Int) : Component {
     init {
-        require(remainingTicks > 0) {
-            "Death timer must have positive remaining ticks!"
+        require(remainingTicks >= 0) {
+            "Death timer can't have negative remaining ticks!"
         }
     }
-
-    /**
-     * Returns a copy of the death timer after a tick has passed.
-     *
-     * @return the timer information after another tick has elapsed
-     */
-    fun tick(): DeathTimer = copy(remainingTicks = remainingTicks - 1)
 }

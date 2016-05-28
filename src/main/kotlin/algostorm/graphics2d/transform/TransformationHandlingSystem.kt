@@ -31,6 +31,9 @@ import algostorm.time.Tick
  * the entity and removes the timer. Upon receiving a [Transform] event, it
  * flushes the current `TransformationTimer` and applies it, then sets the new
  * transformation timer to the event transformation.
+ *
+ * @property entityManager the entity manager used to retrieve and update entity
+ * transformations
  */
 class TransformationHandlingSystem(
         private val entityManager: MutableEntityManager
@@ -50,11 +53,10 @@ class TransformationHandlingSystem(
     }
 
     private val transformHandler = Subscriber(Transform::class) { event ->
-        val entity = entityManager[event.entityId] ?: error(
-                "Transforming non-existent entity!"
-        )
-        entity.apply(entity.transformation)
-        entity.set(TransformationTimer(event.transformations, 0))
+        entityManager[event.entityId]?.let { entity ->
+            entity.apply(entity.transformation)
+            entity.set(TransformationTimer(event.transformations, 0))
+        }
     }
 
     /**
