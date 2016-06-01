@@ -22,8 +22,7 @@ import algostorm.ecs.MutableEntityManager
 import algostorm.graphics2d.ScreenPosition
 import algostorm.graphics2d.Sprite
 import algostorm.graphics2d.animation.Animation
-import algostorm.graphics2d.transform.TransformationTimer
-import algostorm.lifecycle.DeathTimer
+import algostorm.graphics2d.transform.ScreenVelocity
 import algostorm.physics2d.Box
 import algostorm.physics2d.Collidable
 import algostorm.physics2d.Rigid
@@ -41,7 +40,7 @@ class EntityDatabase : MutableEntityManager {
             components: Iterable<Component>
     ) : MutableEntity(id) {
         private companion object {
-            private var componentIndex = 8
+            private var componentIndex = 7
             private val componentMapper = hashMapOf(
                     ScreenPosition::class to 0,
                     Sprite::class to 1,
@@ -49,8 +48,7 @@ class EntityDatabase : MutableEntityManager {
                     Rigid::class to 3,
                     Collidable::class to 4,
                     Animation::class to 5,
-                    TransformationTimer::class to 6,
-                    DeathTimer::class to 7
+                    ScreenVelocity::class to 6
             )
 
             fun getIndex(type: KClass<out Component>): Int =

@@ -81,18 +81,20 @@ class TimeSystem(
 
     private val registerHandler = Subscriber(RegisterTimer::class) { event ->
         if (event.timer.remainingTicks == 0) {
-            publisher.post(event.timer.event)
+            publisher.post(event.timer.events)
         } else {
             timelineEntity.set(Timeline(timeline.timers + event.timer))
         }
     }
 
     private val tickHandler = Subscriber(Tick::class) { event ->
-        val newTimers = timeline.timers.map { it.tick() }
+        val newTimers = timeline.timers.map {
+            it.copy(remainingTicks = it.remainingTicks - 1)
+        }
         val (expired, notExpired) = newTimers.partition {
             it.remainingTicks == 0
         }
-        expired.forEach { publisher.post(it.event) }
+        expired.forEach { publisher.post(it.events) }
         timelineEntity.set(Timeline(notExpired))
     }
 

@@ -42,15 +42,6 @@ interface Publisher {
     }
 
     /**
-     * Calls [post] for each given event.
-     *
-     * @param events the events that should be posted
-     */
-    fun post(vararg events: Event) {
-        events.forEach { post(it) }
-    }
-
-    /**
      * Blocks until all other events have been handled by their subscribers.
      */
     fun publishAll(): Unit

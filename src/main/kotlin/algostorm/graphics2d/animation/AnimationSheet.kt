@@ -22,16 +22,17 @@ package algostorm.graphics2d.animation
  *
  * Every animation must contain at least two frames.
  *
- * @throws IllegalArgumentException if one of the animations has less than two
- * frames or if the `idle` animation is missing
+ * @property animations the underlying map containing the animations
+ * @throws IllegalArgumentException if one of the frame sequences is empty or if
+ * the `idle` animation is missing
  */
 data class AnimationSheet(private val animations: Map<String, List<Frame>>) {
     init {
         require(AnimationSheet::idle.name in animations) {
             "Idle animation is missing!"
         }
-        require(animations.all { animation -> animation.value.size > 1 }) {
-            "Animation must contain at least two frames!"
+        require(animations.all { it.value.isNotEmpty() }) {
+            "Frame sequences can't be empty!"
         }
     }
 

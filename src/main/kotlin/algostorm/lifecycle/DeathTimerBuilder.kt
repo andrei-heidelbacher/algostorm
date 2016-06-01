@@ -16,22 +16,32 @@
 
 package algostorm.lifecycle
 
-import algostorm.ecs.Component
+import algostorm.event.Event
+import algostorm.time.RegisterTimer
+import algostorm.time.Timer
 
 /**
- * A component which indicates that the current entity should die within
- * [remainingTicks] ticks.
+ * An event builder which indicates that the current entity should die within
+ * [remainingTicks] ticks after it is spawned.
  *
- * This component should be used for creating transient entities whose ids are
- * not available at the time of creation.
+ * This event builder should be used for creating transient entities whose ids
+ * are not available at the time of creation.
+ *
+ * It creates a [RegisterTimer] event which will trigger a [Death] event after
+ * the timer expires.
  *
  * @property remainingTicks the number of ticks after which the entity dies
  * @throws IllegalArgumentException if [remainingTicks] is negative
  */
-data class DeathTimer(val remainingTicks: Int) : Component {
+data class DeathTimerBuilder(
+        val remainingTicks: Int
+) : CreateEntity.EventBuilder {
     init {
         require(remainingTicks >= 0) {
             "Death timer can't have negative remaining ticks!"
         }
     }
+
+    override fun build(entityId: Int): Event =
+            RegisterTimer(Timer(remainingTicks, Death(entityId)))
 }
