@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package algostorm.script
+package algostorm.physics2d
 
-import algostorm.event.Event
+import algostorm.ecs.Component
 
-/**
- * An event which requests the execution of a script.
- *
- * The [ScriptingSystem.Context] will be made available to the script as a
- * variable named "context" (without quotes).
- *
- * @property scriptId the id of the script that should be executed
- * @property args the arguments of the script function
- */
-data class RunScript(val scriptId: Int, val args: List<*>) : Event {
-    constructor(scriptId: Int, vararg args: Any?) : this(
-            scriptId = scriptId,
-            args = args.asList()
-    )
-}
+data class Velocity(val x: Int, val y: Int) : Component

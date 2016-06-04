@@ -34,6 +34,10 @@ data class Animation private constructor(
         val frames: List<Frame>,
         val elapsedTicks: Int
 ) : Component {
+    companion object {
+        const val IDLE = "idle"
+    }
+
     init {
         require(frames.isNotEmpty()) { "Frame sequence can't be empty!" }
         require(elapsedTicks >= 0) { "Elapsed ticks can't be negative!" }

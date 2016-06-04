@@ -16,7 +16,6 @@
 
 package algostorm.time
 
-import algostorm.ecs.Component
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
@@ -38,14 +37,24 @@ import algostorm.event.Subscriber
  * entity is deleted from the entity manager.
  *
  * @property entityManager the entity manager of the game
+ * @property properties the properties of the game
  * @property publisher the publisher used to post expired timer events
  * @throws IllegalStateException if, at the time of creation, the entity manager
  * contains more than one timeline entity
  */
 class TimeSystem(
         private val entityManager: MutableEntityManager,
+        private val properties: MutableMap<String, Any?>,
         private val publisher: Publisher
 ) : EntitySystem {
+    companion object {
+        /**
+         * The property used by this system. It should be an object of type
+         * [Timeline].
+         */
+        const val TIMELINE: String = "timeline"
+    }
+
     /**
      * A special component which is attached to a unique entity and contains all
      * the timers in the game.
@@ -55,35 +64,15 @@ class TimeSystem(
      *
      * @property timers a list which contains all the active timers in the game
      */
-    data class Timeline(val timers: List<Timer>) : Component
+    data class Timeline(val timers: List<Timer>)
 
-    private val timelineEntity = entityManager
-            .getEntitiesWithComponentType(Timeline::class)
-            .toList()
-            .let { entities ->
-                check(entities.size <= 1) {
-                    "The timeline can't be contained by multiple entities!"
-                }
-                entities
-            }.singleOrNull()
-            ?: entityManager.create(listOf(Timeline(emptyList())))
-        get() {
-            check(timelineEntity.id in entityManager) {
-                "Timeline entity can't be deleted!"
-            }
-            return field
-        }
-
-    private val timeline: Timeline
-        get() = timelineEntity.get<Timeline>() ?: error(
-                "Timeline entity must contain the timeline component!"
-        )
+    private var timeline: Timeline by properties
 
     private val registerHandler = Subscriber(RegisterTimer::class) { event ->
         if (event.timer.remainingTicks == 0) {
             publisher.post(event.timer.events)
         } else {
-            timelineEntity.set(Timeline(timeline.timers + event.timer))
+            timeline = Timeline(timeline.timers + event.timer)
         }
     }
 
@@ -95,7 +84,7 @@ class TimeSystem(
             it.remainingTicks == 0
         }
         expired.forEach { publisher.post(it.events) }
-        timelineEntity.set(Timeline(notExpired))
+        timeline = Timeline(notExpired)
     }
 
     /**

@@ -32,8 +32,9 @@ import kotlin.system.measureTimeMillis
  * An asynchronous engine that runs the game loop on its own private thread.
  *
  * All the systems passed in the state will have their handlers subscribed to
- * the event bus upon the creation of the engine. All the engine methods are
- * thread-safe.
+ * the event bus upon the creation of the engine. The subscriptions are
+ * synchronized on the internal state lock. All the engine methods are thread
+ * safe.
  *
  * @property state the state of this engine. All changes made to the `state`
  * outside of this engine's thread may lead to inconsistent state and
@@ -65,11 +66,15 @@ abstract class Engine protected constructor(
      *
      * @property entityManager the entity manager that handles all the entities
      * in the game
+     * @property properties various properties used by the game systems. The
+     * stored properties must not be generic, otherwise they may not be
+     * serializable.
      * @property eventBus the event bus which handles all the events in the game
      * @property systems the systems which handle the logic of the game
      */
     data class State(
             val entityManager: MutableEntityManager,
+            val properties: MutableMap<String, Any?>,
             val eventBus: EventBus,
             val systems: List<EntitySystem>
     )
@@ -107,10 +112,12 @@ abstract class Engine protected constructor(
      * It is the entry point into the game logic code.
      *
      * @param entityManager the entity manager in this engine's [state]
+     * @param properties the properties used by the game systems
      * @param publisher the publisher view of this engine's event bus
      */
     protected abstract fun handleTick(
             entityManager: MutableEntityManager,
+            properties: MutableMap<String, Any?>,
             publisher: Publisher
     ): Unit
 
@@ -142,7 +149,11 @@ abstract class Engine protected constructor(
                     while (status == Status.RUNNING) {
                         val elapsedTime = measureTimeMillis {
                             synchronized(stateLock) {
-                                handleTick(state.entityManager, state.eventBus)
+                                handleTick(
+                                        entityManager = state.entityManager,
+                                        properties = state.properties,
+                                        publisher = state.eventBus
+                                )
                             }
                         }
                         val sleepTime = millisPerTick - elapsedTime

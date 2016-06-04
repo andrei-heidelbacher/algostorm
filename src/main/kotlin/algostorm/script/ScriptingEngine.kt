@@ -16,7 +16,6 @@
 
 package algostorm.script
 
-import algostorm.assets.AssetCollection
 import algostorm.assets.Script
 
 /**
@@ -27,9 +26,13 @@ import algostorm.assets.Script
  */
 interface ScriptingEngine {
     /**
-     * The collection which contains all the scripts that can be executed.
+     * Makes the given [value] available as a variable with the name equal to
+     * the given [key] to all executed scripts.
+     *
+     * @property key the name of the variable that will be made available
+     * @property value the object that will be made available
      */
-    val scripts: AssetCollection<Script>
+    fun put(key: String, value: Any?): Unit
 
     /**
      * Executes the given [script] with the specified arguments and returns its
@@ -40,21 +43,4 @@ interface ScriptingEngine {
      * @return the script result, or `null` if it doesn't return anything.
      */
     fun runScript(script: Script, vararg args: Any?): Any?
-
-    /**
-     * Fetches the script with the given [scriptId] and calls [runScript] with
-     * the found [Script].
-     *
-     * @param scriptId the id of the script that should be executed
-     * @param args the script parameters
-     * @return the script result, or `null` if it doesn't return anything
-     * @throws IllegalArgumentException if the given script id doesn't exist in
-     * the [scripts] collection
-     */
-    fun runScript(scriptId: Int, vararg args: Any?): Any? {
-        val script = requireNotNull(scripts[scriptId]) {
-            "Script id doesn't exist!!"
-        }
-        return runScript(script, *args)
-    }
 }

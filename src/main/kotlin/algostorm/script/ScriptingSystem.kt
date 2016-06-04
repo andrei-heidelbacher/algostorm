@@ -16,6 +16,8 @@
 
 package algostorm.script
 
+import algostorm.assets.AssetCollection
+import algostorm.assets.Script
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
 import algostorm.event.Publisher
@@ -25,38 +27,54 @@ import algostorm.event.Subscriber
  * A system that handles script execution requests.
  *
  * Upon receiving a [RunScript] event, the [ScriptingEngine.runScript] method
- * will be called. The first script parameter is a [Context], and following are
- * the parameters indicated in the `RunScript` event.
+ * will be called. The [Context] is made available to executed scripts as a
+ * variable named "context".
  *
  * @property scriptingEngine the engine that will execute the script requests
- * @property entityManager the entity manager which will be provided in the context
- * of every executed script
- * @property publisher the publisher which will be provided in the context of every
- * executed script
+ * @property entityManager the entity manager which will be provided in the
+ * context of every executed script
+ * @property properties the properties of the game which will be provided in the
+ * context of every executed script
+ * @property publisher the publisher which will be provided in the context of
+ * every executed script
  */
 class ScriptingSystem(
         private val scriptingEngine: ScriptingEngine,
         private val entityManager: EntityManager,
+        private val properties: Map<String, Any?>,
         private val publisher: Publisher
 ) : EntitySystem {
+    companion object {
+        /**
+         * The property used by this system. It should be an object of type
+         * [AssetCollection].
+         */
+        const val SCRIPT_SET: String = "scriptSet"
+    }
+
     /**
      * The context of every script executed through a [RunScript] request. This
-     * will be passed as the first argument to the executed scripts.
+     * will be made available as a variable named "context" to the executed
+     * scripts.
      *
      * @property entityManager a read-only view of the entity manager which
      * handles the game entities
+     * @property properties a read-only view of the properties of the game
      * @property publisher a publisher which provides posting functionality to
      * the game event bus
      */
     data class Context(
             val entityManager: EntityManager,
+            val properties: Map<String, Any?>,
             val publisher: Publisher
     )
 
-    private val context = Context(entityManager, publisher)
+    private val scriptSet: AssetCollection<Script> by properties
+    private val context = Context(entityManager, properties, publisher)
     private val scriptHandler = Subscriber(RunScript::class) { event ->
+        val script = scriptSet[event.scriptId] ?: error("Missing script id!")
         val args = event.args.toTypedArray()
-        scriptingEngine.runScript(event.scriptId, context, *args)
+        scriptingEngine.runScript(script, context, *args)
     }
 
     /**
