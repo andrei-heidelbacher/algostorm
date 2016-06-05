@@ -22,6 +22,6 @@ import algostorm.event.Event
  * An event which requests to animate the given entity with the given animation.
  *
  * @property entityId the id of the entity that is to be animated
- * @property animation the name of the animation
+ * @property animationName the name of the animation
  */
-data class Animate(val entityId: Int, val animation: String) : Event
+data class Animate(val entityId: Int, val animationName: String) : Event

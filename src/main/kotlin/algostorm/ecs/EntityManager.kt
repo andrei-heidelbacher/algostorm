@@ -47,9 +47,8 @@ interface EntityManager {
      * @param type the component type the entities must contain
      * @return all entities that have a component of the requested type
      */
-    fun <T : Component> getEntitiesWithComponentType(
-            type: KClass<T>
-    ): Sequence<Entity>
+    fun <T : Component> filterEntities(type: KClass<T>): Sequence<Entity> =
+            entities.filter { type in it }
 
     /**
      * Returns all entities that have a component of each provided type.
@@ -58,9 +57,7 @@ interface EntityManager {
      * @return all the entities in the manager that contain the requested
      * component types
      */
-    fun getEntitiesWithComponentTypes(
-            vararg types: KClass<out Component>
-    ): Sequence<Entity> =
+    fun filterEntities(vararg types: KClass<out Component>): Sequence<Entity> =
             entities.filter { entity -> types.all { type -> type in entity } }
 
     /**

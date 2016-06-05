@@ -33,4 +33,9 @@ interface EventBus : Publisher {
      * event bus
      */
     fun subscribe(subscriber: Subscriber<*>): Subscription
+
+    /**
+     * Blocks until all other events have been handled by their subscribers.
+     */
+    fun publishAll(): Unit
 }

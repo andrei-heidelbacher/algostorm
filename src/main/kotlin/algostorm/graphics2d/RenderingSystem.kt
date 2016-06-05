@@ -23,7 +23,7 @@ import algostorm.event.Subscriber
 /**
  * A system which handles the rendering of all entities in the game.
  *
- * When a [RenderAll] event is received, the [RenderingEngine.render] method is
+ * When a [Render] event is received, the [RenderingEngine.render] method is
  * called.
  *
  * @property renderingEngine the engine that will render the game entities to
@@ -33,14 +33,26 @@ import algostorm.event.Subscriber
  */
 class RenderingSystem(
         private val renderingEngine: RenderingEngine,
-        private val entityManager: EntityManager
+        private val entityManager: EntityManager,
+        private val properties: Map<String, Any?>
 ) : EntitySystem {
-    private val renderHandler = Subscriber(RenderAll::class) { event ->
-        renderingEngine.render(entityManager.entities)
+    companion object {
+        /**
+         * The name of property used by this system.
+         */
+        const val TILE_COLLECTION: String = "tileCollection"
+    }
+
+    private val tileCollection: TileCollection
+        get() = (properties[TILE_COLLECTION] as? TileCollection)
+                ?: error("Missing $TILE_COLLECTION property!")
+
+    private val renderHandler = Subscriber(Render::class) { event ->
+        renderingEngine.render(tileCollection, entityManager.entities)
     }
 
     /**
-     * This system handles [RenderAll] events.
+     * This system handles [Render] events.
      */
     override val handlers: List<Subscriber<*>> = listOf(renderHandler)
 }

@@ -24,23 +24,12 @@ import algostorm.event.Subscriber
 /**
  * A system that triggers every registered [Timer] when it expires.
  *
- * For every [Tick] event, it ticks every timer which is saved on a special
- * entity that contains a single [Timeline] component.
- *
- * When this system is created, the timeline owner entity is fetched from the
- * entity manager. If it doesn't exist, a new entity is created; however, the
- * `CreateEntity` - `Spawned` process is skipped. Because this system should be
- * created before the engine is started and before any processing begins, a
- * `ConcurrentModificationException` can't occur.
- *
- * The system handlers will throw an [IllegalStateException] if the timeline
- * entity is deleted from the entity manager.
+ * For every [Tick] event, it ticks every timer which is saved in the [TIMELINE]
+ * property.
  *
  * @property entityManager the entity manager of the game
  * @property properties the properties of the game
  * @property publisher the publisher used to post expired timer events
- * @throws IllegalStateException if, at the time of creation, the entity manager
- * contains more than one timeline entity
  */
 class TimeSystem(
         private val entityManager: MutableEntityManager,
@@ -55,18 +44,12 @@ class TimeSystem(
         const val TIMELINE: String = "timeline"
     }
 
-    /**
-     * A special component which is attached to a unique entity and contains all
-     * the timers in the game.
-     *
-     * At most one such component should exist at any point in time, and at most
-     * one entity should contain this component at any point in time.
-     *
-     * @property timers a list which contains all the active timers in the game
-     */
-    data class Timeline(val timers: List<Timer>)
-
-    private var timeline: Timeline by properties
+    private var timeline: Timeline
+        get() = (properties[TIMELINE] as? Timeline)
+                ?: error("Missing $TIMELINE property!")
+        set(value: Timeline) {
+            properties[TIMELINE] = value
+        }
 
     private val registerHandler = Subscriber(RegisterTimer::class) { event ->
         if (event.timer.remainingTicks == 0) {

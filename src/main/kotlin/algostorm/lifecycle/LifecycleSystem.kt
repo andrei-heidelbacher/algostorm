@@ -69,9 +69,6 @@ class LifecycleSystem(
     /**
      * This system handles [CreateEntity], [DeleteEntity] and [Death] events.
      */
-    override val handlers: List<Subscriber<*>> = listOf(
-            createHandler,
-            deleteHandler,
-            deathHandler
-    )
+    override val handlers: List<Subscriber<*>> =
+            listOf(createHandler, deleteHandler, deathHandler)
 }

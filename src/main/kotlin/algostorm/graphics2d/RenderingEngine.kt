@@ -16,8 +16,6 @@
 
 package algostorm.graphics2d
 
-import algostorm.assets.AssetCollection
-import algostorm.assets.Tile
 import algostorm.ecs.Entity
 
 /**
@@ -28,36 +26,11 @@ import algostorm.ecs.Entity
  */
 interface RenderingEngine {
     /**
-     * The width of a tile in pixels.
-     */
-    val tileWidth: Int
-
-    /**
-     * The height of a tile in pixels.
-     */
-    val tileHeight: Int
-
-    /**
-     * The tile collection used for rendering.
-     */
-    val tiles: AssetCollection<Tile>
-
-    /**
-     * Returns the tile with the given [tileId].
-     *
-     * @param tileId the id of the requested tile
-     * @return the requested tile
-     * @throws IllegalArgumentException if the given id doesn't exist in the
-     * tile collection
-     */
-    fun getTile(tileId: Int): Tile =
-            requireNotNull(tiles[tileId]) { "Tile id doesn't exist!" }
-
-    /**
      * Draws the screen using the data from the received [entities]. This should
      * be a blocking call.
      *
+     * @param tileCollection the [TileCollection] used for rendering
      * @param entities the lazy view of the current game state
      */
-    fun render(entities: Sequence<Entity>): Unit
+    fun render(tileCollection: TileCollection, entities: Sequence<Entity>): Unit
 }

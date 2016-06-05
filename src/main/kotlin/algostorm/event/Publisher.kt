@@ -40,9 +40,4 @@ interface Publisher {
     fun post(events: List<Event>) {
         events.forEach { post(it) }
     }
-
-    /**
-     * Blocks until all other events have been handled by their subscribers.
-     */
-    fun publishAll(): Unit
 }

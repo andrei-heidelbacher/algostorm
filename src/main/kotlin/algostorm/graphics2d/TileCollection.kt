@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.graphics2d
+
+import algostorm.graphics2d.Image.Viewport
 
 /**
- * Factory object for tile collections.
+ * A collection of tile sets which maps global tile ids to viewports.
+ *
+ * @property tileSets the tile sets of this collection
  */
-object TileCollection {
-    /**
-     * Returns a tile collection created from the given [tileSets].
-     *
-     * @param tileSets the tilesets in the tile collection
-     * @return a tile collection that maps ids to tiles
-     */
-    @JvmStatic fun invoke(tileSets: Iterable<TileSet>): AssetCollection<Tile> {
-        val container = hashMapOf<Int, Tile>()
+data class TileCollection(private val tileSets: List<TileSet>) {
+    @Transient private val tiles = run {
+        val container = hashMapOf<Int, Viewport>()
         for (tileSet in tileSets) {
             for (tileId in tileSet.firstId..tileSet.lastId) {
                 require(tileId !in container) {
-                    "Tile id is contained in multiple tilesets!"
+                    "Tile id is contained in multiple tile sets!"
                 }
-                container[tileId] = Tile(
-                        image = tileSet.image,
-                        viewport = tileSet.getViewport(tileId)
-                )
+                container[tileId] = tileSet.getViewport(tileId)
             }
         }
-        return AssetCollection(container)
+        container
     }
+
+    /**
+     * Returns the [Viewport] corresponding to the given [tileId].
+     *
+     * @param tileId the id of the requested tile
+     * @return the requested viewport
+     */
+    operator fun get(tileId: Int): Viewport =
+            tiles[tileId] ?: error("Missing tile id!")
 }

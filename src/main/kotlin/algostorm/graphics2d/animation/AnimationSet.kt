@@ -16,17 +16,20 @@
 
 package algostorm.graphics2d.animation
 
-import algostorm.graphics2d.Sprite
-
 /**
- * A building-block for frame sequences used in animations.
+ * A container which maps animation sheet ids to [AnimationSheet]. This object
+ * should be saved as a property of the game.
  *
- * @property sprite the sprite that should be rendered
- * @property durationInTicks how long should the current sprite be rendered
- * @throws IllegalArgumentException if [durationInTicks] is not positive
+ * @property animations the underlying map of this container
  */
-data class Frame(val sprite: Sprite, val durationInTicks: Int) {
-    init {
-        require(durationInTicks > 0) { "Frame duration must be positive!" }
-    }
+data class AnimationSet(private val animations: Map<Int, AnimationSheet>) {
+    /**
+     * Returns the animation sheet with the given id.
+     *
+     * @param animationSheetId the id of the requested animation sheet
+     * @return the requested animation sheet, or `null` if the given id doesn't
+     * exist in this container
+     */
+    operator fun get(animationSheetId: Int): AnimationSheet? =
+            animations[animationSheetId]
 }

@@ -20,7 +20,8 @@ import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
 /**
- * A component which tells that the owner entity will block translations.
+ * A component which tells that the owner entity will block movement and
+ * triggers collisions.
  */
 object Rigid : Component {
     /**

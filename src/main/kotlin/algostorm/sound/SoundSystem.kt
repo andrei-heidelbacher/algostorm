@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.audio
+package algostorm.sound
 
 import algostorm.ecs.EntitySystem
 import algostorm.event.Subscriber
@@ -22,19 +22,36 @@ import algostorm.event.Subscriber
 /**
  * A system which handles playing and stopping sounds.
  *
- * After receiving a [PlaySound] event, the [AudioEngine.playSound] method is
- * called. After receiving a [StopSound] event, the [AudioEngine.stopSound]
+ * After receiving a [PlaySound] event, the [SoundEngine.playSound] method is
+ * called. After receiving a [StopSound] event, the [SoundEngine.stopSound]
  * method is called.
  *
- * @property audioEngine the engine that will play the sounds
+ * @property soundEngine the engine that will play the sounds
+ * @property properties the properties of the game
  */
-class AudioSystem(private val audioEngine: AudioEngine) : EntitySystem {
+class SoundSystem(
+        private val soundEngine: SoundEngine,
+        private val properties: Map<String, Any?>
+) : EntitySystem {
+    companion object {
+        /**
+         * The property used by this system. It should be an object of type
+         * [SoundSet].
+         */
+        const val SOUND_SET: String = "soundSet"
+    }
+
+    private val soundSet: SoundSet
+        get() = (properties[SOUND_SET] as? SoundSet)
+                ?: error("Missing $SOUND_SET property!")
+
     private val playHandler = Subscriber(PlaySound::class) { event ->
-        audioEngine.playSound(event.soundId, event.frequency, event.loop)
+        val soundUri = soundSet[event.soundId] ?: error("Missing sound id!")
+        soundEngine.playSound(soundUri, event.frequency, event.loop)
     }
 
     private val stopHandler = Subscriber(StopSound::class) { event ->
-        audioEngine.stopSound(event.frequency)
+        soundEngine.stopSound(event.frequency)
     }
 
     /**

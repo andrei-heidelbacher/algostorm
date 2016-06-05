@@ -17,5 +17,21 @@
 package algostorm.physics2d
 
 import algostorm.ecs.Component
+import algostorm.ecs.Entity
 
-data class Velocity(val x: Int, val y: Int) : Component
+/**
+ * A component which indicates that the owner entity should have it's box
+ * translated by the indicated, once every `Tick`.
+ *
+ * @property x the velocity on the x-axis
+ * @property y the velocity of the y-axis
+ */
+data class Velocity(val x: Int, val y: Int) : Component {
+    companion object {
+        /**
+         * The [Velocity] component of this entity.
+         */
+        val Entity.velocity: Velocity
+            get() = get() ?: Velocity(0, 0)
+    }
+}

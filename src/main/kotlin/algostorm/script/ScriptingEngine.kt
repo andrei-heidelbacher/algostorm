@@ -16,13 +16,10 @@
 
 package algostorm.script
 
-import algostorm.assets.Script
-
 /**
  * An object that can execute scripts.
  *
- * Methods on this object will be called from the private engine thread. All
- * method calls should be thread-safe.
+ * Methods on this object will be called from the private engine thread.
  */
 interface ScriptingEngine {
     /**
@@ -35,12 +32,12 @@ interface ScriptingEngine {
     fun put(key: String, value: Any?): Unit
 
     /**
-     * Executes the given [script] with the specified arguments and returns its
-     * result.
+     * Executes the script at the given [scriptUri] with the specified arguments
+     * and returns its result.
      *
-     * @param script the script that should be executed
+     * @param scriptUri the location of the script that should be executed
      * @param args the script parameters
      * @return the script result, or `null` if it doesn't return anything.
      */
-    fun runScript(script: Script, vararg args: Any?): Any?
+    fun runScript(scriptUri: String, vararg args: Any?): Any?
 }

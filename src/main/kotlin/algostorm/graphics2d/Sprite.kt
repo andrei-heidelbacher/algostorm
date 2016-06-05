@@ -22,19 +22,28 @@ import algostorm.ecs.Entity
 /**
  * A component that contains rendering information.
  *
- * A sprite is represented as a tile and is identified through its [tileId].
+ * A sprite is rendered as a tile and is identified through its [tileId].
+ *
+ * Entities should be rendered in ascending order by their [z] coordinate. In
+ * case of equality, the user can define a custom ordering.
  *
  * @property tileId the unique identifier of the sprite
  * @property flippedHorizontally whether the sprite should be flipped
  * horizontally
  * @property flippedVertically whether the sprite should be flipped vertically
  * @property flippedDiagonally whether the sprite should be flipped diagonally
+ * @property z the z-coordinate of the owner entity
+ * @property xOffset the x-axis rendering offset
+ * @property yOffset the y-axis rendering offset
  */
 data class Sprite(
         val tileId: Int,
         val flippedHorizontally: Boolean,
         val flippedVertically: Boolean,
-        val flippedDiagonally: Boolean
+        val flippedDiagonally: Boolean,
+        val z: Int,
+        val xOffset: Int,
+        val yOffset: Int
 ) : Component {
     companion object {
         /**

@@ -19,13 +19,11 @@ package algostorm.engine
 import algostorm.ecs.Component
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
-import algostorm.graphics2d.ScreenPosition
 import algostorm.graphics2d.Sprite
 import algostorm.graphics2d.animation.Animation
-import algostorm.graphics2d.transform.ScreenVelocity
 import algostorm.physics2d.Box
-import algostorm.physics2d.Collidable
 import algostorm.physics2d.Rigid
+import algostorm.physics2d.Velocity
 
 import kotlin.reflect.KClass
 
@@ -40,15 +38,13 @@ class EntityDatabase : MutableEntityManager {
             components: Iterable<Component>
     ) : MutableEntity(id) {
         private companion object {
-            private var componentIndex = 7
+            private var componentIndex = 5
             private val componentMapper = hashMapOf(
-                    ScreenPosition::class to 0,
-                    Sprite::class to 1,
-                    Box::class to 2,
-                    Rigid::class to 3,
-                    Collidable::class to 4,
-                    Animation::class to 5,
-                    ScreenVelocity::class to 6
+                    Sprite::class to 0,
+                    Box::class to 1,
+                    Rigid::class to 2,
+                    Animation::class to 3,
+                    Velocity::class to 4
             )
 
             fun getIndex(type: KClass<out Component>): Int =
@@ -107,11 +103,6 @@ class EntityDatabase : MutableEntityManager {
         get() = entitySet.values.asSequence()
 
     override fun get(entityId: Int): MutableEntity? = entitySet[entityId]
-
-    override fun <T : Component> getEntitiesWithComponentType(
-            type: KClass<T>
-    ): Sequence<MutableEntity> =
-            entities.filter { type in it }
 
     override fun create(components: Iterable<Component>): MutableEntity =
             create(nextId, components)

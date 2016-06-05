@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package algostorm.audio
-
-import algostorm.event.Event
+package algostorm.script
 
 /**
- * An event that requests a sound to be played on the given [frequency].
+ * A container that maps script ids to script URIs. This object should be saved
+ * as a property of the game.
  *
- * @property soundId the id of the sound that should be played
- * @property frequency the frequency on which the sound should be played
- * @property loop whether the sound should be looped or not
+ * @property scripts the underlying map of this container
  */
-data class PlaySound(
-        val soundId: Int,
-        val frequency: Int,
-        val loop: Boolean = false
-) : Event
+data class ScriptSet(private val scripts: Map<Int, String>) {
+    /**
+     * Returns the URI of the given [scriptId].
+     *
+     * @param scriptId the id of the requested script
+     * @return the URI of the requested script, or `null` if the given id
+     * doesn't exist in this container
+     */
+    operator fun get(scriptId: Int): String? = scripts[scriptId]
+}

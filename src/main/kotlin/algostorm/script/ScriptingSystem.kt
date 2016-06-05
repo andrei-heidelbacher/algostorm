@@ -16,8 +16,6 @@
 
 package algostorm.script
 
-import algostorm.assets.AssetCollection
-import algostorm.assets.Script
 import algostorm.ecs.EntityManager
 import algostorm.ecs.EntitySystem
 import algostorm.event.Publisher
@@ -28,7 +26,8 @@ import algostorm.event.Subscriber
  *
  * Upon receiving a [RunScript] event, the [ScriptingEngine.runScript] method
  * will be called. The [Context] is made available to executed scripts as a
- * variable named "context".
+ * variable named [CONTEXT] by calling the [ScriptingEngine.put] method before
+ * the execution of the script.
  *
  * @property scriptingEngine the engine that will execute the script requests
  * @property entityManager the entity manager which will be provided in the
@@ -47,34 +46,39 @@ class ScriptingSystem(
     companion object {
         /**
          * The property used by this system. It should be an object of type
-         * [AssetCollection].
+         * [ScriptSet].
          */
         const val SCRIPT_SET: String = "scriptSet"
+
+        /**
+         * The name of the [Context] variable available to executed scripts.
+         */
+        const val CONTEXT: String = "context"
     }
 
     /**
-     * The context of every script executed through a [RunScript] request. This
-     * will be made available as a variable named "context" to the executed
-     * scripts.
+     * The context of every script executed through a [RunScript] request.
      *
      * @property entityManager a read-only view of the entity manager which
      * handles the game entities
-     * @property properties a read-only view of the properties of the game
      * @property publisher a publisher which provides posting functionality to
      * the game event bus
      */
     data class Context(
             val entityManager: EntityManager,
-            val properties: Map<String, Any?>,
             val publisher: Publisher
     )
 
-    private val scriptSet: AssetCollection<Script> by properties
-    private val context = Context(entityManager, properties, publisher)
+    private val scriptSet: ScriptSet
+        get() = (properties[SCRIPT_SET] as? ScriptSet)
+                ?: error("Missing $SCRIPT_SET property!")
+
+    private val context = Context(entityManager, publisher)
     private val scriptHandler = Subscriber(RunScript::class) { event ->
-        val script = scriptSet[event.scriptId] ?: error("Missing script id!")
+        val scriptUri = scriptSet[event.scriptId] ?: error("Missing script id!")
         val args = event.args.toTypedArray()
-        scriptingEngine.runScript(script, context, *args)
+        scriptingEngine.put(CONTEXT, context)
+        scriptingEngine.runScript(scriptUri, context, *args)
     }
 
     /**

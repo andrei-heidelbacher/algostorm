@@ -27,10 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
-import algostorm.assets.AssetCollection
-import algostorm.assets.Script
-import algostorm.assets.Sound
-import algostorm.assets.TileSet
 import algostorm.ecs.Component
 import algostorm.event.Event
 
@@ -125,34 +121,10 @@ object Serializer {
             JsonParseException::class,
             JsonMappingException::class
     )
-    @JvmStatic fun readTileSets(
+    @JvmStatic fun readProperties(
             src: InputStream
-    ): List<TileSet> = objectMapper.readValue(
+    ): Map<String, Any?> = objectMapper.readValue(
             src,
-            object : TypeReference<List<TileSet>>() {}
-    )
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readSoundCollection(
-            src: InputStream
-    ): AssetCollection<Sound> = objectMapper.readValue(
-            src,
-            object : TypeReference<AssetCollection<Sound>>() {}
-    )
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readScriptCollection(
-            src: InputStream
-    ): AssetCollection<Sound> = objectMapper.readValue(
-            src,
-            object : TypeReference<AssetCollection<Script>>() {}
+            object : TypeReference<Map<String, Any?>>() {}
     )
 }

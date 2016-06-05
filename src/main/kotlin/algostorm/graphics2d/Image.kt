@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.graphics2d
 
 /**
  * An image object.
@@ -24,10 +24,11 @@ package algostorm.assets
  * @property height the height of this image in pixels
  * @throws IllegalArgumentException if the width or height are negative
  */
-data class Image(val source: String, val width: Int, val height: Int) : Asset {
+data class Image(val source: String, val width: Int, val height: Int) {
     /**
      * A viewport projected over an image.
      *
+     * @property source the location of the associated image
      * @property x the lower-left corner x-coordinate of this viewport
      * @property y the lower-left corner y-coordinate of this viewport
      * @property width the width of this viewport in pixels
@@ -35,6 +36,7 @@ data class Image(val source: String, val width: Int, val height: Int) : Asset {
      * @throws IllegalArgumentException if the width or height are negative
      */
     data class Viewport(
+            val source: String,
             val x: Int,
             val y: Int,
             val width: Int,

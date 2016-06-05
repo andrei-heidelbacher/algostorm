@@ -29,11 +29,12 @@ interface MutableEntityManager : EntityManager {
 
     override operator fun get(entityId: Int): MutableEntity?
 
-    override fun <T : Component> getEntitiesWithComponentType(
+    override fun <T : Component> filterEntities(
             type: KClass<T>
-    ): Sequence<MutableEntity>
+    ): Sequence<MutableEntity> =
+            entities.filter { type in it }
 
-    override fun getEntitiesWithComponentTypes(
+    override fun filterEntities(
             vararg types: KClass<out Component>
     ): Sequence<MutableEntity> =
             entities.filter { entity -> types.all { type -> type in entity } }

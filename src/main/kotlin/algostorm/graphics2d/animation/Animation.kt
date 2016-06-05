@@ -17,77 +17,35 @@
 package algostorm.graphics2d.animation
 
 import algostorm.ecs.Component
-import algostorm.graphics2d.Sprite
+import algostorm.ecs.Entity
 
 /**
- * A component which contains all information required to animate an entity.
+ * A component which contains the animation information of an entity.
  *
- * @property animationSheet a map with all the animations associated with the
- * entity
- * @property frames the current animation applied to the entity
- * @property elapsedTicks how many ticks have elapsed from the current animation
- * @throws IllegalArgumentException if [frames] is empty or if [elapsedTicks] is
- * negative
+ * This component should not be directly created or removed. Instead, use the
+ * [Animate] event.
+ *
+ * @property sheetId the id of the animation sheet used for this entity
+ * @property name the name of the animation
+ * @property remainingTicks the number of ticks after which the animation is
+ * finished
+ * @throws IllegalArgumentException if [remainingTicks] is negative
  */
-data class Animation private constructor(
-        val animationSheet: AnimationSheet,
-        val frames: List<Frame>,
-        val elapsedTicks: Int
+data class Animation(
+        val sheetId: Int,
+        val name: String,
+        val remainingTicks: Int
 ) : Component {
     companion object {
-        const val IDLE = "idle"
+        /**
+         * The [Animation] component of this entity, or `null` if it doesn't
+         * have an animation.
+         */
+        val Entity.animation: Animation?
+            get() = get()
     }
 
     init {
-        require(frames.isNotEmpty()) { "Frame sequence can't be empty!" }
-        require(elapsedTicks >= 0) { "Elapsed ticks can't be negative!" }
-    }
-
-    /**
-     * Builds an animation which has the given [animationSheet], the `idle`
-     * animation and `0` [elapsedTicks].
-     *
-     * @param animationSheet the animation sheet used for animating the owner
-     * entity
-     */
-    constructor(animationSheet: AnimationSheet) : this(
-            animationSheet = animationSheet,
-            frames = animationSheet.idle,
-            elapsedTicks = 0
-    )
-
-    /**
-     * Returns the sprite that should be rendered at the time of calling.
-     *
-     * @return the sprite that should be rendered
-     */
-    internal fun getSprite(): Sprite {
-        var remainingTicks = elapsedTicks
-        for ((sprite, durationInTicks) in frames) {
-            if (durationInTicks <= remainingTicks) {
-                remainingTicks -= durationInTicks
-            } else {
-                return sprite
-            }
-        }
-        return frames.last().sprite
-    }
-
-    /**
-     * Returns a copy of the animation information after a tick has passed.
-     *
-     * If the current animation finishes, it continues with the idle animation
-     * in the [animationSheet].
-     *
-     * @return the animation information after a tick
-     */
-    internal fun tick(): Animation {
-        val durationInTicks = frames.sumBy { it.durationInTicks }
-        val newElapsedTicks = (elapsedTicks + 1 - durationInTicks) %
-                animationSheet.idle.sumBy { it.durationInTicks }
-        return if (elapsedTicks + 1 < durationInTicks)
-            copy(elapsedTicks = elapsedTicks + 1)
-        else
-            copy(frames = animationSheet.idle, elapsedTicks = newElapsedTicks)
+        require(remainingTicks >= 0) { "Remaining ticks can't be negative!" }
     }
 }

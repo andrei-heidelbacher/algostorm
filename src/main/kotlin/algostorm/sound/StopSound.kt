@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.sound
+
+import algostorm.event.Event
 
 /**
- * An object representing a tile.
+ * An event which signals that the sound played on the given [frequency] should
+ * be stopped.
  *
- * @property image the originating image of this tile
- * @property viewport the area of the image on which this tile is placed
+ * @property frequency the frequency of the sound that should be stopped
  */
-data class Tile(val image: Image, val viewport: Image.Viewport) : Asset
+data class StopSound(val frequency: Int) : Event

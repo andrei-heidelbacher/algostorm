@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.sound
 
 /**
- * An object representing a sound.
+ * A container that maps sound ids to sound URIs. This object should be saved as
+ * a property of the game.
  *
- * @property source the location of this sound
+ * @property sounds the underlying map of this container
  */
-data class Sound(val source: String) : Asset
+data class SoundSet(private val sounds: Map<Int, String>) {
+    /**
+     * Returns the URI of the given [soundId].
+     *
+     * @param soundId the id of the requested sound
+     * @return the URI of the requested sound, or `null` if the given id doesn't
+     * exist in this container
+     */
+    operator fun get(soundId: Int): String? = sounds[soundId]
+}

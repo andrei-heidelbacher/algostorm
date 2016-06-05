@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package algostorm.graphics2d
+package algostorm.sound
 
 import algostorm.event.Event
 
 /**
- * An event which signals the fact that all existing entities should be rendered
- * to the screen.
+ * An event that requests a sound to be played on the given [frequency].
+ *
+ * @property soundId the id of the sound that should be played
+ * @property frequency the frequency on which the sound should be played
+ * @property loop whether the sound should be looped or not
  */
-object RenderAll : Event
+data class PlaySound(
+        val soundId: Int,
+        val frequency: Int,
+        val loop: Boolean = false
+) : Event

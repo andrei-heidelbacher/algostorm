@@ -38,7 +38,8 @@ data class Box(
 ) : Component {
     companion object {
         /**
-         * The [Box] component of this entity, or `null` if it doesn't have a box.
+         * The [Box] component of this entity, or `null` if it doesn't have a
+         * box.
          */
         val Entity.box: Box?
             get() = get()
@@ -70,13 +71,4 @@ data class Box(
             contains(other.x, other.y + other.height) ||
             contains(other.x + other.width, other.y) ||
             contains(other.x + other.width, other.y + other.height)
-
-    /**
-     * Returns a copy of this box translated with the indicated amount.
-     *
-     * @param dx the translation amount on the x-axis
-     * @param dy the translation amount on the y-axis
-     * @return the translated box
-     */
-    fun translate(dx: Int, dy: Int): Box = copy(x = x + dx, y = y + dy)
 }

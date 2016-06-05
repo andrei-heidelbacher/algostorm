@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.audio
-
-import algostorm.assets.AssetCollection
-import algostorm.assets.Sound
+package algostorm.sound
 
 /**
  * An object which handles playing sounds.
@@ -30,38 +27,17 @@ import algostorm.assets.Sound
  * Methods on this object will be called from the private engine thread. All
  * method calls should be non-blocking and thread-safe.
  */
-interface AudioEngine {
+interface SoundEngine {
     /**
-     * The sounds used in the game.
-     */
-    val sounds: AssetCollection<Sound>
-
-    /**
-     * Plays the given [sound]. If another sound is already playing on the given
-     * [frequency], that sound should be stopped first.
+     * Plays the sound located at the given [soundUri]. If another sound is
+     * already playing on the given [frequency], that sound should be stopped
+     * first.
      *
-     * @param sound the sound which should be played
+     * @param soundUri the location of the sound which should be played
      * @param frequency the frequency on which the sound should be played
      * @param loop whether the sound should be looped or not
      */
-    fun playSound(sound: Sound, frequency: Int, loop: Boolean = false): Unit
-
-    /**
-     * Fetches the sound with the given [soundId] and calls [playSound] with the
-     * found [Sound].
-     *
-     * @param soundId the id of the sound which should be played
-     * @param frequency the frequency on which the sound should be played
-     * @param loop whether the sound should be looped or not
-     * @throws IllegalArgumentException if the given [soundId] doesn't exist in
-     * the [sounds] collection
-     */
-    fun playSound(soundId: Int, frequency: Int, loop: Boolean = false) {
-        val sound = requireNotNull(sounds[soundId]) {
-            "Sound id doesn't exist!"
-        }
-        playSound(sound, frequency, loop)
-    }
+    fun playSound(soundUri: String, frequency: Int, loop: Boolean = false): Unit
 
     /**
      * Stops the sound playing on the given [frequency].

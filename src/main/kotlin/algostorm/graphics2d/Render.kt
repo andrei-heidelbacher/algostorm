@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package algostorm.audio
+package algostorm.graphics2d
 
 import algostorm.event.Event
 
 /**
- * An event which signals that the sound played on the given [frequency] should
- * be stopped.
- *
- * @property frequency the frequency of the sound that should be stopped
+ * An event which signals the fact that all existing entities should be rendered
+ * to the screen.
  */
-data class StopSound(val frequency: Int) : Event
+object Render : Event

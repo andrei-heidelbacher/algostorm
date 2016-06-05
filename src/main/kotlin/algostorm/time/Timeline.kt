@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package algostorm.assets
+package algostorm.time
 
 /**
- * An object representing a script.
+ * A container for all the timers in the game. This object should be saved as a
+ * property of the game.
  *
- * @property source the location of this script
+ * @property timers a list which contains all the active timers in the game
  */
-data class Script(val source: String) : Asset
+data class Timeline(val timers: List<Timer>)
