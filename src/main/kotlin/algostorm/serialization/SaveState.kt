@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package algostorm.physics2d
+package algostorm.serialization
 
 import algostorm.ecs.Component
-import algostorm.ecs.Entity
 
 /**
- * A component which indicates that the owner entity should have it's box
- * translated by the indicated, once every `Tick`.
+ * The data contained in a game, which is serialized when the game is saved.
  *
- * @property x the velocity on the x-axis
- * @property y the velocity of the y-axis
+ * @property entities the entities present in the game
+ * @property properties the properties of the game
  */
-data class Velocity(val x: Int, val y: Int) : Component {
-    companion object {
-        /**
-         * The [Velocity] component of this entity.
-         */
-        val Entity.velocity: Velocity
-            get() = get() ?: Velocity(0, 0)
-    }
-}
+data class SaveState(
+        val entities: Map<Int, List<Component>>,
+        val properties: Map<String, Any>
+)

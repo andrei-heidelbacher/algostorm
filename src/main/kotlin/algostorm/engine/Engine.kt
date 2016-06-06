@@ -21,7 +21,10 @@ import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
 import algostorm.event.Publisher
+import algostorm.serialization.SaveState
+import algostorm.serialization.Serializer
 
+import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -74,7 +77,7 @@ abstract class Engine protected constructor(
      */
     data class State(
             val entityManager: MutableEntityManager,
-            val properties: MutableMap<String, Any?>,
+            val properties: MutableMap<String, Any>,
             val eventBus: EventBus,
             val systems: List<EntitySystem>
     )
@@ -117,7 +120,7 @@ abstract class Engine protected constructor(
      */
     protected abstract fun handleTick(
             entityManager: MutableEntityManager,
-            properties: MutableMap<String, Any?>,
+            properties: MutableMap<String, Any>,
             publisher: Publisher
     ): Unit
 
@@ -191,13 +194,15 @@ abstract class Engine protected constructor(
     }
 
     /**
-     * Blocks until all events have been handled and the event bus becomes empty
-     * and deletes all entities from the entity manager.
+     * Blocks until all events have been handled and the event bus becomes
+     * empty, deletes all entities from the entity manager and removes all
+     * properties.
      */
     fun clearState() {
         synchronized(stateLock) {
             state.eventBus.publishAll()
             state.entityManager.clear()
+            state.properties.clear()
         }
     }
 
@@ -224,24 +229,18 @@ abstract class Engine protected constructor(
     }
 
     /**
-     * Retrieves the current game state.
+     * Retrieves the current [SaveState] and serializes it to the given stream
+     * using the [Serializer.writeValue] method.
      *
-     * @return a frozen (unchanging in time) read-only view of all entities in
-     * the game at the time of calling
+     * @param outputStream the stream to which the state is written
      */
-    fun saveState(): Map<Int, List<Component>> =
-            synchronized(stateLock) { state.entityManager.snapshot() }
-
-    /**
-     * [Clears][clearState] this engine and loads the given game state.
-     *
-     * @param entities a list of [Component] lists, leaving the engine to assign
-     * ids to the entities.
-     */
-    fun loadState(entities: Iterable<Iterable<Component>>) {
+    fun saveState(outputStream: OutputStream) {
         synchronized(stateLock) {
-            clearState()
-            entities.forEach { state.entityManager.create(it.toList()) }
+            val entities = state.entityManager.entities.associate {
+                it.id to it.components
+            }
+            val properties = state.properties
+            Serializer.writeValue(outputStream, SaveState(entities, properties))
         }
     }
 
@@ -249,11 +248,16 @@ abstract class Engine protected constructor(
      * [Clears][clearState] this engine and loads the given game state.
      *
      * @param entities a mapping from entity ids to [Component] lists.
+     * @param properties the properties of the game
      */
-    fun loadState(entities: Map<Int, Iterable<Component>>) {
+    fun loadState(
+            entities: Map<Int, Iterable<Component>>,
+            properties: Map<String, Any>
+    ) {
         synchronized(stateLock) {
             clearState()
             entities.forEach { state.entityManager.create(it.key, it.value) }
+            state.properties.putAll(properties)
         }
     }
 }

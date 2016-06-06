@@ -40,7 +40,7 @@ import algostorm.event.Subscriber
 class ScriptingSystem(
         private val scriptingEngine: ScriptingEngine,
         private val entityManager: EntityManager,
-        private val properties: Map<String, Any?>,
+        private val properties: Map<String, Any>,
         private val publisher: Publisher
 ) : EntitySystem {
     companion object {

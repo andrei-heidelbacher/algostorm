@@ -31,7 +31,7 @@ import algostorm.event.Subscriber
  */
 class SoundSystem(
         private val soundEngine: SoundEngine,
-        private val properties: Map<String, Any?>
+        private val properties: Map<String, Any>
 ) : EntitySystem {
     companion object {
         /**

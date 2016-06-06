@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import algostorm.ecs.Component
-import algostorm.event.Event
 
 import java.io.IOException
 import java.io.InputStream
@@ -38,6 +37,8 @@ import kotlin.reflect.KClass
 
 /**
  * Serialization and deserialization utility methods.
+ *
+ * Only non-generic concrete types can be deserialized.
  */
 object Serializer {
     /**
@@ -69,6 +70,28 @@ object Serializer {
             JsonParseException::class,
             JsonMappingException::class
     )
+    @JvmStatic fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
+            objectMapper.readValue(src, type.java)
+
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
+            readValue(src, T::class)
+
+    /**
+     * Special utility function which can deserialize a list of components.
+     *
+     * @param src the input stream from which the components are read
+     * @return the list of components
+     */
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
     @JvmStatic fun readComponents(
             src: InputStream
     ): List<Component> = objectMapper.readValue(
@@ -81,50 +104,6 @@ object Serializer {
             JsonParseException::class,
             JsonMappingException::class
     )
-    @JvmStatic fun readEntitiesWithIds(
-            src: InputStream
-    ): Map<Int, List<Component>> = objectMapper.readValue(
-            src,
-            object : TypeReference<Map<Int, List<Component>>>() {}
-    )
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readEntities(
-            src: InputStream
-    ): List<List<Component>> = objectMapper.readValue(
-            src,
-            object : TypeReference<List<List<Component>>>() {}
-    )
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun <T : Event> readEvent(src: InputStream, type: KClass<T>): T =
-            objectMapper.readValue(src, type.java)
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic inline fun <reified T : Event> readEvent(src: InputStream): T =
-            readEvent(src, T::class)
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readProperties(
-            src: InputStream
-    ): Map<String, Any?> = objectMapper.readValue(
-            src,
-            object : TypeReference<Map<String, Any?>>() {}
-    )
+    @JvmStatic fun readSaveState(src: InputStream): SaveState =
+            objectMapper.readValue(src, SaveState::class.java)
 }

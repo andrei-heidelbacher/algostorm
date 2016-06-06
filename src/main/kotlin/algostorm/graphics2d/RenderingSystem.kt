@@ -34,7 +34,7 @@ import algostorm.event.Subscriber
 class RenderingSystem(
         private val renderingEngine: RenderingEngine,
         private val entityManager: EntityManager,
-        private val properties: Map<String, Any?>
+        private val properties: Map<String, Any>
 ) : EntitySystem {
     companion object {
         /**

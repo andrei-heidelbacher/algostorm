@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package algostorm.input
+package algostorm.physics2d
+
+import algostorm.event.Event
 
 /**
- * Base type for all possible user inputs.
+ * An event which signals that the given entity has translated by the given
+ * amount.
  *
- * Every user input should be an immutable data class.
+ * Only the [PhysicsSystem] should post this event.
+ *
+ * @property entityId the id of the translated entity
+ * @property dx the amount the entity translated on the x-axis
+ * @property dy the amount the entity translated on the y-axis
  */
-interface Input
+data class Translated internal constructor(
+        val entityId: Int,
+        val dx: Int,
+        val dy: Int
+) : Event

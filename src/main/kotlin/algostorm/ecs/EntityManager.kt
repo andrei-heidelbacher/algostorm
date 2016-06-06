@@ -68,13 +68,4 @@ interface EntityManager {
      * otherwise
      */
     operator fun contains(entityId: Int): Boolean = get(entityId) != null
-
-    /**
-     * Returns an immutable and frozen (unchanging over time) view of all
-     * entities currently present in this manager.
-     *
-     * @return the frozen state of the entity manager
-     */
-    fun snapshot(): Map<Int, List<Component>> =
-            entities.associate { it.id to it.components }
 }

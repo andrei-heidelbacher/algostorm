@@ -33,17 +33,13 @@ import algostorm.ecs.Entity
  * @property flippedVertically whether the sprite should be flipped vertically
  * @property flippedDiagonally whether the sprite should be flipped diagonally
  * @property z the z-coordinate of the owner entity
- * @property xOffset the x-axis rendering offset
- * @property yOffset the y-axis rendering offset
  */
 data class Sprite(
         val tileId: Int,
         val flippedHorizontally: Boolean,
         val flippedVertically: Boolean,
         val flippedDiagonally: Boolean,
-        val z: Int,
-        val xOffset: Int,
-        val yOffset: Int
+        val z: Int
 ) : Component {
     companion object {
         /**

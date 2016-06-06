@@ -23,7 +23,6 @@ import algostorm.graphics2d.Sprite
 import algostorm.graphics2d.animation.Animation
 import algostorm.physics2d.Box
 import algostorm.physics2d.Rigid
-import algostorm.physics2d.Velocity
 
 import kotlin.reflect.KClass
 
@@ -38,13 +37,12 @@ class EntityDatabase : MutableEntityManager {
             components: Iterable<Component>
     ) : MutableEntity(id) {
         private companion object {
-            private var componentIndex = 5
+            private var componentIndex = 4
             private val componentMapper = hashMapOf(
                     Sprite::class to 0,
                     Box::class to 1,
                     Rigid::class to 2,
-                    Animation::class to 3,
-                    Velocity::class to 4
+                    Animation::class to 3
             )
 
             fun getIndex(type: KClass<out Component>): Int =

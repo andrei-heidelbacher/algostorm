@@ -20,11 +20,13 @@ package algostorm.input
  * Thread-safe input source which allows setting and retrieving actor inputs.
  *
  * This is a mutable and serializable object, however, it may be used in other
- * components, as the internal state of the source is transient.
+ * components, as the internal state of the source is transient. This class may
+ * not be serialized alone, but it may be serialized as a member of another
+ * class as long as the wrapper class is not generic.
  *
  * @param T the user input type
  */
-class InputSource<T : Input> {
+class InputSocket<T> {
     @Transient private val lock = Any()
 
     /**

@@ -44,7 +44,7 @@ import algostorm.time.Tick
  */
 class AnimationSystem(
         private val entityManager: MutableEntityManager,
-        private val properties: Map<String, Any?>
+        private val properties: Map<String, Any>
 ) : EntitySystem {
     companion object {
         /**

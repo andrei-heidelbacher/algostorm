@@ -33,7 +33,7 @@ import algostorm.event.Subscriber
  */
 class TimeSystem(
         private val entityManager: MutableEntityManager,
-        private val properties: MutableMap<String, Any?>,
+        private val properties: MutableMap<String, Any>,
         private val publisher: Publisher
 ) : EntitySystem {
     companion object {
