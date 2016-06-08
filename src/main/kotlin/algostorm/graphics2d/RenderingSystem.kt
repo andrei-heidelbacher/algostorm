@@ -30,6 +30,7 @@ import algostorm.event.Subscriber
  * the screen
  * @property entityManager an entity manager which can be queried to fetch
  * renderable entities
+ * @property properties the properties of the game
  */
 class RenderingSystem(
         private val renderingEngine: RenderingEngine,
@@ -38,17 +39,40 @@ class RenderingSystem(
 ) : EntitySystem {
     companion object {
         /**
-         * The name of property used by this system.
+         * The name of a property used by this system. It should be an object of
+         * type [TileCollection].
          */
         const val TILE_COLLECTION: String = "tileCollection"
+
+        /**
+         * The name of a property used by this system. It should be an [Int] and
+         * should be expressed in pixels.
+         */
+        const val TILE_WIDTH: String = "tileWidth"
+
+        /**
+         * The name of a property used by this system. It should be an [Int] and
+         * should be expressed in pixels.
+         */
+        const val TILE_HEIGHT: String = "tileHeight"
     }
 
     private val tileCollection: TileCollection
-        get() = (properties[TILE_COLLECTION] as? TileCollection)
-                ?: error("Missing $TILE_COLLECTION property!")
+        get() = properties[TILE_COLLECTION] as TileCollection
+
+    private val tileWidth: Int
+        get() = properties[TILE_WIDTH] as Int
+
+    private val tileHeight: Int
+        get() = properties[TILE_HEIGHT] as Int
 
     private val renderHandler = Subscriber(Render::class) { event ->
-        renderingEngine.render(tileCollection, entityManager.entities)
+        renderingEngine.render(
+                tileCollection = tileCollection,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                entities = entityManager.entities
+        )
     }
 
     /**

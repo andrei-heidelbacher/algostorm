@@ -42,8 +42,7 @@ class SoundSystem(
     }
 
     private val soundSet: SoundSet
-        get() = (properties[SOUND_SET] as? SoundSet)
-                ?: error("Missing $SOUND_SET property!")
+        get() = properties[SOUND_SET] as SoundSet
 
     private val playHandler = Subscriber(PlaySound::class) { event ->
         val soundUri = soundSet[event.soundId] ?: error("Missing sound id!")

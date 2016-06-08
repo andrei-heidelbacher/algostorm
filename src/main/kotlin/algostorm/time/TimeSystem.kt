@@ -45,8 +45,7 @@ class TimeSystem(
     }
 
     private var timeline: Timeline
-        get() = (properties[TIMELINE] as? Timeline)
-                ?: error("Missing $TIMELINE property!")
+        get() = properties[TIMELINE] as Timeline
         set(value: Timeline) {
             properties[TIMELINE] = value
         }

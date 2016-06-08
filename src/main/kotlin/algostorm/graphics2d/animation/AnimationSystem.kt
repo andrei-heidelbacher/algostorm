@@ -48,14 +48,14 @@ class AnimationSystem(
 ) : EntitySystem {
     companion object {
         /**
-         * The name of the property used by this system.
+         * The name of the property used by this system. It should be an object
+         * of type [AnimationSet].
          */
         const val ANIMATION_SET: String = "animationSet"
     }
 
     private val animationSet: AnimationSet
-        get() = (properties[ANIMATION_SET] as? AnimationSet)
-                ?: error("Missing $ANIMATION_SET property!")
+        get() = properties[ANIMATION_SET] as AnimationSet
 
     private fun getSheet(sheetId: Int): AnimationSheet =
             animationSet[sheetId] ?: error("Missing sheet id!")

@@ -32,8 +32,7 @@ import algostorm.event.Subscriber
  * @property scriptingEngine the engine that will execute the script requests
  * @property entityManager the entity manager which will be provided in the
  * context of every executed script
- * @property properties the properties of the game which will be provided in the
- * context of every executed script
+ * @property properties the properties of the game
  * @property publisher the publisher which will be provided in the context of
  * every executed script
  */
@@ -70,8 +69,7 @@ class ScriptingSystem(
     )
 
     private val scriptSet: ScriptSet
-        get() = (properties[SCRIPT_SET] as? ScriptSet)
-                ?: error("Missing $SCRIPT_SET property!")
+        get() = properties[SCRIPT_SET] as ScriptSet
 
     private val context = Context(entityManager, publisher)
     private val scriptHandler = Subscriber(RunScript::class) { event ->

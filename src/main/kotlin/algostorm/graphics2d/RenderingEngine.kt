@@ -21,16 +21,22 @@ import algostorm.ecs.Entity
 /**
  * An object that handles rendering to the screen.
  *
- * Methods on this object will be called from the private engine thread. All
- * method calls should be thread-safe.
+ * Methods on this object will be called from the private engine thread.
  */
 interface RenderingEngine {
     /**
      * Draws the screen using the data from the received [entities]. This should
      * be a blocking call.
      *
-     * @param tileCollection the [TileCollection] used for rendering
+     * @param tileCollection the tile collection used for rendering
+     * @param tileWidth the width of a single tile in pixels
+     * @param tileHeight the height of a single tile in pixels
      * @param entities the lazy view of the current game state
      */
-    fun render(tileCollection: TileCollection, entities: Sequence<Entity>): Unit
+    fun render(
+            tileCollection: TileCollection,
+            tileWidth: Int,
+            tileHeight: Int,
+            entities: Sequence<Entity>
+    ): Unit
 }
