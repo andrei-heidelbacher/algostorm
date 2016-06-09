@@ -31,7 +31,7 @@ import algostorm.event.Event
  */
 data class CreateEntity(
         val components: Iterable<Component>,
-        val onSpawned: List<EventBuilder>
+        val onSpawned: List<EventBuilder> = emptyList()
 ) : Event {
     /**
      * An object which encapsulates the data required to build an [Event] whose
@@ -53,11 +53,4 @@ data class CreateEntity(
          */
         fun build(entityId: Int): Event
     }
-
-    /**
-     * Requests the creation of an entity with the given `components`.
-     *
-     * @param components the components the created entity should contain
-     */
-    constructor(components: Iterable<Component>) : this(components, emptyList())
 }
