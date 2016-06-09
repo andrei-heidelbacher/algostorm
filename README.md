@@ -1,4 +1,8 @@
 ## Algostorm
+
+[![](https://jitpack.io/v/andrei-heidelbacher/algostorm.svg)](https://jitpack.io/#andrei-heidelbacher/algostorm)
+[![License](http://img.shields.io/:license-apache-blue.svg?style=flat-square)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 Algostorm is a 2d grid-based game engine for the JVM. It is designed for turn-based games, but can
 be adapted for real-time with a little effort.
 
@@ -25,5 +29,3 @@ The github repository can be found [here](https://github.com/andrei-heidelbacher
 
 ### Licensing
 The engine is released under the Apache V2.0 License.
-
-[![](https://jitpack.io/v/andrei-heidelbacher/algostorm.svg)](https://jitpack.io/#andrei-heidelbacher/algostorm)
