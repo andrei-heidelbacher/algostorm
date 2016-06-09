@@ -32,7 +32,12 @@ import kotlin.reflect.KClass
  * All entities are kept in-memory, in a map.
  */
 class EntityDatabase : MutableEntityManager {
-    private class EntityRecord(
+    /**
+     * A concrete implementation of a [MutableEntity].
+     *
+     * All components are kept in-memory, within an array.
+     */
+    class EntityRecord(
             id: Int,
             components: Iterable<Component>
     ) : MutableEntity(id) {
