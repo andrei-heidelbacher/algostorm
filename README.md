@@ -25,3 +25,5 @@ The github repository can be found [here](https://github.com/andrei-heidelbacher
 
 ### Licensing
 The engine is released under the Apache V2.0 License.
+
+[![](https://jitpack.io/v/andrei-heidelbacher/algostorm.svg)](https://jitpack.io/#andrei-heidelbacher/algostorm)

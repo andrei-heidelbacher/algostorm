@@ -17,7 +17,7 @@
 package algostorm.input
 
 /**
- * Thread-safe input source which allows setting and retrieving actor inputs.
+ * Thread-safe input socket which allows setting and retrieving actor inputs.
  *
  * This is a mutable and serializable object, however, it may be used in other
  * components, as the internal state of the source is transient. This class may
@@ -30,7 +30,7 @@ class InputSocket<T> {
     @Transient private val lock = Any()
 
     /**
-     * The last received input while the source is enabled, or `null` if no
+     * The last received input while the socket is enabled, or `null` if no
      * input has been received.
      *
      * After successfully retrieving a non-null input, it is reset to `null`.
@@ -52,10 +52,10 @@ class InputSocket<T> {
         }
 
     /**
-     * The enabled property of the source.
+     * The enabled property of the socket.
      *
-     * If the source is disabled, no input can be received. Upon enabling or
-     * disabling the source, the last [input] is flushed and set to `null`.
+     * If the socket is disabled, no input can be received. Upon enabling or
+     * disabling the socket, the last [input] is flushed and set to `null`.
      */
     @Transient var isEnabled: Boolean = false
         get() = synchronized(lock) { field }

@@ -60,18 +60,20 @@ class ScriptingSystem(
      *
      * @property entityManager a read-only view of the entity manager which
      * handles the game entities
+     * @property properties a read-only view of the game properties
      * @property publisher a publisher which provides posting functionality to
      * the game event bus
      */
     data class Context(
             val entityManager: EntityManager,
+            val properties: Map<String, Any>,
             val publisher: Publisher
     )
 
     private val scriptSet: ScriptSet
         get() = properties[SCRIPT_SET] as ScriptSet
 
-    private val context = Context(entityManager, publisher)
+    private val context = Context(entityManager, properties, publisher)
     private val scriptHandler = Subscriber(RunScript::class) { event ->
         val scriptUri = scriptSet[event.scriptId] ?: error("Missing script id!")
         val args = event.args.toTypedArray()
