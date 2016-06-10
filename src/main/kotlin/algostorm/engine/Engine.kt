@@ -200,7 +200,7 @@ abstract class Engine protected constructor(
      */
     fun clearState() {
         synchronized(stateLock) {
-            state.eventBus.publishAll()
+            state.eventBus.publishPosts()
             state.entityManager.clear()
             state.properties.clear()
         }

@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
  * An asynchronous implementation of an [EventBus].
  *
  * The [post] method adds the event to the event queue and it will be processed
- * only when [publishAll] is called.
+ * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
     private val subscribers =
@@ -55,7 +55,7 @@ class EventQueue : EventBus {
         eventQueue.add(event)
     }
 
-    override fun publishAll() {
+    override fun publishPosts() {
         do {
             val event = eventQueue.poll()
             if (event != null) {
