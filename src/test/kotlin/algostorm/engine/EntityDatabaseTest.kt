@@ -16,9 +16,7 @@
 
 package algostorm.engine
 
-import algostorm.ecs.MutableEntityManager
 import algostorm.ecs.MutableEntityManagerTest
 
-class EntityDatabaseTest : MutableEntityManagerTest() {
-    override val entityManager: MutableEntityManager = EntityDatabase()
+class EntityDatabaseTest : MutableEntityManagerTest(EntityDatabase()) {
 }

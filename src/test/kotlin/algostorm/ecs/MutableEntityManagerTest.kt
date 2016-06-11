@@ -16,18 +16,13 @@
 
 package algostorm.ecs
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 @Ignore
-abstract class MutableEntityManagerTest {
-    protected abstract val entityManager: MutableEntityManager
-
-    @Before
-    fun setUpEntities() {
-    }
-
+abstract class MutableEntityManagerTest(
+        protected val entityManager: MutableEntityManager
+) {
     @Test
     fun clearShouldLeaveEntitiesEmpty() {
     }

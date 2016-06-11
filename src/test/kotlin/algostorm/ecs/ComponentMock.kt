@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package algostorm.event
+package algostorm.ecs
 
-import org.junit.Ignore
-import org.junit.Test
-
-@Ignore
-abstract class EventBusTest(protected val eventBus: EventBus) {
-    @Test
-    fun publishPostsShouldNotifySubscribers() {
-    }
-}
+/**
+ * A component that should be used for testing purposes.
+ *
+ * @property componentId the unique identifier of the component. Two components
+ * are equal if and only if they have the same id.
+ */
+data class ComponentMock(val componentId: Int) : Component

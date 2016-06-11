@@ -16,28 +16,29 @@
 
 package algostorm.event
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import java.util.LinkedList
+import java.util.Queue
 
-class SubscriberTest {
-    @Test
-    fun notifyWhenInterestedShouldHandleEqualEvent() {
-        val postedEvent = EventMock(862)
-        var handledEvent: Event? = null
-        val subscriber = Subscriber(EventMock::class) { event ->
-            handledEvent = event
-        }
-        subscriber.notify(postedEvent)
-        assertEquals(postedEvent, handledEvent)
+class PublisherMock : Publisher {
+    private val queue: Queue<Event> = LinkedList()
+
+    override fun post(event: Event) {
+        queue.add(event)
     }
 
-    @Test
-    fun notifyWhenNotInterestedShouldNotHandle() {
-        var handled = false
-        val subscriber = Subscriber(EventMock::class) { event ->
-            handled = true
+    fun verify(event: Event) {
+        val actualEvent = queue.poll()
+        val expectedEvent = event
+        check(actualEvent == expectedEvent) {
+            "The given event was not posted!\n" +
+                    "Expected: $expectedEvent\n" +
+                    "Actual: $actualEvent"
         }
-        subscriber.notify(object : Event {})
-        assertEquals(false, handled)
+    }
+
+    fun verifyEmpty() {
+        check(queue.isEmpty()) {
+            "There were more events posted!\nFound: ${queue.toList()}"
+        }
     }
 }

@@ -16,12 +16,10 @@
 
 package algostorm.event
 
-import org.junit.Ignore
-import org.junit.Test
-
-@Ignore
-abstract class EventBusTest(protected val eventBus: EventBus) {
-    @Test
-    fun publishPostsShouldNotifySubscribers() {
-    }
-}
+/**
+ * An event that should be used for testing purposes.
+ *
+ * @property eventId the unique identifier of the event. Two events are equal if
+ * and only if they have the same id.
+ */
+data class EventMock(val eventId: Int) : Event

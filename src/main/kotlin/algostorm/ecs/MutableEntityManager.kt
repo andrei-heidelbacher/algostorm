@@ -59,6 +59,7 @@ interface MutableEntityManager : EntityManager {
      * @param entityId the id the created entity must have
      * @param components the components the created entity must contain
      * @return the created entity
+     * @throws IllegalArgumentException if the [entityId] already exists
      * @throws IllegalStateException if there are too many entities in this
      * manager
      */
