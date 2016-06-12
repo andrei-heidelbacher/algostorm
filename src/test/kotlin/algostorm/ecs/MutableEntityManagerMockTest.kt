@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package algostorm.engine
+package algostorm.ecs
 
-import algostorm.ecs.MutableEntityManagerTest
-
-class EntityDatabaseTest : MutableEntityManagerTest(
-        entityManager = EntityDatabase(),
+class MutableEntityManagerMockTest : MutableEntityManagerTest(
+        entityManager = MutableEntityManagerMock(),
         entityCount = 1000
 )
+

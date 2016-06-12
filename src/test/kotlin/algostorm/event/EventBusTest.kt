@@ -16,12 +16,30 @@
 
 package algostorm.event
 
+import org.junit.Assert.assertEquals
 import org.junit.Ignore
 import org.junit.Test
 
+/**
+ * An abstract test class for an [EventBus].
+ *
+ * In order to test common functionality to all event buses, you may implement
+ * this class and provide a concrete event bus instance to test.
+ *
+ * @property eventBus the event bus instance that should be tested
+ */
 @Ignore
 abstract class EventBusTest(protected val eventBus: EventBus) {
     @Test
     fun publishPostsShouldNotifySubscribers() {
+        var handledEvent: EventMock? = null
+        val subscriber = Subscriber(EventMock::class) { handledEvent = it }
+        val subscription = eventBus.subscribe(subscriber)
+        eventBus.post(EventMock(0))
+        eventBus.post(object : Event {})
+        eventBus.publishPosts()
+        subscription.unsubscribe()
+        eventBus.post(EventMock(1))
+        assertEquals(EventMock(0), handledEvent)
     }
 }

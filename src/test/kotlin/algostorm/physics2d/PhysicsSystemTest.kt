@@ -23,26 +23,48 @@ import algostorm.event.PublisherMock
 
 class PhysicsSystemTest {
     @Test
-    fun translateIntentTest() {
+    fun translateOverlappingShouldTriggerCollision() {
         val entityManager = MutableEntityManagerMock(mapOf(
-                0 to listOf(),
-                1 to listOf(),
-                2 to listOf()
+                0 to listOf(Box(0, 0, 32, 32), Rigid),
+                1 to listOf(Box(32, 32, 32, 32), Rigid),
+                2 to listOf(Box(32, 0, 32, 32))
         ))
         val publisher = PublisherMock()
         val physicsSystem = PhysicsSystem(entityManager, publisher)
-        val entityId = 1
         val dx = 32
         val dy = 32
         physicsSystem.handlers.forEach {
-            it.notify(TranslateIntent(entityId, dx, dy))
+            it.notify(TranslateIntent(0, dx, dy))
         }
-        publisher.verify(Translated(entityId, dx, dy))
+        publisher.verify(Collision(0, 1))
         publisher.verifyEmpty()
         entityManager.verify(mapOf(
-                0 to listOf(),
-                1 to listOf(),
-                2 to listOf()
+                0 to listOf(Box(0, 0, 32, 32), Rigid),
+                1 to listOf(Box(32, 32, 32, 32), Rigid),
+                2 to listOf(Box(32, 0, 32, 32))
+        ))
+    }
+
+    @Test
+    fun translateNoOverlappingShouldTriggerTranslated() {
+        val entityManager = MutableEntityManagerMock(mapOf(
+                0 to listOf(Box(0, 0, 32, 32), Rigid),
+                1 to listOf(Box(32, 32, 32, 32)),
+                2 to listOf(Box(32, 0, 32, 32))
+        ))
+        val publisher = PublisherMock()
+        val physicsSystem = PhysicsSystem(entityManager, publisher)
+        val dx = 32
+        val dy = 32
+        physicsSystem.handlers.forEach {
+            it.notify(TranslateIntent(0, dx, dy))
+        }
+        publisher.verify(Translated(0, dx, dy))
+        publisher.verifyEmpty()
+        entityManager.verify(mapOf(
+                0 to listOf(Box(32, 32, 32, 32), Rigid),
+                1 to listOf(Box(32, 32, 32, 32)),
+                2 to listOf(Box(32, 0, 32, 32))
         ))
     }
 }

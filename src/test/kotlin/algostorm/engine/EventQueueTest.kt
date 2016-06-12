@@ -16,9 +16,6 @@
 
 package algostorm.engine
 
-import algostorm.ecs.MutableEntityManagerTest
+import algostorm.event.EventBusTest
 
-class EntityDatabaseTest : MutableEntityManagerTest(
-        entityManager = EntityDatabase(),
-        entityCount = 1000
-)
+class EventQueueTest : EventBusTest(eventBus = EventQueue())

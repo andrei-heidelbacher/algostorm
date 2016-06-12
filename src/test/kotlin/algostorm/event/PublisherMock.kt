@@ -19,6 +19,11 @@ package algostorm.event
 import java.util.LinkedList
 import java.util.Queue
 
+/**
+ * A publisher that should be used for testing purposes.
+ *
+ * Every posted event is added to the back of an event queue.
+ */
 class PublisherMock : Publisher {
     private val queue: Queue<Event> = LinkedList()
 
@@ -26,6 +31,14 @@ class PublisherMock : Publisher {
         queue.add(event)
     }
 
+    /**
+     * Pops the event in the front of the queue and checks if it is equal to the
+     * given [event].
+     *
+     * @param event the expected event in the front of the queue
+     * @throws IllegalStateException if the given event doesn't correspond to
+     * the front of the queue
+     */
     fun verify(event: Event) {
         val actualEvent = queue.poll()
         val expectedEvent = event
@@ -36,6 +49,11 @@ class PublisherMock : Publisher {
         }
     }
 
+    /**
+     * Checks if the event queue is empty.
+     *
+     * @throws IllegalStateException if the event queue is not empty
+     */
     fun verifyEmpty() {
         check(queue.isEmpty()) {
             "There were more events posted!\nFound: ${queue.toList()}"

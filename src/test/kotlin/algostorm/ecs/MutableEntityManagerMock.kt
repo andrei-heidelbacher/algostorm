@@ -16,6 +16,10 @@
 
 package algostorm.ecs
 
+/**
+ * A concrete implementation of a mutable entity manager that should be used for
+ * testing purposes.
+ */
 class MutableEntityManagerMock() : MutableEntityManager {
     private val entityMap = hashMapOf<Int, MutableEntityMock>()
     private var nextId = 0
@@ -43,7 +47,8 @@ class MutableEntityManagerMock() : MutableEntityManager {
     ): MutableEntityMock {
         require(entityId !in entityMap)
         val entity = MutableEntityMock(entityId)
-        components.forEach { entity.set(it) }
+        components.forEach { entity[it.javaClass.kotlin] = it }
+        entityMap[entityId] = entity
         return entity
     }
 
@@ -52,6 +57,13 @@ class MutableEntityManagerMock() : MutableEntityManager {
 
     override fun get(entityId: Int): MutableEntityMock? = entityMap[entityId]
 
+    /**
+     * Checks that the manager entities are equal to the given [entities].
+     *
+     * @param entities the expected state of the manager
+     * @throws IllegalStateException if the given entities do not correspond to
+     * the manager entities
+     */
     fun verify(entities: Map<Int, Iterable<Component>>) {
         val actualEntities = entityMap.mapValues { it.value.components.toSet() }
         val expectedEntities = entities.mapValues { it.value.toSet() }

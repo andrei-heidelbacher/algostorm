@@ -11,8 +11,7 @@ be adapted for real-time with a little effort.
 * an entity-component-system framework
 * event-based inter-system communication
 * engine that runs on its own private thread
-* default physics, entity lifecycle management, in-game timers
-* graphics and animation utilities
+* default physics, in-game timers, graphics and animation utilities
 * asset management (tile sets, sounds, scripts)
 * thread-safe input bridge between raw user input and game-specific commands
 * JSON serialization utilities

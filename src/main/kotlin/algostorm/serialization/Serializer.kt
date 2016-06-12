@@ -46,7 +46,7 @@ object Serializer {
      */
     const val FORMAT: String = "json"
 
-    private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+    private val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)

@@ -43,9 +43,9 @@ class MutableEntityMock(id: Int) : MutableEntity(id) {
     }
 
     /**
-     * Checks if this entity's components are equal to the given [components].
+     * Checks if the entity components are equal to the given [components].
      *
-     * @param components the components this entity should have
+     * @param components the expected components of this entity
      * @throws IllegalStateException if this entity has different components
      */
     fun verify(components: Iterable<Component>) {
