@@ -20,7 +20,7 @@ be adapted for real-time with a little effort.
 To use the engine, you need the following dependencies:
 * kotlin-stdlib-1.0.2 or newer
 * kotlin-reflect-1.0.2 or newer
-* jackson-module-kotlin-2.7.1-2 or newer
+* jackson-module-kotlin-2.7.4 or newer
 
 You may download the latest released jar [here](https://github.com/andrei-heidelbacher/algostorm/releases).
 
