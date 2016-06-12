@@ -20,7 +20,6 @@ import algostorm.ecs.Component
 import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
-import algostorm.event.Publisher
 import algostorm.serialization.SaveState
 import algostorm.serialization.Serializer
 
@@ -43,11 +42,13 @@ import kotlin.system.measureTimeMillis
  * outside of this engine's thread may lead to inconsistent state and
  * concurrency issues. Thus, the engine state should remain private to the
  * engine.
+ * @property systems the systems which handle the logic of the game
  * @property millisPerTick the number of milliseconds spent in an update cycle
  * and the resolution of an atomic time unit
  */
 abstract class Engine protected constructor(
         private val state: State,
+        private val systems: List<EntitySystem>,
         private val millisPerTick: Int
 ) {
     companion object {
@@ -73,19 +74,16 @@ abstract class Engine protected constructor(
      * stored properties must not be generic, otherwise they may not be
      * serializable.
      * @property eventBus the event bus which handles all the events in the game
-     * @property systems the systems which handle the logic of the game
      */
     data class State(
             val entityManager: MutableEntityManager,
             val properties: MutableMap<String, Any>,
-            val eventBus: EventBus,
-            val systems: List<EntitySystem>
+            val eventBus: EventBus
     )
-
 
     private val stateLock = Any()
     private val subscriptions = synchronized(stateLock) {
-        state.systems.flatMap { system ->
+        systems.flatMap { system ->
             system.handlers.map { handler -> state.eventBus.subscribe(handler) }
         }
     }
@@ -114,15 +112,9 @@ abstract class Engine protected constructor(
      *
      * It is the entry point into the game logic code.
      *
-     * @param entityManager the entity manager in this engine's [state]
-     * @param properties the properties used by the game systems
-     * @param publisher the publisher view of this engine's event bus
+     * @param state this engine's [state]
      */
-    protected abstract fun handleTick(
-            entityManager: MutableEntityManager,
-            properties: MutableMap<String, Any>,
-            publisher: Publisher
-    ): Unit
+    protected abstract fun handleTick(state: State): Unit
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread. The
@@ -152,11 +144,7 @@ abstract class Engine protected constructor(
                     while (status == Status.RUNNING) {
                         val elapsedTime = measureTimeMillis {
                             synchronized(stateLock) {
-                                handleTick(
-                                        entityManager = state.entityManager,
-                                        properties = state.properties,
-                                        publisher = state.eventBus
-                                )
+                                handleTick(state)
                             }
                         }
                         val sleepTime = millisPerTick - elapsedTime

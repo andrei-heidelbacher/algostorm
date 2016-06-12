@@ -17,7 +17,6 @@
 package algostorm.time
 
 import algostorm.ecs.EntitySystem
-import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
 import algostorm.event.Subscriber
 
@@ -27,12 +26,10 @@ import algostorm.event.Subscriber
  * For every [Tick] event, it ticks every timer which is saved in the [TIMELINE]
  * property.
  *
- * @property entityManager the entity manager of the game
  * @property properties the properties of the game
  * @property publisher the publisher used to post expired timer events
  */
 class TimeSystem(
-        private val entityManager: MutableEntityManager,
         private val properties: MutableMap<String, Any>,
         private val publisher: Publisher
 ) : EntitySystem {
