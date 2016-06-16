@@ -51,7 +51,7 @@ class EventQueue : EventBus {
         }
     }
 
-    override fun post(event: Event) {
+    override fun <T : Event> post(event: T) {
         eventQueue.add(event)
     }
 

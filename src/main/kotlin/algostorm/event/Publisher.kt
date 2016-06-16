@@ -28,9 +28,10 @@ interface Publisher {
      * Posts the given [event] and notifies all subscribers which subscribed at
      * this publisher for this `event` type.
      *
+     * @param T the type of the event
      * @param event the event that should be posted
      */
-    fun post(event: Event): Unit
+    fun <T : Event> post(event: T): Unit
 
     /**
      * Calls [post] for each given event.

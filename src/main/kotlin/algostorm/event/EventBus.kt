@@ -29,8 +29,7 @@ interface EventBus : Publisher {
      * @param subscriber the object that subscribes for events to this event
      * bus.
      * @return the subscription which allows the subscriber to unsubscribe and
-     * stop listening for events of the specified topic which are posted to this
-     * event bus
+     * stop listening for events which are posted to this event bus
      */
     fun subscribe(subscriber: Subscriber<*>): Subscription
 

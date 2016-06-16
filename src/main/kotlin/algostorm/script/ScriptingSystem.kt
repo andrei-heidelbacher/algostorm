@@ -30,6 +30,7 @@ import algostorm.event.Subscriber
  * the execution of the script.
  *
  * @property scriptingEngine the engine that will execute the script requests
+ * @property scriptSet the collection that maps script ids to scrip URIs
  * @property entityManager the entity manager which will be provided in the
  * context of every executed script
  * @property properties the properties of the game
@@ -38,17 +39,12 @@ import algostorm.event.Subscriber
  */
 class ScriptingSystem(
         private val scriptingEngine: ScriptingEngine,
+        private val scriptSet: Map<Int, String>,
         private val entityManager: EntityManager,
         private val properties: Map<String, Any>,
         private val publisher: Publisher
 ) : EntitySystem {
     companion object {
-        /**
-         * The property used by this system. It should be an object of type
-         * [ScriptSet].
-         */
-        const val SCRIPT_SET: String = "scriptSet"
-
         /**
          * The name of the [Context] variable available to executed scripts.
          */
@@ -69,9 +65,6 @@ class ScriptingSystem(
             val properties: Map<String, Any>,
             val publisher: Publisher
     )
-
-    private val scriptSet: ScriptSet
-        get() = properties[SCRIPT_SET] as ScriptSet
 
     private val context = Context(entityManager, properties, publisher)
     private val scriptHandler = Subscriber(RunScript::class) { event ->

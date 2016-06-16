@@ -22,16 +22,16 @@ import algostorm.ecs.Entity
 /**
  * A transformation that is to be applied to the screen position of an entity.
  *
- * @property dx the translation amount on the x-axis in pixels
- * @property dy the translation amount on the y-axis in pixels
+ * @property dx the translation amount on the x-axis in tiles
+ * @property dy the translation amount on the y-axis in tiles
  */
-data class Transformation(val dx: Int, val dy: Int) : Component {
+data class Transformation(val dx: Float, val dy: Float) : Component {
     companion object {
         /**
          * The identity transformation which leaves the entity on which it is
          * applied unchanged.
          */
-        val IDENTITY: Transformation = Transformation(0, 0)
+        val IDENTITY: Transformation = Transformation(0F, 0F)
 
         /**
          * The [Transformation] applied on this entity, or [IDENTITY] if no

@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package algostorm.script
+package algostorm.event
 
-/**
- * A container that maps script ids to script URIs. This object should be saved
- * as a property of the game.
- *
- * @property scripts the underlying map of this container
- */
-data class ScriptSet(private val scripts: Map<Int, String>) {
-    /**
-     * Returns the URI of the given [scriptId].
-     *
-     * @param scriptId the id of the requested script
-     * @return the URI of the requested script, or `null` if the given id
-     * doesn't exist in this container
-     */
-    operator fun get(scriptId: Int): String? = scripts[scriptId]
-}
+@Target(AnnotationTarget.FUNCTION)
+@MustBeDocumented
+annotation class Subscribe
