@@ -21,10 +21,9 @@ import algostorm.event.Event
 /**
  * An event which signals that [sourceId] collided with [targetId].
  *
+ * Only the [PhysicsSystem] should post this event.
+ *
  * @property sourceId the id of the entity that triggered the collision
  * @property targetId the id of the entity that was collided
  */
-data class Collision internal constructor(
-        val sourceId: Int,
-        val targetId: Int
-) : Event
+data class Collision(val sourceId: Int, val targetId: Int) : Event

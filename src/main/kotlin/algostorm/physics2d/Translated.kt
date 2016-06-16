@@ -28,8 +28,4 @@ import algostorm.event.Event
  * @property dx the amount the entity translated on the x-axis
  * @property dy the amount the entity translated on the y-axis
  */
-data class Translated internal constructor(
-        val entityId: Int,
-        val dx: Int,
-        val dy: Int
-) : Event
+data class Translated(val entityId: Int, val dx: Int, val dy: Int) : Event

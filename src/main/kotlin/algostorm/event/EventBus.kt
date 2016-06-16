@@ -29,6 +29,8 @@ interface EventBus : Publisher {
      * bus
      * @return the subscription which allows the subscriber to unsubscribe and
      * stop listening for events which are posted to this event bus
+     * @throws IllegalArgumentException if the subscriber contains an annotated
+     * event handler that does not conform to the [Subscribe] contract
      */
     fun subscribe(subscriber: Subscriber): Subscription
 

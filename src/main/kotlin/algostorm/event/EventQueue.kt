@@ -16,9 +16,9 @@
 
 package algostorm.event
 
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.LinkedList
-
-import kotlin.reflect.KClass
 
 /**
  * An asynchronous implementation of an [EventBus].
@@ -27,9 +27,32 @@ import kotlin.reflect.KClass
  * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
+    private val subscribers = hashMapOf<Subscriber, Map<Class<*>, List<Method>>>()
     private val eventQueue = LinkedList<Event>()
 
+    private fun validateEventHandler(handler: Method) {
+        val name = handler.name
+        val returnsUnit = Unit.javaClass.isAssignableFrom(handler.returnType)
+        val isPublic = Modifier.isPublic(handler.modifiers)
+        val parameterTypes = handler.parameterTypes
+        require(returnsUnit) { "$name doesn't return Unit!" }
+        require(isPublic) { "$name is not public!" }
+        require(parameterTypes.size == 1) {
+            "$name receives more than one parameter!"
+        }
+        require(Event::class.java.isAssignableFrom(parameterTypes.single())) {
+            "$name doesn't receive a subtype of Event!"
+        }
+    }
+
     override fun subscribe(subscriber: Subscriber): Subscription {
+        val handlers = subscriber.javaClass.methods.filter {
+            it.isAnnotationPresent(Subscribe::class.java)
+        }
+        handlers.forEach { validateEventHandler(it) }
+        subscribers[subscriber] = handlers.groupBy {
+            it.parameterTypes.single()
+        }
         return object : Subscription {
             private var isCancelled = false
 
@@ -38,6 +61,7 @@ class EventQueue : EventBus {
                     "Can't cancel the same subscription multiple times!"
                 }
                 isCancelled = true
+                subscribers.remove(subscriber)
             }
         }
     }
@@ -47,10 +71,13 @@ class EventQueue : EventBus {
     }
 
     override fun publishPosts() {
-        do {
-            val event = eventQueue.poll()
-            if (event != null) {
+        while (eventQueue.isNotEmpty()) {
+            val event = eventQueue.remove()
+            subscribers.forEach { subscriber, map ->
+                map[event.javaClass]?.forEach { handler ->
+                    handler.invoke(subscriber, event)
+                }
             }
-        } while (event != null)
+        }
     }
 }

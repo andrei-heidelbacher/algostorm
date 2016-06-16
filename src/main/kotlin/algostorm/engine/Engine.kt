@@ -55,7 +55,7 @@ abstract class Engine protected constructor(
         /**
          * Name of the engine thread.
          */
-        const val NAME = "Algostorm-Engine"
+        const val NAME: String = "Algostorm-Engine"
     }
 
     /**

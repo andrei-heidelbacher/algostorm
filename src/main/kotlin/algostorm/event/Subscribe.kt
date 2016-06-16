@@ -20,8 +20,8 @@ package algostorm.event
  * Annotation to mark a method of a [Subscriber] as an event handler.
  *
  * An event handler is a method that is annotated with the [Subscribe]
- * annotation, is `public`, `final`, returns [Unit] and receives a single
- * parameter which is a subtype of [Event].
+ * annotation, is `public`, returns [Unit] and receives a single parameter which
+ * is a subtype of [Event].
  *
  * Event-handling methods which are inherited are also registered for events
  * upon subscription.
