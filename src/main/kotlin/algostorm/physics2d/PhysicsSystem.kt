@@ -16,9 +16,9 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 import algostorm.physics2d.Box.Companion.box
 import algostorm.physics2d.Rigid.isRigid
@@ -42,8 +42,8 @@ import algostorm.physics2d.Rigid.isRigid
 class PhysicsSystem(
         private val entityManager: MutableEntityManager,
         private val publisher: Publisher
-) : EntitySystem {
-    private val translateHandler = Subscriber(TranslateIntent::class) { event ->
+) : Subscriber {
+    @Subscribe fun handleTranslateIntent(event: TranslateIntent) {
         entityManager[event.entityId]?.let { entity ->
             val newBox = entity.box?.translate(event.dx, event.dy)
                     ?: error("Can't translate an entity without a location!")
@@ -62,9 +62,4 @@ class PhysicsSystem(
             }
         }
     }
-
-    /**
-     * This system handles [TranslateIntent] events.
-     */
-    override val handlers: List<Subscriber<*>> = listOf(translateHandler)
 }

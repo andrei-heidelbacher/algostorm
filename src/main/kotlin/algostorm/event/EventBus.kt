@@ -23,15 +23,14 @@ package algostorm.event
  */
 interface EventBus : Publisher {
     /**
-     * Registers the given [subscriber] to the specified topic and returns the
-     * subscription.
+     * Registers the given [subscriber] and returns the associated subscription.
      *
      * @param subscriber the object that subscribes for events to this event
-     * bus.
+     * bus
      * @return the subscription which allows the subscriber to unsubscribe and
      * stop listening for events which are posted to this event bus
      */
-    fun subscribe(subscriber: Subscriber<*>): Subscription
+    fun subscribe(subscriber: Subscriber): Subscription
 
     /**
      * Blocks until all posted events have been handled by their subscribers.

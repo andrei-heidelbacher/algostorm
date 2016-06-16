@@ -16,8 +16,8 @@
 
 package algostorm.graphics2d.transform
 
-import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 import algostorm.graphics2d.transform.Transformation.Companion.transformation
 
@@ -32,15 +32,10 @@ import algostorm.graphics2d.transform.Transformation.Companion.transformation
  */
 class TransformationSystem(
         private val entityManager: MutableEntityManager
-) : EntitySystem {
-    private val transformHandler = Subscriber(Transform::class) { event ->
+) : Subscriber {
+    @Subscribe fun handleTransform(event: Transform) {
         entityManager[event.entityId]?.let { entity ->
             entity.set(entity.transformation + event.transformation)
         }
     }
-
-    /**
-     * This system handles [Transform] events.
-     */
-    override val handlers: List<Subscriber<*>> = listOf(transformHandler)
 }

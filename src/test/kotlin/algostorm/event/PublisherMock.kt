@@ -27,7 +27,7 @@ import java.util.Queue
 class PublisherMock : Publisher {
     private val queue: Queue<Event> = LinkedList()
 
-    override fun post(event: Event) {
+    override fun <T : Event> post(event: T) {
         queue.add(event)
     }
 

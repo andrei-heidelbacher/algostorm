@@ -16,8 +16,8 @@
 
 package algostorm.time
 
-import algostorm.ecs.EntitySystem
 import algostorm.event.Publisher
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 
 /**
@@ -32,7 +32,7 @@ import algostorm.event.Subscriber
 class TimeSystem(
         private val properties: MutableMap<String, Any>,
         private val publisher: Publisher
-) : EntitySystem {
+) : Subscriber {
     companion object {
         /**
          * The property used by this system. It should be an object of type
@@ -47,7 +47,7 @@ class TimeSystem(
             properties[TIMELINE] = value
         }
 
-    private val registerHandler = Subscriber(RegisterTimer::class) { event ->
+    @Subscribe fun handleRegisterTimer(event: RegisterTimer) {
         if (event.timer.remainingTicks == 0) {
             publisher.post(event.timer.events)
         } else {
@@ -55,7 +55,7 @@ class TimeSystem(
         }
     }
 
-    private val tickHandler = Subscriber(Tick::class) { event ->
+    @Subscribe fun handleTick(event: Tick) {
         val newTimers = timeline.timers.map {
             it.copy(remainingTicks = it.remainingTicks - 1)
         }
@@ -65,10 +65,4 @@ class TimeSystem(
         expired.forEach { publisher.post(it.events) }
         timeline = Timeline(notExpired)
     }
-
-    /**
-     * This system handles [RegisterTimer] and [Tick] events.
-     */
-    override val handlers: List<Subscriber<*>> =
-            listOf(registerHandler, tickHandler)
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package algostorm.engine
+package algostorm.ecs
 
-import algostorm.event.EventBusTest
-
-class EventQueueTest : EventBusTest(eventBus = EventQueue())
+class EntityDatabaseTest : MutableEntityManagerTest(
+        entityManager = EntityDatabase(),
+        entityCount = 1000
+)

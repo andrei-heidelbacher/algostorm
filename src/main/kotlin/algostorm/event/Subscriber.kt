@@ -16,32 +16,10 @@
 
 package algostorm.event
 
-import kotlin.reflect.KClass
-
 /**
- * An [Event] handler that subscribes for a certain type of events ([topic]).
+ * Marker interface for objects that wish to register [Event] handling methods
+ * to an [EventBus].
  *
- * @param T the type of events in which the subscriber is interested
- * @property topic the [KClass] object of the event type which defines the topic
- * @property handler the event handler which is called by the [notify] method
- * when this subscriber is notified of an event it subscribed for
+ * To mark a method as an event handler, annotate it with [Subscribe].
  */
-class Subscriber<T : Event>(
-        val topic: KClass<T>,
-        private val handler: (T) -> Unit
-) {
-    /**
-     * This method is called by the event bus to notify this subscriber of an
-     * [event].
-     *
-     * If the given event belongs to the [topic], then it is forwarded to the
-     * [handler].
-     *
-     * @param event the event for which the subscriber is notified
-     */
-    fun notify(event: Event) {
-        if (topic.java.isInstance(event)) {
-            handler(topic.java.cast(event))
-        }
-    }
-}
+interface Subscriber

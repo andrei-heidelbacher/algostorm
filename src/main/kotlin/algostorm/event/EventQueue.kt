@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.engine
-
-import algostorm.event.Event
-import algostorm.event.EventBus
-import algostorm.event.Subscriber
-import algostorm.event.Subscription
+package algostorm.event
 
 import java.util.LinkedList
 
@@ -32,12 +27,9 @@ import kotlin.reflect.KClass
  * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
-    private val subscribers =
-            hashMapOf<KClass<out Event>, MutableSet<Subscriber<*>>>()
     private val eventQueue = LinkedList<Event>()
 
-    override fun subscribe(subscriber: Subscriber<*>): Subscription {
-        subscribers.getOrPut(subscriber.topic) { linkedSetOf() }.add(subscriber)
+    override fun subscribe(subscriber: Subscriber): Subscription {
         return object : Subscription {
             private var isCancelled = false
 
@@ -46,7 +38,6 @@ class EventQueue : EventBus {
                     "Can't cancel the same subscription multiple times!"
                 }
                 isCancelled = true
-                subscribers[subscriber.topic]?.remove(subscriber)
             }
         }
     }
@@ -59,9 +50,6 @@ class EventQueue : EventBus {
         do {
             val event = eventQueue.poll()
             if (event != null) {
-                subscribers[event.javaClass.kotlin].orEmpty().forEach {
-                    it.notify(event)
-                }
             }
         } while (event != null)
     }

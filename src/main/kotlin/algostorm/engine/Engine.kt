@@ -17,9 +17,9 @@
 package algostorm.engine
 
 import algostorm.ecs.Component
-import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
+import algostorm.event.Subscriber
 import algostorm.serialization.SaveState
 import algostorm.serialization.Serializer
 
@@ -48,7 +48,7 @@ import kotlin.system.measureTimeMillis
  */
 abstract class Engine protected constructor(
         private val state: State,
-        private val systems: List<EntitySystem>,
+        private val systems: List<Subscriber>,
         private val millisPerTick: Int
 ) {
     companion object {
@@ -83,9 +83,7 @@ abstract class Engine protected constructor(
 
     private val stateLock = Any()
     private val subscriptions = synchronized(stateLock) {
-        systems.flatMap { system ->
-            system.handlers.map { handler -> state.eventBus.subscribe(handler) }
-        }
+        systems.map { state.eventBus.subscribe(it) }
     }
 
     private val statusLock = Any()

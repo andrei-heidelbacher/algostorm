@@ -16,7 +16,7 @@
 
 package algostorm.sound
 
-import algostorm.ecs.EntitySystem
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 
 /**
@@ -32,7 +32,7 @@ import algostorm.event.Subscriber
 class SoundSystem(
         private val soundEngine: SoundEngine,
         private val properties: Map<String, Any>
-) : EntitySystem {
+) : Subscriber {
     companion object {
         /**
          * The property used by this system. It should be an object of type
@@ -44,18 +44,12 @@ class SoundSystem(
     private val soundSet: SoundSet
         get() = properties[SOUND_SET] as SoundSet
 
-    private val playHandler = Subscriber(PlaySound::class) { event ->
+    @Subscribe fun handlePlaySound(event: PlaySound) {
         val soundUri = soundSet[event.soundId] ?: error("Missing sound id!")
         soundEngine.playSound(soundUri, event.frequency, event.loop)
     }
 
-    private val stopHandler = Subscriber(StopSound::class) { event ->
+    @Subscribe fun handleStopSound(event: StopSound) {
         soundEngine.stopSound(event.frequency)
     }
-
-    /**
-     * This system handles [PlaySound] and [StopSound] events.
-     */
-    override val handlers: List<Subscriber<*>> =
-            listOf(playHandler, stopHandler)
 }

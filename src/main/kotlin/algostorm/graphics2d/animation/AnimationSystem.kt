@@ -16,9 +16,9 @@
 
 package algostorm.graphics2d.animation
 
-import algostorm.ecs.EntitySystem
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 import algostorm.graphics2d.Sprite.Companion.sprite
 import algostorm.graphics2d.animation.Animation.Companion.animation
@@ -45,7 +45,7 @@ import algostorm.time.Tick
 class AnimationSystem(
         private val entityManager: MutableEntityManager,
         private val properties: Map<String, Any>
-) : EntitySystem {
+) : Subscriber {
     companion object {
         /**
          * The name of the property used by this system. It should be an object
@@ -90,7 +90,7 @@ class AnimationSystem(
         return first()
     }
 
-    private val tickHandler = Subscriber(Tick::class) { event ->
+    @Subscribe fun handleTick(event: Tick) {
         entityManager.filterEntities(Animation::class).forEach { entity ->
             val animation = entity.animation?.tick()
                     ?: error("Entity is missing animation component!")
@@ -105,17 +105,11 @@ class AnimationSystem(
         }
     }
 
-    private val animateHandler = Subscriber(Animate::class) { event ->
+    @Subscribe fun handleAnimate(event: Animate) {
         entityManager[event.entityId]?.let { entity ->
             val sheetId = entity.animation?.sheetId
                     ?: error("Can't animate entity without animation!")
             entity.setAnimation(sheetId, event.animationName)
         }
     }
-
-    /**
-     * This system handles [Tick] and [Animate] events.
-     */
-    override val handlers: List<Subscriber<*>> =
-            listOf(tickHandler, animateHandler)
 }

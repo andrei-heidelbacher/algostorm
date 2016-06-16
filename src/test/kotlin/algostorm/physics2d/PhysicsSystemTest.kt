@@ -33,9 +33,7 @@ class PhysicsSystemTest {
         val physicsSystem = PhysicsSystem(entityManager, publisher)
         val dx = 32
         val dy = 32
-        physicsSystem.handlers.forEach {
-            it.notify(TranslateIntent(0, dx, dy))
-        }
+        physicsSystem.handleTranslateIntent(TranslateIntent(0, dx, dy))
         publisher.verify(Collision(0, 1))
         publisher.verifyEmpty()
         entityManager.verify(mapOf(
@@ -56,9 +54,7 @@ class PhysicsSystemTest {
         val physicsSystem = PhysicsSystem(entityManager, publisher)
         val dx = 32
         val dy = 32
-        physicsSystem.handlers.forEach {
-            it.notify(TranslateIntent(0, dx, dy))
-        }
+        physicsSystem.handleTranslateIntent(TranslateIntent(0, dx, dy))
         publisher.verify(Translated(0, dx, dy))
         publisher.verifyEmpty()
         entityManager.verify(mapOf(

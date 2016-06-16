@@ -17,8 +17,8 @@
 package algostorm.script
 
 import algostorm.ecs.EntityManager
-import algostorm.ecs.EntitySystem
 import algostorm.event.Publisher
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 
 /**
@@ -43,7 +43,7 @@ class ScriptingSystem(
         private val entityManager: EntityManager,
         private val properties: Map<String, Any>,
         private val publisher: Publisher
-) : EntitySystem {
+) : Subscriber {
     companion object {
         /**
          * The name of the [Context] variable available to executed scripts.
@@ -67,15 +67,11 @@ class ScriptingSystem(
     )
 
     private val context = Context(entityManager, properties, publisher)
-    private val scriptHandler = Subscriber(RunScript::class) { event ->
+
+    @Subscribe fun handleRunScript(event: RunScript) {
         val scriptUri = scriptSet[event.scriptId] ?: error("Missing script id!")
         val args = event.args.toTypedArray()
         scriptingEngine.put(CONTEXT, context)
         scriptingEngine.runScript(scriptUri, context, *args)
     }
-
-    /**
-     * This system handles [RunScript] events.
-     */
-    override val handlers: List<Subscriber<*>> = listOf(scriptHandler)
 }

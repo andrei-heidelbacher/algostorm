@@ -17,7 +17,7 @@
 package algostorm.event
 
 /**
- * Allows a [Subscriber] to cancel its subscription at an [EventBus].
+ * Allows a [Subscriber] to cancel its subscription to an [EventBus].
  */
 interface Subscription {
     /**

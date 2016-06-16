@@ -17,7 +17,7 @@
 package algostorm.graphics2d
 
 import algostorm.ecs.EntityManager
-import algostorm.ecs.EntitySystem
+import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 
 /**
@@ -36,7 +36,7 @@ class RenderingSystem(
         private val renderingEngine: RenderingEngine,
         private val entityManager: EntityManager,
         private val properties: Map<String, Any>
-) : EntitySystem {
+) : Subscriber {
     companion object {
         /**
          * The name of a property used by this system. It should be an object of
@@ -66,7 +66,7 @@ class RenderingSystem(
     private val tileHeight: Int
         get() = properties[TILE_HEIGHT] as Int
 
-    private val renderHandler = Subscriber(Render::class) { event ->
+    @Subscribe fun handleRender(event: Render) {
         renderingEngine.render(
                 tileCollection = tileCollection,
                 tileWidth = tileWidth,
@@ -74,9 +74,4 @@ class RenderingSystem(
                 entities = entityManager.entities
         )
     }
-
-    /**
-     * This system handles [Render] events.
-     */
-    override val handlers: List<Subscriber<*>> = listOf(renderHandler)
 }
