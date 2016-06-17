@@ -73,7 +73,8 @@ class EventQueue : EventBus {
     override fun publishPosts() {
         while (eventQueue.isNotEmpty()) {
             val event = eventQueue.remove()
-            subscribers.forEach { subscriber, map ->
+            subscribers.forEach { entry ->
+                val (subscriber, map) = entry
                 map[event.javaClass]?.forEach { handler ->
                     handler.invoke(subscriber, event)
                 }
