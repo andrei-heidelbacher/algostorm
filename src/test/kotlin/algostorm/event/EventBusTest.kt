@@ -32,14 +32,16 @@ import org.junit.Test
 abstract class EventBusTest(protected val eventBus: EventBus) {
     @Test
     fun publishPostsShouldNotifySubscribers() {
-        /*var handledEvent: EventMock? = null
-        val subscriber = Subscriber(EventMock::class) { handledEvent = it }
-        val subscription = eventBus.subscribe(subscriber)
-        eventBus.post(EventMock(0))
-        eventBus.post(object : Event {})
+        val postedEvent = EventMock(5)
+        var handledEvent: EventMock? = null
+        val subscriber = object : Subscriber {
+            @Subscribe fun handleEventMock(event: EventMock) {
+                handledEvent = event
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.post(postedEvent)
         eventBus.publishPosts()
-        subscription.unsubscribe()
-        eventBus.post(EventMock(1))
-        assertEquals(EventMock(0), handledEvent)*/
+        assertEquals(postedEvent, handledEvent)
     }
 }

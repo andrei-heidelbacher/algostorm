@@ -19,6 +19,10 @@ package algostorm.event
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.LinkedList
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KType
+import kotlin.reflect.memberFunctions
 
 /**
  * An asynchronous implementation of an [EventBus].
@@ -27,7 +31,8 @@ import java.util.LinkedList
  * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
-    private val subscribers = hashMapOf<Subscriber, Map<Class<*>, List<Method>>>()
+    private val subscribers =
+            hashMapOf<Subscriber, Map<Class<*>, List<Method>>>()
     private val eventQueue = LinkedList<Event>()
 
     private fun validateEventHandler(handler: Method) {
@@ -45,7 +50,29 @@ class EventQueue : EventBus {
         }
     }
 
+    private companion object {
+        val <T : Any> T.kClass: KClass<T>
+            get() = javaClass.kotlin
+
+        fun KType.isSubtypeOf(superType: KClass<*>): Boolean =
+                superType.java.isAssignableFrom(Class.forName(toString()))
+
+        fun validateEventHandler(handler: KFunction<*>) {
+            val name = handler.name
+            val returnsUnit = handler.returnType.toString() == Unit.toString()
+            val parameterTypes = handler.parameters.map { it.type }
+            require(returnsUnit) { "$name doesn't return Unit!" }
+            require(parameterTypes.size == 2) {
+                "$name receives more than one parameter!"
+            }
+            require(parameterTypes[1].isSubtypeOf(Event::class)) {
+                "$name doesn't receive a subtype of Event!"
+            }
+        }
+    }
+
     override fun subscribe(subscriber: Subscriber): Subscription {
+        subscriber.kClass.memberFunctions.filter { it.annotations.any { it.annotationClass == Subscribe::class } }.forEach { validateEventHandler(it) }
         val handlers = subscriber.javaClass.methods.filter {
             it.isAnnotationPresent(Subscribe::class.java)
         }
