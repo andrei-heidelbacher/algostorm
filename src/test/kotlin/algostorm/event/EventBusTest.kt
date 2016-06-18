@@ -35,7 +35,7 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
         val postedEvent = EventMock(5)
         var handledEvent: EventMock? = null
         val subscriber = object : Subscriber {
-            @Subscribe fun handleEventMock(event: EventMock) {
+            @Subscribe private fun handleEventMock(event: EventMock) {
                 handledEvent = event
             }
         }
@@ -43,5 +43,13 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
         eventBus.post(postedEvent)
         eventBus.publishPosts()
         assertEquals(postedEvent, handledEvent)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeMultipleParametersReceivedShouldThrow() {
+        val subscriber = object : Subscriber {
+            @Subscribe fun handleEventMock(event: EventMock, other: Any) {}
+        }
+        eventBus.subscribe(subscriber)
     }
 }

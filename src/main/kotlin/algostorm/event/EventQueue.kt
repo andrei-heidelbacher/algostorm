@@ -16,12 +16,15 @@
 
 package algostorm.event
 
-import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.LinkedList
+
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
+import kotlin.reflect.defaultType
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.memberFunctions
 
 /**
@@ -31,55 +34,41 @@ import kotlin.reflect.memberFunctions
  * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
-    private val subscribers =
-            hashMapOf<Subscriber, Map<Class<*>, List<Method>>>()
-    private val eventQueue = LinkedList<Event>()
-
-    private fun validateEventHandler(handler: Method) {
-        val name = handler.name
-        val returnsUnit = Unit.javaClass.isAssignableFrom(handler.returnType)
-        val isPublic = Modifier.isPublic(handler.modifiers)
-        val parameterTypes = handler.parameterTypes
-        require(returnsUnit) { "$name doesn't return Unit!" }
-        require(isPublic) { "$name is not public!" }
-        require(parameterTypes.size == 1) {
-            "$name receives more than one parameter!"
-        }
-        require(Event::class.java.isAssignableFrom(parameterTypes.single())) {
-            "$name doesn't receive a subtype of Event!"
-        }
-    }
-
     private companion object {
         val <T : Any> T.kClass: KClass<T>
             get() = javaClass.kotlin
 
-        fun KType.isSubtypeOf(superType: KClass<*>): Boolean =
-                superType.java.isAssignableFrom(Class.forName(toString()))
+        val KType.kClass: KClass<*>
+            get() = Class.forName(toString()).kotlin
+
+        fun KClass<*>.isAssignableFrom(cls: KClass<*>): Boolean =
+                java.isAssignableFrom(cls.java)
 
         fun validateEventHandler(handler: KFunction<*>) {
             val name = handler.name
-            val returnsUnit = handler.returnType.toString() == Unit.toString()
-            val parameterTypes = handler.parameters.map { it.type }
+            val returnsUnit = handler.returnType == Unit::class.defaultType
+            val parameters = handler.parameters
             require(returnsUnit) { "$name doesn't return Unit!" }
-            require(parameterTypes.size == 2) {
+            require(parameters.size == 2) {
                 "$name receives more than one parameter!"
             }
-            require(parameterTypes[1].isSubtypeOf(Event::class)) {
+            require(Event::class.isAssignableFrom(parameters[1].type.kClass)) {
                 "$name doesn't receive a subtype of Event!"
             }
         }
     }
 
+    private val subscribers =
+            hashMapOf<Subscriber, Map<KType, List<KFunction<*>>>>()
+    private val eventQueue = LinkedList<Event>()
+
     override fun subscribe(subscriber: Subscriber): Subscription {
-        subscriber.kClass.memberFunctions.filter { it.annotations.any { it.annotationClass == Subscribe::class } }.forEach { validateEventHandler(it) }
-        val handlers = subscriber.javaClass.methods.filter {
-            it.isAnnotationPresent(Subscribe::class.java)
+        val handlers = subscriber.kClass.memberFunctions.filter { function ->
+            Subscribe::class in function.annotations.map { it.annotationClass }
         }
         handlers.forEach { validateEventHandler(it) }
-        subscribers[subscriber] = handlers.groupBy {
-            it.parameterTypes.single()
-        }
+        handlers.forEach { it.isAccessible = true }
+        subscribers[subscriber] = handlers.groupBy { it.parameters[1].type }
         return object : Subscription {
             private var isCancelled = false
 
@@ -102,8 +91,8 @@ class EventQueue : EventBus {
             val event = eventQueue.remove()
             subscribers.forEach { entry ->
                 val (subscriber, map) = entry
-                map[event.javaClass]?.forEach { handler ->
-                    handler.invoke(subscriber, event)
+                map[event.kClass.defaultType]?.forEach { handler ->
+                    handler.call(subscriber, event)
                 }
             }
         }
