@@ -16,5 +16,18 @@
 
 package algostorm.tiled
 
-class Map {
+class Map(
+        val width: Int,
+        val height: Int,
+        val tileWidth: Int,
+        val tileHeight: Int,
+        val orientation: Orientation,
+        val tileSets: List<TileSet>,
+        val layers: List<Layer>,
+        var nextObjectId: Int,
+        val properties: MutableMap<String, Any> = hashMapOf()
+) {
+    enum class Orientation {
+        ORTHOGONAL, ISOMETRIC, STAGGERED
+    }
 }

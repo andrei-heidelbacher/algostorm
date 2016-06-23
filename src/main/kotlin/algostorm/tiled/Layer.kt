@@ -32,14 +32,39 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 sealed class Layer {
     abstract val name: String
-    abstract val isVisible: Boolean
-    abstract val opacity: Float
+    abstract var isVisible: Boolean
+    abstract var opacity: Float
     abstract val offsetX: Int
     abstract val offsetY: Int
+    abstract val properties: MutableMap<String, Any>
 
-    abstract class TileLayer : Layer()
+    class TileLayer(
+            override val name: String,
+            val data: List<Int>,
+            override var isVisible: Boolean = true,
+            override var opacity: Float = 1F,
+            override val offsetX: Int = 0,
+            override val offsetY: Int = 0,
+            override val properties: MutableMap<String, Any> = hashMapOf()
+    ) : Layer()
 
-    abstract class ImageLayer : Layer()
+    class ImageLayer(
+            override val name: String,
+            val image: String,
+            override var isVisible: Boolean = true,
+            override var opacity: Float = 1F,
+            override val offsetX: Int = 0,
+            override val offsetY: Int = 0,
+            override val properties: MutableMap<String, Any> = hashMapOf()
+    ) : Layer()
 
-    abstract class ObjectGroup : Layer()
+    class ObjectGroup(
+            override val name: String,
+            val objects : MutableSet<Object>,
+            override var isVisible: Boolean = true,
+            override var opacity: Float = 1F,
+            override val offsetX: Int = 0,
+            override val offsetY: Int = 1,
+            override val properties: MutableMap<String, Any> = hashMapOf()
+    ) : Layer()
 }

@@ -16,5 +16,15 @@
 
 package algostorm.tiled
 
-class TileSet {
-}
+class TileSet(
+        val name: String,
+        val tileWidth: Int,
+        val tileHeight: Int,
+        val image: String,
+        val imageWidth: Int,
+        val imageHeight: Int,
+        val margin: Int,
+        val spacing: Int,
+        val firstGid: Int,
+        val properties: MutableMap<String, Any> = hashMapOf()
+)

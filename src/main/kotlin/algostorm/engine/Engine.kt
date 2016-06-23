@@ -16,12 +16,8 @@
 
 package algostorm.engine
 
-import algostorm.ecs.Component
-import algostorm.ecs.MutableEntityManager
 import algostorm.event.EventBus
 import algostorm.event.Subscriber
-import algostorm.serialization.SaveState
-import algostorm.serialization.Serializer
 
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -35,21 +31,24 @@ import kotlin.system.measureTimeMillis
  *
  * All the systems passed in the state will have their handlers subscribed to
  * the event bus upon the creation of the engine. The subscriptions are
- * synchronized on the internal state lock. All the engine methods are thread
- * safe.
- *
- * @property state the state of this engine. All changes made to the `state`
+ * synchronized on the internal state lock. All changes to the game state
  * outside of this engine's thread may lead to inconsistent state and
  * concurrency issues. Thus, the engine state should remain private to the
- * engine.
- * @property systems the systems which handle the logic of the game
+ * engine and modified only in the [handleTick] and [clearState] methods.
+ *
+ * All the engine methods are thread safe.
+ *
  * @property millisPerTick the number of milliseconds spent in an update cycle
  * and the resolution of an atomic time unit
+ * @property eventBus the event bus to which the systems will be subscribed. It
+ * is part of the engine state and accessing it should be synchronized on the
+ * state lock.
+ * @param systems the systems which handle the logic of the game
  */
 abstract class Engine protected constructor(
-        private val state: State,
-        private val systems: List<Subscriber>,
-        private val millisPerTick: Int
+        protected val millisPerTick: Int,
+        protected val eventBus: EventBus,
+        systems: List<Subscriber>
 ) {
     companion object {
         /**
@@ -65,25 +64,9 @@ abstract class Engine protected constructor(
         RUNNING, STOPPING, STOPPED
     }
 
-    /**
-     * The state of an engine.
-     *
-     * @property entityManager the entity manager that handles all the entities
-     * in the game
-     * @property properties various properties used by the game systems. The
-     * stored properties must not be generic, otherwise they may not be
-     * serializable.
-     * @property eventBus the event bus which handles all the events in the game
-     */
-    data class State(
-            val entityManager: MutableEntityManager,
-            val properties: MutableMap<String, Any>,
-            val eventBus: EventBus
-    )
-
     private val stateLock = Any()
     private val subscriptions = synchronized(stateLock) {
-        systems.map { state.eventBus.subscribe(it) }
+        systems.map { eventBus.subscribe(it) }
     }
 
     private val statusLock = Any()
@@ -106,13 +89,25 @@ abstract class Engine protected constructor(
     /**
      * This method is invoked at most once every [millisPerTick] from this
      * engine's thread while this engine is running. The call to this method is
-     * synchronized with the `state` lock.
+     * synchronized with the state lock.
      *
      * It is the entry point into the game logic code.
-     *
-     * @param state this engine's [state]
      */
-    protected abstract fun handleTick(state: State): Unit
+    protected abstract fun handleTick(): Unit
+
+    /**
+     * Retrieves the current game state and serializes it to the given stream.
+     * The call to this method is synchronized with the state lock.
+     *
+     * @param outputStream the stream to which the game state is written
+     */
+    protected abstract fun serializeState(outputStream: OutputStream): Unit
+
+    /**
+     * Clears the current game state for a clean shutdown. The call to this
+     * method is synchronized with the state lock.
+     */
+    protected abstract fun clearState(): Unit
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread. The
@@ -123,10 +118,10 @@ abstract class Engine protected constructor(
      *
      * While this engine is running, at most once every [millisPerTick]
      * milliseconds, it will invoke the [handleTick] method. The call to
-     * `handleTick` is synchronized with the `state` lock.
+     * `handleTick` is synchronized with the state lock.
      *
      * @throws IllegalStateException if the `status` is not `Status.STOPPED` or
-     * if this engine has been shutdown
+     * if [isShutdown] is `true`
      */
     fun start() {
         synchronized(statusLock) {
@@ -142,7 +137,7 @@ abstract class Engine protected constructor(
                     while (status == Status.RUNNING) {
                         val elapsedTime = measureTimeMillis {
                             synchronized(stateLock) {
-                                handleTick(state)
+                                handleTick()
                             }
                         }
                         val sleepTime = millisPerTick - elapsedTime
@@ -180,19 +175,6 @@ abstract class Engine protected constructor(
     }
 
     /**
-     * Blocks until all events have been handled and the event bus becomes
-     * empty, deletes all entities from the entity manager and removes all
-     * properties.
-     */
-    fun clearState() {
-        synchronized(stateLock) {
-            state.eventBus.publishPosts()
-            state.entityManager.clear()
-            state.properties.clear()
-        }
-    }
-
-    /**
      * [Stops][stop] and [clears][clearState] this engine, unsubscribes all its
      * systems from the event bus and sets the [isShutdown] flag to `true`.
      *
@@ -215,35 +197,13 @@ abstract class Engine protected constructor(
     }
 
     /**
-     * Retrieves the current [SaveState] and serializes it to the given stream
-     * using the [Serializer.writeValue] method.
+     * Acquires the state lock and calls the [serializeState] method.
      *
-     * @param outputStream the stream to which the state is written
+     * @param outputStream the stream to which the game state is written
      */
     fun saveState(outputStream: OutputStream) {
         synchronized(stateLock) {
-            val entities = state.entityManager.entities.associate {
-                it.id to it.components
-            }
-            val properties = state.properties
-            Serializer.writeValue(outputStream, SaveState(entities, properties))
-        }
-    }
-
-    /**
-     * [Clears][clearState] this engine and loads the given game state.
-     *
-     * @param entities a mapping from entity ids to [Component] lists.
-     * @param properties the properties of the game
-     */
-    fun loadState(
-            entities: Map<Int, Iterable<Component>>,
-            properties: Map<String, Any>
-    ) {
-        synchronized(stateLock) {
-            clearState()
-            entities.forEach { state.entityManager.create(it.key, it.value) }
-            state.properties.putAll(properties)
+            serializeState(outputStream)
         }
     }
 }

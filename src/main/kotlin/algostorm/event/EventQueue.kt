@@ -16,16 +16,8 @@
 
 package algostorm.event
 
-import java.lang.reflect.Modifier
+import java.lang.reflect.Method
 import java.util.LinkedList
-
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KType
-import kotlin.reflect.defaultType
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.memberFunctions
 
 /**
  * An asynchronous implementation of an [EventBus].
@@ -34,41 +26,23 @@ import kotlin.reflect.memberFunctions
  * only when [publishPosts] is called.
  */
 class EventQueue : EventBus {
-    private companion object {
-        val <T : Any> T.kClass: KClass<T>
-            get() = javaClass.kotlin
-
-        val KType.kClass: KClass<*>
-            get() = Class.forName(toString()).kotlin
-
-        fun KClass<*>.isAssignableFrom(cls: KClass<*>): Boolean =
-                java.isAssignableFrom(cls.java)
-
-        fun validateEventHandler(handler: KFunction<*>) {
-            val name = handler.name
-            val returnsUnit = handler.returnType == Unit::class.defaultType
-            val parameters = handler.parameters
-            require(returnsUnit) { "$name doesn't return Unit!" }
-            require(parameters.size == 2) {
-                "$name receives more than one parameter!"
-            }
-            require(Event::class.isAssignableFrom(parameters[1].type.kClass)) {
-                "$name doesn't receive a subtype of Event!"
-            }
+    private fun Method.validateEventHandler() {
+        require(returnType.name == "void") { "$name doesn't return Unit/void!" }
+        require(parameterCount == 1) { "$name doesn't have single parameter!" }
+        require(Event::class.java.isAssignableFrom(parameterTypes[0])) {
+            "$name doesn't receive as a parameter a subtype of Event!"
         }
     }
 
-    private val subscribers =
-            hashMapOf<Subscriber, Map<KType, List<KFunction<*>>>>()
+    private val subscribers = hashMapOf<Subscriber, List<Method>>()
     private val eventQueue = LinkedList<Event>()
 
     override fun subscribe(subscriber: Subscriber): Subscription {
-        val handlers = subscriber.kClass.memberFunctions.filter { function ->
-            Subscribe::class in function.annotations.map { it.annotationClass }
+        val handlers = subscriber.javaClass.methods.filter {
+            it.isAnnotationPresent(Subscribe::class.java)
         }
-        handlers.forEach { validateEventHandler(it) }
-        handlers.forEach { it.isAccessible = true }
-        subscribers[subscriber] = handlers.groupBy { it.parameters[1].type }
+        handlers.forEach { it.validateEventHandler() }
+        subscribers[subscriber] = handlers
         return object : Subscription {
             private var isCancelled = false
 
@@ -76,8 +50,8 @@ class EventQueue : EventBus {
                 check(!isCancelled) {
                     "Can't cancel the same subscription multiple times!"
                 }
-                isCancelled = true
                 subscribers.remove(subscriber)
+                isCancelled = true
             }
         }
     }
@@ -89,11 +63,10 @@ class EventQueue : EventBus {
     override fun publishPosts() {
         while (eventQueue.isNotEmpty()) {
             val event = eventQueue.remove()
-            subscribers.forEach { entry ->
-                val (subscriber, map) = entry
-                map[event.kClass.defaultType]?.forEach { handler ->
-                    handler.call(subscriber, event)
-                }
+            for ((subscriber, handlers) in subscribers) {
+                handlers.filter {
+                    it.parameterTypes[0].isInstance(event)
+                }.forEach { it.invoke(subscriber, event) }
             }
         }
     }

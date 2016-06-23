@@ -17,6 +17,7 @@
 package algostorm.event
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Ignore
 import org.junit.Test
 
@@ -35,7 +36,7 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
         val postedEvent = EventMock(5)
         var handledEvent: EventMock? = null
         val subscriber = object : Subscriber {
-            @Subscribe private fun handleEventMock(event: EventMock) {
+            @Subscribe fun handleEventMock(event: EventMock) {
                 handledEvent = event
             }
         }
@@ -51,5 +52,47 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
             @Subscribe fun handleEventMock(event: EventMock, other: Any) {}
         }
         eventBus.subscribe(subscriber)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeNonEventShouldThrow() {
+        val subscriber = object : Subscriber {
+            @Subscribe fun handleNonEvent(any: Any) {}
+        }
+        eventBus.subscribe(subscriber)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeReturningNonVoidShouldThrow() {
+        val subscriber = object : Subscriber {
+            @Subscribe fun handleEventMock(event: EventMock): Any = event
+        }
+        eventBus.subscribe(subscriber)
+    }
+
+    @Test
+    fun protectedHandlerShouldBeIgnored() {
+        val postedEvent = EventMock(5)
+        val subscriber = object : Subscriber {
+            @Subscribe protected fun handleEventMock(event: EventMock) {
+                fail()
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.post(postedEvent)
+        eventBus.publishPosts()
+    }
+
+    @Test
+    fun privateHandlerShouldBeIgnored() {
+        val postedEvent = EventMock(5)
+        val subscriber = object : Subscriber {
+            @Subscribe private  fun handleEventMock(event: EventMock) {
+                fail()
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.post(postedEvent)
+        eventBus.publishPosts()
     }
 }
