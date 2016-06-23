@@ -28,7 +28,7 @@ import java.util.LinkedList
 class EventQueue : EventBus {
     private fun Method.validateEventHandler() {
         require(returnType.name == "void") { "$name doesn't return Unit/void!" }
-        require(parameterCount == 1) { "$name doesn't have single parameter!" }
+        require(parameters.size == 1) { "$name doesn't have single parameter!" }
         require(Event::class.java.isAssignableFrom(parameterTypes[0])) {
             "$name doesn't receive as a parameter a subtype of Event!"
         }
