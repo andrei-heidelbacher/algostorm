@@ -16,26 +16,26 @@
 
 package algostorm.graphics2d
 
-import algostorm.ecs.EntityManager
 import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 
 /**
  * A system which handles the rendering of all entities in the game.
- *
- * When a [Render] event is received, the [render] method is called.
- *
- * @property entityManager an entity manager which can be queried to fetch
- * renderable entities
  */
-abstract class AbstractRenderingSystem(
-        protected val entityManager: EntityManager,
-        protected val tileCollection: TileCollection,
-        protected val tileWidth: Int,
-        protected val tileHeight: Int
-) : Subscriber {
+abstract class AbstractRenderingSystem : Subscriber {
+    /**
+     * This method should render all the game data to the screen.
+     *
+     * It will be called from the private engine thread and should be blocking
+     * and thread-safe.
+     */
     protected abstract fun render(): Unit
 
+    /**
+     * When a [Render] event is received, the [render] method is called.
+     *
+     * @param event the rendering request
+     */
     @Subscribe fun handleRender(event: Render) {
         render()
     }

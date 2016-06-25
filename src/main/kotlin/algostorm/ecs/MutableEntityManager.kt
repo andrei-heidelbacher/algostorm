@@ -16,54 +16,35 @@
 
 package algostorm.ecs
 
-import kotlin.reflect.KClass
-
 /**
  * A mutable view of an [EntityManager] that manages the creation and deletion
  * of all [entities] in the game.
  *
- * Entities should not be created manually, but through a mutable entity manager.
+ * Entities should not be created manually, but through a mutable entity
+ * manager.
  */
 interface MutableEntityManager : EntityManager {
     override val entities: Sequence<MutableEntity>
 
     override operator fun get(entityId: Int): MutableEntity?
 
-    override fun <T : Component> filterEntities(
-            type: KClass<T>
-    ): Sequence<MutableEntity> =
-            entities.filter { type in it }
-
     override fun filterEntities(
-            vararg types: KClass<out Component>
+            vararg properties: String
     ): Sequence<MutableEntity> =
-            entities.filter { entity -> types.all { type -> type in entity } }
+            entities.filter { entity -> properties.all { it in entity } }
 
     /**
-     * Creates an entity with the given [components] and adds it to this
+     * Creates an entity with the given [properties] and adds it to this
      * manager.
      *
      * The generated id must be unique among all other entities in this manager.
      *
-     * @param components the components the created entity must contain
+     * @param properties the properties the created entity must contain
      * @return the created entity
      * @throws IllegalStateException if there are too many entities in this
      * manager
      */
-    fun create(components: Iterable<Component>): MutableEntity
-
-    /**
-     * Creates an entity with the given id and [components] and adds it to this
-     * manager.
-     *
-     * @param entityId the id the created entity must have
-     * @param components the components the created entity must contain
-     * @return the created entity
-     * @throws IllegalArgumentException if the [entityId] already exists
-     * @throws IllegalStateException if there are too many entities in this
-     * manager
-     */
-    fun create(entityId: Int, components: Iterable<Component>): MutableEntity
+    fun create(properties: Map<String, Any>): MutableEntity
 
     /**
      * Removes the given entity from this manager.

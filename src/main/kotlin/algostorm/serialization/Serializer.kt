@@ -21,13 +21,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerationException
 import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-
-import algostorm.ecs.Component
+import com.fasterxml.jackson.module.kotlin.readValue
 
 import java.io.IOException
 import java.io.InputStream
@@ -37,8 +35,6 @@ import kotlin.reflect.KClass
 
 /**
  * Serialization and deserialization utility methods.
- *
- * Only non-generic concrete types can be deserialized.
  */
 object Serializer {
     /**
@@ -46,7 +42,10 @@ object Serializer {
      */
     const val FORMAT: String = "json"
 
-    private val objectMapper = jacksonObjectMapper().apply {
+    /**
+     * The object that handles serialization and deserialization.
+     */
+    @JvmField val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
@@ -79,31 +78,5 @@ object Serializer {
             JsonMappingException::class
     )
     @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
-            readValue(src, T::class)
-
-    /**
-     * Special utility function which can deserialize a list of components.
-     *
-     * @param src the input stream from which the components are read
-     * @return the list of components
-     */
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readComponents(
-            src: InputStream
-    ): List<Component> = objectMapper.readValue(
-            src,
-            object : TypeReference<List<Component>>() {}
-    )
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun readSaveState(src: InputStream): SaveState =
-            objectMapper.readValue(src, SaveState::class.java)
+            objectMapper.readValue(src)
 }

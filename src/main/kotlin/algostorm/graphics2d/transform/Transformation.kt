@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d.transform
 
-import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
 /**
@@ -25,8 +24,14 @@ import algostorm.ecs.Entity
  * @property dx the translation amount on the x-axis in tiles
  * @property dy the translation amount on the y-axis in tiles
  */
-data class Transformation(val dx: Float, val dy: Float) : Component {
+data class Transformation(val dx: Float, val dy: Float) {
     companion object {
+        /**
+         * The name of the transformation property. It is of type
+         * [Transformation].
+         */
+        const val PROPERTY: String = "transformation"
+
         /**
          * The identity transformation which leaves the entity on which it is
          * applied unchanged.
@@ -38,7 +43,7 @@ data class Transformation(val dx: Float, val dy: Float) : Component {
          * transformation is applied.
          */
         val Entity.transformation: Transformation
-            get() = get() ?: IDENTITY
+            get() = get(PROPERTY) as Transformation? ?: IDENTITY
     }
 
     /**

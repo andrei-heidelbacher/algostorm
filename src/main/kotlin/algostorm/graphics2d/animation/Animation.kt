@@ -16,7 +16,6 @@
 
 package algostorm.graphics2d.animation
 
-import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
 /**
@@ -35,14 +34,19 @@ data class Animation(
         val sheetId: Int,
         val name: String,
         val remainingTicks: Int
-) : Component {
+) {
     companion object {
+        /**
+         * The name of the animation property. It is of type [Animation].
+         */
+        const val PROPERTY: String = "animation"
+
         /**
          * The [Animation] component of this entity, or `null` if it doesn't
          * have an animation.
          */
         val Entity.animation: Animation?
-            get() = get()
+            get() = get(PROPERTY) as Animation?
     }
 
     init {

@@ -16,8 +16,6 @@
 
 package algostorm.ecs
 
-import kotlin.reflect.KClass
-
 /**
  * An object with the role of a database that allows fetching [entities] that
  * exist in the game.
@@ -42,23 +40,14 @@ interface EntityManager {
     operator fun get(entityId: Int): Entity?
 
     /**
-     * Returns all entities that have a component of the given [type].
+     * Returns all entities that have the specified properties.
      *
-     * @param type the component type the entities must contain
-     * @return all entities that have a component of the requested type
-     */
-    fun <T : Component> filterEntities(type: KClass<T>): Sequence<Entity> =
-            entities.filter { type in it }
-
-    /**
-     * Returns all entities that have a component of each provided type.
-     *
-     * @param types the component types the requested entities must contain
+     * @param properties the property names the requested entities must contain
      * @return all the entities in the manager that contain the requested
-     * component types
+     * properties
      */
-    fun filterEntities(vararg types: KClass<out Component>): Sequence<Entity> =
-            entities.filter { entity -> types.all { type -> type in entity } }
+    fun filterEntities(vararg properties: String): Sequence<Entity> =
+            entities.filter { entity -> properties.all { it in entity } }
 
     /**
      * Checks if the given entity is contained in this manager or not.

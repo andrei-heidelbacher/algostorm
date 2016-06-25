@@ -16,12 +16,17 @@
 
 package algostorm.script
 
+import algostorm.event.Subscribe
+import algostorm.event.Subscriber
+
 /**
- * An object that can execute scripts.
+ * A system that handles script execution requests.
  *
- * Methods on this object will be called from the private engine thread.
+ * @property scriptSet the collection that maps script ids to scrip URIs
  */
-interface ScriptingEngine {
+abstract class AbstractScriptingSystem(
+        private val scriptSet: Map<Int, String>
+) : Subscriber {
     /**
      * Makes the given [value] available as a variable with the name equal to
      * the given [key] to all executed scripts.
@@ -29,7 +34,7 @@ interface ScriptingEngine {
      * @property key the name of the variable that will be made available
      * @property value the object that will be made available
      */
-    fun put(key: String, value: Any?): Unit
+    protected abstract fun put(key: String, value: Any?): Unit
 
     /**
      * Executes the script at the given [scriptUri] with the specified arguments
@@ -39,5 +44,13 @@ interface ScriptingEngine {
      * @param args the script parameters
      * @return the script result, or `null` if it doesn't return anything.
      */
-    fun runScript(scriptUri: String, vararg args: Any?): Any?
+    protected abstract fun runScript(scriptUri: String, vararg args: Any?): Any?
+
+    /**
+     * Upon receiving a [RunScript], the [runScript] method is called.
+     */
+    @Subscribe fun handleRunScript(event: RunScript) {
+        val scriptUri = scriptSet[event.scriptId] ?: error("Missing script id!")
+        runScript(scriptUri, *event.args.toTypedArray())
+    }
 }

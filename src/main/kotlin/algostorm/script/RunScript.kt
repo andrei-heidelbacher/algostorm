@@ -21,9 +21,6 @@ import algostorm.event.Event
 /**
  * An event which requests the execution of a script.
  *
- * The [ScriptingSystem.Context] will be made available to the script as a
- * variable named "context" (without quotes).
- *
  * @property scriptId the id of the script that should be executed
  * @property args the arguments of the script function
  */

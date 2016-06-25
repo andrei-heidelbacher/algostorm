@@ -24,18 +24,20 @@ import algostorm.graphics2d.transform.Transformation.Companion.transformation
 /**
  * A system that manages the transformations applied to entities.
  *
- * Upon receiving a [Transform] event, it adds the indicated [Transformation] to
- * the current entity `Transformation`.
- *
  * @property entityManager the entity manager used to fetch and update entity
  * transformations
  */
 class TransformationSystem(
         private val entityManager: MutableEntityManager
 ) : Subscriber {
+    /**
+     * Upon receiving a [Transform] event, it adds the indicated
+     * [Transformation] to the current entity `Transformation`.
+     */
     @Subscribe fun handleTransform(event: Transform) {
         entityManager[event.entityId]?.let { entity ->
-            entity.set(entity.transformation + event.transformation)
+            entity[Transformation.PROPERTY] =
+                    entity.transformation + event.transformation
         }
     }
 }

@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package algostorm.tiled
+package algostorm.tiled.json
 
-class Map(
-        val width: Int,
-        val height: Int,
-        val tileWidth: Int,
-        val tileHeight: Int,
-        val orientation: Orientation,
-        val tileSets: List<TileSet>,
-        val layers: List<Layer>,
-        var nextObjectId: Int,
-        val properties: MutableMap<String, Any> = hashMapOf()
-) {
-    enum class Orientation {
-        ORTHOGONAL, ISOMETRIC, STAGGERED
-    }
+data class Object(val id: Int) {
+    val properties: MutableMap<String, Any> = hashMapOf()
 }

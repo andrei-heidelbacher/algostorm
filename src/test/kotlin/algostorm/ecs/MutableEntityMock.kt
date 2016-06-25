@@ -16,45 +16,38 @@
 
 package algostorm.ecs
 
-import kotlin.reflect.KClass
-
 /**
  * A mutable entity implementation that should be used for testing purposes.
  */
 class MutableEntityMock(id: Int) : MutableEntity(id) {
-    private val componentMap = hashMapOf<KClass<out Component>, Component>()
+    val properties: MutableMap<String, Any> = hashMapOf()
 
-    constructor(id: Int, components: Iterable<Component>) : this(id) {
-        components.forEach { set(it) }
+    constructor(id: Int, properties: Map<String, Any>) : this(id) {
+        this.properties.putAll(properties)
     }
 
-    override val components: List<Component>
-        get() = componentMap.values.toList()
+    override operator fun get(name: String): Any? = properties[name]
 
-    override fun <T : Component> get(type: KClass<T>): T? =
-            type.java.cast(componentMap[type])
-
-    override fun <T : Component> remove(type: KClass<T>) {
-        componentMap.remove(type)
+    override fun remove(name: String) {
+        properties.remove(name)
     }
 
-    override fun <T : Component> set(type: KClass<T>, value: T) {
-        componentMap[type] = value
+    override operator fun <T : Any> set(name: String, value: T) {
+        properties[name] = value
     }
 
     /**
-     * Checks if the entity components are equal to the given [components].
+     * Checks if the entity properties are equal to the given properties.
      *
-     * @param components the expected components of this entity
-     * @throws IllegalStateException if this entity has different components
+     * @param expectedProperties the expected properties of this entity
+     * @throws IllegalStateException if this entity has different properties
      */
-    fun verify(components: Iterable<Component>) {
-        val actualComponents = this.components.toSet()
-        val expectedComponents = components.toSet()
-        check(actualComponents == expectedComponents) {
-            "Entity $id doesn't have the indicated components!\n" +
-                    "Expected: $expectedComponents\n" +
-                    "Actual: $actualComponents"
+    fun verify(expectedProperties: Map<String, Any>) {
+        val actualProperties = properties
+        check(actualProperties == expectedProperties) {
+            "Entity $id doesn't have the indicated properties!\n" +
+                    "Expected: $expectedProperties\n" +
+                    "Actual: $actualProperties"
         }
     }
 }

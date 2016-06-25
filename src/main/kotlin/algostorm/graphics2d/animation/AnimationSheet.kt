@@ -37,7 +37,7 @@ data class AnimationSheet(private val animations: Map<String, List<Frame>>) {
     /**
      * A building-block for frame sequences used in animations.
      *
-     * @property tileId the id of the tile that should be rendered
+     * @property spriteId the id of the tile that should be rendered
      * @property flippedHorizontally whether the tile should be flipped
      * horizontally
      * @property flippedVertically whether the tile should be flipped vertically
@@ -46,7 +46,7 @@ data class AnimationSheet(private val animations: Map<String, List<Frame>>) {
      * @throws IllegalArgumentException if [durationInTicks] is not positive
      */
     data class Frame(
-            val tileId: Int,
+            val spriteId: Int,
             val flippedHorizontally: Boolean,
             val flippedVertically: Boolean,
             val flippedDiagonally: Boolean,

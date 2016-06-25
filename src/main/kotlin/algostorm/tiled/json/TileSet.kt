@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.tiled
+package algostorm.tiled.json
 
 class TileSet(
         val name: String,

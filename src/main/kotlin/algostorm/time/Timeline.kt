@@ -17,9 +17,19 @@
 package algostorm.time
 
 /**
- * A container for all the timers in the game. This object should be saved as a
- * property of the game.
- *
- * @property timers a list which contains all the active timers in the game
+ * A container for all the timers in the game.
  */
-data class Timeline(val timers: List<Timer>)
+interface Timeline {
+    /**
+     * @param timer the timer which should be registered
+     */
+    fun registerTimer(timer: Timer): Unit
+
+    /**
+     * Signals that a tick has passed and all registered timers should be
+     * updated.
+     *
+     * @return the list of all timers that expired upon this tick
+     */
+    fun tick(): List<Timer>
+}

@@ -16,8 +16,11 @@
 
 package algostorm.sound
 
+import algostorm.event.Subscribe
+import algostorm.event.Subscriber
+
 /**
- * An object which handles playing sounds.
+ * A system which handles playing and stopping sounds.
  *
  * Sounds on different frequencies are played simultaneously and do not affect
  * each other. Each frequency can play at most one sound at once. This allows
@@ -26,8 +29,12 @@ package algostorm.sound
  *
  * Methods on this object will be called from the private engine thread. All
  * method calls should be non-blocking and thread-safe.
+ *
+ * @param soundSet the collection that maps sound ids to sound URIs
  */
-interface SoundEngine {
+abstract class AbstractSoundSystem(
+        private val soundSet: Map<Int, String>
+) : Subscriber {
     /**
      * Plays the sound located at the given [soundUri]. If another sound is
      * already playing on the given [frequency], that sound should be stopped
@@ -37,12 +44,35 @@ interface SoundEngine {
      * @param frequency the frequency on which the sound should be played
      * @param loop whether the sound should be looped or not
      */
-    fun playSound(soundUri: String, frequency: Int, loop: Boolean = false): Unit
+    protected abstract fun playSound(
+            soundUri: String,
+            frequency: Int,
+            loop: Boolean
+    ): Unit
 
     /**
      * Stops the sound playing on the given [frequency].
      *
      * @param frequency the frequency on which sounds should be stopped
      */
-    fun stopSound(frequency: Int): Unit
+    protected abstract fun stopSound(frequency: Int): Unit
+
+    /**
+     * After receiving a [PlaySound] event, the [playSound] method is called.
+     *
+     * @param event the event which requests a sound to be played
+     */
+    @Subscribe fun handlePlaySound(event: PlaySound) {
+        val soundUri = soundSet[event.soundId] ?: error("Missing sound id!")
+        playSound(soundUri, event.frequency, event.loop)
+    }
+
+    /**
+     * After receiving a [StopSound] event, the [stopSound] method is called.
+     *
+     * @param event the event which requests a sound to be stopped
+     */
+    @Subscribe fun handleStopSound(event: StopSound) {
+        stopSound(event.frequency)
+    }
 }

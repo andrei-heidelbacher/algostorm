@@ -16,61 +16,37 @@
 
 package algostorm.ecs
 
-import kotlin.reflect.KClass
-
 /**
- * A game object containing a set of [components].
+ * A game object containing a set of named properties.
  *
- * It can only contain one component of a specific type. Two entities are equal
- * if and only if they have the same [id]. Raw entities should not be
- * serialized; instead, serialize the `id` and `components`.
+ * Two entities are equal if and only if they have the same [id]. Raw entities
+ * should not be serialized; instead, serialize the `id` and underlying
+ * properties.
  *
  * This is a read-only view, but the underlying implementation might be mutable.
+ *
+ * All the entity properties should be immutable data-types or primitive types.
  *
  * @property id the unique identifier of the entity
  */
 abstract class Entity(val id: Int) {
     /**
-     * All components owned by this entity at the time of calling.
+     * Returns the property with the given [name].
+     *
+     * @param name the name of the property
+     * @return the requested property, or `null` if this entity doesn't contain
+     * the property
      */
-    abstract val components: List<Component>
+    abstract fun get(name: String): Any?
 
     /**
-     * Returns the component of the given [type] owned by this entity.
+     * Checks whether this entity contains the property with the given [name].
      *
-     * @param type the type of the requested component
-     * @return the component of the specified type, or `null` if this entity
-     * doesn't contain such a component
-     */
-    abstract operator fun <T : Component> get(type: KClass<T>): T?
-
-    /**
-     * Returns the component of the given type [T] owned by this entity.
-     *
-     * @param T the type of the requested component
-     * @return the component of the specified type, or `null` if this entity
-     * doesn't contain such a component
-     */
-    inline fun <reified T : Component> get(): T? = this[T::class]
-
-    /**
-     * Returns whether this entity contains the given component [type].
-     *
-     * @param type the component type
-     * @return `true` if this entity contains the given component type, `false`
+     * @param name the name of the property
+     * @return `true` if this entity contains the given property, `false`
      * otherwise
      */
-    operator fun <T : Component> contains(type: KClass<T>): Boolean =
-            get(type) != null
-
-    /**
-     * Returns whether this entity contains the given component type [T].
-     *
-     * @param T the component type
-     * @return `true` if this entity contains the given component type, `false`
-     * otherwise
-     */
-    inline fun <reified T : Component> contains(): Boolean = T::class in this
+    operator fun contains(name: String): Boolean = get(name) != null
 
     final override fun equals(other: Any?): Boolean =
             other is Entity && id == other.id

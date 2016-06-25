@@ -16,37 +16,31 @@
 
 package algostorm.graphics2d
 
-import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
 /**
  * A component that contains rendering information.
  *
- * A sprite is rendered as a tile and is identified through its [tileId].
+ * A sprite is rendered as a tile and is identified through its [spriteId].
  *
  * Entities should be rendered in ascending order by their [z] coordinate. In
  * case of equality, the user can define a custom ordering.
  *
- * @property tileId the unique identifier of the sprite
- * @property flippedHorizontally whether the sprite should be flipped
- * horizontally
- * @property flippedVertically whether the sprite should be flipped vertically
- * @property flippedDiagonally whether the sprite should be flipped diagonally
+ * @property spriteId the unique identifier of the sprite
  * @property z the z-coordinate of the owner entity
  */
-data class Sprite(
-        val tileId: Int,
-        val flippedHorizontally: Boolean,
-        val flippedVertically: Boolean,
-        val flippedDiagonally: Boolean,
-        val z: Int
-) : Component {
+data class Sprite(val spriteId: Int, val z: Int) {
     companion object {
+        /**
+         * The name of the sprite property. It is of type [Sprite].
+         */
+        const val PROPERTY: String = "sprite"
+
         /**
          * The [Sprite] component of this entity, or `null` if it doesn't have a
          * sprite.
          */
         val Entity.sprite: Sprite?
-            get() = get()
+            get() = get(PROPERTY) as Sprite?
     }
 }

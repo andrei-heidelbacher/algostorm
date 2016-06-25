@@ -16,7 +16,6 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.Component
 import algostorm.ecs.Entity
 
 /**
@@ -35,14 +34,19 @@ data class Box(
         val y: Int,
         val width: Int,
         val height: Int
-) : Component {
+) {
     companion object {
+        /**
+         * The name of the box property. It is of type [Box].
+         */
+        const val PROPERTY: String = "box"
+
         /**
          * The [Box] component of this entity, or `null` if it doesn't have a
          * box.
          */
         val Entity.box: Box?
-            get() = get()
+            get() = get(PROPERTY) as Box?
     }
 
     init {
@@ -57,8 +61,8 @@ data class Box(
      * @return `true` if the given tile is inside this box, `false` otherwise
      */
     fun contains(x: Int, y: Int): Boolean =
-            this.x <= x && x <= this.x + this.width &&
-                    this.y <= y && y <= this.y + this.height
+            this.x <= x && x < this.x + this.width &&
+                    this.y <= y && y < this.y + this.height
 
     /**
      * Returns whether the two boxes overlap (that is, there exists a tile
@@ -67,10 +71,10 @@ data class Box(
      * @param other the box with which the intersection is checked
      * @return `true` if the two boxes overlap, `false` otherwise
      */
-    fun overlaps(other: Box): Boolean = contains(other.x, other.y) ||
-            contains(other.x, other.y + other.height) ||
-            contains(other.x + other.width, other.y) ||
-            contains(other.x + other.width, other.y + other.height)
+    fun overlaps(other: Box): Boolean = x < other.x + other.width &&
+            x + width - 1 >= other.x &&
+            y < other.y + other.height &&
+            y + height - 1 >= other.y
 
     /**
      * Returns a copy of this box translated with the indicated amount.

@@ -24,31 +24,21 @@ class MutableEntityManagerMock() : MutableEntityManager {
     private val entityMap = hashMapOf<Int, MutableEntityMock>()
     private var nextId = 0
 
-    constructor(entities: Map<Int, Iterable<Component>>) : this() {
-        entities.forEach { create(it.key, it.value) }
+    constructor(entities: Map<Int, Map<String, Any>>) : this() {
+        entityMap.putAll(entities.mapValues {
+            MutableEntityMock(it.key, it.value)
+        })
     }
 
     override val entities: Sequence<MutableEntityMock>
         get() = entityMap.values.asSequence()
 
-    override fun create(components: Iterable<Component>): MutableEntityMock {
-        check(entityMap.size < Int.MAX_VALUE)
-        while (nextId in entityMap) {
-            ++nextId
-        }
+    override fun create(properties: Map<String, Any>): MutableEntityMock {
+        check(nextId >= 0)
         val id = nextId
-        ++nextId
-        return create(id, components)
-    }
-
-    override fun create(
-            entityId: Int,
-            components: Iterable<Component>
-    ): MutableEntityMock {
-        require(entityId !in entityMap)
-        val entity = MutableEntityMock(entityId)
-        components.forEach { entity[it.javaClass.kotlin] = it }
-        entityMap[entityId] = entity
+        val entity = MutableEntityMock(id, properties)
+        nextId++
+        entityMap[id] = entity
         return entity
     }
 
@@ -60,13 +50,12 @@ class MutableEntityManagerMock() : MutableEntityManager {
     /**
      * Checks that the manager entities are equal to the given [entities].
      *
-     * @param entities the expected state of the manager
+     * @param expectedEntities the expected state of the manager
      * @throws IllegalStateException if the given entities do not correspond to
      * the manager entities
      */
-    fun verify(entities: Map<Int, Iterable<Component>>) {
-        val actualEntities = entityMap.mapValues { it.value.components.toSet() }
-        val expectedEntities = entities.mapValues { it.value.toSet() }
+    fun verify(expectedEntities: Map<Int, Map<String, Any>>) {
+        val actualEntities = entityMap.mapValues { it.value.properties }
         check(actualEntities == expectedEntities) {
             "Entity manager doesn't have the indicated entities!\n" +
                     "Expected: $expectedEntities\n" +

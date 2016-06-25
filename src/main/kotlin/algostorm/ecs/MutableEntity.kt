@@ -16,62 +16,25 @@
 
 package algostorm.ecs
 
-import kotlin.reflect.KClass
-
 /**
- * A mutable view of an [Entity] that allows setting or removing components.
+ * A mutable view of an [Entity] that allows setting or removing properties.
  */
 abstract class MutableEntity(id: Int) : Entity(id) {
     /**
-     * Even if a component is removed, added or replaced after retrieving the
-     * components, the returned list will not change.
+     * Sets the [value] of the specified property.
+     *
+     * If this entity already contains a property with the given name, the value
+     * is overwritten.
+     *
+     * @param T the type of the property that is set
+     * @param name the name of the property
      */
-    override abstract val components: List<Component>
+    abstract operator fun <T : Any> set(name: String, value: T): Unit
 
     /**
-     * Sets the [value] of the specified component [type].
+     * Removes the specified property.
      *
-     * If this entity already contains a component of the specified type, the
-     * value is overwritten.
-     *
-     * @param type the type of the component that is set
-     * @param value the value of the component that is set
+     * @param name the name of the property that should be removed
      */
-    abstract operator fun <T : Component> set(type: KClass<T>, value: T): Unit
-
-    /**
-     * Sets the [value] of the specified component type [T].
-     *
-     * If this entity already contains a component of the specified type, the
-     * value is overwritten.
-     *
-     * @param T the type of the component that is set
-     * @param value the value of the component that is set
-     */
-    inline fun <reified T : Component> set(value: T) {
-        this[T::class] = value
-    }
-
-    /**
-     * Removes the specified component [type].
-     *
-     * @param type the type of the component to be removed
-     */
-    abstract fun <T : Component> remove(type: KClass<T>): Unit
-
-    /**
-     * Removes the specified component type [T].
-     *
-     * @param T the type of the component to be removed
-     */
-    inline fun <reified T : Component> remove() {
-        remove(T::class)
-    }
-
-    /**
-     * Removes all the components from this entity.
-     */
-    fun clear() {
-        components.forEach { remove(it.javaClass.kotlin) }
-    }
+    abstract fun remove(name: String): Unit
 }

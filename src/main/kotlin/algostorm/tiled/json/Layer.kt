@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package algostorm.tiled
+package algostorm.tiled.json
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
@@ -40,7 +40,7 @@ sealed class Layer {
 
     class TileLayer(
             override val name: String,
-            val data: List<Int>,
+            val data: IntArray,
             override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
@@ -50,7 +50,7 @@ sealed class Layer {
 
     class ImageLayer(
             override val name: String,
-            val image: String,
+            var image: String,
             override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,

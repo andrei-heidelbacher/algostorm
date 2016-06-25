@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package algostorm.ecs
+package algostorm.tiled.json
 
-/**
- * A component that should be used for testing purposes.
- *
- * @property componentId the unique identifier of the component. Two components
- * are equal if and only if they have the same id.
- */
-data class ComponentMock(val componentId: Int) : Component
+object Tile {
+    val Int.gid: Int
+        get() = and(0x1FFFFFFF)
+
+    val Int.isFlippedHorizontally: Boolean
+        get() = toLong().and(0x80000000) != 0L
+
+    val Int.isFlippedVertically: Boolean
+        get() = and(0x4000000) != 0
+
+    val Int.isFlippedDiagonally: Boolean
+        get() = and(0x2000000) != 0
+}

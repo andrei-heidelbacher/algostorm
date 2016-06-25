@@ -36,10 +36,14 @@ abstract class MutableEntityManagerTest(
         protected val entityManager: MutableEntityManager,
         protected val entityCount: Int
 ) {
+    companion object {
+        const val PROPERTY_NAME_MOCK: String = "property"
+    }
+
     @Before
     fun setUp() {
         for (id in 0..entityCount - 1) {
-            entityManager.create(listOf(ComponentMock(id)))
+            entityManager.create(mapOf(PROPERTY_NAME_MOCK to id))
         }
     }
 
@@ -65,11 +69,6 @@ abstract class MutableEntityManagerTest(
         }
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun createExistingShouldThrow() {
-        entityManager.create(0, listOf())
-    }
-
     @Test
     fun getNonExistingShouldReturnNull() {
         assertEquals(null, entityManager[entityCount])
@@ -85,10 +84,7 @@ abstract class MutableEntityManagerTest(
     @Test
     fun getExistingShouldHaveSameComponents() {
         for (id in 0..entityCount - 1) {
-            assertEquals(
-                    setOf(ComponentMock(id)),
-                    entityManager[id]?.components?.toSet()
-            )
+            assertEquals(entityManager[id]?.get(PROPERTY_NAME_MOCK), id)
         }
     }
 
@@ -127,11 +123,11 @@ abstract class MutableEntityManagerTest(
     @Test
     fun filterEntitiesShouldFilterNonConformingEntities() {
         for (id in entityCount..2 * entityCount - 1) {
-            entityManager.create(listOf())
+            entityManager.create(emptyMap())
         }
         assertEquals(
                 (0..entityCount - 1).toSet(),
-                entityManager.filterEntities(ComponentMock::class).map {
+                entityManager.filterEntities(PROPERTY_NAME_MOCK).map {
                     it.id
                 }.toSet()
         )

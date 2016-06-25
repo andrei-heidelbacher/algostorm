@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package algostorm.ecs
+package algostorm.tiled.json
 
-/**
- * Base type for all components.
- *
- * All components should be immutable data classes that contain only properties,
- * without any associated behaviour. The type of a component is denoted by its
- * kotlin class object.
- *
- * Concrete components should not be generic, otherwise they may not be
- * serializable.
- */
-interface Component
+class TiledMap(
+        val width: Int,
+        val height: Int,
+        val tileWidth: Int,
+        val tileHeight: Int,
+        val orientation: Orientation,
+        val tileSets: List<TileSet>,
+        val layers: List<Layer>,
+        var nextObjectId: Int,
+        val properties: MutableMap<String, Any> = hashMapOf()
+) {
+    enum class Orientation {
+        ORTHOGONAL, ISOMETRIC, STAGGERED
+    }
+}

@@ -20,6 +20,7 @@ import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
 import algostorm.event.Subscribe
 import algostorm.event.Subscriber
+import algostorm.graphics2d.Sprite
 import algostorm.graphics2d.Sprite.Companion.sprite
 import algostorm.graphics2d.animation.Animation.Companion.animation
 import algostorm.graphics2d.animation.AnimationSheet.Frame
@@ -28,35 +29,15 @@ import algostorm.time.Tick
 /**
  * A system that manages the animation information of entities.
  *
- * Upon receiving a [Tick] event, it updates all the [Animation] components. If
- * any of them completes, they are continued with the [AnimationSheet.IDLE]
- * animation.
- *
- * Upon receiving an [Animate] event, it overwrites the current animation with
- * the indicated animation, or with the `IDLE` animation if the indicated one
- * doesn't exist in the animation sheet.
- *
- * Entities without `Animation` and `Sprite` components can't be animated.
- *
  * @property entityManager the entity manager used to retrieve and update entity
  * animations
- * @property properties the properties of the game
+ * @property animationSet the collection which maps animation sheet ids to
+ * animation sheets
  */
 class AnimationSystem(
         private val entityManager: MutableEntityManager,
-        private val properties: Map<String, Any>
+        private val animationSet: Map<Int, AnimationSheet>
 ) : Subscriber {
-    companion object {
-        /**
-         * The name of the property used by this system. It should be an object
-         * of type [AnimationSet].
-         */
-        const val ANIMATION_SET: String = "animationSet"
-    }
-
-    private val animationSet: AnimationSet
-        get() = properties[ANIMATION_SET] as AnimationSet
-
     private fun getSheet(sheetId: Int): AnimationSheet =
             animationSet[sheetId] ?: error("Missing sheet id!")
 
@@ -64,17 +45,19 @@ class AnimationSystem(
             copy(remainingTicks = remainingTicks - 1)
 
     private fun MutableEntity.updateSprite(frame: Frame) {
-        set(sprite?.copy(
-                tileId = frame.tileId,
-                flippedHorizontally = frame.flippedHorizontally,
-                flippedVertically = frame.flippedVertically,
-                flippedDiagonally = frame.flippedDiagonally
+        set(Sprite.PROPERTY, sprite?.copy(
+                spriteId = frame.spriteId
         ) ?: error("Can't animate entity without a sprite!"))
     }
 
     private fun MutableEntity.setAnimation(sheetId: Int, name: String) {
         val frames = getSheet(sheetId)[name]
-        set(Animation(sheetId, name, frames.sumBy { it.durationInTicks }))
+        val newAnimation = Animation(
+                sheetId = sheetId,
+                name = name,
+                remainingTicks = frames.sumBy { it.durationInTicks }
+        )
+        set(Animation.PROPERTY, newAnimation)
         updateSprite(frames.first())
     }
 
@@ -90,21 +73,37 @@ class AnimationSystem(
         return first()
     }
 
+    /**
+     * Upon receiving a [Tick] event, it updates all the [Animation] components.
+     * If any of them completes, they are continued with the
+     * [AnimationSheet.IDLE] animation.
+     *
+     * @param event the event which signals a tick has elapsed
+     */
     @Subscribe fun handleTick(event: Tick) {
-        entityManager.filterEntities(Animation::class).forEach { entity ->
-            val animation = entity.animation?.tick()
-                    ?: error("Entity is missing animation component!")
-            val (sheetId, name, remainingTicks) = animation
-            val sheet = getSheet(sheetId)
-            if (remainingTicks == 0) {
-                entity.setAnimation(sheetId, AnimationSheet.IDLE)
-            } else {
-                entity.set(animation)
-                entity.updateSprite(sheet[name].getFrame(remainingTicks))
+        entityManager.filterEntities(Animation.PROPERTY).forEach { entity ->
+            entity.animation?.tick()?.let { animation ->
+                val (sheetId, name, remainingTicks) = animation
+                val sheet = getSheet(sheetId)
+                if (remainingTicks == 0) {
+                    entity.setAnimation(sheetId, AnimationSheet.IDLE)
+                } else {
+                    entity[Animation.PROPERTY] = animation
+                    entity.updateSprite(sheet[name].getFrame(remainingTicks))
+                }
             }
         }
     }
 
+    /**
+     * Upon receiving an [Animate] event, it overwrites the current animation
+     * with the indicated animation, or with the `IDLE` animation if the
+     * indicated one doesn't exist in the animation sheet.
+     *
+     * Entities without `Animation` and `Sprite` components can't be animated.
+     *
+     * @param event the animation request
+     */
     @Subscribe fun handleAnimate(event: Animate) {
         entityManager[event.entityId]?.let { entity ->
             val sheetId = entity.animation?.sheetId
