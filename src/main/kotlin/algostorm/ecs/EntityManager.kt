@@ -40,16 +40,6 @@ interface EntityManager {
     operator fun get(entityId: Int): Entity?
 
     /**
-     * Returns all entities that have the specified properties.
-     *
-     * @param properties the property names the requested entities must contain
-     * @return all the entities in the manager that contain the requested
-     * properties
-     */
-    fun filterEntities(vararg properties: String): Sequence<Entity> =
-            entities.filter { entity -> properties.all { it in entity } }
-
-    /**
      * Checks if the given entity is contained in this manager or not.
      *
      * @param entityId the id of the given entity

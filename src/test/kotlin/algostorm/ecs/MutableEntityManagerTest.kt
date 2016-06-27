@@ -56,20 +56,6 @@ abstract class MutableEntityManagerTest(
     }
 
     @Test
-    fun clearShouldLeaveEntitiesEmpty() {
-        entityManager.clear()
-        assertEquals(0, entityManager.entities.count())
-    }
-
-    @Test
-    fun getAfterClearShouldReturnNull() {
-        entityManager.clear()
-        for (id in -1..entityCount) {
-            assertEquals(null, entityManager[id])
-        }
-    }
-
-    @Test
     fun getNonExistingShouldReturnNull() {
         assertEquals(null, entityManager[entityCount])
     }
@@ -127,7 +113,9 @@ abstract class MutableEntityManagerTest(
         }
         assertEquals(
                 (0..entityCount - 1).toSet(),
-                entityManager.filterEntities(PROPERTY_NAME_MOCK).map {
+                entityManager.entities.filter {
+                    PROPERTY_NAME_MOCK in it
+                }.map {
                     it.id
                 }.toSet()
         )

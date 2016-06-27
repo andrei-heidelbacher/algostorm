@@ -81,7 +81,7 @@ class AnimationSystem(
      * @param event the event which signals a tick has elapsed
      */
     @Subscribe fun handleTick(event: Tick) {
-        entityManager.filterEntities(Animation.PROPERTY).forEach { entity ->
+        entityManager.entities.forEach { entity ->
             entity.animation?.tick()?.let { animation ->
                 val (sheetId, name, remainingTicks) = animation
                 val sheet = getSheet(sheetId)

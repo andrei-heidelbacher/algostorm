@@ -28,11 +28,6 @@ interface MutableEntityManager : EntityManager {
 
     override operator fun get(entityId: Int): MutableEntity?
 
-    override fun filterEntities(
-            vararg properties: String
-    ): Sequence<MutableEntity> =
-            entities.filter { entity -> properties.all { it in entity } }
-
     /**
      * Creates an entity with the given [properties] and adds it to this
      * manager.
@@ -52,13 +47,6 @@ interface MutableEntityManager : EntityManager {
      * @param entityId the id of the entity to be deleted
      * @return `true` if the entity was successfully deleted, or `false` if it
      * doesn't exist in this manager
-   */
-    fun delete(entityId: Int): Boolean
-
-    /**
-     * Deletes all the entities in the manager.
      */
-    fun clear() {
-        entities.toList().forEach { delete(it.id) }
-    }
+    fun delete(entityId: Int): Boolean
 }
