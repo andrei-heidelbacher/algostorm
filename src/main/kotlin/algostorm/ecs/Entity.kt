@@ -31,22 +31,22 @@ package algostorm.ecs
  */
 abstract class Entity(val id: Int) {
     /**
-     * Returns the property with the given [name].
+     * Returns the property with the given name.
      *
-     * @param name the name of the property
+     * @param property the name of the property
      * @return the requested property, or `null` if this entity doesn't contain
      * the property
      */
-    abstract fun get(name: String): Any?
+    abstract fun get(property: String): Any?
 
     /**
-     * Checks whether this entity contains the property with the given [name].
+     * Checks whether this entity contains the property with the given name.
      *
-     * @param name the name of the property
+     * @param property the name of the property
      * @return `true` if this entity contains the given property, `false`
      * otherwise
      */
-    operator fun contains(name: String): Boolean = get(name) != null
+    operator fun contains(property: String): Boolean = get(property) != null
 
     final override fun equals(other: Any?): Boolean =
             other is Entity && id == other.id

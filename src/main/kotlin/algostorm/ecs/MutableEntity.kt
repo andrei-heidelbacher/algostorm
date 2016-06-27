@@ -27,14 +27,15 @@ abstract class MutableEntity(id: Int) : Entity(id) {
      * is overwritten.
      *
      * @param T the type of the property that is set
-     * @param name the name of the property
+     * @param property the name of the property
+     * @param value the value of the property
      */
-    abstract operator fun <T : Any> set(name: String, value: T): Unit
+    abstract operator fun <T : Any> set(property: String, value: T): Unit
 
     /**
      * Removes the specified property.
      *
-     * @param name the name of the property that should be removed
+     * @param property the name of the property that should be removed
      */
-    abstract fun remove(name: String): Unit
+    abstract fun remove(property: String): Unit
 }

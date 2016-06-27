@@ -26,14 +26,14 @@ class MutableEntityMock(id: Int) : MutableEntity(id) {
         this.properties.putAll(properties)
     }
 
-    override operator fun get(name: String): Any? = properties[name]
+    override operator fun get(property: String): Any? = properties[property]
 
-    override fun remove(name: String) {
-        properties.remove(name)
+    override fun remove(property: String) {
+        properties.remove(property)
     }
 
-    override operator fun <T : Any> set(name: String, value: T) {
-        properties[name] = value
+    override operator fun <T : Any> set(property: String, value: T) {
+        properties[property] = value
     }
 
     /**

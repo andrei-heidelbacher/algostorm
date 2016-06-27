@@ -49,15 +49,15 @@ class MutableEntityManagerAdapter(
     private class MutableEntityAdapter(
             val tiledObject: Object
     ) : MutableEntity(tiledObject.id) {
-        override operator fun get(name: String): Any? =
-                tiledObject.properties[name]
+        override operator fun get(property: String): Any? =
+                tiledObject.properties[property]
 
-        override fun <T : Any> set(name: String, value: T) {
-            tiledObject.properties[name] = value
+        override fun <T : Any> set(property: String, value: T) {
+            tiledObject.properties[property] = value
         }
 
-        override fun remove(name: String) {
-            tiledObject.properties.remove(name)
+        override fun remove(property: String) {
+            tiledObject.properties.remove(property)
         }
     }
 
