@@ -61,10 +61,12 @@ class MutableEntityManagerAdapter(
         }
     }
 
-    private val entityMap: MutableMap<Int, MutableEntityAdapter> = hashMapOf()
     private val objectGroup = requireNotNull(tiledMap.layers.find {
         it.name == ENTITY_LAYER_NAME
     } as? Layer.ObjectGroup) { "Tiled map doesn't contain entity layer!" }
+    private val entityMap = objectGroup.objects.associateTo(hashMapOf()) {
+        it.id to MutableEntityAdapter(it)
+    }
 
     override val entities: Sequence<MutableEntity>
         get() = entityMap.values.asSequence()

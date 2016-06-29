@@ -68,7 +68,7 @@ abstract class MutableEntityManagerTest(
     }
 
     @Test
-    fun getExistingShouldHaveSameComponents() {
+    fun getExistingShouldHaveSameProperties() {
         for (id in 0..entityCount - 1) {
             assertEquals(entityManager[id]?.get(PROPERTY_NAME_MOCK), id)
         }
@@ -104,20 +104,5 @@ abstract class MutableEntityManagerTest(
     @Test
     fun containsNonExistingShouldReturnFalse() {
         assertEquals(false, entityCount in entityManager)
-    }
-
-    @Test
-    fun filterEntitiesShouldFilterNonConformingEntities() {
-        for (id in entityCount..2 * entityCount - 1) {
-            entityManager.create(emptyMap())
-        }
-        assertEquals(
-                (0..entityCount - 1).toSet(),
-                entityManager.entities.filter {
-                    PROPERTY_NAME_MOCK in it
-                }.map {
-                    it.id
-                }.toSet()
-        )
     }
 }
