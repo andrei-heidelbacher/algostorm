@@ -48,7 +48,7 @@ class MutableEntityManagerAdapter(
      */
     private class MutableEntityAdapter(
             val tiledObject: Object
-    ) : MutableEntity(tiledObject.id) {
+    ) : MutableEntity(tiledObject.id ?: error("Entity without id!")) {
         override operator fun get(property: String): Any? =
                 tiledObject.properties[property]
 

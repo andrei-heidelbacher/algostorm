@@ -16,6 +16,15 @@
 
 package algostorm.tiled.json
 
-data class Object(val id: Int) {
-    val properties: MutableMap<String, Any> = hashMapOf()
+class Object(
+        val id: Int? = null,
+        val name: String? = null,
+        val type: String? = null,
+        val properties: MutableMap<String, Any> = hashMapOf()
+) {
+    override fun equals(other: Any?): Boolean = other is Object &&
+            if (id != null) id == other.id
+            else super.equals(other)
+
+    override fun hashCode(): Int = id ?: super.hashCode()
 }
