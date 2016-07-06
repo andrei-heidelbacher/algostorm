@@ -17,14 +17,16 @@
 package algostorm.tiled.json
 
 class Object(
-        val id: Int? = null,
-        val name: String? = null,
+        val id: Int,
         val type: String? = null,
+        val name: String? = null,
+        var isVisible: Boolean = true,
+        var rotation: Float = 0F,
+        var gid: Long? = null,
         val properties: MutableMap<String, Any> = hashMapOf()
 ) {
-    override fun equals(other: Any?): Boolean = other is Object &&
-            if (id != null) id == other.id
-            else super.equals(other)
+    override fun equals(other: Any?): Boolean =
+            other is Object && id == other.id
 
-    override fun hashCode(): Int = id ?: super.hashCode()
+    override fun hashCode(): Int = id
 }

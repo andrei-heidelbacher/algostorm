@@ -32,7 +32,7 @@ class EventQueue : EventBus {
             "$name doesn't have single parameter!"
         }
         require(Event::class.java.isAssignableFrom(parameterTypes[0])) {
-            "$name doesn't receive as a parameter a subtype of Event!"
+            "$name doesn't receive a subtype of Event as a parameter!"
         }
     }
 

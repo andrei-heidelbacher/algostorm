@@ -47,7 +47,7 @@ class PhysicsSystem(
     @Subscribe fun handleTranslateIntent(event: TranslateIntent) {
         entityManager[event.entityId]?.let { entity ->
             val newBox = entity.box?.translate(event.dx, event.dy)
-                    ?: error("Can't translate an entity without a location!")
+                    ?: error("Can't translate entity $entity without a box!")
             val overlappingEntities = entityManager.entities.filter {
                 it != entity && it.isRigid && it.box?.overlaps(newBox) ?: false
             }

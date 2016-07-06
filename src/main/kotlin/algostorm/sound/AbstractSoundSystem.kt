@@ -63,7 +63,8 @@ abstract class AbstractSoundSystem(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun handlePlaySound(event: PlaySound) {
-        val soundUri = soundSet[event.soundId] ?: error("Missing sound id!")
+        val soundUri = soundSet[event.soundId]
+                ?: error("Missing sound id ${event.soundId}!")
         playSound(soundUri, event.frequency, event.loop)
     }
 

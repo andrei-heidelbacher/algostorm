@@ -50,7 +50,8 @@ abstract class AbstractScriptingSystem(
      * Upon receiving a [RunScript], the [runScript] method is called.
      */
     @Subscribe fun handleRunScript(event: RunScript) {
-        val scriptUri = scriptSet[event.scriptId] ?: error("Missing script id!")
+        val scriptUri = scriptSet[event.scriptId]
+                ?: error("Missing script id ${event.scriptId}!")
         runScript(scriptUri, *event.args.toTypedArray())
     }
 }

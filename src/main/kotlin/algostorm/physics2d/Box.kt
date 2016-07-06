@@ -50,7 +50,9 @@ data class Box(
     }
 
     init {
-        require(width > 0 && height > 0) { "Box dimensions must be positive!" }
+        require(width > 0 && height > 0) {
+            "Box dimensions ($width x $height) must be positive!"
+        }
     }
 
     /**

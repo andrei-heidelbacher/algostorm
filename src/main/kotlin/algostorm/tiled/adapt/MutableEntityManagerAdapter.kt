@@ -46,18 +46,54 @@ class MutableEntityManagerAdapter(
      *
      * @param tiledObject the underlying Tiled object
      */
-    private class MutableEntityAdapter(
+    class MutableEntityAdapter(
             val tiledObject: Object
-    ) : MutableEntity(tiledObject.id ?: error("Entity without id!")) {
-        override operator fun get(property: String): Any? =
-                tiledObject.properties[property]
+    ) : MutableEntity(tiledObject.id) {
+        companion object {
+            const val TYPE: String = "type"
+            const val NAME: String = "name"
+            const val VISIBLE: String = "visible"
+            const val ROTATION: String = "rotation"
+            const val GID: String = "gid"
+        }
+
+        override operator fun get(property: String): Any? = when (property) {
+            TYPE -> tiledObject.type
+            NAME -> tiledObject.name
+            VISIBLE -> tiledObject.isVisible
+            ROTATION -> tiledObject.rotation
+            GID -> tiledObject.gid
+            else -> tiledObject.properties[property]
+        }
 
         override fun <T : Any> set(property: String, value: T) {
-            tiledObject.properties[property] = value
+            when (property) {
+                TYPE, NAME ->
+                    throw IllegalArgumentException("$property is read-only!")
+                VISIBLE -> tiledObject.isVisible =
+                        requireNotNull(value as? Boolean) {
+                            "$VISIBLE property must be of type Boolean!"
+                        }
+                ROTATION -> tiledObject.rotation =
+                        requireNotNull(value as? Float) {
+                            "$ROTATION property must be of type Float!"
+                        }
+                GID -> tiledObject.gid = requireNotNull(value as? Long) {
+                    "$GID property must be of type Long!"
+                }
+                else -> tiledObject.properties[property] = value
+            }
         }
 
         override fun remove(property: String) {
-            tiledObject.properties.remove(property)
+            when (property) {
+                TYPE, NAME ->
+                    throw IllegalArgumentException("$property is read-only!")
+                VISIBLE -> tiledObject.isVisible = false
+                ROTATION -> tiledObject.rotation = 0F
+                GID -> tiledObject.gid = null
+                else -> tiledObject.properties.remove(property)
+            }
         }
     }
 

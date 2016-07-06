@@ -39,7 +39,7 @@ class AnimationSystem(
         private val animationSet: Map<Int, AnimationSheet>
 ) : Subscriber {
     private fun getSheet(sheetId: Int): AnimationSheet =
-            animationSet[sheetId] ?: error("Missing sheet id!")
+            animationSet[sheetId] ?: error("Missing sheet id $sheetId!")
 
     private fun Animation.tick(): Animation =
             copy(remainingTicks = remainingTicks - 1)
@@ -47,7 +47,7 @@ class AnimationSystem(
     private fun MutableEntity.updateSprite(frame: Frame) {
         set(Sprite.PROPERTY, sprite?.copy(
                 spriteId = frame.spriteId
-        ) ?: error("Can't animate entity without a sprite!"))
+        ) ?: error("Can't animate entity $this without a sprite!"))
     }
 
     private fun MutableEntity.setAnimation(sheetId: Int, name: String) {
@@ -107,7 +107,7 @@ class AnimationSystem(
     @Subscribe fun handleAnimate(event: Animate) {
         entityManager[event.entityId]?.let { entity ->
             val sheetId = entity.animation?.sheetId
-                    ?: error("Can't animate entity without animation!")
+                    ?: error("Can't animate entity $entity without animation!")
             entity.setAnimation(sheetId, event.animationName)
         }
     }
