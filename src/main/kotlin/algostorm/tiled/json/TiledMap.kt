@@ -16,18 +16,18 @@
 
 package algostorm.tiled.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 class TiledMap(
         val width: Int,
         val height: Int,
-        val tileWidth: Int,
-        val tileHeight: Int,
-        val orientation: Orientation,
-        val tileSets: List<TileSet>,
+        @JsonProperty("tilewidth") val tileWidth: Int,
+        @JsonProperty("tileheight") val tileHeight: Int,
+        val orientation: String,
+        @JsonProperty("renderorder") val renderOrder: String,
+        @JsonProperty("tilesets") val tileSets: List<TileSet>,
         val layers: List<Layer>,
-        var nextObjectId: Int,
-        val properties: MutableMap<String, Any> = hashMapOf()
-) {
-    enum class Orientation {
-        ORTHOGONAL, ISOMETRIC, STAGGERED
-    }
-}
+        @JsonProperty("nextobjectid") var nextObjectId: Int,
+        val properties: MutableMap<String, Any> = hashMapOf(),
+        val version: Float = 1F
+)

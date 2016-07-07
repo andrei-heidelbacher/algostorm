@@ -55,7 +55,7 @@ object Serializer {
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY
         )
-        setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 

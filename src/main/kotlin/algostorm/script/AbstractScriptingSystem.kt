@@ -21,12 +21,8 @@ import algostorm.event.Subscriber
 
 /**
  * A system that handles script execution requests.
- *
- * @property scriptSet the collection that maps script ids to scrip URIs
  */
-abstract class AbstractScriptingSystem(
-        private val scriptSet: Map<Int, String>
-) : Subscriber {
+abstract class AbstractScriptingSystem : Subscriber {
     /**
      * Makes the given [value] available as a variable with the name equal to
      * the given [key] to all executed scripts.
@@ -50,8 +46,6 @@ abstract class AbstractScriptingSystem(
      * Upon receiving a [RunScript], the [runScript] method is called.
      */
     @Subscribe fun handleRunScript(event: RunScript) {
-        val scriptUri = scriptSet[event.scriptId]
-                ?: error("Missing script id ${event.scriptId}!")
-        runScript(scriptUri, *event.args.toTypedArray())
+        runScript(event.scriptUri, *event.args.toTypedArray())
     }
 }

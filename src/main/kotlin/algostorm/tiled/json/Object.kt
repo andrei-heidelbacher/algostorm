@@ -16,13 +16,15 @@
 
 package algostorm.tiled.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 class Object(
         val id: Int,
-        val type: String? = null,
-        val name: String? = null,
-        var isVisible: Boolean = true,
+        val type: String = "",
+        val name: String = "",
+        @JsonProperty("visible") var isVisible: Boolean = true,
         var rotation: Float = 0F,
-        var gid: Long? = null,
+        var gid: Long = 0,
         val properties: MutableMap<String, Any> = hashMapOf()
 ) {
     override fun equals(other: Any?): Boolean =

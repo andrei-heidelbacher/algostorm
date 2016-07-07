@@ -16,6 +16,7 @@
 
 package algostorm.tiled.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -41,30 +42,30 @@ sealed class Layer {
     class TileLayer(
             override val name: String,
             val data: IntArray,
-            override var isVisible: Boolean = true,
+            @JsonProperty("visible") override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
-            override val offsetX: Int = 0,
-            override val offsetY: Int = 0,
+            @JsonProperty("offsetx") override val offsetX: Int = 0,
+            @JsonProperty("offsety") override val offsetY: Int = 0,
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer()
 
     class ImageLayer(
             override val name: String,
             var image: String,
-            override var isVisible: Boolean = true,
+            @JsonProperty("visible") override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
-            override val offsetX: Int = 0,
-            override val offsetY: Int = 0,
+            @JsonProperty("offsetx") override val offsetX: Int = 0,
+            @JsonProperty("offsety") override val offsetY: Int = 0,
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer()
 
     class ObjectGroup(
             override val name: String,
             val objects : MutableSet<Object>,
-            override var isVisible: Boolean = true,
+            @JsonProperty("visible") override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
-            override val offsetX: Int = 0,
-            override val offsetY: Int = 1,
+            @JsonProperty("offsetx") override val offsetX: Int = 0,
+            @JsonProperty("offsety") override val offsetY: Int = 1,
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer()
 }

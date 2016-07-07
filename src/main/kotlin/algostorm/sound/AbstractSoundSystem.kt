@@ -29,12 +29,8 @@ import algostorm.event.Subscriber
  *
  * Methods on this object will be called from the private engine thread. All
  * method calls should be non-blocking and thread-safe.
- *
- * @param soundSet the collection that maps sound ids to sound URIs
  */
-abstract class AbstractSoundSystem(
-        private val soundSet: Map<Int, String>
-) : Subscriber {
+abstract class AbstractSoundSystem : Subscriber {
     /**
      * Plays the sound located at the given [soundUri]. If another sound is
      * already playing on the given [frequency], that sound should be stopped
@@ -63,9 +59,7 @@ abstract class AbstractSoundSystem(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun handlePlaySound(event: PlaySound) {
-        val soundUri = soundSet[event.soundId]
-                ?: error("Missing sound id ${event.soundId}!")
-        playSound(soundUri, event.frequency, event.loop)
+        playSound(event.soundUri, event.frequency, event.loop)
     }
 
     /**

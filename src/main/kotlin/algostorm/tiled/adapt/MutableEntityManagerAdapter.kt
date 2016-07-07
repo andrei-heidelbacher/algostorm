@@ -91,7 +91,7 @@ class MutableEntityManagerAdapter(
                     throw IllegalArgumentException("$property is read-only!")
                 VISIBLE -> tiledObject.isVisible = false
                 ROTATION -> tiledObject.rotation = 0F
-                GID -> tiledObject.gid = null
+                GID -> tiledObject.gid = 0
                 else -> tiledObject.properties.remove(property)
             }
         }

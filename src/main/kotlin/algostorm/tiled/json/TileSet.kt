@@ -16,22 +16,24 @@
 
 package algostorm.tiled.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 class TileSet(
         val name: String,
-        val tileWidth: Int,
-        val tileHeight: Int,
+        @JsonProperty("tilewidth") val tileWidth: Int,
+        @JsonProperty("tileheight") val tileHeight: Int,
         val image: String,
-        val imageWidth: Int,
-        val imageHeight: Int,
+        @JsonProperty("imagewidth") val imageWidth: Int,
+        @JsonProperty("imageheight") val imageHeight: Int,
         val margin: Int,
         val spacing: Int,
-        val firstGid: Int,
-        val tileCount: Int,
+        @JsonProperty("firstgid") val firstGid: Int,
+        @JsonProperty("tilecount") val tileCount: Int,
         val properties: Map<String, Any> = emptyMap(),
         val terrains: List<Terrain> = emptyList(),
-        private val tileProperties: Map<String, Map<String, Any>>? = null,
-        private val tiles: Map<String, Tile>? = null,
-        private val tilePropertyTypes: Map<String, Map<String, String>>? = null
+        @JsonProperty("tileproperties")
+        private val tileProperties: Map<String, Map<String, Any>> = emptyMap(),
+        private val tiles: Map<String, Tile> = emptyMap()
 ) {
     class Tile(
             val animation: List<Frame>? = null,
@@ -54,7 +56,19 @@ class TileSet(
             fun Long.flipDiagonally(): Long = xor(0x20000000)
         }
 
-        data class Frame(val tileId: Int, val duration: Int)
+        data class Frame(
+                @JsonProperty("tileid") val tileId: Int,
+                val duration: Int
+        ) {
+            init {
+                require(tileId >= 0) {
+                    "Frame tile id $tileId can't be negative!"
+                }
+                require(duration > 0) {
+                    "Frame duration $duration must be positive!"
+                }
+            }
+        }
 
         init {
             require(animation == null || animation.isNotEmpty()) {
@@ -66,18 +80,70 @@ class TileSet(
         }
     }
 
-    class Terrain(val name: String, val tileId: Int)
+    class Terrain(val name: String, @JsonProperty("tileid") val tileId: Int)
 
-    fun getTileProperties(tileId: Int): Map<String, Any> =
-            tileProperties?.get("$tileId") ?: emptyMap()
+    data class Viewport(
+            val image: String,
+            val x: Int,
+            val y: Int,
+            val width: Int,
+            val height: Int
+    ) {
+        init {
+            require(width >= 0 && height >= 0) {
+                "Viewport sizes ($width x $height) can't be negative!"
+            }
+        }
+    }
 
-    fun getTile(tileId: Int): Tile? = tiles?.get("$tileId")
+    init {
+        require(tileWidth > 0 && tileHeight > 0) {
+            "$name tile sizes ($tileWidth x $tileHeight) must be positive!"
+        }
+        require(imageWidth > 0 && imageHeight > 0) {
+            "$name image sizes ($imageWidth x $imageHeight) must be positive!"
+        }
+        require(margin >= 0) { "$name margin $margin can't be negative!" }
+        require(spacing >= 0) { "$name spacing $spacing can't be negative!" }
+        require(firstGid > 0) { "$name first gid $firstGid must be positive!" }
+        require(tileCount > 0) {
+            "$name tile count $tileCount must be positive!"
+        }
+        val widthOffset = (imageWidth - 2 * margin + spacing) %
+                (tileWidth + spacing)
+        val heightOffset = (imageHeight - 2 * margin + spacing) %
+                (tileHeight + spacing)
+        require(widthOffset == 0 && heightOffset == 0) {
+            "$name image sizes don't match margin, spacing and tile sizes!"
+        }
+    }
 
-    fun getTileId(gid: Long): Int {
+
+    private fun getTileId(gid: Long): Int {
         val tileId = gid.and(0x1FFFFFFF).toInt() - firstGid
         require(tileId in 0..tileCount - 1) {
             "Gid $gid is not part of the $name tile set!"
         }
         return tileId
+    }
+
+    fun getTileProperties(gid: Long): Map<String, Any> =
+            tileProperties["${getTileId(gid)}"] ?: emptyMap()
+
+    fun getTile(gid: Long): Tile = tiles["${getTileId(gid)}"] ?: Tile()
+
+    fun getViewport(gid: Long): Viewport {
+        val tileId = getTileId(gid)
+        val columns = (imageWidth - 2 * margin + spacing) /
+                (tileWidth + spacing)
+        val row = tileId / columns
+        val column = tileId % columns
+        return Viewport(
+                image = image,
+                x = margin + column * (tileWidth + spacing),
+                y = margin + row * (tileHeight + spacing),
+                width = tileWidth,
+                height = tileHeight
+        )
     }
 }
