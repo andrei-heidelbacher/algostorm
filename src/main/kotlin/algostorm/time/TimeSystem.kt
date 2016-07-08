@@ -16,6 +16,8 @@
 
 package algostorm.time
 
+import algostorm.ecs.Entity
+import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
 import algostorm.event.Subscribe
 import algostorm.event.Subscriber
@@ -27,9 +29,13 @@ import algostorm.event.Subscriber
  * @property publisher the publisher used to post expired timer events
  */
 class TimeSystem(
-        private val timeline: Timeline,
+        private val entityManager: MutableEntityManager,
         private val publisher: Publisher
 ) : Subscriber {
+    private companion object {
+        val Entity.timers: List<Timer>
+            get() = (get(Timeline.PROPERTY) as Timeline?)?.timers ?: emptyList()
+    }
     /**
      * Upon receiving a [RegisterTimer] event, it calls the
      * [Timeline.registerTimer] method.
@@ -40,7 +46,6 @@ class TimeSystem(
         if (event.timer.remainingTicks == 0) {
             publisher.post(event.timer.events)
         } else {
-            timeline.registerTimer(event.timer)
         }
     }
 
@@ -51,6 +56,8 @@ class TimeSystem(
      * @param event the event which signals a tick has elapsed
      */
     @Subscribe fun handleTick(event: Tick) {
-        timeline.tick().forEach { publisher.post(it.events) }
+        entityManager.entities.forEach {
+            it.timers
+        }
     }
 }

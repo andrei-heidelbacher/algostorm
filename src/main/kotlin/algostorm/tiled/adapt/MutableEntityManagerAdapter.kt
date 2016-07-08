@@ -18,9 +18,8 @@ package algostorm.tiled.adapt
 
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
-import algostorm.tiled.json.Layer
-import algostorm.tiled.json.TiledMap
-import algostorm.tiled.json.Object
+import algostorm.physics2d.Box
+import algostorm.tiled.Tiled
 
 /**
  * A concrete implementation of a mutable entity manager which wraps a Tiled
@@ -29,14 +28,15 @@ import algostorm.tiled.json.Object
  *
  * @param tiledMap the underlying Tiled map
  * @throws IllegalArgumentException if the given [tiledMap] doesn't contain a
- * [Layer.ObjectGroup] with the name [ENTITY_LAYER_NAME]
+ * [Tiled.Layer.ObjectGroup] with the name [ENTITY_LAYER_NAME]
  */
 class MutableEntityManagerAdapter(
-        private val tiledMap: TiledMap
+        private val tiledMap: Tiled.Map
 ) : MutableEntityManager {
     companion object {
         /**
-         * The name of the [Layer.ObjectGroup] which contains the game entities.
+         * The name of the [Tiled.Layer.ObjectGroup] which contains the game
+         * entities.
          */
         const val ENTITY_LAYER_NAME = "entities"
     }
@@ -47,12 +47,13 @@ class MutableEntityManagerAdapter(
      * @param tiledObject the underlying Tiled object
      */
     class MutableEntityAdapter(
-            val tiledObject: Object
+            val tiledObject: Tiled.Object
     ) : MutableEntity(tiledObject.id) {
         companion object {
             const val TYPE: String = "type"
             const val NAME: String = "name"
             const val VISIBLE: String = "visible"
+            const val BOX: String = "box"
             const val ROTATION: String = "rotation"
             const val GID: String = "gid"
         }
@@ -61,6 +62,15 @@ class MutableEntityManagerAdapter(
             TYPE -> tiledObject.type
             NAME -> tiledObject.name
             VISIBLE -> tiledObject.isVisible
+            BOX -> {
+                if (tiledObject.width == 0 || tiledObject.height == 0) null
+                else Box(
+                        x = tiledObject.x,
+                        y = tiledObject.y,
+                        width = tiledObject.width,
+                        height = tiledObject.height
+                )
+            }
             ROTATION -> tiledObject.rotation
             GID -> tiledObject.gid
             else -> tiledObject.properties[property]
@@ -74,6 +84,15 @@ class MutableEntityManagerAdapter(
                         requireNotNull(value as? Boolean) {
                             "$VISIBLE property must be of type Boolean!"
                         }
+                BOX -> {
+                    val (x, y, width, height) = requireNotNull(value as? Box) {
+                        "$BOX property must be of type Box!"
+                    }
+                    tiledObject.x = x
+                    tiledObject.y = y
+                    tiledObject.width = width
+                    tiledObject.height = height
+                }
                 ROTATION -> tiledObject.rotation =
                         requireNotNull(value as? Float) {
                             "$ROTATION property must be of type Float!"
@@ -90,6 +109,12 @@ class MutableEntityManagerAdapter(
                 TYPE, NAME ->
                     throw IllegalArgumentException("$property is read-only!")
                 VISIBLE -> tiledObject.isVisible = false
+                BOX -> {
+                    tiledObject.x = 0
+                    tiledObject.y = 0
+                    tiledObject.width = 0
+                    tiledObject.height = 0
+                }
                 ROTATION -> tiledObject.rotation = 0F
                 GID -> tiledObject.gid = 0
                 else -> tiledObject.properties.remove(property)
@@ -99,7 +124,7 @@ class MutableEntityManagerAdapter(
 
     private val objectGroup = requireNotNull(tiledMap.layers.find {
         it.name == ENTITY_LAYER_NAME
-    } as? Layer.ObjectGroup) { "Tiled map doesn't contain entity layer!" }
+    } as? Tiled.Layer.ObjectGroup) { "Tiled map doesn't contain entity layer!" }
     private val entityMap = objectGroup.objects.associateTo(hashMapOf()) {
         it.id to MutableEntityAdapter(it)
     }
@@ -110,11 +135,9 @@ class MutableEntityManagerAdapter(
     override fun get(entityId: Int): MutableEntity? = entityMap[entityId]
 
     override fun create(properties: Map<String, Any>): MutableEntity {
-        check(tiledMap.nextObjectId >= 0) { "Too many entities!" }
-        val id = tiledMap.nextObjectId
-        val tiledObject = Object(id)
+        val id = tiledMap.getNextObjectId()
+        val tiledObject = Tiled.Object(id)
         val entity = MutableEntityAdapter(tiledObject)
-        tiledMap.nextObjectId++
         tiledObject.properties.putAll(properties)
         objectGroup.objects.add(tiledObject)
         entityMap[id] = entity

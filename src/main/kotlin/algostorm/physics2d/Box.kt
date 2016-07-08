@@ -25,8 +25,8 @@ import algostorm.ecs.Entity
  *
  * @property x the x-axis coordinate of the bottom-left corner of this box
  * @property y the y-axis coordinate of the bottom-left corner of this box
- * @property width the width of this box in tiles
- * @property height the height of this box in tiles
+ * @property width the width of this box in pixels
+ * @property height the height of this box in pixels
  * @throws IllegalArgumentException if [width] or [height] are not positive
  */
 data class Box(
@@ -51,15 +51,15 @@ data class Box(
 
     init {
         require(width > 0 && height > 0) {
-            "Box dimensions ($width x $height) must be positive!"
+            "Box dimensions ($width, $height) must be positive!"
         }
     }
 
     /**
-     * Returns whether the given tile lies inside this box.
+     * Returns whether the given pixel lies inside this box.
      *
-     * @param x the x-axis coordinate of the tile
-     * @param y the y-axis coordinate of the tile
+     * @param x the x-axis coordinate of the pixel
+     * @param y the y-axis coordinate of the pixel
      * @return `true` if the given tile is inside this box, `false` otherwise
      */
     fun contains(x: Int, y: Int): Boolean =
@@ -67,7 +67,7 @@ data class Box(
                     this.y <= y && y < this.y + this.height
 
     /**
-     * Returns whether the two boxes overlap (that is, there exists a tile
+     * Returns whether the two boxes overlap (that is, there exists a pixel
      * (x, y) such that it lies inside both boxes).
      *
      * @param other the box with which the intersection is checked

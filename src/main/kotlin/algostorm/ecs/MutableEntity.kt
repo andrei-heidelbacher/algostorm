@@ -18,6 +18,8 @@ package algostorm.ecs
 
 /**
  * A mutable view of an [Entity] that allows setting or removing properties.
+ *
+ * @throws IllegalArgumentException if [id] is negative
  */
 abstract class MutableEntity(id: Int) : Entity(id) {
     /**

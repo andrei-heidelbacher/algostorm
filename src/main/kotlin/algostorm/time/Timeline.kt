@@ -16,20 +16,22 @@
 
 package algostorm.time
 
-/**
- * A container for all the timers in the game.
- */
-interface Timeline {
-    /**
-     * @param timer the timer which should be registered
-     */
-    fun registerTimer(timer: Timer): Unit
+import algostorm.ecs.Entity
 
-    /**
-     * Signals that a tick has passed and all registered timers should be
-     * updated.
-     *
-     * @return the list of all timers that expired upon this tick
-     */
-    fun tick(): List<Timer>
+/**
+ * A container for the timers attached to an entity.
+ *
+ * @property timers the timers attached to the owner entity
+ */
+data class Timeline(val timers: List<Timer>) {
+    companion object {
+        /**
+         * The name of the timeline property. It is of type [Timeline].
+         */
+        const val PROPERTY: String = "timeline"
+
+        /**
+         * The timers attached to this entity.
+         */
+    }
 }

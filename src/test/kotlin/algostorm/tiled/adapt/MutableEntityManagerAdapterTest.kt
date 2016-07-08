@@ -17,27 +17,27 @@
 package algostorm.tiled.adapt
 
 import algostorm.ecs.MutableEntityManagerTest
-import algostorm.tiled.json.Layer
-import algostorm.tiled.json.TiledMap
+import algostorm.tiled.Tiled
 
 class MutableEntityManagerAdapterTest : MutableEntityManagerTest(
         entityManager = MutableEntityManagerAdapter(
-                tiledMap = TiledMap(
+                tiledMap = Tiled.Map(
                         width = 32,
                         height = 32,
                         tileWidth = 32,
                         tileHeight = 32,
-                        orientation = TiledMap.Orientation.ORTHOGONAL,
+                        orientation = Tiled.Map.Orientation.ORTHOGONAL,
                         tileSets = emptyList(),
                         layers = listOf(
-                                Layer.ObjectGroup(
+                                Tiled.Layer.ObjectGroup(
                                         name = MutableEntityManagerAdapter
                                                 .ENTITY_LAYER_NAME,
                                         objects = hashSetOf()
                                 )
                         ),
-                        nextObjectId = 0
+                        nextObjectId = 1
                 )
         ),
+        firstId = 1,
         entityCount = 1000
 )

@@ -34,15 +34,18 @@ import org.junit.Test
 @Ignore
 abstract class MutableEntityManagerTest(
         protected val entityManager: MutableEntityManager,
+        protected val firstId: Int,
         protected val entityCount: Int
 ) {
     companion object {
         const val PROPERTY_NAME_MOCK: String = "property"
     }
 
+    private val idRange = firstId..entityCount + firstId - 1
+
     @Before
     fun setUp() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             entityManager.create(mapOf(PROPERTY_NAME_MOCK to id))
         }
     }
@@ -50,40 +53,40 @@ abstract class MutableEntityManagerTest(
     @Test
     fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
-                (0..entityCount - 1).toSet(),
+                (idRange).toSet(),
                 entityManager.entities.map { it.id }.toSet()
         )
     }
 
     @Test
     fun getNonExistingShouldReturnNull() {
-        assertEquals(null, entityManager[entityCount])
+        assertEquals(null, entityManager[idRange.endInclusive + 1])
     }
 
     @Test
     fun getExistingShouldReturnNonNull() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             assertEquals(id, entityManager[id]?.id)
         }
     }
 
     @Test
     fun getExistingShouldHaveSameProperties() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             assertEquals(entityManager[id]?.get(PROPERTY_NAME_MOCK), id)
         }
     }
 
     @Test
     fun deleteExistingShouldReturnTrue() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             assertEquals(true, entityManager.delete(id))
         }
     }
 
     @Test
     fun getAfterDeleteShouldReturnNull() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             entityManager.delete(id)
             assertEquals(null, entityManager[id])
         }
@@ -91,18 +94,18 @@ abstract class MutableEntityManagerTest(
 
     @Test
     fun deleteNonExistingShouldReturnFalse() {
-        assertEquals(false, entityManager.delete(entityCount))
+        assertEquals(false, entityManager.delete(idRange.endInclusive + 1))
     }
 
     @Test
     fun containsExistingShouldReturnTrue() {
-        for (id in 0..entityCount - 1) {
+        for (id in idRange) {
             assertEquals(true, id in entityManager)
         }
     }
 
     @Test
     fun containsNonExistingShouldReturnFalse() {
-        assertEquals(false, entityCount in entityManager)
+        assertEquals(false, idRange.endInclusive + 1 in entityManager)
     }
 }

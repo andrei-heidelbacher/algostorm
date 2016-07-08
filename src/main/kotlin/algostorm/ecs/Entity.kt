@@ -27,9 +27,14 @@ package algostorm.ecs
  *
  * All the entity properties should be immutable data-types or primitive types.
  *
- * @property id the unique identifier of the entity
+ * @property id the non-negative unique identifier of this entity
+ * @throws IllegalArgumentException if [id] is negative
  */
 abstract class Entity(val id: Int) {
+    init {
+        require(id >= 0) { "Entity id $id can't be negative!" }
+    }
+
     /**
      * Returns the property with the given name.
      *

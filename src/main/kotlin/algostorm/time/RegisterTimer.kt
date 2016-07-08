@@ -23,4 +23,4 @@ import algostorm.event.Event
  *
  * @property timer the timer that must be registered
  */
-data class RegisterTimer(val timer: Timer) : Event
+data class RegisterTimer(val entityId: Int, val timer: Timer) : Event

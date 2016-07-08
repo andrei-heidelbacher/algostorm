@@ -18,6 +18,7 @@ package algostorm.ecs
 
 class MutableEntityManagerMockTest : MutableEntityManagerTest(
         entityManager = MutableEntityManagerMock(),
+        firstId = 1,
         entityCount = 1000
 )
 
