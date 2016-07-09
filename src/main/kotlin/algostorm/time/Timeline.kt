@@ -16,22 +16,12 @@
 
 package algostorm.time
 
-import algostorm.ecs.Entity
-
 /**
- * A container for the timers attached to an entity.
- *
- * @property timers the timers attached to the owner entity
+ * A container for the timers in the game.
  */
-data class Timeline(val timers: List<Timer>) {
-    companion object {
-        /**
-         * The name of the timeline property. It is of type [Timeline].
-         */
-        const val PROPERTY: String = "timeline"
-
-        /**
-         * The timers attached to this entity.
-         */
-    }
+interface Timeline {
+    /**
+     * The active timers in the game.
+     */
+    var timers: List<Timer>
 }

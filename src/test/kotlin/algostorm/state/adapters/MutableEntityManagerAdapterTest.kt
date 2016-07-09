@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package algostorm.tiled.adapt
+package algostorm.state.adapters
 
 import algostorm.ecs.MutableEntityManagerTest
-import algostorm.tiled.Tiled
+import algostorm.state.State
 
 class MutableEntityManagerAdapterTest : MutableEntityManagerTest(
         entityManager = MutableEntityManagerAdapter(
-                tiledMap = Tiled.Map(
+                stateMap = State.Map(
                         width = 32,
                         height = 32,
                         tileWidth = 32,
                         tileHeight = 32,
-                        orientation = Tiled.Map.Orientation.ORTHOGONAL,
+                        orientation = State.Map.Orientation.ORTHOGONAL,
                         tileSets = emptyList(),
                         layers = listOf(
-                                Tiled.Layer.ObjectGroup(
+                                State.Layer.ObjectGroup(
                                         name = MutableEntityManagerAdapter
                                                 .ENTITY_LAYER_NAME,
                                         objects = hashSetOf()
                                 )
                         ),
-                        nextObjectId = 1
+                        nextObjectId = 0
                 )
         ),
-        firstId = 1,
+        firstId = 0,
         entityCount = 1000
 )
