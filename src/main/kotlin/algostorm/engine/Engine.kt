@@ -16,9 +16,6 @@
 
 package algostorm.engine
 
-import algostorm.event.EventBus
-import algostorm.event.Subscriber
-
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -29,27 +26,16 @@ import kotlin.system.measureTimeMillis
 /**
  * An asynchronous engine that runs the game loop on its own private thread.
  *
- * All the systems passed in the state will have their handlers subscribed to
- * the event bus upon the creation of the engine. The subscriptions are
- * synchronized on the internal state lock. All changes to the game state
- * outside of this engine's thread may lead to inconsistent state and
- * concurrency issues. Thus, the engine state should remain private to the
- * engine and modified only in the [handleTick] and [clearState] methods.
+ * All changes to the game state outside of this engine's thread may lead to
+ * inconsistent state and concurrency issues. Thus, the engine state should
+ * remain private to the engine and modified only in the [handleTick] and
+ * [clearState] methods.
  *
- * All the engine methods are thread safe.
- *
- * @property millisPerTick the number of milliseconds spent in an update cycle
- * and the resolution of an atomic time unit
- * @property eventBus the event bus to which the systems will be subscribed. It
- * is part of the engine state and accessing it should be synchronized on the
- * state lock.
- * @param systems the systems which handle the logic of the game
+ * All the engine methods are thread safe as long as the complete construction
+ * of the engine and initialization of the state happens-before any other method
+ * call.
  */
-abstract class Engine protected constructor(
-        protected val millisPerTick: Int,
-        protected val eventBus: EventBus,
-        systems: List<Subscriber>
-) {
+abstract class Engine {
     companion object {
         /**
          * Name of the engine thread.
@@ -65,10 +51,6 @@ abstract class Engine protected constructor(
     }
 
     private val stateLock = Any()
-    private val subscriptions = synchronized(stateLock) {
-        systems.map { eventBus.subscribe(it) }
-    }
-
     private val statusLock = Any()
     private var process = synchronized(statusLock) { thread(name = NAME) {} }
     private val internalStatus = AtomicReference(Status.STOPPED)
@@ -85,6 +67,12 @@ abstract class Engine protected constructor(
      */
     val isShutdown: Boolean
         get() = internalShutdownStatus.get()
+
+    /**
+     * The number of milliseconds spent in an update cycle and the resolution of
+     * an atomic time unit.
+     */
+    protected abstract val millisPerTick: Int
 
     /**
      * This method is invoked at most once every [millisPerTick] from this
@@ -192,7 +180,6 @@ abstract class Engine protected constructor(
         }
         synchronized(stateLock) {
             clearState()
-            subscriptions.forEach { it.unsubscribe() }
         }
     }
 

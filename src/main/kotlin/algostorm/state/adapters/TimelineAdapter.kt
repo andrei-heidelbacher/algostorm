@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package algostorm.ecs
+package algostorm.state.adapters
 
-class MutableEntityManagerMockTest : MutableEntityManagerTest(
-        entityManager = MutableEntityManagerMock(),
-        firstId = 0,
-        entityCount = 1000
-)
+import algostorm.state.State
+import algostorm.time.Timeline
+import algostorm.time.Timer
 
+class TimelineAdapter(private val stateMap: State.Map) : Timeline {
+    companion object {
+
+    }
+
+    override var timers: List<Timer>
+        get() = error("")//stateMap.properties[]
+        set(value) {
+        }
+}
