@@ -59,6 +59,12 @@ object State {
                 }
                 firstGid += tileSet.tileCount
             }
+            require(tileSets.map { it.name }.distinct().size == tileSets.size) {
+                "Different tile sets can't have the same name!"
+            }
+            require(layers.distinct().size == layers.size) {
+                "Different layers can't have the same name!"
+            }
         }
 
         /**
@@ -200,6 +206,11 @@ object State {
         abstract val offsetY: Int
         abstract val properties: MutableMap<String, Any>
 
+        final override fun equals(other: Any?): Boolean =
+                other is Layer && name == other.name
+
+        final override fun hashCode(): Int = name.hashCode()
+
         class TileLayer(
                 override val name: String,
                 val data: IntArray,
@@ -233,10 +244,20 @@ object State {
 
     class Object(
             val id: Int,
+            val x: Int,
+            val y: Int,
+            val width: Int,
+            val height: Int,
+            val gid: Int = 0,
+            val isVisible: Boolean = true,
             val properties: MutableMap<String, Any> = hashMapOf()
     ) {
         init {
             require(id >= 0) { "Object id $id can't be negative!" }
+            require(gid >= 0) { "Object gid $gid can't be negative!" }
+            require(width > 0 && height > 0) {
+                "Object $id sizes ($width, $height) must be positive!"
+            }
         }
 
         override fun equals(other: Any?): Boolean =
