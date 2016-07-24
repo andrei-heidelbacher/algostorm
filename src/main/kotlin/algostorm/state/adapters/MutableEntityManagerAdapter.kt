@@ -18,7 +18,8 @@ package algostorm.state.adapters
 
 import algostorm.ecs.MutableEntity
 import algostorm.ecs.MutableEntityManager
-import algostorm.state.State
+import algostorm.state.Layer
+import algostorm.state.Object
 
 /**
  * A concrete implementation of a mutable entity manager which wraps a State
@@ -30,7 +31,7 @@ import algostorm.state.State
  * [State.Layer.ObjectGroup] with the name [ENTITY_LAYER_NAME]
  */
 class MutableEntityManagerAdapter(
-        private val stateMap: State.Map
+        private val stateMap: algostorm.state.Map
 ) : MutableEntityManager {
     companion object {
         /**
@@ -46,7 +47,7 @@ class MutableEntityManagerAdapter(
      * @param stateObject the underlying state object
      */
     class MutableEntityAdapter(
-            val stateObject: State.Object
+            val stateObject: Object
     ) : MutableEntity(stateObject.id) {
         override operator fun get(property: String): Any? =
                 stateObject.properties[property]
@@ -62,7 +63,7 @@ class MutableEntityManagerAdapter(
 
     private val objectGroup = requireNotNull(stateMap.layers.find {
         it.name == ENTITY_LAYER_NAME
-    } as? State.Layer.ObjectGroup) { "State map doesn't contain entity layer!" }
+    } as? Layer.ObjectGroup) { "State map doesn't contain entity layer!" }
     private val entityMap = objectGroup.objects.associateTo(hashMapOf()) {
         it.id to MutableEntityAdapter(it)
     }
@@ -74,7 +75,7 @@ class MutableEntityManagerAdapter(
 
     override fun create(properties: Map<String, Any>): MutableEntity {
         val id = stateMap.getNextObjectId()
-        val tiledObject = State.Object(id)
+        val tiledObject = Object(id)
         val entity = MutableEntityAdapter(tiledObject)
         tiledObject.properties.putAll(properties)
         objectGroup.objects.add(tiledObject)

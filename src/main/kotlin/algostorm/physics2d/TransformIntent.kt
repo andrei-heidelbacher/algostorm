@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package algostorm.graphics2d.transform
+package algostorm.physics2d
 
 import algostorm.event.Event
 
 /**
- * An event which signals a [transformation] that should be applied on the
- * specified entity.
+ * An event which signals a transformation that should be applied on the given
+ * object.
  *
- * @property entityId the id of the entity that is to be transformed
- * @property transformation the transformation that must be applied
+ * @property objectId the id of the object which should be transformed
+ * @property dx the translation amount on the x-axis in pixels
+ * @property dy the translation amount on the y-axis in pixels
+ * @property rotate the rotation amount in radians
  */
-data class Transform(
-        val entityId: Int,
-        val transformation: Transformation
+data class TransformIntent(
+        val objectId: Int,
+        val dx: Int,
+        val dy: Int,
+        val rotate: Float
 ) : Event

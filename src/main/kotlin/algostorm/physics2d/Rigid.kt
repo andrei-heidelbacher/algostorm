@@ -16,10 +16,10 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.Entity
+import algostorm.state.Object
 
 /**
- * A component which tells that the owner entity will block movement and
+ * A component which tells that the owner object will block movement and
  * triggers collisions.
  */
 object Rigid {
@@ -29,9 +29,9 @@ object Rigid {
     const val PROPERTY: String = "isRigid"
 
     /**
-     * Returns `true` if this entity contains the rigid property and it is set
+     * Returns `true` if this object contains the rigid property and it is set
      * to `true`, `false` otherwise.
      */
-    val Entity.isRigid: Boolean
-        get() = get(PROPERTY) as? Boolean ?: false
+    val Object.isRigid: Boolean
+        get() = properties[PROPERTY] as? Boolean ?: false
 }

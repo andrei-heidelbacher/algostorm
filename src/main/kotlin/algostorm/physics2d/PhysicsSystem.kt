@@ -16,47 +16,79 @@
 
 package algostorm.physics2d
 
-import algostorm.ecs.MutableEntityManager
 import algostorm.event.Publisher
 import algostorm.event.Subscribe
 import algostorm.event.Subscriber
-import algostorm.physics2d.Box.Companion.box
 import algostorm.physics2d.Rigid.isRigid
+import algostorm.state.Object
+import algostorm.state.ObjectManager
 
 /**
- * A system that handles [TranslateIntent] events and publishes [Translated] and
- * [Collision] events.
+ * A system that handles [TransformIntent] events and publishes [Transformed]
+ * and [Collision] events.
  *
- * @property entityManager the entity manager used to retrieve and update the
- * entities
- * @property publisher the publisher used to post `Translated` and `Collision`
+ * @property objectManager the object manager used to retrieve and update the
+ * objects
+ * @property publisher the publisher used to post `Transformed` and `Collision`
  * events
  */
 class PhysicsSystem(
-        private val entityManager: MutableEntityManager,
+        private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
+    companion object {
+        /**
+         * Transforms this object with the given amounts.
+         *
+         * @param dx the translation amount on the x-axis
+         * @param dy the translation amount on the y-axis
+         * @param rotate the rotation amount in radians
+         */
+        fun Object.transform(dx: Int, dy: Int, rotate: Float) {
+            x += dx
+            y += dy
+            rotation += rotate
+        }
+
+        /**
+         * Returns whether the two objects overlap (that is, there exists a
+         * pixel `(x, y)` such that it lies inside both objects).
+         *
+         * @param other the object with which the intersection is checked
+         * @return `true` if the two objects overlap, `false` otherwise
+         */
+        fun Object.overlaps(other: Object): Boolean =
+                x < other.x + other.width &&
+                        x + width - 1 >= other.x &&
+                        y < other.y + other.height &&
+                        y + height - 1 >= other.y
+    }
+
     /**
-     * Upon receiving a [TranslateIntent] event, the [Box] of the entity is
-     * translated by the indicated amount. If the moved entity is [Rigid] and
-     * there are any other `Rigid` entities with their boxes overlapping the
-     * destination location, the entity is restored to it's initial location and
-     * a [Collision] event is triggered with every overlapping entity, having
-     * this entity as the source and each other entity as the target.
+     * Upon receiving a [TransformIntent] event, the the object is transformed
+     * by the indicated amount. If the moved object is [Rigid] and there are any
+     * other `Rigid` objects with their boxes overlapping the destination
+     * location, the object is restored to it's initial location and a
+     * [Collision] event is triggered with every overlapping object, having this
+     * object as the source and each other object as the target.
      */
-    @Subscribe fun handleTranslateIntent(event: TranslateIntent) {
-        entityManager[event.entityId]?.let { entity ->
-            val newBox = entity.box?.translate(event.dx, event.dy)
-                    ?: error("Can't translate entity $entity without a box!")
-            val overlappingEntities = entityManager.entities.filter {
-                it != entity && it.isRigid && it.box?.overlaps(newBox) ?: false
+    @Subscribe fun handleTranslateIntent(event: TransformIntent) {
+        objectManager[event.objectId]?.let { obj ->
+            obj.transform(event.dx, event.dy, event.rotate)
+            val overlappingObjects = objectManager.objects.filter {
+                it != obj && it.isRigid && it.overlaps(obj)
             }
-            if (!entity.isRigid || overlappingEntities.count() == 0) {
-                entity[Box.PROPERTY] = newBox
-                publisher.post(Translated(event.entityId, event.dx, event.dy))
+            if (!obj.isRigid || overlappingObjects.count() == 0) {
+                publisher.post(Transformed(
+                        objectId = event.objectId,
+                        dx = event.dx,
+                        dy = event.dy,
+                        rotate = event.rotate
+                ))
             } else {
-                overlappingEntities.forEach {
-                    publisher.post(Collision(event.entityId, it.id))
+                obj.transform(-event.dx, -event.dy, -event.rotate)
+                overlappingObjects.forEach {
+                    publisher.post(Collision(event.objectId, it.id))
                 }
             }
         }

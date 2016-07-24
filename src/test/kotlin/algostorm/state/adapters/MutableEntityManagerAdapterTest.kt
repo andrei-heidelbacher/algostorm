@@ -17,19 +17,20 @@
 package algostorm.state.adapters
 
 import algostorm.ecs.MutableEntityManagerTest
-import algostorm.state.State
+import algostorm.state.Layer
+import algostorm.state.Map
 
 class MutableEntityManagerAdapterTest : MutableEntityManagerTest(
         entityManager = MutableEntityManagerAdapter(
-                stateMap = State.Map(
+                stateMap = Map(
                         width = 32,
                         height = 32,
                         tileWidth = 32,
                         tileHeight = 32,
-                        orientation = State.Map.Orientation.ORTHOGONAL,
+                        orientation = Map.Orientation.ORTHOGONAL,
                         tileSets = emptyList(),
                         layers = listOf(
-                                State.Layer.ObjectGroup(
+                                Layer.ObjectGroup(
                                         name = MutableEntityManagerAdapter
                                                 .ENTITY_LAYER_NAME,
                                         objects = hashSetOf()

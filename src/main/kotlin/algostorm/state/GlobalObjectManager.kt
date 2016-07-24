@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package algostorm.physics2d
+package algostorm.state
 
-import algostorm.event.Event
+class GlobalObjectManager(private val map: Map) {
+    private val objectGroups = map.layers
+            .filterIsInstance<Layer.ObjectGroup>()
+            .associateBy { it.name }
 
-/**
- * An event which signals that the given entity intends to translate itself by
- * the given amount.
- *
- * @property entityId the id of the entity which intends to translate itself
- * @property dx the amount the entity intends to translate on the x-axis
- * @property dy the amount the entity intends to translate on the y-axis
- */
-data class TranslateIntent(val entityId: Int, val dx: Int, val dy: Int) : Event
+    fun create(
+            objectGroupName: String,
+            x: Int,
+            y: Int,
+            width: Int,
+            height: Int,
+            gid: Int = 0,
+            rotation: Float = 0F,
+            isVisible: Boolean = true,
+            properties: MutableMap<String, Any> = hashMapOf()
+    ): Object? = null
+}

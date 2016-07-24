@@ -16,11 +16,11 @@
 
 package algostorm.state.adapters
 
-import algostorm.state.State
+import algostorm.state.Map
 import algostorm.time.Timeline
 import algostorm.time.Timer
 
-class TimelineAdapter(private val stateMap: State.Map) : Timeline {
+class TimelineAdapter(private val stateMap: Map) : Timeline {
     companion object {
 
     }

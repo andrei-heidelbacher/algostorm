@@ -19,13 +19,18 @@ package algostorm.physics2d
 import algostorm.event.Event
 
 /**
- * An event which signals that the given entity has translated by the given
- * amount.
+ * An event which signals that the given object has been transformed.
  *
  * Only the [PhysicsSystem] should post this event.
  *
- * @property entityId the id of the translated entity
- * @property dx the amount the entity translated on the x-axis
- * @property dy the amount the entity translated on the y-axis
+ * @property objectId the id of the transformed object
+ * @property dx the amount the object translated on the x-axis in pixels
+ * @property dy the amount the object translated on the y-axis in pixels
+ * @property rotate the amount the object rotated in radians
  */
-data class Translated(val entityId: Int, val dx: Int, val dy: Int) : Event
+data class Transformed(
+        val objectId: Int,
+        val dx: Int,
+        val dy: Int,
+        val rotate: Float
+) : Event
