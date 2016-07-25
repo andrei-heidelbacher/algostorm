@@ -31,6 +31,8 @@ class ObjectManager(private val map: Map, name: String) {
 
     operator fun get(objectId: Int): Object? = objectMap[objectId]
 
+    operator fun contains(objectId: Int): Boolean = objectId in objectMap
+
     fun create(
             x: Int,
             y: Int,
