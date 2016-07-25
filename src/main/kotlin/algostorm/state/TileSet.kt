@@ -32,7 +32,7 @@ class TileSet(
         val tiles: Map<Int, Tile> = emptyMap()
 ) {
     class Tile(
-            val animations: Map<String, List<Frame>> = emptyMap(),
+            val animation: List<Frame>? = null,
             val properties: Map<String, Any> = emptyMap()
     ) {
         companion object {
@@ -64,7 +64,7 @@ class TileSet(
         }
 
         init {
-            require(animations.all { it.value.isNotEmpty() }) {
+            require(animation?.isNotEmpty() ?: true) {
                 "Animation can't have empty frame sequence!"
             }
         }

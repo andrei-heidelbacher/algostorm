@@ -18,25 +18,53 @@ package algostorm.graphics2d
 
 import algostorm.event.Subscribe
 import algostorm.event.Subscriber
+import algostorm.state.Layer
+import algostorm.state.Map
+import algostorm.state.TileSet.Viewport
 
 /**
  * A system which handles the rendering of all entities in the game.
  */
-abstract class AbstractRenderingSystem : Subscriber {
+abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     /**
-     * This method should render all the game data to the screen.
+     * This method should render the viewport projected on the indicated bitmap.
      *
      * It will be called from the private engine thread and should be blocking
      * and thread-safe.
      */
-    protected abstract fun render(): Unit
+    protected abstract fun renderBitmap(viewport: Viewport): Unit
+
+    protected abstract val cameraX: Int
+
+    protected abstract val cameraY: Int
 
     /**
-     * When a [Render] event is received, the [render] method is called.
+     * When a [Render] event is received, the [renderBitmap] method is called
+     * for every tile, image and renderable object in the game.
      *
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
-        render()
+        map.layers.filter { it.isVisible }.forEach { layer ->
+            when (layer) {
+                is Layer.ImageLayer -> {
+
+                }
+                is Layer.TileLayer -> {
+
+                }
+                is Layer.ObjectGroup -> {
+                    layer.objects.filter {
+                        it.isVisible && it.gid != 0
+                    }.forEach {
+                        val tileSet = map.getTileSet(it.gid)
+                                ?: error("Invalid gid ${it.gid}!")
+                        val tileId = map.getTileId(it.gid)
+                                ?: error("Invalid gid ${it.gid}!")
+                        renderBitmap(tileSet.getViewport(tileId))
+                    }
+                }
+            }
+        }
     }
 }
