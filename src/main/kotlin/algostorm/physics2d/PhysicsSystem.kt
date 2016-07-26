@@ -71,6 +71,8 @@ class PhysicsSystem(
      * location, the object is restored to it's initial location and a
      * [Collision] event is triggered with every overlapping object, having this
      * object as the source and each other object as the target.
+     *
+     * @param event the [TransformIntent] event
      */
     @Subscribe fun handleTranslateIntent(event: TransformIntent) {
         objectManager[event.objectId]?.let { obj ->

@@ -221,6 +221,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
 
     /**
      * When a [Tick] event is received, the [currentTimeMillis] is increased.
+     *
+     * @param event the [Tick] event
      */
     @Subscribe fun handleTick(event: Tick) {
         currentTimeMillis += event.elapsedMillis
