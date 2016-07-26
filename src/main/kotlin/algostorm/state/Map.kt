@@ -17,6 +17,18 @@
 package algostorm.state
 
 /**
+ * A map which contains all the game state.
+ *
+ * The rendering order of all tiles and objects is right-down.
+ *
+ * @property width the x-axis width of the map in tiles
+ * @property height the y-axis height of the map in tiles
+ * @property orientation the orientation of the map
+ * @property tileSets the tile sets used for rendering
+ * @property layers the layers of the game
+ * @property properties the properties of this map
+ * @property version the version of this map
+ * @property nextObjectId the next available id for an object
  * @throws IllegalArgumentException if [nextObjectId] is negative or if there
  * are multiple tile sets with the same name or multiple layers with the same
  * name or if [width] or [height] or [tileWidth] or [tileHeight] are not

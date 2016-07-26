@@ -26,8 +26,6 @@ import algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import algostorm.state.TileSet.Viewport
 import algostorm.time.Tick
 import kotlin.comparisons.compareBy
-import kotlin.comparisons.compareByDescending
-import kotlin.comparisons.thenBy
 
 /**
  * A system which handles the rendering of all objects in the game.
