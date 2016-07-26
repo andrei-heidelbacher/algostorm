@@ -20,5 +20,7 @@ import algostorm.event.Event
 
 /**
  * An event which signals an atomic time unit has passed.
+ *
+ * @property elapsedMillis the number of milliseconds of an atomic time unit
  */
-object Tick : Event
+data class Tick(val elapsedMillis: Int) : Event

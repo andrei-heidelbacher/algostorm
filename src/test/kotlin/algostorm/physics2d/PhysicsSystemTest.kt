@@ -18,14 +18,13 @@ package algostorm.physics2d
 
 import org.junit.Test
 
-import algostorm.ecs.MutableEntityManagerMock
 import algostorm.event.PublisherMock
 
 class PhysicsSystemTest {
     val tileWidth: Int = 32
     val tileHeight: Int = 32
 
-    fun makeEntity(x: Int, y: Int, isRigid: Boolean): Map<String, Any> = mapOf(
+    /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): Map<String, Any> = mapOf(
             Box.PROPERTY to Box(x, y, tileWidth, tileHeight),
             Rigid.PROPERTY to isRigid
     )
@@ -91,5 +90,5 @@ class PhysicsSystemTest {
                 1 to makeEntity(tileWidth, tileHeight, false),
                 2 to makeEntity(tileWidth, 0, true)
         ))
-    }
+    }*/
 }

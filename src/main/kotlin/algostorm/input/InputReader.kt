@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package algostorm.state.adapters
+package algostorm.input
 
-import algostorm.state.Map
-import algostorm.time.Timeline
-import algostorm.time.Timer
-
-class TimelineAdapter(private val stateMap: Map) : Timeline {
-    companion object {
-
-    }
-
-    override var timers: List<Timer>
-        get() = error("")//stateMap.properties[]
-        set(value) {
-        }
+/**
+ * Allows reading input.
+ *
+ * @param T the input type
+ */
+interface InputReader<out T : Any> {
+    /**
+     * Retrieves the most recent input and resets the last input to `null`.
+     *
+     * @return the most recent input, or `null` if there is not input to read
+     */
+    fun readInput(): T?
 }

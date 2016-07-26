@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package algostorm.ecs
+package algostorm.input
 
-class MutableEntityManagerMockTest : MutableEntityManagerTest(
-        entityManager = MutableEntityManagerMock(),
-        firstId = 0,
-        entityCount = 1000
-)
-
+/**
+ * Allows writing input.
+ *
+ * @param T the input type
+ */
+interface InputWriter<in T : Any> {
+    /**
+     * Writes the given input.
+     */
+    fun writeInput(input: T?): Unit
+}

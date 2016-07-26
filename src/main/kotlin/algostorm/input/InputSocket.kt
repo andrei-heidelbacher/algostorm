@@ -17,52 +17,29 @@
 package algostorm.input
 
 /**
- * Thread-safe input socket which allows setting and retrieving actor inputs.
+ * Thread-safe input socket which allows setting and retrieving inputs.
  *
- * This is a mutable and serializable object, however, it may be used in other
- * components, as the internal state of the source is transient. This class may
- * not be serialized alone, but it may be serialized as a member of another
- * class as long as the wrapper class is not generic.
- *
- * @param T the user input type
+ * @param T the user lastInput type
  */
-class InputSocket<T> {
+class InputSocket<T : Any> : InputReader<T>, InputWriter<T> {
     @Transient private val lock = Any()
 
     /**
-     * The last received input while the socket is enabled, or `null` if no
-     * input has been received.
+     * The last received input, or `null` if no input has been received.
      *
      * After successfully retrieving a non-null input, it is reset to `null`.
      */
-    @Transient var input: T? = null
-        get() = synchronized(lock) {
-            val value = field
-            if (value != null) {
-                field = null
-            }
-            value
-        }
-        set(value) {
-            synchronized(lock) {
-                if (isEnabled) {
-                    field = value
-                }
-            }
-        }
+    private var lastInput: T? = null
 
-    /**
-     * The enabled property of the socket.
-     *
-     * If the socket is disabled, no input can be received. Upon enabling or
-     * disabling the socket, the last [input] is flushed and set to `null`.
-     */
-    @Transient var isEnabled: Boolean = false
-        get() = synchronized(lock) { field }
-        set(value) {
-            synchronized(lock) {
-                input = null
-                field = value
-            }
+    override fun readInput(): T? = synchronized(lock) {
+        val value = lastInput
+        lastInput = null
+        value
+    }
+
+    override fun writeInput(input: T?) {
+        synchronized(lock) {
+            lastInput = input
         }
+    }
 }

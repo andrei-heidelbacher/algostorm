@@ -20,11 +20,11 @@ import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 import algostorm.state.Layer
 import algostorm.state.Map
-import algostorm.state.Map.RenderOrder
 import algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
 import algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
 import algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import algostorm.state.TileSet.Viewport
+import algostorm.time.Tick
 
 /**
  * A system which handles the rendering of all objects in the game.
@@ -32,9 +32,25 @@ import algostorm.state.TileSet.Viewport
 abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     /**
      * This method should render the viewport projected on the indicated bitmap.
+     * The drawing coordinates are given relative to the screen.
      *
      * It will be called from the private engine thread and should be blocking
      * and thread-safe.
+     *
+     * @param viewport the viewport which should be rendered
+     * @param flipHorizontally whether the image should be flipped horizontally
+     * before rendering
+     * @param flipVertically whether the image should be flipped vertically
+     * before rendering
+     * @param flipDiagonally whether the image should be flipped diagonally
+     * before rendering
+     * @param opacity the opacity of the image. Should be between `0` and `1`.
+     * @param x the x-axis coordinate of the lower-left corner of the rendered
+     * image in pixels
+     * @param y the y-axis coordinate of the lower-left corner of the rendered
+     * image in pixels
+     * @param rotation the rotation of the image around the lower-left corner in
+     * radians
      */
     protected abstract fun renderBitmap(
             viewport: Viewport,
@@ -47,13 +63,27 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
             rotation: Float
     ): Unit
 
+    /**
+     * The x-axis coordinate of the lower-left corner of the camera in pixels.
+     */
     protected abstract val cameraX: Int
 
+    /**
+     * The y-axis coordinate of the lower-left corner of the camera in pixels.
+     */
     protected abstract val cameraY: Int
 
+    /**
+     * The x-axis width of the camera in pixels.
+     */
     protected abstract val cameraWidth: Int
 
+    /**
+     * The y-axis height of the camera in pixels.
+     */
     protected abstract val cameraHeight: Int
+
+    private var currentTimeMillis = 0L
 
     private fun renderGid(
             gid: Int,
@@ -72,7 +102,7 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         val tileId = if (animation == null) {
             localTileId
         } else {
-            var elapsedTimeMillis = System.currentTimeMillis() %
+            var elapsedTimeMillis = currentTimeMillis %
                     animation.sumBy { it.duration }
             animation.dropWhile {
                 elapsedTimeMillis -= it.duration
@@ -126,18 +156,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     }
 
     private fun renderTileLayer(tileLayer: Layer.TileLayer) {
-        val yRange = when (map.renderOrder) {
-            RenderOrder.LEFT_DOWN, RenderOrder.RIGHT_DOWN -> {
-                map.height - 1 downTo 0
-            }
-            RenderOrder.LEFT_UP, RenderOrder.RIGHT_UP -> 0 until map.height
-        }
-        val xRange = when (map.renderOrder) {
-            RenderOrder.LEFT_DOWN, RenderOrder.LEFT_UP -> map.width - 1 downTo 0
-            RenderOrder.RIGHT_DOWN, RenderOrder.RIGHT_UP -> 0 until map.width
-        }
-        yRange.forEach { y ->
-            xRange.forEach { x ->
+        for (y in 0 until map.height) {
+            for (x in 0 until map.width) {
                 renderGid(
                         gid = tileLayer.data[x * map.height + y],
                         opacity = tileLayer.opacity,
@@ -147,6 +167,13 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                 )
             }
         }
+    }
+
+    /**
+     * When a [Tick] event is received, the [currentTimeMillis] is increased.
+     */
+    @Subscribe fun handleTick(event: Tick) {
+        currentTimeMillis += event.elapsedMillis
     }
 
     /**

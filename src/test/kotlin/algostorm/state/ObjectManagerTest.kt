@@ -21,8 +21,8 @@ import org.junit.Before
 import org.junit.Test
 
 class ObjectManagerTest {
-    private companion object {
-        val NAME = "objectGroup"
+    companion object {
+        val OBJECT_GROUP_NAME = "objectGroup"
         val TILE_WIDTH = 32
         val TILE_HEIGHT = 32
         val FIRST_ID = 1
@@ -46,7 +46,7 @@ class ObjectManagerTest {
             orientation = Map.Orientation.ORTHOGONAL,
             tileSets = emptyList(),
             layers = listOf(Layer.ObjectGroup(
-                    name = NAME,
+                    name = OBJECT_GROUP_NAME,
                     objects = (FIRST_ID until FIRST_ID + OBJECT_COUNT / 2).map {
                         makeObject(it)
                     }.toHashSet()
@@ -54,7 +54,7 @@ class ObjectManagerTest {
             nextObjectId = FIRST_ID + OBJECT_COUNT / 2
     )
 
-    private val objectManager = ObjectManager(map, NAME)
+    private val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
 
     @Before
     fun setUp() {

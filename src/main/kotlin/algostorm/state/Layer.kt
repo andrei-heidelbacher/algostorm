@@ -19,22 +19,53 @@ package algostorm.state
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+import algostorm.state.Layer.ImageLayer
+import algostorm.state.Layer.ObjectGroup
+import algostorm.state.Layer.TileLayer
+
+/**
+ * An abstract layer in the game world.
+ */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
         property = "type"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = Layer.TileLayer::class, name = "TileLayer"),
-        JsonSubTypes.Type(value = Layer.ImageLayer::class, name = "ImageLayer"),
-        JsonSubTypes.Type(value = Layer.ObjectGroup::class, name = "ObjectGroup")
+        JsonSubTypes.Type(value = TileLayer::class, name = "TileLayer"),
+        JsonSubTypes.Type(value = ImageLayer::class, name = "ImageLayer"),
+        JsonSubTypes.Type(value = ObjectGroup::class, name = "ObjectGroup")
 )
 sealed class Layer {
+    /**
+     * The name of this layer. Two layers are equal if and only if they have the
+     * same name.
+     */
     abstract val name: String
+
+    /**
+     * Whether this layer should be rendered or not.
+     */
     abstract var isVisible: Boolean
+
+    /**
+     * The opacity of this layer. Should be a value between `0` and `1`.
+     */
     abstract var opacity: Float
+
+    /**
+     * The x-axis rendering offset in pixels.
+     */
     abstract val offsetX: Int
+
+    /**
+     * The y-axis rendering offset in pixels.
+     */
     abstract val offsetY: Int
+
+    /**
+     * The properties of this layer.
+     */
     abstract val properties: MutableMap<String, Any>
 
     final override fun equals(other: Any?): Boolean =
@@ -42,6 +73,14 @@ sealed class Layer {
 
     final override fun hashCode(): Int = name.hashCode()
 
+    /**
+     * A layer which consists of `width x height` tiles, where `width` and
+     * `height` are the dimensions of the containing [Map].
+     *
+     * @property data the global ids of the tiles on the containing map. Index
+     * `i` of this array represents the tile with `x = i / width` and
+     * `y = i % width`.
+     */
     class TileLayer(
             override val name: String,
             val data: IntArray,
@@ -52,6 +91,11 @@ sealed class Layer {
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer()
 
+    /**
+     * A layer which consists of a single [image].
+     *
+     * @param image the URI of the image that should be rendered
+     */
     class ImageLayer(
             override val name: String,
             var image: String,
@@ -62,6 +106,11 @@ sealed class Layer {
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer()
 
+    /**
+     * A layer which contains a set of [objects].
+     *
+     * @property objects the set of objects contained by this layer
+     */
     class ObjectGroup(
             override val name: String,
             val objects : MutableSet<Object>,

@@ -16,31 +16,41 @@
 
 package algostorm.state
 
+/**
+ * @throws IllegalArgumentException if [nextObjectId] is negative or if there
+ * are multiple tile sets with the same name or multiple layers with the same
+ * name or if [width] or [height] or [tileWidth] or [tileHeight] are not
+ * positive
+ */
 class Map(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
         val orientation: Orientation,
-        val renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
         val properties: MutableMap<String, Any> = hashMapOf(),
         val version: String = "1.0",
         private var nextObjectId: Int
 ) {
+    /**
+     * The orientation of the map.
+     */
     enum class Orientation {
         ORTHOGONAL, ISOMETRIC
-    }
-
-    enum class RenderOrder {
-        RIGHT_DOWN, RIGHT_UP, LEFT_DOWN, LEFT_UP
     }
 
     @Transient private val gidToTileSet = hashMapOf<Int, TileSet>()
     @Transient private val gidToTileId = hashMapOf<Int, Int>()
 
     init {
+        require(width > 0 && height > 0) {
+            "Map sizes ($width, $height) must be positive!"
+        }
+        require(tileWidth > 0 && tileHeight > 0) {
+            "Map tile sizes ($tileWidth, $tileHeight) must be positive!"
+        }
         require(nextObjectId >= 0) {
             "Map next object id $nextObjectId can't be negative!"
         }
@@ -61,6 +71,9 @@ class Map(
     }
 
     /**
+     * Returns the next available object id and increments [nextObjectId].
+     *
+     * @return the next available object id
      * @throws IllegalStateException if there are too many objects
      */
     fun getNextObjectId(): Int {
@@ -70,9 +83,23 @@ class Map(
         return id
     }
 
+    /**
+     * Returns the tile set which contains the given [gid].
+     *
+     * @param gid the searched global tile id
+     * @return the requested tile set, or `null` if the given [gid] isn't
+     * contained by any tile sets
+     */
     fun getTileSet(gid: Int): TileSet? =
             gidToTileSet[gid.and(0x0FFFFFFF)]
 
+    /**
+     * Returns the local tile id of the given [gid].
+     *
+     * @param gid the searched global tile id
+     * @return the requested local tile id, or `null` if the given [gid] isn't
+     * contained by any tile sets
+     */
     fun getTileId(gid: Int): Int? =
             gidToTileId[gid.and(0x0FFFFFFF)]
 }

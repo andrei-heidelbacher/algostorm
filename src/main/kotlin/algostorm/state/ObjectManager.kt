@@ -59,6 +59,7 @@ class ObjectManager(private val map: Map, name: String) {
     }
 
     fun delete(id: Int): Boolean = objectMap[id]?.let { obj ->
+        objectMap.remove(id)
         objectGroup.objects.remove(obj)
     } ?: false
 }

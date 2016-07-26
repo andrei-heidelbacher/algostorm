@@ -16,6 +16,26 @@
 
 package algostorm.state
 
+/**
+ * A physical and renderable object in the game. Two objects are equal if and
+ * only if they have the same [id].
+ *
+ * @property id the unique identifier of this object
+ * @property x the x-axis coordinate of the lower-left corner of this object in
+ * pixels
+ * @property y the y-axis coordinate of the lower-left corner of this object in
+ * pixels
+ * @property width the x-axis width of this object in pixels
+ * @property height the y-axis height of this object in pixels
+ * @property gid the global id of the object tile. A value of `0` indicates the
+ * empty tile (nothing to render)
+ * @property rotation the rotation of this object around the lower-left corner
+ * in radians
+ * @property isVisible whether this object should be rendered or not
+ * @property properties the properties of this object
+ * @throws IllegalArgumentException if [id] or [gid] is negative or if [width]
+ * or [height] are not positive
+ */
 class Object(
         val id: Int,
         var x: Int,
