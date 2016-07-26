@@ -32,7 +32,7 @@ import kotlin.comparisons.compareBy
  */
 abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     /**
-     * This method should render the viewport projected on the indicated bitmap.
+     * This method should draw the viewport projected on the indicated bitmap.
      * The drawing coordinates are given relative to the screen.
      *
      * It will be called from the private engine thread and should be blocking
@@ -53,7 +53,7 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
      * @param rotation the rotation of the image around the lower-left corner in
      * radians
      */
-    protected abstract fun renderBitmap(
+    protected abstract fun drawBitmap(
             viewport: Viewport,
             flipHorizontally: Boolean,
             flipVertically: Boolean,
@@ -63,6 +63,17 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
             y: Int,
             rotation: Float
     ): Unit
+
+    /**
+     * Clears the screen.
+     */
+    protected abstract fun clear(): Unit
+
+    /**
+     * Renders all the changes from the last [clear] or [render] call to the
+     * screen.
+     */
+    protected abstract fun render(): Unit
 
     /**
      * The x-axis coordinate of the lower-left corner of the camera in pixels.
@@ -86,7 +97,7 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
 
     private var currentTimeMillis = 0L
 
-    private fun renderGid(
+    private fun drawGid(
             gid: Int,
             opacity: Float,
             x: Int,
@@ -112,7 +123,7 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         }
         if (x <= cameraWidth && x + width - 1 >= 0 &&
                 y <= cameraHeight && y + height - 1 >= 0) {
-            renderBitmap(
+            drawBitmap(
                     viewport = tileSet.getViewport(tileId),
                     flipHorizontally = gid.isFlippedHorizontally,
                     flipVertically = gid.isFlippedVertically,
@@ -125,8 +136,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         }
     }
 
-    private fun renderImageLayer(imageLayer: Layer.ImageLayer) {
-        renderBitmap(
+    private fun drawImageLayer(imageLayer: Layer.ImageLayer) {
+        drawBitmap(
                 viewport = Viewport(
                         image = imageLayer.image,
                         x = cameraX - imageLayer.offsetX,
@@ -144,11 +155,11 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         )
     }
 
-    private fun renderObjectGroup(objectGroup: Layer.ObjectGroup) {
+    private fun drawObjectGroup(objectGroup: Layer.ObjectGroup) {
         objectGroup.objects.filter {
             it.isVisible && it.gid != 0
         }.sortedWith(compareBy({ -it.y }, { it.x })).forEach {
-            renderGid(
+            drawGid(
                     gid = it.gid,
                     opacity = objectGroup.opacity,
                     x = it.x + objectGroup.offsetX - cameraX,
@@ -158,10 +169,10 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         }
     }
 
-    private fun renderTileLayer(tileLayer: Layer.TileLayer) {
+    private fun drawTileLayer(tileLayer: Layer.TileLayer) {
         for (y in map.height - 1 downTo 0) {
             for (x in 0 until map.width) {
-                renderGid(
+                drawGid(
                         gid = tileLayer.data[x * map.height + y],
                         opacity = tileLayer.opacity,
                         x = x * map.tileWidth + tileLayer.offsetX - cameraX,
@@ -180,18 +191,22 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     }
 
     /**
-     * When a [Render] event is received, the [renderBitmap] method is called
-     * for every tile, image and renderable object in the game.
+     * When a [Render] event is received, the [clear] method is called, followed
+     * by [drawBitmap] for every tile, image and renderable object in the
+     * game. After all the rendering is done, the [render] method is called to
+     * render the changes to the screen.
      *
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
+        clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {
-                is Layer.ImageLayer -> renderImageLayer(layer)
-                is Layer.ObjectGroup -> renderObjectGroup(layer)
-                is Layer.TileLayer -> renderTileLayer(layer)
+                is Layer.ImageLayer -> drawImageLayer(layer)
+                is Layer.ObjectGroup -> drawObjectGroup(layer)
+                is Layer.TileLayer -> drawTileLayer(layer)
             }
         }
+        render()
     }
 }
