@@ -19,11 +19,13 @@ package algostorm.state
 /**
  * A map which contains all the game state.
  *
- * The rendering order of all tiles and objects is right-down.
+ * The x-axis is increasing from left to right and the y-axis is increasing from
+ * top to bottom.
  *
- * @property width the x-axis width of the map in tiles
- * @property height the y-axis height of the map in tiles
+ * @property width the width of the map in tiles
+ * @property height the height of the map in tiles
  * @property orientation the orientation of the map
+ * @property renderOrder the order in which objects and tiles are rendered
  * @property tileSets the tile sets used for rendering
  * @property layers the layers of the game
  * @property properties the properties of this map
@@ -40,6 +42,7 @@ class Map(
         val tileWidth: Int,
         val tileHeight: Int,
         val orientation: Orientation,
+        val renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
         val properties: MutableMap<String, Any> = hashMapOf(),
@@ -51,6 +54,13 @@ class Map(
      */
     enum class Orientation {
         ORTHOGONAL, ISOMETRIC
+    }
+
+    /**
+     * The rendering order of tiles and objects.
+     */
+    enum class RenderOrder {
+        RIGHT_DOWN, RIGHT_UP, LEFT_DOWN, LEFT_UP
     }
 
     @Transient private val gidToTileSet = hashMapOf<Int, TileSet>()

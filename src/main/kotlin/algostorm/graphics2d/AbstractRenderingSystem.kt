@@ -20,11 +20,14 @@ import algostorm.event.Subscribe
 import algostorm.event.Subscriber
 import algostorm.state.Layer
 import algostorm.state.Map
+import algostorm.state.Map.RenderOrder
+import algostorm.state.Object
 import algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
 import algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
 import algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import algostorm.state.TileSet.Viewport
 import algostorm.time.Tick
+
 import kotlin.comparisons.compareBy
 
 /**
@@ -33,7 +36,8 @@ import kotlin.comparisons.compareBy
 abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     /**
      * This method should draw the viewport projected on the indicated bitmap.
-     * The drawing coordinates are given relative to the screen.
+     * The drawing coordinates are given relative to the screen. If necessary,
+     * it will scale the viewport to the destination area.
      *
      * It will be called from the private engine thread and should be blocking
      * and thread-safe.
@@ -46,10 +50,12 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
      * @param flipDiagonally whether the image should be flipped diagonally
      * before rendering
      * @param opacity the opacity of the image. Should be between `0` and `1`.
-     * @param x the x-axis coordinate of the lower-left corner of the rendered
+     * @param x the x-axis coordinate of the top-left corner of the rendered
      * image in pixels
-     * @param y the y-axis coordinate of the lower-left corner of the rendered
+     * @param y the y-axis coordinate of the top-left corner of the rendered
      * image in pixels
+     * @param width the width of the rendered image in pixels
+     * @param height the height of the rendered image in pixels
      * @param rotation the rotation of the image around the lower-left corner in
      * radians
      */
@@ -61,6 +67,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
             opacity: Float,
             x: Int,
             y: Int,
+            width: Int,
+            height: Int,
             rotation: Float
     ): Unit
 
@@ -76,22 +84,22 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
     protected abstract fun render(): Unit
 
     /**
-     * The x-axis coordinate of the lower-left corner of the camera in pixels.
+     * The x-axis coordinate of the top-left corner of the camera in pixels.
      */
     protected abstract val cameraX: Int
 
     /**
-     * The y-axis coordinate of the lower-left corner of the camera in pixels.
+     * The y-axis coordinate of the top-left corner of the camera in pixels.
      */
     protected abstract val cameraY: Int
 
     /**
-     * The x-axis width of the camera in pixels.
+     * The width of the camera in pixels.
      */
     protected abstract val cameraWidth: Int
 
     /**
-     * The y-axis height of the camera in pixels.
+     * The height of the camera in pixels.
      */
     protected abstract val cameraHeight: Int
 
@@ -102,20 +110,19 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
             opacity: Float,
             x: Int,
             y: Int,
+            width: Int,
+            height: Int,
             rotation: Float
     ) {
-        val tileSet = map.getTileSet(gid)
-                ?: error("Invalid gid $gid!")
-        val localTileId = map.getTileId(gid)
-                ?: error("Invalid gid $gid!")
-        val width = tileSet.tileWidth
-        val height = tileSet.tileHeight
+        val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
+        val localTileId = map.getTileId(gid) ?: error("Invalid gid $gid!")
         val animation = tileSet.tiles[localTileId]?.animation
         val tileId = if (animation == null) {
             localTileId
         } else {
-            var elapsedTimeMillis = currentTimeMillis %
-                    animation.sumBy { it.duration }
+            var elapsedTimeMillis = currentTimeMillis % animation.sumBy {
+                it.duration
+            }
             animation.dropWhile {
                 elapsedTimeMillis -= it.duration
                 elapsedTimeMillis >= 0
@@ -131,6 +138,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                     opacity = opacity,
                     x = x - cameraX,
                     y = y - cameraY,
+                    width = width,
+                    height = height,
                     rotation = rotation
             )
         }
@@ -151,32 +160,59 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                 opacity = imageLayer.opacity,
                 x = 0,
                 y = 0,
+                width = cameraWidth,
+                height = cameraHeight,
                 rotation = 0F
         )
     }
 
     private fun drawObjectGroup(objectGroup: Layer.ObjectGroup) {
+        val comparator = when (map.renderOrder) {
+            RenderOrder.RIGHT_DOWN -> compareBy<Object>({ it.y }, { it.x })
+            RenderOrder.RIGHT_UP -> compareBy<Object>({ -it.y }, { it.x })
+            RenderOrder.LEFT_DOWN -> compareBy<Object>({ it.y }, { -it.x })
+            RenderOrder.LEFT_UP -> compareBy<Object>({ -it.y }, { -it.x })
+        }
         objectGroup.objects.filter {
             it.isVisible && it.gid != 0
-        }.sortedWith(compareBy({ -it.y }, { it.x })).forEach {
+        }.sortedWith(comparator).forEach {
             drawGid(
                     gid = it.gid,
                     opacity = objectGroup.opacity,
                     x = it.x + objectGroup.offsetX - cameraX,
                     y = it.y + objectGroup.offsetY - cameraY,
+                    width = it.width,
+                    height = it.height,
                     rotation = it.rotation
             )
         }
     }
 
     private fun drawTileLayer(tileLayer: Layer.TileLayer) {
-        for (y in map.height - 1 downTo 0) {
-            for (x in 0 until map.width) {
+        val (yRange, xRange) = when (map.renderOrder) {
+            RenderOrder.RIGHT_DOWN ->
+                Pair(0 until map.height, 0 until map.width)
+            RenderOrder.RIGHT_UP ->
+                Pair(map.height - 1 downTo 0, 0 until map.width)
+            RenderOrder.LEFT_DOWN ->
+                Pair(0 until map.height, map.width - 1 downTo 0)
+            RenderOrder.LEFT_UP ->
+                Pair(map.height - 1 downTo 0, map.width - 1 downTo 0)
+        }
+        for (y in yRange) {
+            for (x in xRange) {
+                val gid = tileLayer.data[y * map.width + x]
+                if (gid == 0) {
+                    continue
+                }
+                val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
                 drawGid(
-                        gid = tileLayer.data[x * map.height + y],
+                        gid = gid,
                         opacity = tileLayer.opacity,
                         x = x * map.tileWidth + tileLayer.offsetX - cameraX,
                         y = y * map.tileHeight + tileLayer.offsetY - cameraY,
+                        width = tileSet.tileWidth,
+                        height = tileSet.tileHeight,
                         rotation = 0F
                 )
             }

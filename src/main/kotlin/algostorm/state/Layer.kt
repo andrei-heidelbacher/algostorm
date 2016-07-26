@@ -78,8 +78,8 @@ sealed class Layer {
      * `height` are the dimensions of the containing [Map].
      *
      * @property data the global ids of the tiles on the containing map. Index
-     * `i` of this array represents the tile with `x = i / width` and
-     * `y = i % width`.
+     * `i` of this array represents the tile with `x = i % width` and
+     * `y = i / width`.
      */
     class TileLayer(
             override val name: String,
