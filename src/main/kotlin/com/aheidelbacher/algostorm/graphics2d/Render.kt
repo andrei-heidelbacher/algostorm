@@ -19,7 +19,9 @@ package com.aheidelbacher.algostorm.graphics2d
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * An event which signals the fact that all existing entities should be rendered
- * to the screen.
+ * An event which requests the rendering of the entire game state to the screen.
+ *
+ * @property cameraX the x-axis coordinate of the center of the camera in pixels
+ * @property cameraY the y-axis coordinate of the center of the camera in pixels
  */
-object Render : Event
+data class Render(val cameraX: Int, val cameraY: Int) : Event

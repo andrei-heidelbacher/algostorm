@@ -33,106 +33,18 @@ import kotlin.comparisons.compareBy
 /**
  * A system which handles the rendering of all objects in the game to the screen
  * canvas.
+ *
+ * Every method call to the [canvas] is made from the private engine thread.
  */
-abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
-    /**
-     * Draws the viewport projected on the indicated bitmap. The drawing
-     * coordinates are given relative to the screen canvas. If necessary, it
-     * will scale the viewport to the destination area.
-     *
-     * It will be called from the private engine thread and should and
-     * thread-safe.
-     *
-     * @param viewport the viewport which should be rendered
-     * @param flipHorizontally whether the image should be flipped horizontally
-     * before rendering
-     * @param flipVertically whether the image should be flipped vertically
-     * before rendering
-     * @param flipDiagonally whether the image should be flipped diagonally
-     * before rendering
-     * @param opacity the opacity of the image. Should be between `0` and `1`.
-     * @param x the x-axis coordinate of the top-left corner of the rendered
-     * image in pixels
-     * @param y the y-axis coordinate of the top-left corner of the rendered
-     * image in pixels
-     * @param width the width of the rendered image in pixels
-     * @param height the height of the rendered image in pixels
-     * @param rotation the rotation of the image around the lower-left corner in
-     * radians
-     */
-    protected abstract fun drawBitmap(
-            viewport: Viewport,
-            flipHorizontally: Boolean,
-            flipVertically: Boolean,
-            flipDiagonally: Boolean,
-            opacity: Float,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            rotation: Float
-    ): Unit
-
-    /**
-     * Locks the screen canvas and allows editing the canvas content.
-     *
-     * It will be called from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract fun lockCanvas(): Unit
-
-    /**
-     * Clears the screen canvas.
-     *
-     * It will be called from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract fun clearCanvas(): Unit
-
-    /**
-     * Unlocks the screen canvas and posts all the changes made since the canvas
-     * was locked.
-     *
-     * It will be called from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract fun unlockCanvasAndPost(): Unit
-
-    /**
-     * The width of the canvas in pixels.
-     *
-     * It will be retrieved from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract val canvasWidth: Int
-
-    /**
-     * The height of the canvas in pixels.
-     *
-     * It will be retrieved from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract val canvasHeight: Int
-
-    /**
-     * The x-axis coordinate of the top-left corner of the canvas in pixels.
-     *
-     * It will be retrieved from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract val canvasX: Int
-
-    /**
-     * The y-axis coordinate of the top-left corner of the canvas in pixels.
-     *
-     * It will be retrieved from the private engine thread and should be
-     * thread-safe.
-     */
-    protected abstract val canvasY: Int
-
+class RenderingSystem(
+        private val map: Map,
+        private val canvas: Canvas
+) : Subscriber {
     private var currentTimeMillis = 0L
 
     private fun drawGid(
+            canvasX: Int,
+            canvasY: Int,
             gid: Int,
             opacity: Float,
             x: Int,
@@ -155,9 +67,9 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                 elapsedTimeMillis >= 0
             }.first().tileId
         }
-        if (x <= canvasWidth && x + width - 1 >= 0 &&
-                y <= canvasHeight && y + height - 1 >= 0) {
-            drawBitmap(
+        if (x <= canvas.width && x + width - 1 >= 0 &&
+                y <= canvas.height && y + height - 1 >= 0) {
+            canvas.drawBitmap(
                     viewport = tileSet.getViewport(tileId),
                     flipHorizontally = gid.isFlippedHorizontally,
                     flipVertically = gid.isFlippedVertically,
@@ -172,14 +84,18 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         }
     }
 
-    private fun drawImageLayer(imageLayer: Layer.ImageLayer) {
-        drawBitmap(
+    private fun drawImageLayer(
+            canvasX: Int,
+            canvasY: Int,
+            imageLayer: Layer.ImageLayer
+    ) {
+        canvas.drawBitmap(
                 viewport = Viewport(
                         image = imageLayer.image,
                         x = canvasX - imageLayer.offsetX,
                         y = canvasY - imageLayer.offsetY,
-                        width = canvasWidth,
-                        height = canvasHeight
+                        width = canvas.width,
+                        height = canvas.height
                 ),
                 flipHorizontally = false,
                 flipVertically = false,
@@ -187,13 +103,17 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                 opacity = imageLayer.opacity,
                 x = 0,
                 y = 0,
-                width = canvasWidth,
-                height = canvasHeight,
+                width = canvas.width,
+                height = canvas.height,
                 rotation = 0F
         )
     }
 
-    private fun drawObjectGroup(objectGroup: Layer.ObjectGroup) {
+    private fun drawObjectGroup(
+            canvasX: Int,
+            canvasY: Int,
+            objectGroup: Layer.ObjectGroup
+    ) {
         val comparator = when (map.renderOrder) {
             RenderOrder.RIGHT_DOWN -> compareBy<Object>({ it.y }, { it.x })
             RenderOrder.RIGHT_UP -> compareBy<Object>({ -it.y }, { it.x })
@@ -204,6 +124,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
             it.isVisible && it.gid != 0
         }.sortedWith(comparator).forEach {
             drawGid(
+                    canvasX = canvasX,
+                    canvasY = canvasY,
                     gid = it.gid,
                     opacity = objectGroup.opacity,
                     x = it.x + objectGroup.offsetX - canvasX,
@@ -215,7 +137,11 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
         }
     }
 
-    private fun drawTileLayer(tileLayer: Layer.TileLayer) {
+    private fun drawTileLayer(
+            canvasX: Int,
+            canvasY: Int,
+            tileLayer: Layer.TileLayer
+    ) {
         val (yRange, xRange) = when (map.renderOrder) {
             RenderOrder.RIGHT_DOWN ->
                 Pair(0 until map.height, 0 until map.width)
@@ -234,6 +160,8 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
                 }
                 val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
                 drawGid(
+                        canvasX = canvasX,
+                        canvasY = canvasY,
                         gid = gid,
                         opacity = tileLayer.opacity,
                         x = x * map.tileWidth + tileLayer.offsetX - canvasX,
@@ -257,22 +185,24 @@ abstract class AbstractRenderingSystem(protected val map: Map) : Subscriber {
 
     /**
      * When a [Render] event is received, the following method calls occur:
-     * [lockCanvas], followed by [clearCanvas], followed by [drawBitmap] for
-     * every tile, image and renderable object in the game, followed by
-     * [unlockCanvasAndPost].
+     * [Canvas.lock], followed by [Canvas.clear], followed by
+     * [Canvas.drawBitmap] for every tile, image and renderable object in the
+     * game, followed by [Canvas.unlockAndPost].
      *
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
-        lockCanvas()
-        clearCanvas()
+        val canvasX = event.cameraX - canvas.width / 2
+        val canvasY = event.cameraY - canvas.height / 2
+        canvas.lock()
+        canvas.clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {
-                is Layer.ImageLayer -> drawImageLayer(layer)
-                is Layer.ObjectGroup -> drawObjectGroup(layer)
-                is Layer.TileLayer -> drawTileLayer(layer)
+                is Layer.ImageLayer -> drawImageLayer(canvasX, canvasY, layer)
+                is Layer.ObjectGroup -> drawObjectGroup(canvasX, canvasY, layer)
+                is Layer.TileLayer -> drawTileLayer(canvasX, canvasY, layer)
             }
         }
-        unlockCanvasAndPost()
+        canvas.unlockAndPost()
     }
 }
