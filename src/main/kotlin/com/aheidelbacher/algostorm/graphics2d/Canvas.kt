@@ -30,11 +30,15 @@ import com.aheidelbacher.algostorm.state.TileSet.Viewport
 interface Canvas {
     /**
      * The width of this canvas in pixels.
+     *
+     * @throws IllegalStateException if the canvas is not locked
      */
     val width: Int
 
     /**
      * The height of this canvas in pixels.
+     *
+     * @throws IllegalStateException if the canvas is not locked
      */
     val height: Int
 
