@@ -185,16 +185,16 @@ class RenderingSystem(
 
     /**
      * When a [Render] event is received, the following method calls occur:
-     * [Canvas.lock], followed by [Canvas.clear], followed by
-     * [Canvas.drawBitmap] for every tile, image and renderable object in the
-     * game, followed by [Canvas.unlockAndPost].
+     * [Canvas.lock], followed by [Canvas.width], [Canvas.height] and
+     * [Canvas.clear], followed by [Canvas.drawBitmap] for every tile, image and
+     * renderable object in the game, followed by [Canvas.unlockAndPost].
      *
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
+        canvas.lock()
         val canvasX = event.cameraX - canvas.width / 2
         val canvasY = event.cameraY - canvas.height / 2
-        canvas.lock()
         canvas.clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {
