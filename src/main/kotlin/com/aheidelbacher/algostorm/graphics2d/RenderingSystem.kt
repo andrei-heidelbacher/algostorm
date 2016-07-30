@@ -43,8 +43,6 @@ class RenderingSystem(
     private var currentTimeMillis = 0L
 
     private fun drawGid(
-            canvasX: Int,
-            canvasY: Int,
             gid: Int,
             opacity: Float,
             x: Int,
@@ -75,8 +73,8 @@ class RenderingSystem(
                     flipVertically = gid.isFlippedVertically,
                     flipDiagonally = gid.isFlippedDiagonally,
                     opacity = opacity,
-                    x = x - canvasX,
-                    y = y - canvasY,
+                    x = x,
+                    y = y,
                     width = width,
                     height = height,
                     rotation = rotation
@@ -124,8 +122,6 @@ class RenderingSystem(
             it.isVisible && it.gid != 0
         }.sortedWith(comparator).forEach {
             drawGid(
-                    canvasX = canvasX,
-                    canvasY = canvasY,
                     gid = it.gid,
                     opacity = objectGroup.opacity,
                     x = it.x + objectGroup.offsetX - canvasX,
@@ -160,8 +156,6 @@ class RenderingSystem(
                 }
                 val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
                 drawGid(
-                        canvasX = canvasX,
-                        canvasY = canvasY,
                         gid = gid,
                         opacity = tileLayer.opacity,
                         x = x * map.tileWidth + tileLayer.offsetX - canvasX,

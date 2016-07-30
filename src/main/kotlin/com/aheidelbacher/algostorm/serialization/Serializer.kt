@@ -50,7 +50,7 @@ object Serializer {
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         enableDefaultTyping(
-                ObjectMapper.DefaultTyping.NON_FINAL,
+                ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT,
                 JsonTypeInfo.As.PROPERTY
         )
     }
@@ -66,6 +66,14 @@ object Serializer {
 
     @Throws(
             IOException::class,
+            JsonGenerationException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic fun writeValueAsString(value: Any): String =
+            objectMapper.writeValueAsString(value)
+
+    @Throws(
+            IOException::class,
             JsonParseException::class,
             JsonMappingException::class
     )
@@ -77,6 +85,22 @@ object Serializer {
             JsonParseException::class,
             JsonMappingException::class
     )
+    @JvmStatic fun <T : Any> readValue(src: String, type: KClass<T>): T =
+            objectMapper.readValue(src, type.java)
+
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
     @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
+            objectMapper.readValue(src)
+
+    @Throws(
+            IOException::class,
+            JsonParseException::class,
+            JsonMappingException::class
+    )
+    @JvmStatic inline fun <reified T : Any> readValue(src: String): T =
             objectMapper.readValue(src)
 }
