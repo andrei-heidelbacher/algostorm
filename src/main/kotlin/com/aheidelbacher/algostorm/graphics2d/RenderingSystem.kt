@@ -41,6 +41,23 @@ class RenderingSystem(
         private val canvas: Canvas
 ) : Subscriber {
     private companion object {
+        /**
+         * A camera representing the captured area by the screen.
+         *
+         * @property x the x-axis coordinate of the upper-left corner of the
+         * camera in pixels
+         * @property y the y-axis coordinate of the upper-left corner of the
+         * camera in pixels
+         * @property width the width of the camera in pixels
+         * @property height the height of the camera in pixels
+         */
+        data class Camera(
+                val x: Int,
+                val y: Int,
+                val width: Int,
+                val height: Int
+        )
+
         fun isVisible(
                 camera: Camera,
                 gid: Int,
@@ -214,12 +231,17 @@ class RenderingSystem(
      */
     @Subscribe fun handleRender(event: Render) {
         canvas.lock()
+        val cameraWidth = canvas.width
+        val cameraHeight = canvas.height
+        val cameraX = event.cameraX - cameraWidth / 2
+        val cameraY = event.cameraY - cameraHeight / 2
+        val camera = Camera(cameraX, cameraY, cameraWidth, cameraHeight)
         canvas.clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {
-                is Layer.ImageLayer -> drawImageLayer(event.camera, layer)
-                is Layer.ObjectGroup -> drawObjectGroup(event.camera, layer)
-                is Layer.TileLayer -> drawTileLayer(event.camera, layer)
+                is Layer.ImageLayer -> drawImageLayer(camera, layer)
+                is Layer.ObjectGroup -> drawObjectGroup(camera, layer)
+                is Layer.TileLayer -> drawTileLayer(camera, layer)
             }
         }
         canvas.unlockAndPost()

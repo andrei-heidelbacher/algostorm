@@ -21,6 +21,7 @@ import com.aheidelbacher.algostorm.event.Event
 /**
  * An event which requests the rendering of the entire game state to the screen.
  *
- * @property camera the current area captured by the screen
+ * @property cameraX the x-axis coordinate of the center of the camera in pixels
+ * @property cameraY the y-axis coordinate of the center of the camera in pixels
  */
-data class Render(val camera: Camera) : Event
+data class Render(val cameraX: Int, val cameraY: Int) : Event

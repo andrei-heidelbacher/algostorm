@@ -29,6 +29,20 @@ import com.aheidelbacher.algostorm.state.TileSet.Viewport
  */
 interface Canvas {
     /**
+     * The width of this canvas in pixels.
+     *
+     * @throws IllegalStateException if the canvas is not locked
+     */
+    val width: Int
+
+    /**
+     * The height of this canvas in pixels.
+     *
+     * @throws IllegalStateException if the canvas is not locked
+     */
+    val height: Int
+
+    /**
      * Locks this canvas and allows editing the canvas content.
      *
      * @throws IllegalStateException if the canvas is already locked
