@@ -40,8 +40,8 @@ class RenderingSystem(
         private val map: Map,
         private val canvas: Canvas
 ) : Subscriber {
-    companion object {
-        private fun isVisible(
+    private companion object {
+        fun isVisible(
                 camera: Camera,
                 gid: Int,
                 x: Int,
@@ -53,7 +53,7 @@ class RenderingSystem(
                 x + width > camera.x && x < camera.x + camera.width &&
                 y + height > camera.y && y < camera.y + camera.height
 
-        private fun isVisible(camera: Camera, obj: Object): Boolean =
+        fun isVisible(camera: Camera, obj: Object): Boolean =
                 obj.isVisible && isVisible(
                         camera = camera,
                         gid = obj.gid,
