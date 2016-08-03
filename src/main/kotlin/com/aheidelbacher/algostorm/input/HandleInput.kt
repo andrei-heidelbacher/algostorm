@@ -16,7 +16,9 @@
 
 package com.aheidelbacher.algostorm.input
 
+import com.aheidelbacher.algostorm.event.Event
+
 /**
  * An event which signals that user input should be processed.
  */
-object HandleInput
+object HandleInput : Event

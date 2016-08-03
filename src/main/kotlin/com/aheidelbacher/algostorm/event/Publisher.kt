@@ -41,4 +41,13 @@ interface Publisher {
     fun post(events: List<Event>) {
         events.forEach { post(it) }
     }
+
+    /**
+     * Calls [post] for each given event.
+     *
+     * @param events the events that should be posted
+     */
+    fun post(vararg events: Event) {
+        events.forEach { post(it) }
+    }
 }
