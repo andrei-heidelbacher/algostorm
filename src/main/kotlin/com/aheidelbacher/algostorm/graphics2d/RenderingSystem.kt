@@ -187,7 +187,8 @@ class RenderingSystem(
         }
         for (y in yRange) {
             for (x in xRange) {
-                val gid = layer.data[y * map.width + x]
+                val index = y / map.tileHeight * map.width + x / map.tileWidth
+                val gid = layer.data[index]
                 val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
                 if (isVisible(
                         camera = camera,
