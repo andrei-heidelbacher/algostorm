@@ -21,12 +21,16 @@ import com.aheidelbacher.algostorm.event.Event
 /**
  * An event which requests the execution of a script.
  *
- * @property scriptUri the location of script that should be executed
+ * @property scriptFunctionName the name of script function that should be
+ * executed
  * @property args the arguments of the script function
  */
-data class RunScript(val scriptUri: String, val args: List<*>) : Event {
-    constructor(scriptUri: String, vararg args: Any?) : this(
-            scriptUri = scriptUri,
+data class RunScript(
+        val scriptFunctionName: String,
+        val args: List<*>
+) : Event {
+    constructor(scriptFunctionName: String, vararg args: Any?) : this(
+            scriptFunctionName = scriptFunctionName,
             args = args.asList()
     )
 }

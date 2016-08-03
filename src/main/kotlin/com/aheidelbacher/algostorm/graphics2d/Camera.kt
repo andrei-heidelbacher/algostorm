@@ -16,11 +16,14 @@
 
 package com.aheidelbacher.algostorm.graphics2d
 
-import com.aheidelbacher.algostorm.event.Event
-
 /**
- * An event which requests the rendering of the entire game state to the screen.
+ * A camera representing the captured area by the screen.
  *
- * @property camera the current area captured by the screen
+ * @property x the x-axis coordinate of the upper-left corner of the camera in
+ * pixels
+ * @property y the y-axis coordinate of the upper-left corner of the camera in
+ * pixels
+ * @property width the width of the camera in pixels
+ * @property height the height of the camera in pixels
  */
-data class Render(val camera: Camera) : Event
+data class Camera(val x: Int, val y: Int, val width: Int, val height: Int)

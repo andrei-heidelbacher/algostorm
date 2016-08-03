@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.input
 
 import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.time.Tick
+import com.aheidelbacher.algostorm.event.Subscriber
 
 /**
  * A system which handles user input.
@@ -29,21 +29,21 @@ import com.aheidelbacher.algostorm.time.Tick
  */
 abstract class AbstractInputSystem<in T : Any>(
         private val inputReader: InputReader<T>
-) {
+) : Subscriber {
     /**
      * Handles the most recent input from the [inputReader].
      *
      * @param input the retrieved input
      */
-    protected abstract fun handleInput(input: T?): Unit
+    protected abstract fun handleInput(input: T): Unit
 
     /**
-     * Upon receiving a [Tick] event, the [inputReader] reader is checked for
+     * Upon receiving a [HandleInput] event, the [inputReader] is checked for
      * new input and the [handleInput] method is called.
      *
-     * @param event the [Tick] event.
+     * @param event the [HandleInput] event.
      */
-    @Subscribe fun handleTick(event: Tick) {
-        handleInput(inputReader.readInput())
+    @Subscribe fun handleTick(event: HandleInput) {
+        inputReader.readInput()?.let { handleInput(it) }
     }
 }

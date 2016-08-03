@@ -55,6 +55,12 @@ class Object(
         }
     }
 
+    operator fun get(propertyName: String): Any? = properties[propertyName]
+
+    operator fun <T : Any> set(propertyName: String, value: T) {
+        properties[propertyName] = value
+    }
+
     override fun equals(other: Any?): Boolean =
             other is Object && id == other.id
 

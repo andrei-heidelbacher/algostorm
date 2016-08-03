@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.graphics2d
-
-import com.aheidelbacher.algostorm.event.Event
+package com.aheidelbacher.algostorm.input
 
 /**
- * An event which requests the rendering of the entire game state to the screen.
- *
- * @property camera the current area captured by the screen
+ * An event which signals that user input should be processed.
  */
-data class Render(val camera: Camera) : Event
+object HandleInput

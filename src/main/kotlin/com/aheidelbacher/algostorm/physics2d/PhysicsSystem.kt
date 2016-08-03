@@ -58,10 +58,8 @@ class PhysicsSystem(
          * @return `true` if the two objects overlap, `false` otherwise
          */
         fun Object.overlaps(other: Object): Boolean =
-                x < other.x + other.width &&
-                        x + width - 1 >= other.x &&
-                        y < other.y + other.height &&
-                        y + height - 1 >= other.y
+                x < other.x + other.width && x + width > other.x &&
+                        y < other.y + other.height && y + height > other.y
     }
 
     /**

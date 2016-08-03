@@ -16,6 +16,8 @@
 
 package com.aheidelbacher.algostorm.state
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * A map which contains all the game state.
  *
@@ -53,14 +55,18 @@ class Map(
      * The orientation of the map.
      */
     enum class Orientation {
-        ORTHOGONAL, ISOMETRIC
+        @JsonProperty("orthogonal") ORTHOGONAL,
+        @JsonProperty("isometric") ISOMETRIC
     }
 
     /**
      * The rendering order of tiles and objects.
      */
     enum class RenderOrder {
-        RIGHT_DOWN, RIGHT_UP, LEFT_DOWN, LEFT_UP
+        @JsonProperty("right-down") RIGHT_DOWN,
+        @JsonProperty("right-up") RIGHT_UP,
+        @JsonProperty("left-down") LEFT_DOWN,
+        @JsonProperty("left-up") LEFT_UP
     }
 
     @Transient private val gidToTileSet = hashMapOf<Int, TileSet>()
@@ -112,8 +118,7 @@ class Map(
      * @return the requested tile set, or `null` if the given [gid] isn't
      * contained by any tile sets
      */
-    fun getTileSet(gid: Int): TileSet? =
-            gidToTileSet[gid.and(0x0FFFFFFF)]
+    fun getTileSet(gid: Int): TileSet? = gidToTileSet[gid.and(0x0FFFFFFF)]
 
     /**
      * Returns the local tile id of the given [gid].
@@ -122,6 +127,5 @@ class Map(
      * @return the requested local tile id, or `null` if the given [gid] isn't
      * contained by any tile sets
      */
-    fun getTileId(gid: Int): Int? =
-            gidToTileId[gid.and(0x0FFFFFFF)]
+    fun getTileId(gid: Int): Int? = gidToTileId[gid.and(0x0FFFFFFF)]
 }

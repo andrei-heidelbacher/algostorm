@@ -40,6 +40,31 @@ class RenderingSystem(
         private val map: Map,
         private val canvas: Canvas
 ) : Subscriber {
+    companion object {
+        private fun isVisible(
+                camera: Camera,
+                gid: Int,
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int,
+                rotation: Float
+        ): Boolean = gid != 0 &&
+                x + width > camera.x && x < camera.x + camera.width &&
+                y + height > camera.y && y < camera.y + camera.height
+
+        private fun isVisible(camera: Camera, obj: Object): Boolean =
+                obj.isVisible && isVisible(
+                        camera = camera,
+                        gid = obj.gid,
+                        x = obj.x,
+                        y = obj.y,
+                        width = obj.width,
+                        height = obj.height,
+                        rotation = obj.rotation
+                )
+    }
+
     private var currentTimeMillis = 0L
 
     private fun drawGid(
@@ -65,35 +90,28 @@ class RenderingSystem(
                 elapsedTimeMillis >= 0
             }.first().tileId
         }
-        if (x <= canvas.width && x + width - 1 >= 0 &&
-                y <= canvas.height && y + height - 1 >= 0) {
-            canvas.drawBitmap(
-                    viewport = tileSet.getViewport(tileId),
-                    flipHorizontally = gid.isFlippedHorizontally,
-                    flipVertically = gid.isFlippedVertically,
-                    flipDiagonally = gid.isFlippedDiagonally,
-                    opacity = opacity,
-                    x = x,
-                    y = y,
-                    width = width,
-                    height = height,
-                    rotation = rotation
-            )
-        }
+        canvas.drawBitmap(
+                viewport = tileSet.getViewport(tileId),
+                flipHorizontally = gid.isFlippedHorizontally,
+                flipVertically = gid.isFlippedVertically,
+                flipDiagonally = gid.isFlippedDiagonally,
+                opacity = opacity,
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                rotation = rotation
+        )
     }
 
-    private fun drawImageLayer(
-            canvasX: Int,
-            canvasY: Int,
-            imageLayer: Layer.ImageLayer
-    ) {
+    private fun drawImageLayer(camera: Camera, imageLayer: Layer.ImageLayer) {
         canvas.drawBitmap(
                 viewport = Viewport(
                         image = imageLayer.image,
-                        x = canvasX - imageLayer.offsetX,
-                        y = canvasY - imageLayer.offsetY,
-                        width = canvas.width,
-                        height = canvas.height
+                        x = camera.x - imageLayer.offsetX,
+                        y = camera.y - imageLayer.offsetY,
+                        width = camera.width,
+                        height = camera.height
                 ),
                 flipHorizontally = false,
                 flipVertically = false,
@@ -101,31 +119,27 @@ class RenderingSystem(
                 opacity = imageLayer.opacity,
                 x = 0,
                 y = 0,
-                width = canvas.width,
-                height = canvas.height,
+                width = camera.width,
+                height = camera.height,
                 rotation = 0F
         )
     }
 
-    private fun drawObjectGroup(
-            canvasX: Int,
-            canvasY: Int,
-            objectGroup: Layer.ObjectGroup
-    ) {
+    private fun drawObjectGroup(camera: Camera, layer: Layer.ObjectGroup) {
         val comparator = when (map.renderOrder) {
             RenderOrder.RIGHT_DOWN -> compareBy<Object>({ it.y }, { it.x })
             RenderOrder.RIGHT_UP -> compareBy<Object>({ -it.y }, { it.x })
             RenderOrder.LEFT_DOWN -> compareBy<Object>({ it.y }, { -it.x })
             RenderOrder.LEFT_UP -> compareBy<Object>({ -it.y }, { -it.x })
         }
-        objectGroup.objects.filter {
-            it.isVisible && it.gid != 0
+        layer.objects.filter {
+            isVisible(camera, it)
         }.sortedWith(comparator).forEach {
             drawGid(
                     gid = it.gid,
-                    opacity = objectGroup.opacity,
-                    x = it.x + objectGroup.offsetX - canvasX,
-                    y = it.y + objectGroup.offsetY - canvasY,
+                    opacity = layer.opacity,
+                    x = it.x + layer.offsetX - camera.x,
+                    y = it.y + layer.offsetY - camera.y,
                     width = it.width,
                     height = it.height,
                     rotation = it.rotation
@@ -133,37 +147,50 @@ class RenderingSystem(
         }
     }
 
-    private fun drawTileLayer(
-            canvasX: Int,
-            canvasY: Int,
-            tileLayer: Layer.TileLayer
-    ) {
+    private fun drawTileLayer(camera: Camera, layer: Layer.TileLayer) {
+        val tileWidth = map.tileWidth
+        val tileHeight = map.tileHeight
         val (yRange, xRange) = when (map.renderOrder) {
-            RenderOrder.RIGHT_DOWN ->
-                Pair(0 until map.height, 0 until map.width)
-            RenderOrder.RIGHT_UP ->
-                Pair(map.height - 1 downTo 0, 0 until map.width)
-            RenderOrder.LEFT_DOWN ->
-                Pair(0 until map.height, map.width - 1 downTo 0)
-            RenderOrder.LEFT_UP ->
-                Pair(map.height - 1 downTo 0, map.width - 1 downTo 0)
+            RenderOrder.RIGHT_DOWN -> Pair(
+                    0 until map.height * tileHeight step tileHeight,
+                    0 until map.width * tileWidth step tileWidth
+            )
+            RenderOrder.RIGHT_UP -> Pair(
+                    (map.height - 1) * tileHeight downTo 0 step tileHeight,
+                    0 until map.width * tileWidth step tileWidth
+            )
+            RenderOrder.LEFT_DOWN -> Pair(
+                    0 until map.height * tileHeight step tileHeight,
+                    (map.width - 1) * tileWidth downTo 0 step tileWidth
+            )
+            RenderOrder.LEFT_UP -> Pair(
+                    (map.height - 1) * tileHeight downTo 0 step tileHeight,
+                    (map.width - 1) * tileWidth downTo 0 step tileWidth
+            )
         }
         for (y in yRange) {
             for (x in xRange) {
-                val gid = tileLayer.data[y * map.width + x]
-                if (gid == 0) {
-                    continue
-                }
+                val gid = layer.data[y * map.width + x]
                 val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
-                drawGid(
+                if (isVisible(
+                        camera = camera,
                         gid = gid,
-                        opacity = tileLayer.opacity,
-                        x = x * map.tileWidth + tileLayer.offsetX - canvasX,
-                        y = y * map.tileHeight + tileLayer.offsetY - canvasY,
+                        x = x + layer.offsetX,
+                        y = y + layer.offsetY,
                         width = tileSet.tileWidth,
                         height = tileSet.tileHeight,
                         rotation = 0F
-                )
+                )) {
+                    drawGid(
+                            gid = gid,
+                            opacity = layer.opacity,
+                            x = x + layer.offsetX - camera.x,
+                            y = y + layer.offsetY - camera.y,
+                            width = tileSet.tileWidth,
+                            height = tileSet.tileHeight,
+                            rotation = 0F
+                    )
+                }
             }
         }
     }
@@ -179,22 +206,20 @@ class RenderingSystem(
 
     /**
      * When a [Render] event is received, the following method calls occur:
-     * [Canvas.lock], followed by [Canvas.width], [Canvas.height] and
-     * [Canvas.clear], followed by [Canvas.drawBitmap] for every tile, image and
-     * renderable object in the game, followed by [Canvas.unlockAndPost].
+     * [Canvas.lock], followed by [Canvas.clear], followed by
+     * [Canvas.drawBitmap] for every tile, image and renderable object in the
+     * game, followed by [Canvas.unlockAndPost].
      *
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
         canvas.lock()
-        val canvasX = event.cameraX - canvas.width / 2
-        val canvasY = event.cameraY - canvas.height / 2
         canvas.clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {
-                is Layer.ImageLayer -> drawImageLayer(canvasX, canvasY, layer)
-                is Layer.ObjectGroup -> drawObjectGroup(canvasX, canvasY, layer)
-                is Layer.TileLayer -> drawTileLayer(canvasX, canvasY, layer)
+                is Layer.ImageLayer -> drawImageLayer(event.camera, layer)
+                is Layer.ObjectGroup -> drawObjectGroup(event.camera, layer)
+                is Layer.TileLayer -> drawTileLayer(event.camera, layer)
             }
         }
         canvas.unlockAndPost()
