@@ -19,21 +19,21 @@ package com.aheidelbacher.algostorm.graphics2d
 class Matrix private constructor(private val values: FloatArray) {
     companion object {
         val IDENTITY: Matrix = Matrix(floatArrayOf(
-                1.0F, 0.0F, 0.0F,
-                0.0F, 1.0F, 0.0F,
-                0.0F, 0.0F, 1.0F
+                1F, 0F, 0F,
+                0F, 1F, 0F,
+                0F, 0F, 1F
         ))
 
         fun translate(dx: Float, dy: Float): Matrix = Matrix(floatArrayOf(
-                1.0F, 0.0F, dx,
-                0.0F, 1.0F, dy,
-                0.0F, 0.0F, 1.0F
+                1F, 0F, dx,
+                0F, 1F, dy,
+                0F, 0F, 1F
         ))
 
         fun scale(sx: Float, sy: Float): Matrix = Matrix(floatArrayOf(
-                sx, 0.0F, 0.0F,
-                0.0F, sy, 0.0F,
-                0.0F, 0.0F, 1.0F
+                sx, 0F, 0F,
+                0F, sy, 0F,
+                0F, 0F, 1F
         ))
 
         fun rotate(degrees: Float): Matrix {
@@ -41,9 +41,9 @@ class Matrix private constructor(private val values: FloatArray) {
             val cos = Math.cos(radians).toFloat()
             val sin = Math.sin(radians).toFloat()
             return Matrix(floatArrayOf(
-                    cos, sin, 0.0F,
-                    -sin, cos, 0.0F,
-                    0.0F, 0.0F, 1.0F
+                    cos, sin, 0F,
+                    -sin, cos, 0F,
+                    0F, 0F, 1F
             ))
         }
 
@@ -76,9 +76,9 @@ class Matrix private constructor(private val values: FloatArray) {
 
     fun postConcat(other: Matrix): Matrix {
         val result = floatArrayOf(
-                0.0F, 0.0F, 0.0F,
-                0.0F, 0.0F, 0.0F,
-                0.0F, 0.0F, 0.0F
+                0F, 0F, 0F,
+                0F, 0F, 0F,
+                0F, 0F, 0F
         )
         for (i in 0..SIZE - 1)
             for (j in 0..SIZE - 1)
