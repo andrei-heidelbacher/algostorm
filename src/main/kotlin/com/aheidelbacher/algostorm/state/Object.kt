@@ -55,12 +55,40 @@ class Object(
         }
     }
 
+    /**
+     * Returns the property with the given name.
+     *
+     * @param propertyName the name of the requested property
+     * @return the property with the given name, or `null` if there is no such
+     * property
+     */
     operator fun get(propertyName: String): Any? = properties[propertyName]
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * @param T the type of the property
+     * @param propertyName the name of the property
+     * @param value the new value of the property
+     */
     operator fun <T : Any> set(propertyName: String, value: T) {
         properties[propertyName] = value
     }
 
+    /**
+     * Checks whether this object contains a property with the given name.
+     *
+     * @param propertyName the name of the property
+     * @return whether this object contains the given property
+     */
+    operator fun contains(propertyName: String): Boolean =
+            propertyName in properties
+
+    /**
+     * Removes the property with the given name.
+     *
+     * @param propertyName the name of the property that should be removed
+     */
     fun remove(propertyName: String) {
         properties.remove(propertyName)
     }
