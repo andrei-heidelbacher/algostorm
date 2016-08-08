@@ -18,9 +18,10 @@ package com.aheidelbacher.algostorm.graphics2d
 
 import com.aheidelbacher.algostorm.state.TileSet.Viewport
 
+import java.io.InputStream
+
 /**
- * A canvas that allows `draw` calls. Every method of the canvas will be called
- * from the private engine thread and should be thread-safe.
+ * A canvas that allows `draw` calls.
  *
  * Every change to the canvas should be performed after it was locked and the
  * changes should become visible after it was unlocked.
@@ -28,6 +29,15 @@ import com.aheidelbacher.algostorm.state.TileSet.Viewport
  * After the canvas was locked, it must be unlocked.
  */
 interface Canvas {
+    /**
+     * Loads the image from the given [inputStream] and saves it under the
+     * [image] name.
+     *
+     * @param image the identifier of the image
+     * @param inputStream the stream from which the image should be read
+     */
+    fun loadBitmap(image: String, inputStream: InputStream): Unit
+
     /**
      * The width of this canvas in pixels.
      *
@@ -75,8 +85,8 @@ interface Canvas {
      * image in pixels
      * @param width the width of the rendered image in pixels
      * @param height the height of the rendered image in pixels
-     * @param rotation the rotation of the image around the lower-left corner in
-     * radians
+     * @param rotation the rotation of the image around the top-left corner in
+     * clock-wise degrees
      * @throws IllegalStateException if the canvas is not locked
      */
     fun drawBitmap(
@@ -91,6 +101,19 @@ interface Canvas {
             height: Int,
             rotation: Float
     ): Unit
+
+    /**
+     * Draws the viewport projected on the indicated bitmap to the canvas using
+     * the specified [matrix].
+     *
+     * @param viewport the viewport which should be rendered
+     * @param matrix the matrix that should be applied to the viewport when
+     * rendering. Initially, the viewport rectangle is considered to have the
+     * top-left corner overlap with the top-left corner of the canvas.
+     * @param opacity the opacity of the image. Should be between `0` and `1`.
+     * @throws IllegalStateException if the canvas is not locked
+     */
+    fun drawBitmap(viewport: Viewport, matrix: Matrix, opacity: Float): Unit
 
     /**
      * Unlocks this canvas and posts all the changes made since the canvas was

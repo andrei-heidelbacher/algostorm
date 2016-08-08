@@ -30,7 +30,7 @@ package com.aheidelbacher.algostorm.state
  * @property gid the global id of the object tile. A value of `0` indicates the
  * empty tile (nothing to draw)
  * @property rotation the rotation of this object around the top-left corner in
- * radians
+ * clock-wise degrees
  * @property isVisible whether this object should be rendered or not
  * @property properties the properties of this object
  * @throws IllegalArgumentException if [id] or [gid] is negative or if [width]
@@ -59,6 +59,10 @@ class Object(
 
     operator fun <T : Any> set(propertyName: String, value: T) {
         properties[propertyName] = value
+    }
+
+    fun remove(propertyName: String) {
+        properties.remove(propertyName)
     }
 
     override fun equals(other: Any?): Boolean =

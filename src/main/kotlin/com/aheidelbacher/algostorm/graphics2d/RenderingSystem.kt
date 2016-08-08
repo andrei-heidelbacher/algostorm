@@ -28,6 +28,8 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertica
 import com.aheidelbacher.algostorm.state.TileSet.Viewport
 import com.aheidelbacher.algostorm.time.Tick
 
+import java.io.File
+
 import kotlin.comparisons.compareBy
 
 /**
@@ -35,10 +37,17 @@ import kotlin.comparisons.compareBy
  * canvas.
  *
  * Every method call to the [canvas] is made from the private engine thread.
+ *
+ * @property map the map which should be rendered
+ * @property canvas the canvas to which the system draws
+ * @param graphicsDirectory the directory containing the image files used in the
+ * map tile sets and which are loaded at construction time using the
+ * [Canvas.loadBitmap] method
  */
 class RenderingSystem(
         private val map: Map,
-        private val canvas: Canvas
+        private val canvas: Canvas,
+        graphicsDirectory: File
 ) : Subscriber {
     private companion object {
         /**
@@ -82,6 +91,12 @@ class RenderingSystem(
                 )
     }
 
+    init {
+        graphicsDirectory.listFiles().forEach {
+            canvas.loadBitmap(it.name, it.inputStream())
+        }
+    }
+
     private var currentTimeMillis = 0L
 
     private fun drawGid(
@@ -107,7 +122,23 @@ class RenderingSystem(
                 elapsedTimeMillis >= 0
             }.first().tileId
         }
+        val viewport = tileSet.getViewport(tileId)
+        val sx = width.toFloat() / viewport.width.toFloat() *
+                (if (gid.isFlippedVertically) -1.0F else 1.0F) *
+                (if (gid.isFlippedDiagonally) -1.0F else 1.0F)
+        val sy = height.toFloat() / viewport.height.toFloat() *
+                (if (gid.isFlippedHorizontally) -1.0F else 1.0F) *
+                (if (gid.isFlippedDiagonally) -1.0F else 1.0F)
+        val dx = x + if (gid.isFlippedDiagonally) width.toFloat() else 0.0F
+        val dy = y + if (gid.isFlippedDiagonally) height.toFloat() else 0.0F
         canvas.drawBitmap(
+                viewport = viewport,
+                matrix = Matrix.rotate(rotation)
+                        .postScale(sx, sy)
+                        .postTranslate(dx, dy),
+                opacity = opacity
+        )
+        /*canvas.drawBitmap(
                 viewport = tileSet.getViewport(tileId),
                 flipHorizontally = gid.isFlippedHorizontally,
                 flipVertically = gid.isFlippedVertically,
@@ -118,11 +149,22 @@ class RenderingSystem(
                 width = width,
                 height = height,
                 rotation = rotation
-        )
+        )*/
     }
 
     private fun drawImageLayer(camera: Camera, imageLayer: Layer.ImageLayer) {
         canvas.drawBitmap(
+                viewport = Viewport(
+                        image = imageLayer.image,
+                        x = camera.x - imageLayer.offsetX,
+                        y = camera.y - imageLayer.offsetY,
+                        width = camera.width,
+                        height = camera.height
+                ),
+                matrix = Matrix.IDENTITY,
+                opacity = imageLayer.opacity
+        )
+        /*canvas.drawBitmap(
                 viewport = Viewport(
                         image = imageLayer.image,
                         x = camera.x - imageLayer.offsetX,
@@ -139,7 +181,7 @@ class RenderingSystem(
                 width = camera.width,
                 height = camera.height,
                 rotation = 0F
-        )
+        )*/
     }
 
     private fun drawObjectGroup(camera: Camera, layer: Layer.ObjectGroup) {

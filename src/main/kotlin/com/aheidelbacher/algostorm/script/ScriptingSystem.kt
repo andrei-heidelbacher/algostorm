@@ -20,21 +20,23 @@ import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.script.ScriptEngine.Companion.invokeFunction
 
-import java.io.InputStream
+import java.io.File
 
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scripts the scripts which are loaded and executed at construction time
- * using the [ScriptEngine.eval] method.
+ * @param scriptsDirectory the folder containing the scripts which are loaded
+ * and executed at construction time using the [ScriptEngine.eval] method
  */
 class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
-        scripts: List<InputStream>
+        scriptsDirectory: File
 ) : Subscriber {
     init {
-        scripts.forEach { scriptEngine.eval(it) }
+        scriptsDirectory.listFiles().forEach {
+            scriptEngine.eval(it.inputStream())
+        }
     }
 
     /**

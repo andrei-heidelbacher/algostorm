@@ -66,14 +66,6 @@ object Serializer {
 
     @Throws(
             IOException::class,
-            JsonGenerationException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic fun writeValueAsString(value: Any): String =
-            objectMapper.writeValueAsString(value)
-
-    @Throws(
-            IOException::class,
             JsonParseException::class,
             JsonMappingException::class
     )
@@ -94,13 +86,5 @@ object Serializer {
             JsonMappingException::class
     )
     @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
-            objectMapper.readValue(src)
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
-    @JvmStatic inline fun <reified T : Any> readValue(src: String): T =
             objectMapper.readValue(src)
 }
