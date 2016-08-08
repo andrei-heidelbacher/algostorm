@@ -28,12 +28,17 @@ import java.io.File
  * @property scriptEngine the engine used to execute scripts
  * @param scriptsDirectory the folder containing the scripts which are loaded
  * and executed at construction time using the [ScriptEngine.eval] method
+ * @throws IllegalArgumentException if the given `scriptsDirectory` is not a
+ * directory
  */
 class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
         scriptsDirectory: File
 ) : Subscriber {
     init {
+        require(scriptsDirectory.isDirectory) {
+            "Given file ${scriptsDirectory.absolutePath} is not a directory!"
+        }
         scriptsDirectory.listFiles().forEach {
             scriptEngine.eval(it.inputStream())
         }

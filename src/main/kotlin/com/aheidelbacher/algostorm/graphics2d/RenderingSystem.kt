@@ -43,6 +43,8 @@ import kotlin.comparisons.compareBy
  * @param graphicsDirectory the directory containing the image files used in the
  * map tile sets and which are loaded at construction time using the
  * [Canvas.loadBitmap] method
+ * @throws IllegalArgumentException if the given `graphicsDirectory` is not a
+ * directory
  */
 class RenderingSystem(
         private val map: Map,
@@ -92,6 +94,9 @@ class RenderingSystem(
     }
 
     init {
+        require(graphicsDirectory.isDirectory) {
+            "Given file ${graphicsDirectory.absolutePath} is not a directory!"
+        }
         graphicsDirectory.listFiles().forEach {
             canvas.loadBitmap(it.name, it.inputStream())
         }
