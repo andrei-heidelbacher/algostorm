@@ -28,7 +28,7 @@ import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.File
+import java.io.InputStream
 
 import kotlin.comparisons.compareBy
 
@@ -40,16 +40,13 @@ import kotlin.comparisons.compareBy
  *
  * @property map the map which should be rendered
  * @property canvas the canvas to which the system draws
- * @param graphicsDirectory the directory containing the image files used in the
- * map tile sets and which are loaded at construction time using the
- * [Canvas.loadBitmap] method
- * @throws IllegalArgumentException if the given `graphicsDirectory` is not a
- * directory
+ * @param images the image files used in the map tile sets and which are loaded
+ * at construction time using [Canvas.loadBitmap] method
  */
 class RenderingSystem(
         private val map: Map,
         private val canvas: Canvas,
-        graphicsDirectory: File
+        images: kotlin.collections.Map<String, InputStream>
 ) : Subscriber {
     private companion object {
         /**
@@ -94,12 +91,7 @@ class RenderingSystem(
     }
 
     init {
-        require(graphicsDirectory.isDirectory) {
-            "Given file ${graphicsDirectory.absolutePath} is not a directory!"
-        }
-        graphicsDirectory.listFiles().forEach {
-            canvas.loadBitmap(it.name, it.inputStream())
-        }
+        images.forEach { canvas.loadBitmap(it.key, it.value) }
     }
 
     private var currentTimeMillis: Long = 0L

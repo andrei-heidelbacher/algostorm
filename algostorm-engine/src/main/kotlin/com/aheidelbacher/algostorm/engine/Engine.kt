@@ -16,10 +16,8 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import java.io.File
-import java.io.FileNotFoundException
+import java.io.InputStream
 import java.io.OutputStream
-import java.net.URISyntaxException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -46,33 +44,16 @@ abstract class Engine {
         const val NAME: String = "ALGOSTORM_ENGINE"
 
         /**
-         * Returns all the resources in the given resource directory as input
-         * streams.
+         * Returns the resource with the given name using the [Engine] class
+         * [Class.getResourceAsStream] method.
          *
-         * @param resourceDirectoryName the URI of the resource folder containing
-         * the requested resources
-         * @return the requested resources
-         * @throws IllegalArgumentException if the given resource is not a
-         * directory or if it can't be formatted to a URI
-         * @throws FileNotFoundException if the given resource doesn't exist
+         * @param name the name of the requested resource
+         * @throws IllegalArgumentException if the given resource doesn't exist
          */
-        @Throws(FileNotFoundException::class)
-        fun getResourceDirectory(resourceDirectoryName: String): File {
-            val url = Engine::class.java.getResource(resourceDirectoryName)
-            url ?: throw FileNotFoundException(
-                    "Resource $resourceDirectoryName not found!"
-            )
-            val uri = try {
-                url.toURI()
-            } catch (e: URISyntaxException) {
-                throw IllegalArgumentException("Can't convert URL $url to URI!")
-            }
-            val file = File(uri)
-            require(file.isDirectory) {
-                "Resource $resourceDirectoryName is not a directory!"
-            }
-            return file
-        }
+        @JvmStatic fun getResource(name: String): InputStream =
+                requireNotNull(Engine::class.java.getResourceAsStream(name)) {
+                    "Resource $name doesn't exist!"
+                }
     }
 
     /**

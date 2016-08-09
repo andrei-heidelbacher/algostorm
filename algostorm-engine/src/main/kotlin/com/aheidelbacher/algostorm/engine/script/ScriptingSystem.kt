@@ -20,28 +20,21 @@ import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFu
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.File
+import java.io.InputStream
 
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scriptsDirectory the folder containing the scripts which are loaded
- * and executed at construction time using the [ScriptEngine.eval] method
- * @throws IllegalArgumentException if the given `scriptsDirectory` is not a
- * directory
+ * @param scripts the scripts which are loaded and executed at construction time
+ * using the [ScriptEngine.eval] method
  */
 class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
-        scriptsDirectory: File
+        scripts: List<InputStream>
 ) : Subscriber {
     init {
-        require(scriptsDirectory.isDirectory) {
-            "Given file ${scriptsDirectory.absolutePath} is not a directory!"
-        }
-        scriptsDirectory.listFiles().forEach {
-            scriptEngine.eval(it.inputStream())
-        }
+        scripts.forEach { scriptEngine.eval(it) }
     }
 
     /**
