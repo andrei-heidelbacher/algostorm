@@ -113,7 +113,7 @@ sealed class Layer {
      */
     class ObjectGroup(
             override val name: String,
-            val objects : MutableSet<Object>,
+            val objects: MutableSet<Object>,
             override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,

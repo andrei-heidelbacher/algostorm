@@ -30,13 +30,12 @@ import java.io.InputStream
  */
 interface Canvas {
     /**
-     * Loads the image from the given [inputStream] and saves it under the
-     * [image] name.
+     * Loads the image at the given location.
      *
-     * @param image the identifier of the image
-     * @param inputStream the stream from which the image should be read
+     * @param image the location of the image
+     * @throws IllegalArgumentException if the given image doesn't exist
      */
-    fun loadBitmap(image: String, inputStream: InputStream): Unit
+    fun loadBitmap(image: String): Unit
 
     /**
      * The width of this canvas in pixels.

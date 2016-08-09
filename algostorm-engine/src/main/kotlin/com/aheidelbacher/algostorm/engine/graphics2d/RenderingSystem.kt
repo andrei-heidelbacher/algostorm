@@ -28,8 +28,6 @@ import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.InputStream
-
 import kotlin.comparisons.compareBy
 
 /**
@@ -40,13 +38,10 @@ import kotlin.comparisons.compareBy
  *
  * @property map the map which should be rendered
  * @property canvas the canvas to which the system draws
- * @param images the image files used in the map tile sets and which are loaded
- * at construction time using [Canvas.loadBitmap] method
  */
 class RenderingSystem(
         private val map: Map,
-        private val canvas: Canvas,
-        images: kotlin.collections.Map<String, InputStream>
+        private val canvas: Canvas
 ) : Subscriber {
     private companion object {
         /**
@@ -91,7 +86,7 @@ class RenderingSystem(
     }
 
     init {
-        images.forEach { canvas.loadBitmap(it.key, it.value) }
+        map.tileSets.forEach { canvas.loadBitmap(it.image) }
     }
 
     private var currentTimeMillis: Long = 0L
