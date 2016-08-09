@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+dependencies {
+    kapt project(':algostorm-processor')
+    compile project(':algostorm-event')
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.1"
+}
+
+dokka {
+    outputFormat = 'jekyll'
+}
