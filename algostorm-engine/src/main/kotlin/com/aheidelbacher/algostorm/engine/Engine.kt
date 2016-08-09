@@ -68,8 +68,8 @@ abstract class Engine {
                 throw IllegalArgumentException("Can't convert URL $url to URI!")
             }
             val file = File(uri)
-            require(!file.isDirectory) {
-                "Resource directory $resourceDirectoryName not found!"
+            require(file.isDirectory) {
+                "Resource $resourceDirectoryName is not a directory!"
             }
             return file
         }
