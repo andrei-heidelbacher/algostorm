@@ -84,7 +84,7 @@ class Matrix private constructor(private val values: FloatArray) {
             for (j in 0..SIZE - 1)
                 for (k in 0..SIZE - 1)
                     result[i * SIZE + j] +=
-                            values[i * SIZE + k] * other.values[k * SIZE + j]
+                            other.values[i * SIZE + k] * values[k * SIZE + j]
         return Matrix(result)
     }
 
