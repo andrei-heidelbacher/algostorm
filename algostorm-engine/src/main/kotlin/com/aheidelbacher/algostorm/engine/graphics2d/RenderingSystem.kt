@@ -120,16 +120,16 @@ class RenderingSystem(
                 sy = height.toFloat() / viewport.height.toFloat()
         ).let {
             if (!gid.isFlippedDiagonally) it
-            else it.postRotate(90F)
-                    .postScale(1F, -1F)
-                    .postTranslate(width.toFloat(), 0F)
+            else it.preRotate(90F)
+                    .preScale(1F, -1F)
+                    .preTranslate(width.toFloat(), 0F)
         }.let {
             if (!gid.isFlippedHorizontally) it
-            else it.postScale(-1F, 1F).postTranslate(width.toFloat(), 0F)
+            else it.preScale(-1F, 1F).preTranslate(width.toFloat(), 0F)
         }.let {
             if (!gid.isFlippedVertically) it
-            else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
-        }.postRotate(rotation).postTranslate(x.toFloat(), y.toFloat())
+            else it.preScale(1F, -1F).preTranslate(0F, height.toFloat())
+        }.preRotate(rotation).preTranslate(x.toFloat(), y.toFloat())
         canvas.drawBitmap(
                 viewport = viewport,
                 matrix = matrix,
