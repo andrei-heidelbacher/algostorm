@@ -88,7 +88,7 @@ class TileSet(
             /**
              * Flips this global tile id horizontally.
              */
-            fun Int.flipHorizontally(): Int = xor(0x4000000)
+            fun Int.flipHorizontally(): Int = xor(0x40000000)
 
             /**
              * Flips this global tile id vertically.
