@@ -116,13 +116,13 @@ class RenderingSystem(
         }
         val viewport = tileSet.getViewport(tileId)
         val sx = width.toFloat() / viewport.width.toFloat() *
-                (if (gid.isFlippedVertically) -1.0F else 1.0F) *
-                (if (gid.isFlippedDiagonally) -1.0F else 1.0F)
+                (if (gid.isFlippedHorizontally) -1F else 1F) *
+                (if (gid.isFlippedDiagonally) -1F else 1F)
         val sy = height.toFloat() / viewport.height.toFloat() *
-                (if (gid.isFlippedHorizontally) -1.0F else 1.0F) *
-                (if (gid.isFlippedDiagonally) -1.0F else 1.0F)
-        val dx = x + if (gid.isFlippedDiagonally) width.toFloat() else 0.0F
-        val dy = y + if (gid.isFlippedDiagonally) height.toFloat() else 0.0F
+                (if (gid.isFlippedVertically) -1F else 1F) *
+                (if (gid.isFlippedDiagonally) -1F else 1F)
+        val dx = x + if (gid.isFlippedDiagonally) width.toFloat() else 0F
+        val dy = y + if (gid.isFlippedDiagonally) height.toFloat() else 0F
         canvas.drawBitmap(
                 viewport = viewport,
                 matrix = Matrix.rotate(rotation)
@@ -130,18 +130,6 @@ class RenderingSystem(
                         .postTranslate(dx, dy),
                 opacity = opacity
         )
-        /*canvas.drawBitmap(
-                viewport = tileSet.getViewport(tileId),
-                flipHorizontally = gid.isFlippedHorizontally,
-                flipVertically = gid.isFlippedVertically,
-                flipDiagonally = gid.isFlippedDiagonally,
-                opacity = opacity,
-                x = x,
-                y = y,
-                width = width,
-                height = height,
-                rotation = rotation
-        )*/
     }
 
     private fun drawImageLayer(camera: Camera, imageLayer: Layer.ImageLayer) {
@@ -156,24 +144,6 @@ class RenderingSystem(
                 matrix = Matrix.IDENTITY,
                 opacity = imageLayer.opacity
         )
-        /*canvas.drawBitmap(
-                viewport = Viewport(
-                        image = imageLayer.image,
-                        x = camera.x - imageLayer.offsetX,
-                        y = camera.y - imageLayer.offsetY,
-                        width = camera.width,
-                        height = camera.height
-                ),
-                flipHorizontally = false,
-                flipVertically = false,
-                flipDiagonally = false,
-                opacity = imageLayer.opacity,
-                x = 0,
-                y = 0,
-                width = camera.width,
-                height = camera.height,
-                rotation = 0F
-        )*/
     }
 
     private fun drawObjectGroup(camera: Camera, layer: Layer.ObjectGroup) {

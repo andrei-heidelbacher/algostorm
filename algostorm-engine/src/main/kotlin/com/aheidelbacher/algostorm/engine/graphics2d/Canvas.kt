@@ -66,42 +66,6 @@ interface Canvas {
     fun clear(): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap. The drawing
-     * coordinates are given relative to this canvas. If necessary, it will
-     * scale the viewport to the destination area.
-     *
-     * @param viewport the viewport which should be rendered
-     * @param flipHorizontally whether the image should be flipped horizontally
-     * before rendering
-     * @param flipVertically whether the image should be flipped vertically
-     * before rendering
-     * @param flipDiagonally whether the image should be flipped diagonally
-     * before rendering
-     * @param opacity the opacity of the image. Should be between `0` and `1`.
-     * @param x the x-axis coordinate of the top-left corner of the rendered
-     * image in pixels
-     * @param y the y-axis coordinate of the top-left corner of the rendered
-     * image in pixels
-     * @param width the width of the rendered image in pixels
-     * @param height the height of the rendered image in pixels
-     * @param rotation the rotation of the image around the top-left corner in
-     * clock-wise degrees
-     * @throws IllegalStateException if the canvas is not locked
-     */
-    fun drawBitmap(
-            viewport: Viewport,
-            flipHorizontally: Boolean,
-            flipVertically: Boolean,
-            flipDiagonally: Boolean,
-            opacity: Float,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            rotation: Float
-    ): Unit
-
-    /**
      * Draws the viewport projected on the indicated bitmap to the canvas using
      * the specified [matrix].
      *
