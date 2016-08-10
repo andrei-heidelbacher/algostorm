@@ -115,19 +115,24 @@ class RenderingSystem(
             }.first().tileId
         }
         val viewport = tileSet.getViewport(tileId)
-        val sx = width.toFloat() / viewport.width.toFloat() *
-                (if (gid.isFlippedHorizontally) -1F else 1F) *
-                (if (gid.isFlippedDiagonally) -1F else 1F)
-        val sy = height.toFloat() / viewport.height.toFloat() *
-                (if (gid.isFlippedVertically) -1F else 1F) *
-                (if (gid.isFlippedDiagonally) -1F else 1F)
-        val dx = x + if (gid.isFlippedDiagonally) width.toFloat() else 0F
-        val dy = y + if (gid.isFlippedDiagonally) height.toFloat() else 0F
+        val matrix = Matrix.scale(
+                sx = width.toFloat() / viewport.width.toFloat(),
+                sy = height.toFloat() / viewport.height.toFloat()
+        ).let {
+            if (!gid.isFlippedDiagonally) it
+            else it.postRotate(90F)
+                    .postScale(1F, -1F)
+                    .postTranslate(width.toFloat(), 0F)
+        }.let {
+            if (!gid.isFlippedHorizontally) it
+            else it.postScale(-1F, 1F).postTranslate(width.toFloat(), 0F)
+        }.let {
+            if (!gid.isFlippedVertically) it
+            else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
+        }.postRotate(rotation).postTranslate(x.toFloat(), y.toFloat())
         canvas.drawBitmap(
                 viewport = viewport,
-                matrix = Matrix.rotate(rotation)
-                        .postScale(sx, sy)
-                        .postTranslate(dx, dy),
+                matrix = matrix,
                 opacity = opacity
         )
     }
