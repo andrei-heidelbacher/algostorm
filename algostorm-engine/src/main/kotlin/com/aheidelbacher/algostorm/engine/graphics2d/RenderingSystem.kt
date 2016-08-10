@@ -198,25 +198,28 @@ class RenderingSystem(
             for (x in xRange) {
                 val index = y / map.tileHeight * map.width + x / map.tileWidth
                 val gid = layer.data[index]
-                val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
-                if (isVisible(
-                        camera = camera,
-                        gid = gid,
-                        x = x + layer.offsetX,
-                        y = y + layer.offsetY,
-                        width = tileSet.tileWidth,
-                        height = tileSet.tileHeight,
-                        rotation = 0F
-                )) {
-                    drawGid(
+                val tileSet = map.getTileSet(gid)
+                if (gid != 0) {
+                    tileSet ?: error("Invalid gid $gid!")
+                    if (isVisible(
+                            camera = camera,
                             gid = gid,
-                            opacity = layer.opacity,
-                            x = x + layer.offsetX - camera.x,
-                            y = y + layer.offsetY - camera.y,
+                            x = x + layer.offsetX,
+                            y = y + layer.offsetY,
                             width = tileSet.tileWidth,
                             height = tileSet.tileHeight,
                             rotation = 0F
-                    )
+                    )) {
+                        drawGid(
+                                gid = gid,
+                                opacity = layer.opacity,
+                                x = x + layer.offsetX - camera.x,
+                                y = y + layer.offsetY - camera.y,
+                                width = tileSet.tileWidth,
+                                height = tileSet.tileHeight,
+                                rotation = 0F
+                        )
+                    }
                 }
             }
         }
