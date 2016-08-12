@@ -174,33 +174,24 @@ class RenderingSystem(
     }
 
     private fun drawTileLayer(camera: Camera, layer: Layer.TileLayer) {
-        val tileWidth = map.tileWidth
-        val tileHeight = map.tileHeight
         val (yRange, xRange) = when (map.renderOrder) {
-            RenderOrder.RIGHT_DOWN -> Pair(
-                    0 until map.height * tileHeight step tileHeight,
-                    0 until map.width * tileWidth step tileWidth
-            )
-            RenderOrder.RIGHT_UP -> Pair(
-                    (map.height - 1) * tileHeight downTo 0 step tileHeight,
-                    0 until map.width * tileWidth step tileWidth
-            )
-            RenderOrder.LEFT_DOWN -> Pair(
-                    0 until map.height * tileHeight step tileHeight,
-                    (map.width - 1) * tileWidth downTo 0 step tileWidth
-            )
-            RenderOrder.LEFT_UP -> Pair(
-                    (map.height - 1) * tileHeight downTo 0 step tileHeight,
-                    (map.width - 1) * tileWidth downTo 0 step tileWidth
-            )
+            RenderOrder.RIGHT_DOWN ->
+                Pair(0 until map.height, 0 until map.width)
+            RenderOrder.RIGHT_UP ->
+                Pair(map.height - 1 downTo 0, 0 until map.width)
+            RenderOrder.LEFT_DOWN ->
+                Pair(0 until map.height, map.width - 1 downTo 0)
+            RenderOrder.LEFT_UP ->
+                Pair(map.height - 1 downTo 0, map.width - 1 downTo 0)
         }
-        for (y in yRange) {
-            for (x in xRange) {
-                val index = y / map.tileHeight * map.width + x / map.tileWidth
-                val gid = layer.data[index]
-                val tileSet = map.getTileSet(gid)
+        for (ty in yRange) {
+            for (tx in xRange) {
+                val x = tx * map.tileWidth
+                val y = ty * map.tileHeight
+                val gid = layer.data[ty * map.width + tx]
                 if (gid != 0) {
-                    tileSet ?: error("Invalid gid $gid!")
+                    val tileSet = map.getTileSet(gid)
+                            ?: error("Invalid gid $gid!")
                     if (isVisible(
                             camera = camera,
                             gid = gid,
@@ -243,7 +234,6 @@ class RenderingSystem(
      * @param event the rendering request
      */
     @Subscribe fun handleRender(event: Render) {
-        currentTimeMillis = System.currentTimeMillis()
         canvas.lock()
         val cameraWidth = canvas.width
         val cameraHeight = canvas.height
