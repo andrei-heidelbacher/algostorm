@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 import kotlin.concurrent.thread
+import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 /**
@@ -136,14 +137,17 @@ abstract class Engine {
             process = thread(name = NAME) {
                 try {
                     while (status == Status.RUNNING) {
-                        val elapsedTime = measureTimeMillis {
+                        val elapsedTimeMillis = measureNanoTime {
                             synchronized(stateLock) {
                                 handleTick()
                             }
+                        } / 1000000
+                        check(elapsedTimeMillis >= 0) {
+                            "Elapsed time millis can't be negative!"
                         }
-                        val sleepTime = millisPerTick - elapsedTime
-                        if (sleepTime > 0) {
-                            Thread.sleep(sleepTime)
+                        val sleepTimeMillis = millisPerTick - elapsedTimeMillis
+                        if (sleepTimeMillis > 0) {
+                            Thread.sleep(sleepTimeMillis)
                         }
                     }
                 } finally {
