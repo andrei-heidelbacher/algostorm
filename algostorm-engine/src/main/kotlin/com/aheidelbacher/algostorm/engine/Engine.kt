@@ -120,7 +120,9 @@ abstract class Engine {
      *
      * While this engine is running, at most once every [millisPerTick]
      * milliseconds, it will invoke the [handleTick] method. The call to
-     * `handleTick` is synchronized with the state lock.
+     * `handleTick` is synchronized with the state lock. Time is measured using
+     * [measureNanoTime]. If, at any point, the measured time is negative, the
+     * engine thread throws an [IllegalStateException] and terminates.
      *
      * @throws IllegalStateException if the `status` is not `Status.STOPPED` or
      * if [isShutdown] is `true`
