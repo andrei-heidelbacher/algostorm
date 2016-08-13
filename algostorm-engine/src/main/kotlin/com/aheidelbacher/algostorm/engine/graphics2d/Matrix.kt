@@ -16,6 +16,12 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
+/**
+ * Used to apply a sequence of transformations to a bitmap before drawing to the
+ * canvas.
+ *
+ * @property values the underlying values of this matrix
+ */
 class Matrix private constructor(private val values: FloatArray) {
     companion object {
         val IDENTITY: Matrix = Matrix(floatArrayOf(
@@ -75,11 +81,7 @@ class Matrix private constructor(private val values: FloatArray) {
     }
 
     fun postConcat(other: Matrix): Matrix {
-        val result = floatArrayOf(
-                0F, 0F, 0F,
-                0F, 0F, 0F,
-                0F, 0F, 0F
-        )
+        val result = FloatArray(SIZE * SIZE) { 0F }
         for (i in 0..SIZE - 1)
             for (j in 0..SIZE - 1)
                 for (k in 0..SIZE - 1)

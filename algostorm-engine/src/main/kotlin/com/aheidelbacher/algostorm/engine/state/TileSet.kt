@@ -70,35 +70,35 @@ class TileSet(
             /**
              * Whether this global tile id is flipped horizontally.
              */
-            val Int.isFlippedHorizontally: Boolean
-                get() = and(0x40000000) != 0
+            val Long.isFlippedHorizontally: Boolean
+                get() = and(0x80000000) != 0L
 
             /**
              * Whether this global tile id is flipped vertically.
              */
-            val Int.isFlippedVertically: Boolean
-                get() = and(0x20000000) != 0
+            val Long.isFlippedVertically: Boolean
+                get() = and(0x40000000) != 0L
 
             /**
              * Whether this global tile id is flipped diagonally.
              */
-            val Int.isFlippedDiagonally: Boolean
-                get() = and(0x10000000) != 0
+            val Long.isFlippedDiagonally: Boolean
+                get() = and(0x20000000) != 0L
 
             /**
              * Flips this global tile id horizontally.
              */
-            fun Int.flipHorizontally(): Int = xor(0x40000000)
+            fun Long.flipHorizontally(): Long = xor(0x80000000)
 
             /**
              * Flips this global tile id vertically.
              */
-            fun Int.flipVertically(): Int = xor(0x20000000)
+            fun Long.flipVertically(): Long = xor(0x40000000)
 
             /**
              * Flips this global tile id diagonally.
              */
-            fun Int.flipDiagonally(): Int = xor(0x10000000)
+            fun Long.flipDiagonally(): Long = xor(0x20000000)
         }
 
         /**

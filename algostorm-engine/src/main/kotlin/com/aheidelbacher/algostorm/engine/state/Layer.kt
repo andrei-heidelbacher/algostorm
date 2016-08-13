@@ -83,7 +83,7 @@ sealed class Layer {
      */
     class TileLayer(
             override val name: String,
-            val data: IntArray,
+            val data: LongArray,
             override var isVisible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,

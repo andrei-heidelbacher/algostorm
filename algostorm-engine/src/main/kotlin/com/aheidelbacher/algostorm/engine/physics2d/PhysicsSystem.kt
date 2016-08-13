@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.physics2d
 
+import com.aheidelbacher.algostorm.engine.geometry2d.intersects
 import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
@@ -57,9 +58,18 @@ class PhysicsSystem(
          * @param other the object with which the intersection is checked
          * @return `true` if the two objects overlap, `false` otherwise
          */
-        fun Object.overlaps(other: Object): Boolean =
-                x < other.x + other.width && x + width > other.x &&
-                        y < other.y + other.height && y + height > other.y
+        fun Object.overlaps(other: Object): Boolean = intersects(
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                otherX = other.x,
+                otherY = other.y,
+                otherWidth = other.width,
+                otherHeight = other.height
+        )
+        //        x < other.x + other.width && x + width > other.x &&
+        //                y < other.y + other.height && y + height > other.y
     }
 
     /**

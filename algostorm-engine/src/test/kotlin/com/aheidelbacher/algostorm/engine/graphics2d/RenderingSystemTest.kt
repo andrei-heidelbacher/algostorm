@@ -71,7 +71,7 @@ class RenderingSystemTest {
                             y = 48,
                             width = 32,
                             height = 32,
-                            gid = 1.flipHorizontally()
+                            gid = 1L.flipHorizontally()
                     ))
             )),
             nextObjectId = 2

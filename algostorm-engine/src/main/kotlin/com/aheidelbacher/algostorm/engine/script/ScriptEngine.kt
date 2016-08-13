@@ -20,6 +20,10 @@ import java.io.InputStream
 
 import kotlin.reflect.KClass
 
+/**
+ * An object that can evaluate scripts and named functions from previously
+ * evaluated scripts.
+ */
 interface ScriptEngine {
     companion object {
         /**

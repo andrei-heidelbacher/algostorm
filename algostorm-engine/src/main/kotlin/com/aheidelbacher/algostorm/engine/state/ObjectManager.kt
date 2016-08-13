@@ -85,7 +85,7 @@ class ObjectManager(private val map: Map, name: String) {
             y: Int,
             width: Int,
             height: Int,
-            gid: Int = 0,
+            gid: Long = 0L,
             rotation: Float = 0F,
             isVisible: Boolean = true,
             properties: MutableMap<String, Any> = hashMapOf()

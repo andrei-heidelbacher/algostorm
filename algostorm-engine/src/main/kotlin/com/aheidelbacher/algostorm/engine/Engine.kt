@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference
 
 import kotlin.concurrent.thread
 import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
 
 /**
  * An asynchronous engine that runs the game loop on its own private thread.

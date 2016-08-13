@@ -16,6 +16,8 @@
 
 package com.aheidelbacher.algostorm.engine.state
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * A physical and renderable object in the game. Two objects are equal if and
  * only if they have the same [id].
@@ -27,8 +29,7 @@ package com.aheidelbacher.algostorm.engine.state
  * pixels
  * @property width the width of this object in pixels
  * @property height the height of this object in pixels
- * @property gid the global id of the object tile. A value of `0` indicates the
- * empty tile (nothing to draw)
+ * @param gid the initial value of the [gid] property
  * @property rotation the rotation of this object around the top-left corner in
  * clock-wise degrees
  * @property isVisible whether this object should be rendered or not
@@ -42,18 +43,30 @@ class Object(
         var y: Int,
         val width: Int,
         val height: Int,
-        var gid: Int = 0,
+        @JsonProperty("gid") gid: Long = 0L,
         var rotation: Float = 0F,
         var isVisible: Boolean = true,
         val properties: MutableMap<String, Any> = hashMapOf()
 ) {
     init {
         require(id >= 0) { "Object id $id can't be negative!" }
-        require(gid >= 0) { "Object gid $gid can't be negative!" }
+        require(gid >= 0L) { "Object $id gid $gid can't be negative!" }
         require(width > 0 && height > 0) {
             "Object $id sizes ($width, $height) must be positive!"
         }
     }
+
+    /**
+     * The global id of the object tile. A value of `0` indicates the empty tile
+     * (nothing to draw).
+     *
+     * @throws IllegalArgumentException if the value is negative
+     */
+    var gid: Long = gid
+        set(value) {
+            require(value >= 0L) { "Object $id gid $value can't be negative!" }
+            field = value
+        }
 
     /**
      * Returns the property with the given name.

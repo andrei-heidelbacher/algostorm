@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
+import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Map.RenderOrder
@@ -44,44 +45,22 @@ class RenderingSystem(
         private val canvas: Canvas
 ) : Subscriber {
     private companion object {
-        /**
-         * A camera representing the captured area by the screen.
-         *
-         * @property x the x-axis coordinate of the upper-left corner of the
-         * camera in pixels
-         * @property y the y-axis coordinate of the upper-left corner of the
-         * camera in pixels
-         * @property width the width of the camera in pixels
-         * @property height the height of the camera in pixels
-         */
-        data class Camera(
-                val x: Int,
-                val y: Int,
-                val width: Int,
-                val height: Int
-        )
-
         fun isVisible(
-                camera: Camera,
-                gid: Int,
+                camera: Rectangle,
+                gid: Long,
                 x: Int,
                 y: Int,
                 width: Int,
                 height: Int,
                 rotation: Float
-        ): Boolean = gid != 0 &&
-                x + width > camera.x && x < camera.x + camera.width &&
-                y + height > camera.y && y < camera.y + camera.height
+        ) : Boolean = gid != 0L && camera.intersects(x, y, width, height)
 
-        fun isVisible(camera: Camera, obj: Object): Boolean =
-                obj.isVisible && isVisible(
-                        camera = camera,
-                        gid = obj.gid,
+        fun isVisible(camera: Rectangle, obj: Object): Boolean =
+                obj.isVisible && obj.gid != 0L && camera.intersects(
                         x = obj.x,
                         y = obj.y,
                         width = obj.width,
-                        height = obj.height,
-                        rotation = obj.rotation
+                        height = obj.height
                 )
     }
 
@@ -92,7 +71,7 @@ class RenderingSystem(
     private var currentTimeMillis: Long = 0L
 
     private fun drawGid(
-            gid: Int,
+            gid: Long,
             opacity: Float,
             x: Int,
             y: Int,
@@ -137,7 +116,7 @@ class RenderingSystem(
         )
     }
 
-    private fun drawImageLayer(camera: Camera, imageLayer: Layer.ImageLayer) {
+    private fun drawImageLayer(camera: Rectangle, imageLayer: Layer.ImageLayer) {
         canvas.drawBitmap(
                 viewport = Viewport(
                         image = imageLayer.image,
@@ -151,7 +130,7 @@ class RenderingSystem(
         )
     }
 
-    private fun drawObjectGroup(camera: Camera, layer: Layer.ObjectGroup) {
+    private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
         val comparator = when (map.renderOrder) {
             RenderOrder.RIGHT_DOWN -> compareBy<Object>({ it.y }, { it.x })
             RenderOrder.RIGHT_UP -> compareBy<Object>({ -it.y }, { it.x })
@@ -173,7 +152,7 @@ class RenderingSystem(
         }
     }
 
-    private fun drawTileLayer(camera: Camera, layer: Layer.TileLayer) {
+    private fun drawTileLayer(camera: Rectangle, layer: Layer.TileLayer) {
         val (yRange, xRange) = when (map.renderOrder) {
             RenderOrder.RIGHT_DOWN ->
                 Pair(0 until map.height, 0 until map.width)
@@ -189,7 +168,7 @@ class RenderingSystem(
                 val x = tx * map.tileWidth
                 val y = ty * map.tileHeight
                 val gid = layer.data[ty * map.width + tx]
-                if (gid != 0) {
+                if (gid != 0L) {
                     val tileSet = map.getTileSet(gid)
                             ?: error("Invalid gid $gid!")
                     if (isVisible(
@@ -239,7 +218,7 @@ class RenderingSystem(
         val cameraHeight = canvas.height
         val cameraX = event.cameraX - cameraWidth / 2
         val cameraY = event.cameraY - cameraHeight / 2
-        val camera = Camera(cameraX, cameraY, cameraWidth, cameraHeight)
+        val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
         canvas.clear()
         map.layers.filter { it.isVisible }.forEach { layer ->
             when (layer) {

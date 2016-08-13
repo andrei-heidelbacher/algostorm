@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  * @property width the width of the map in tiles
  * @property height the height of the map in tiles
+ * @property tileWidth the width of a tile in pixels
+ * @property tileHeight the height of a tile in pixels
  * @property orientation the orientation of the map
  * @property renderOrder the order in which objects and tiles are rendered
  * @property tileSets the tile sets used for rendering
@@ -69,8 +71,8 @@ class Map(
         @JsonProperty("left-up") LEFT_UP
     }
 
-    @Transient private val gidToTileSet = hashMapOf<Int, TileSet>()
-    @Transient private val gidToTileId = hashMapOf<Int, Int>()
+    @Transient private val gidToTileSet = hashMapOf<Long, TileSet>()
+    @Transient private val gidToTileId = hashMapOf<Long, Int>()
 
     init {
         require(width > 0 && height > 0) {
@@ -82,7 +84,7 @@ class Map(
         require(nextObjectId >= 0) {
             "Map next object id $nextObjectId can't be negative!"
         }
-        var firstGid = 1
+        var firstGid = 1L
         for (tileSet in tileSets) {
             for (tileId in 0..tileSet.tileCount - 1) {
                 gidToTileSet[tileId + firstGid] = tileSet
@@ -118,7 +120,7 @@ class Map(
      * @return the requested tile set, or `null` if the given [gid] isn't
      * contained by any tile sets
      */
-    fun getTileSet(gid: Int): TileSet? = gidToTileSet[gid.and(0x0FFFFFFF)]
+    fun getTileSet(gid: Long): TileSet? = gidToTileSet[gid.and(0x1FFFFFFF)]
 
     /**
      * Returns the local tile id of the given [gid].
@@ -127,5 +129,5 @@ class Map(
      * @return the requested local tile id, or `null` if the given [gid] isn't
      * contained by any tile sets
      */
-    fun getTileId(gid: Int): Int? = gidToTileId[gid.and(0x0FFFFFFF)]
+    fun getTileId(gid: Long): Int? = gidToTileId[gid.and(0x1FFFFFFF)]
 }

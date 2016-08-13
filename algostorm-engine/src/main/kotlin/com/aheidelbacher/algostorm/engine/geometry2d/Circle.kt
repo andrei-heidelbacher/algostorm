@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.physics2d
+package com.aheidelbacher.algostorm.engine.geometry2d
 
-import com.aheidelbacher.algostorm.engine.state.Object
+data class Circle(val x: Int, val y: Int, val radius: Int) {
+    init {
+        require(radius >= 0) { "Circle radius $radius must not be negative!" }
+    }
 
-/**
- * A component which tells that the owner object will block movement and
- * triggers collisions.
- */
-object Rigid {
-    /**
-     * The name of the rigid property. It is of type [Boolean].
-     */
-    const val IS_RIGID: String = "isRigid"
+    fun contains(x: Int, y: Int): Boolean =
+            squareDistance(this.x, this.y, x, y) <= 1L * radius * radius
 
-    /**
-     * Returns `true` if this object contains the rigid property and it is set
-     * to `true`, `false` otherwise.
-     */
-    val Object.isRigid: Boolean
-        get() = properties[IS_RIGID] as? Boolean ?: false
+    operator fun contains(point: Point): Boolean = contains(point.x, point.y)
+
+    fun translate(dx: Int, dy: Int): Circle = copy(x = x + dx, y = y + dy)
 }
