@@ -216,15 +216,17 @@ class RenderingSystem(
         canvas.lock()
         val cameraWidth = canvas.width
         val cameraHeight = canvas.height
-        val cameraX = event.cameraX - cameraWidth / 2
-        val cameraY = event.cameraY - cameraHeight / 2
-        val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
-        canvas.clear()
-        map.layers.filter { it.isVisible }.forEach { layer ->
-            when (layer) {
-                is Layer.ImageLayer -> drawImageLayer(camera, layer)
-                is Layer.ObjectGroup -> drawObjectGroup(camera, layer)
-                is Layer.TileLayer -> drawTileLayer(camera, layer)
+        if (cameraWidth > 0 && cameraHeight > 0) {
+            val cameraX = event.cameraX - cameraWidth / 2
+            val cameraY = event.cameraY - cameraHeight / 2
+            val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
+            canvas.clear()
+            map.layers.filter { it.isVisible }.forEach { layer ->
+                when (layer) {
+                    is Layer.ImageLayer -> drawImageLayer(camera, layer)
+                    is Layer.ObjectGroup -> drawObjectGroup(camera, layer)
+                    is Layer.TileLayer -> drawTileLayer(camera, layer)
+                }
             }
         }
         canvas.unlockAndPost()
