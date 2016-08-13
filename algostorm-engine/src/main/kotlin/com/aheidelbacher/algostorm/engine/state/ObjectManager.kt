@@ -38,8 +38,8 @@ class ObjectManager(private val map: Map, name: String) {
     /**
      * A lazy view of all the objects in the associated object group.
      */
-    val objects: Sequence<Object>
-        get() = objectGroup.objects.asSequence()
+    val objects: Set<Object>
+        get() = objectGroup.objects
 
     /**
      * Returns the object with the given id.

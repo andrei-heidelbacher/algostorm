@@ -117,7 +117,7 @@ class PhysicsSystem(
             val overlappingObjects = objectManager.objects.filter {
                 it != obj && it.isRigid && it.intersects(obj)
             }
-            if (!obj.isRigid || overlappingObjects.count() == 0) {
+            if (!obj.isRigid || overlappingObjects.size == 0) {
                 publisher.post(Transformed(
                         objectId = event.objectId,
                         dx = event.dx,
