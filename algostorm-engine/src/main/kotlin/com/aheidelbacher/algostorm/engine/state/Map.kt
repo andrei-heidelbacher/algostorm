@@ -50,7 +50,7 @@ class Map(
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
         val properties: MutableMap<String, Any> = hashMapOf(),
-        val version: String = "1.0",
+        val version: Float = 1F,
         private var nextObjectId: Int
 ) {
     /**

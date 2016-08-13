@@ -23,16 +23,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * only if they have the same [id].
  *
  * @property id the unique identifier of this object
- * @property x the x-axis coordinate of the top-left corner of this object in
+ * @property x the x-axis coordinate of the bottom-left corner of this object in
  * pixels
- * @property y the y-axis coordinate of the top-left corner of this object in
+ * @property y the y-axis coordinate of the bottom-left corner of this object in
  * pixels
  * @property width the width of this object in pixels
  * @property height the height of this object in pixels
  * @param gid the initial value of the [gid] property
- * @property rotation the rotation of this object around the top-left corner in
- * clock-wise degrees
- * @property isVisible whether this object should be rendered or not
+ * @property rotation the clock-wise rotation of this object around the
+ * bottom-left corner in degrees
+ * @property visible whether this object should be rendered or not
  * @property properties the properties of this object
  * @throws IllegalArgumentException if [id] or [gid] is negative or if [width]
  * or [height] are not positive
@@ -45,7 +45,7 @@ class Object(
         val height: Int,
         @JsonProperty("gid") gid: Long = 0L,
         var rotation: Float = 0F,
-        var isVisible: Boolean = true,
+        var visible: Boolean = true,
         val properties: MutableMap<String, Any> = hashMapOf()
 ) {
     init {

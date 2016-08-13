@@ -72,7 +72,7 @@ class ObjectManager(private val map: Map, name: String) {
      * the empty tile (nothing to draw)
      * @property rotation the rotation of this object around the top-left corner
      * in clock-wise degrees
-     * @property isVisible whether this object should be rendered or not
+     * @property visible whether this object should be rendered or not
      * @property properties the properties of this object
      * @return the created object
      * @throws IllegalStateException if there are too many objects in this
@@ -87,7 +87,7 @@ class ObjectManager(private val map: Map, name: String) {
             height: Int,
             gid: Long = 0L,
             rotation: Float = 0F,
-            isVisible: Boolean = true,
+            visible: Boolean = true,
             properties: MutableMap<String, Any> = hashMapOf()
     ) : Object = with(Object(
             id = map.getNextObjectId(),
@@ -97,7 +97,7 @@ class ObjectManager(private val map: Map, name: String) {
             height = height,
             gid = gid,
             rotation = rotation,
-            isVisible = isVisible,
+            visible = visible,
             properties = properties
     )) {
         objectGroup.objects.add(this)

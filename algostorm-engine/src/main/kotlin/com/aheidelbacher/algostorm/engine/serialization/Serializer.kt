@@ -21,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerationException
 import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -47,6 +49,8 @@ object Serializer {
      */
     @JvmField val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         enableDefaultTyping(

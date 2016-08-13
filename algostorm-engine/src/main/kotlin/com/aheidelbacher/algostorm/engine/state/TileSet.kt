@@ -33,7 +33,9 @@ import kotlin.collections.Map
  * @property margin the margin in pixels
  * @property spacing the spacing between adjacent tiles in pixels
  * @property tileCount the number of tiles present in this tile set
+ * @property tileOffset the rendering offset which should be applied
  * @property properties the properties of this tile set
+ * @property tileProperties properties of individual tiles
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
  * [imageHeight] or [tileCount] are not positive or if [margin] or [spacing]
@@ -50,22 +52,29 @@ class TileSet(
         val margin: Int,
         val spacing: Int,
         val tileCount: Int,
+        val tileOffset: TileOffset = TileOffset(0, 0),
         val properties: Map<String, Any> = emptyMap(),
+        val tileProperties: Map<Int, Map<String, Any>> = emptyMap(),
         val tiles: Map<Int, Tile> = emptyMap()
 ) {
+    /**
+     * Indicates an offset which should be applied when rendering any tile from
+     * this tile set.
+     *
+     * @property x the x-axis offset in pixels
+     * @property y the y-axis offset in pixels
+     */
+    data class TileOffset(val x: Int, val y: Int)
+
     /**
      * An object containing meta-data associated to this tile.
      *
      * @property animation a list of frames representing an animation. Must be
      * `null` (indicating no animation) or must contain at least two frames.
-     * @property properties properties associated to this tile
      * @throws IllegalArgumentException if [animation] is not `null` and
      * contains less than two frames
      */
-    class Tile(
-            val animation: List<Frame>? = null,
-            val properties: Map<String, Any> = emptyMap()
-    ) {
+    class Tile(val animation: List<Frame>? = null) {
         companion object {
             /**
              * Whether this global tile id is flipped horizontally.

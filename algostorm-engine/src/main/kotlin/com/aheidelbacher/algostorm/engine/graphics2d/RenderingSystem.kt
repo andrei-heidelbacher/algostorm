@@ -56,7 +56,7 @@ class RenderingSystem(
         ) : Boolean = gid != 0L && camera.intersects(x, y, width, height)
 
         fun isVisible(camera: Rectangle, obj: Object): Boolean =
-                obj.isVisible && obj.gid != 0L && camera.intersects(
+                obj.visible && obj.gid != 0L && camera.intersects(
                         x = obj.x,
                         y = obj.y,
                         width = obj.width,
@@ -108,7 +108,10 @@ class RenderingSystem(
         }.let {
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
-        }.postRotate(rotation).postTranslate(x.toFloat(), y.toFloat())
+        }.postRotate(rotation).postTranslate( //TODO: fix the rotation!
+                dx = tileSet.tileOffset.x.toFloat() + x.toFloat(),
+                dy = tileSet.tileOffset.y.toFloat() + y.toFloat()
+        )
         canvas.drawBitmap(
                 viewport = viewport,
                 matrix = matrix,
@@ -221,7 +224,7 @@ class RenderingSystem(
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
-            map.layers.filter { it.isVisible }.forEach { layer ->
+            map.layers.filter { it.visible }.forEach { layer ->
                 when (layer) {
                     is Layer.ImageLayer -> drawImageLayer(camera, layer)
                     is Layer.ObjectGroup -> drawObjectGroup(camera, layer)

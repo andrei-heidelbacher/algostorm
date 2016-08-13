@@ -46,7 +46,7 @@ sealed class Layer {
     /**
      * Whether this layer should be rendered or not.
      */
-    abstract var isVisible: Boolean
+    abstract var visible: Boolean
 
     /**
      * The opacity of this layer. Should be a value between `0` and `1`.
@@ -84,7 +84,7 @@ sealed class Layer {
     class TileLayer(
             override val name: String,
             val data: LongArray,
-            override var isVisible: Boolean = true,
+            override var visible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
             override val offsetY: Int = 0,
@@ -99,7 +99,7 @@ sealed class Layer {
     class ImageLayer(
             override val name: String,
             var image: String,
-            override var isVisible: Boolean = true,
+            override var visible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
             override val offsetY: Int = 0,
@@ -114,7 +114,7 @@ sealed class Layer {
     class ObjectGroup(
             override val name: String,
             val objects: MutableSet<Object>,
-            override var isVisible: Boolean = true,
+            override var visible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
             override val offsetY: Int = 0,
