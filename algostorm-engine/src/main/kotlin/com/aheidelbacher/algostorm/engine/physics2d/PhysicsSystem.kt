@@ -52,13 +52,13 @@ class PhysicsSystem(
         }
 
         /**
-         * Returns whether the two objects overlap (that is, there exists a
+         * Returns whether the two objects intersect (that is, there exists a
          * pixel `(x, y)` such that it lies inside both objects).
          *
          * @param other the object with which the intersection is checked
          * @return `true` if the two objects overlap, `false` otherwise
          */
-        fun Object.overlaps(other: Object): Boolean = intersects(
+        fun Object.intersects(other: Object): Boolean = intersects(
                 x = x,
                 y = y,
                 width = width,
@@ -68,8 +68,37 @@ class PhysicsSystem(
                 otherWidth = other.width,
                 otherHeight = other.height
         )
-        //        x < other.x + other.width && x + width > other.x &&
-        //                y < other.y + other.height && y + height > other.y
+
+        /**
+         * Returns whether this object intersects with the specified rectangle
+         * (that is, there exists a pixel `(x, y)` such that it lies inside this
+         * object and inside the given rectangle).
+         *
+         * @param x the x-axis coordinate of the top-left corner of the
+         * rectangle in pixels
+         * @param y the y-axis coordinate of the top-left corner of the
+         * rectangle in pixels
+         * @param width the width of the rectangle in pixels
+         * @param height the height of the rectangle in pixels
+         * @return `true` if the two objects overlap, `false` otherwise
+         * @throws IllegalArgumentException if the given [width] or [height] are
+         * not positive
+         */
+        fun Object.intersects(
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int
+        ): Boolean = intersects(
+                x = this.x,
+                y = this.y,
+                width = this.width,
+                height = this.height,
+                otherX = x,
+                otherY = y,
+                otherWidth = width,
+                otherHeight = height
+        )
     }
 
     /**
@@ -86,7 +115,7 @@ class PhysicsSystem(
         objectManager[event.objectId]?.let { obj ->
             obj.transform(event.dx, event.dy, event.rotate)
             val overlappingObjects = objectManager.objects.filter {
-                it != obj && it.isRigid && it.overlaps(obj)
+                it != obj && it.isRigid && it.intersects(obj)
             }
             if (!obj.isRigid || overlappingObjects.count() == 0) {
                 publisher.post(Transformed(
