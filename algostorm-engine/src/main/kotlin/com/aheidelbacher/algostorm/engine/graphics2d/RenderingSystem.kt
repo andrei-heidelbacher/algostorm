@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
+import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
@@ -25,7 +26,6 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlipped
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
-import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -45,6 +45,11 @@ class RenderingSystem(
         private val canvas: Canvas
 ) : Subscriber {
     private companion object {
+        fun Matrix.postRotate(degrees: Float, px: Float, py: Float): Matrix =
+                postTranslate(-px, -py)
+                        .postRotate(degrees)
+                        .postTranslate(px, py)
+
         fun isVisible(
                 camera: Rectangle,
                 gid: Long,
@@ -108,9 +113,9 @@ class RenderingSystem(
         }.let {
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
-        }.postRotate(rotation).postTranslate( //TODO: fix the rotation!
-                dx = tileSet.tileOffset.x.toFloat() + x.toFloat(),
-                dy = tileSet.tileOffset.y.toFloat() + y.toFloat()
+        }.postRotate(rotation, 0F, height.toFloat()).postTranslate(
+                dx = tileSet.tileOffset.x.toFloat() + x,
+                dy = tileSet.tileOffset.y.toFloat() + y
         )
         canvas.drawBitmap(
                 viewport = viewport,
@@ -199,11 +204,11 @@ class RenderingSystem(
     }
 
     /**
-     * When a [Tick] event is received, the [currentTimeMillis] is increased.
+     * When an [Update] event is received, the [currentTimeMillis] is increased.
      *
-     * @param event the [Tick] event
+     * @param event the [Update] event
      */
-    @Subscribe fun handleTick(event: Tick) {
+    @Subscribe fun onUpdate(event: Update) {
         currentTimeMillis += event.elapsedMillis
     }
 
@@ -215,7 +220,7 @@ class RenderingSystem(
      *
      * @param event the rendering request
      */
-    @Subscribe fun handleRender(event: Render) {
+    @Subscribe fun onRender(event: Render) {
         canvas.lock()
         val cameraWidth = canvas.width
         val cameraHeight = canvas.height

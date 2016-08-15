@@ -58,7 +58,7 @@ abstract class AbstractSoundSystem : Subscriber {
      *
      * @param event the event which requests a sound to be played
      */
-    @Subscribe fun handlePlaySound(event: PlaySound) {
+    @Subscribe fun onPlaySound(event: PlaySound) {
         playSound(event.soundUri, event.frequency, event.loop)
     }
 
@@ -67,7 +67,7 @@ abstract class AbstractSoundSystem : Subscriber {
      *
      * @param event the event which requests a sound to be stopped
      */
-    @Subscribe fun handleStopSound(event: StopSound) {
+    @Subscribe fun onStopSound(event: StopSound) {
         stopSound(event.frequency)
     }
 }

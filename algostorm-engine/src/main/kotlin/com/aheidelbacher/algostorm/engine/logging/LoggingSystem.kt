@@ -33,7 +33,7 @@ class LoggingSystem(private val logger: Logger) : Subscriber {
      *
      * @param event the event which should be logged
      */
-    @Subscribe fun handleEvent(event: Event) {
+    @Subscribe fun onEvent(event: Event) {
         logger.log(event.toString())
     }
 }

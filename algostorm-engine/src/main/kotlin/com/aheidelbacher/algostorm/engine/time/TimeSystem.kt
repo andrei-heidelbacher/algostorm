@@ -35,7 +35,7 @@ class TimeSystem(
      *
      * @param event the event which requests the registration of a timer
      */
-    @Subscribe fun handleRegisterTimer(event: RegisterTimer) {
+    @Subscribe fun onRegisterTimer(event: RegisterTimer) {
         if (event.timer.remainingTicks == 0) {
             publisher.post(event.timer.events)
         } else {
@@ -49,7 +49,7 @@ class TimeSystem(
      *
      * @param event the event which signals a tick has elapsed
      */
-    @Subscribe fun handleTick(event: Tick) {
+    @Subscribe fun onTick(event: Tick) {
         val (expired, remaining) = timeline.timers.map {
             it.copy(remainingTicks = it.remainingTicks - 1)
         }.partition { it.remainingTicks == 0 }

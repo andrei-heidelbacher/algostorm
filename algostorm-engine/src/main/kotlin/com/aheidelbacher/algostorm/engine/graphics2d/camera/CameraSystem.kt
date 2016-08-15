@@ -25,21 +25,30 @@ class CameraSystem(
         private val objectManager: ObjectManager,
         private var followedObjectId: Int? = null
 ) : Subscriber {
-    @Subscribe fun handleFocusOn(event: FocusOn) {
+    @Subscribe fun onUpdateCamera(event: UpdateCamera) {
+        followedObjectId?.let { id ->
+            objectManager[id]?.let { obj ->
+                camera.x = obj.x + obj.width / 2
+                camera.y = obj.y + obj.height / 2
+            }
+        }
+    }
+
+    @Subscribe fun onFocusOn(event: FocusOn) {
         camera.x = event.x
         camera.y = event.y
     }
 
-    @Subscribe fun handleFollow(event: Follow) {
+    @Subscribe fun onFollow(event: Follow) {
         followedObjectId = event.objectId
     }
 
-    @Subscribe fun handleScroll(event: Scroll) {
+    @Subscribe fun onScroll(event: Scroll) {
         camera.x += event.dx
         camera.y += event.dy
     }
 
-    @Subscribe fun handleStopFollowing(event: StopFollowing) {
+    @Subscribe fun onStopFollowing(event: StopFollowing) {
         followedObjectId = null
     }
 }

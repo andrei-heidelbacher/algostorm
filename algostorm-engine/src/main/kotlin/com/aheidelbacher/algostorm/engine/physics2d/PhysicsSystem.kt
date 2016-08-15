@@ -111,7 +111,7 @@ class PhysicsSystem(
      *
      * @param event the [TransformIntent] event
      */
-    @Subscribe fun handleTranslateIntent(event: TransformIntent) {
+    @Subscribe fun onTranslateIntent(event: TransformIntent) {
         objectManager[event.objectId]?.let { obj ->
             obj.transform(event.dx, event.dy, event.rotate)
             val overlappingObjects = objectManager.objects.filter {

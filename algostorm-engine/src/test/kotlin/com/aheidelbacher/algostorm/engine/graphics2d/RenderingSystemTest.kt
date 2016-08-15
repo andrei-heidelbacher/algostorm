@@ -80,6 +80,6 @@ class RenderingSystemTest {
     @Test
     fun testRender() {
         val renderingSystem = RenderingSystem(map, canvas)
-        renderingSystem.handleRender(Render(44, 60))
+        renderingSystem.onRender(Render(44, 60))
     }
 }

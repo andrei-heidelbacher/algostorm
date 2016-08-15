@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics2d.camera
+package com.aheidelbacher.algostorm.engine.script
 
-data class Camera(var x: Int, var y: Int)
+import com.aheidelbacher.algostorm.event.Event
+import kotlin.reflect.KClass
+
+data class RunScriptWithResult(
+        val functionName: String,
+        val returnType: KClass<*>,
+        val args: List<*>,
+        val onResult: (Any?) -> Unit
+) : Event {
+    constructor(
+            functionName: String,
+            returnType: KClass<*>,
+            vararg args: Any?,
+            onResult: (Any?) -> Unit
+    ) : this(
+            functionName = functionName,
+            returnType = returnType,
+            args = args.asList(),
+            onResult = onResult
+    )
+}

@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics2d.camera
+package com.aheidelbacher.algostorm.engine
 
-data class Camera(var x: Int, var y: Int)
+import com.aheidelbacher.algostorm.event.Event
+
+/**
+ * An event which signals that all game logic should advance by an atomic time
+ * unit.
+ *
+ * @property elapsedMillis the number of milliseconds of an atomic time unit
+ */
+data class Update(val elapsedMillis: Int) : Event

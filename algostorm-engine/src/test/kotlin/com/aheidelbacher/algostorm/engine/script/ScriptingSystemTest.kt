@@ -16,20 +16,29 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
-import com.aheidelbacher.algostorm.event.Event
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
-/**
- * An event which requests the execution of a script.
- *
- * @property functionName the name of script function that should be executed
- * @property args the arguments of the script function
- */
-data class RunScript(
-        val functionName: String,
-        val args: List<*>
-) : Event {
-    constructor(functionName: String, vararg args: Any?) : this(
-            functionName = functionName,
-            args = args.asList()
+class ScriptingSystemTest {
+    val system = ScriptingSystem(
+            JavascriptEngine(),
+            listOf(JavascriptEngineTest.SCRIPT.byteInputStream())
     )
+
+    @Test
+    fun testRunScriptWithResult() {
+        val id = 5
+        val value = "five"
+        var isOk = false
+        val event = RunScriptWithResult(
+                JavascriptEngineTest.FUNCTION_NAME,
+                Result::class,
+                id,
+                value
+        ) {
+            isOk = it == Result(id, value)
+        }
+        system.onRunScriptWithResult(event)
+        assertEquals(true, isOk)
+    }
 }

@@ -42,10 +42,18 @@ class ScriptingSystem(
      * called with the supplied arguments. The returned result (if any) is
      * discarded.
      */
-    @Subscribe fun handleRunScript(event: RunScript) {
+    @Subscribe fun onRunScript(event: RunScript) {
         scriptEngine.invokeFunction<Any>(
-                event.scriptFunctionName,
+                event.functionName,
                 *event.args.toTypedArray()
         )
+    }
+
+    @Subscribe fun onRunScriptWithResult(event: RunScriptWithResult) {
+        event.onResult(scriptEngine.invokeFunction(
+                event.functionName,
+                event.returnType,
+                *event.args.toTypedArray()
+        ))
     }
 }

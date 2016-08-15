@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics2d.camera
+package com.aheidelbacher.algostorm.engine.script
 
-data class Camera(var x: Int, var y: Int)
+data class Result(val id: Int, val value: String)

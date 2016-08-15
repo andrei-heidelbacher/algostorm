@@ -29,7 +29,7 @@ import kotlin.system.measureNanoTime
  *
  * All changes to the game state outside of this engine's thread may lead to
  * inconsistent state and concurrency issues. Thus, the engine state should
- * remain private to the engine and modified only in the [handleTick] and
+ * remain private to the engine and modified only in the [onUpdate] and
  * [clearState] methods.
  *
  * All the engine methods are thread safe as long as the complete construction
@@ -85,16 +85,34 @@ abstract class Engine {
      * The number of milliseconds spent in an update cycle and the resolution of
      * an atomic time unit.
      */
-    protected abstract val millisPerTick: Int
+    protected abstract val millisPerUpdate: Int
 
     /**
-     * This method is invoked at most once every [millisPerTick] from this
+     * This method is invoked right before [onUpdate] is called from this
      * engine's thread while this engine is running. The call to this method is
      * synchronized with the state lock.
      *
-     * It is the entry point into the game logic code.
+     * It is the entry point into the input-handling logic.
      */
-    protected abstract fun handleTick(): Unit
+    protected abstract fun onHandleInput(): Unit
+
+    /**
+     * This method is invoked at most once every [millisPerUpdate] from this
+     * engine's thread while this engine is running. The call to this method is
+     * synchronized with the state lock.
+     *
+     * It is the entry point into the game logic.
+     */
+    protected abstract fun onUpdate(): Unit
+
+    /**
+     * This method is invoked right after [onUpdate] returns from this engine's
+     * thread while this engine is running. The call to this method is
+     * synchronized with the state lock.
+     *
+     * It is the entry point into the rendering logic.
+     */
+    protected abstract fun onRender(): Unit
 
     /**
      * Retrieves the current game state and serializes it to the given stream.
@@ -117,11 +135,14 @@ abstract class Engine {
      * The engine thread automatically sets the `status` to `Status.STOPPED`
      * after terminating (either normally or exceptionally).
      *
-     * While this engine is running, at most once every [millisPerTick]
-     * milliseconds, it will invoke the [handleTick] method. The call to
-     * `handleTick` is synchronized with the state lock. Time is measured using
-     * [measureNanoTime]. If, at any point, the measured time is negative, the
-     * engine thread throws an [IllegalStateException] and terminates.
+     * While this engine is running, at most once every [millisPerUpdate]
+     * milliseconds, it will invoke, in order, the following methods:
+     * [onHandleInput], [onUpdate] and [onRender]. These calls are synchronized
+     * with the state lock.
+     *
+     * Time is measured using [measureNanoTime]. If, at any point, the measured
+     * time is negative, the engine thread throws an [IllegalStateException] and
+     * terminates.
      *
      * @throws IllegalStateException if the `status` is not `Status.STOPPED` or
      * if [isShutdown] is `true`
@@ -138,15 +159,17 @@ abstract class Engine {
             process = thread(name = NAME) {
                 try {
                     while (status == Status.RUNNING) {
-                        val elapsedTimeMillis = measureNanoTime {
+                        val elapsedMillis = measureNanoTime {
                             synchronized(stateLock) {
-                                handleTick()
+                                onHandleInput()
+                                onUpdate()
+                                onRender()
                             }
                         } / 1000000
-                        check(elapsedTimeMillis >= 0) {
+                        check(elapsedMillis >= 0) {
                             "Elapsed time millis can't be negative!"
                         }
-                        val sleepTimeMillis = millisPerTick - elapsedTimeMillis
+                        val sleepTimeMillis = millisPerUpdate - elapsedMillis
                         if (sleepTimeMillis > 0) {
                             Thread.sleep(sleepTimeMillis)
                         }

@@ -43,7 +43,7 @@ abstract class AbstractInputSystem<in T : Any>(
      *
      * @param event the [HandleInput] event.
      */
-    @Subscribe fun handleTick(event: HandleInput) {
+    @Subscribe fun onHandleInput(event: HandleInput) {
         inputReader.readInput()?.let { handleInput(it) }
     }
 }

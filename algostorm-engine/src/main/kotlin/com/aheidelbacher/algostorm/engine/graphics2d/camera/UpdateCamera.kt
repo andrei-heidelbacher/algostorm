@@ -16,4 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
-data class Camera(var x: Int, var y: Int)
+import com.aheidelbacher.algostorm.event.Event
+
+object UpdateCamera : Event
