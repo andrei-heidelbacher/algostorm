@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.logging
+package com.aheidelbacher.algostorm.engine.log
 
 import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
 
 /**
- * A system which captures all events and logs them.
- *
- * @property logger the logger used to record the messages. It will be called
- * from the private engine thread and the provided implementation should be
- * thread-safe.
+ * A logger which writes all events to [System.out].
  */
-class LoggingSystem(private val logger: Logger) : Subscriber {
-    /**
-     * Logs the string representation of the given event.
-     *
-     * @param event the event which should be logged
-     */
-    @Subscribe fun onEvent(event: Event) {
-        logger.log(event)
+class SystemLogger : Logger {
+    override fun log(event: Event) {
+        println(event)
     }
 }

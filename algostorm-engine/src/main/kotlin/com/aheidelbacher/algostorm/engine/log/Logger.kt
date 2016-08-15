@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.logging
+package com.aheidelbacher.algostorm.engine.log
 
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * A logger which writes all events to [System.out].
+ * An object which provides logging facilities.
  */
-class SystemLogger : Logger {
-    override fun log(event: Event) {
-        println(event)
-    }
+interface Logger {
+    /**
+     * Logs the given event.
+     *
+     * @param event the event to be recorded
+     */
+    fun log(event: Event): Unit
 }
