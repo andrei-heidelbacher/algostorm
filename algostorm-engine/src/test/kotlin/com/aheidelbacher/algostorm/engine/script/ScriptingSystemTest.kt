@@ -26,6 +26,14 @@ class ScriptingSystemTest {
     )
 
     @Test
+    fun testRunScript() {
+        val id = 5
+        val value = "five"
+        val event = RunScript(JavascriptEngineTest.FUNCTION_NAME, id, value)
+        system.onRunScript(event)
+    }
+
+    @Test
     fun testRunScriptWithResult() {
         val id = 5
         val value = "five"

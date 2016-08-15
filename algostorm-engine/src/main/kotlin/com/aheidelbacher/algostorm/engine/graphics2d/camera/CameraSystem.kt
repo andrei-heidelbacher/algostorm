@@ -35,6 +35,7 @@ class CameraSystem(
     }
 
     @Subscribe fun onFocusOn(event: FocusOn) {
+        followedObjectId = null
         camera.x = event.x
         camera.y = event.y
     }
@@ -44,11 +45,12 @@ class CameraSystem(
     }
 
     @Subscribe fun onScroll(event: Scroll) {
+        followedObjectId = null
         camera.x += event.dx
         camera.y += event.dy
     }
 
-    @Subscribe fun onStopFollowing(event: StopFollowing) {
+    @Subscribe fun onUnfollow(event: Unfollow) {
         followedObjectId = null
     }
 }

@@ -16,11 +16,13 @@
 
 package com.aheidelbacher.algostorm.engine.logging
 
+import com.aheidelbacher.algostorm.event.Event
+
 /**
- * A logger which writes the messages to [System.out].
+ * A logger which writes all events to [System.out].
  */
 class SystemLogger : Logger {
-    override fun log(message: String) {
-        println(message)
+    override fun log(event: Event) {
+        println(event)
     }
 }

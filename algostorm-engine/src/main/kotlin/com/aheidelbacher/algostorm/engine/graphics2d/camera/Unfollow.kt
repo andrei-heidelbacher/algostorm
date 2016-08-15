@@ -18,4 +18,4 @@ package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
 import com.aheidelbacher.algostorm.event.Event
 
-object StopFollowing : Event
+object Unfollow : Event

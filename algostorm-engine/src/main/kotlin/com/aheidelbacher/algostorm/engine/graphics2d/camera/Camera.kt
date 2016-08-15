@@ -16,4 +16,15 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
-data class Camera(var x: Int, var y: Int)
+interface Camera {
+    companion object {
+        operator fun invoke(x: Int, y: Int): Camera = object : Camera {
+            override var x: Int = x
+            override var y: Int = y
+        }
+    }
+
+    var x: Int
+
+    var y: Int
+}

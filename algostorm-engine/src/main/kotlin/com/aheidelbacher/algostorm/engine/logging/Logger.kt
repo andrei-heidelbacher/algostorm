@@ -16,14 +16,16 @@
 
 package com.aheidelbacher.algostorm.engine.logging
 
+import com.aheidelbacher.algostorm.event.Event
+
 /**
  * An object which provides logging facilities.
  */
 interface Logger {
     /**
-     * Logs the given message.
+     * Logs the given event.
      *
-     * @param message the message to be recorded
+     * @param event the event to be recorded
      */
-    fun log(message: String): Unit
+    fun log(event: Event): Unit
 }

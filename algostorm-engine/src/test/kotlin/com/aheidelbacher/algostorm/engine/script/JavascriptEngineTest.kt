@@ -20,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
+
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
@@ -32,23 +33,15 @@ class JavascriptEngineTest {
                 return new Result(id, value);
             };
         """.trim()
+        val VOID_SCRIPT: String = """
+            function getResult(id, value) {
+                var Result = Packages.com.aheidelbacher.algostorm.engine.script.Result;
+                var res = new Result(id, value);
+            };
+        """.trim()
     }
 
     private val engine = JavascriptEngine()
-
-    @Test
-    fun testLoadScript() {
-        engine.eval(SCRIPT.byteInputStream())
-    }
-
-    @Test
-    fun testGetResult() {
-        val id = 5
-        val value = "five"
-        engine.eval(SCRIPT.byteInputStream())
-        val result = engine.invokeFunction<Result>(FUNCTION_NAME, id, value)
-        assertEquals(Result(id, value), result)
-    }
 
     private fun invokeFunction(
             functionName: String,
@@ -57,10 +50,25 @@ class JavascriptEngineTest {
     ): Any? = engine.invokeFunction(functionName, returnType, *args)
 
     @Test
-    fun testGetUntypedResult() {
+    fun testLoadScript() {
+        engine.eval(SCRIPT.byteInputStream())
+    }
+
+    @Test
+    fun testGetResult() {
+        engine.eval(SCRIPT.byteInputStream())
         val id = 5
         val value = "five"
+        val result = engine.invokeFunction<Result>(FUNCTION_NAME, id, value)
+        assertEquals(Result(id, value), result)
+    }
+
+
+    @Test
+    fun testGetUntypedResult() {
         engine.eval(SCRIPT.byteInputStream())
+        val id = 5
+        val value = "five"
         val result = invokeFunction(FUNCTION_NAME, Result::class, id, value)
         assertEquals(Result(id, value), result)
     }
@@ -79,5 +87,14 @@ class JavascriptEngineTest {
             thread { invokeScript() }.join()
         }
         invokeScript()
+    }
+
+    @Test
+    fun testVoidFunctionReturnsUndefined() {
+        engine.eval(VOID_SCRIPT.byteInputStream())
+        val id = 5
+        val value = "five"
+        val result = engine.invokeFunction<Any>(FUNCTION_NAME, id, value)
+        assertEquals("undefined", result)
     }
 }
