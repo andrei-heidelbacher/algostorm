@@ -18,6 +18,8 @@ package com.aheidelbacher.algostorm.engine.state
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlags
+
 /**
  * A map which contains all the game state.
  *
@@ -71,8 +73,8 @@ class Map(
         @JsonProperty("left-up") LEFT_UP
     }
 
-    @Transient private val gidToTileSet = hashMapOf<Long, TileSet>()
-    @Transient private val gidToTileId = hashMapOf<Long, Int>()
+    @Transient private lateinit var gidToTileSet: Array<TileSet?>
+    @Transient private lateinit var gidToTileId: IntArray
 
     init {
         require(width > 0 && height > 0) {
@@ -84,19 +86,22 @@ class Map(
         require(nextObjectId >= 0) {
             "Map next object id $nextObjectId can't be negative!"
         }
-        var firstGid = 1L
-        for (tileSet in tileSets) {
-            for (tileId in 0..tileSet.tileCount - 1) {
-                gidToTileSet[tileId + firstGid] = tileSet
-                gidToTileId[tileId + firstGid] = tileId
-            }
-            firstGid += tileSet.tileCount
-        }
         require(tileSets.distinct().size == tileSets.size) {
             "Different tile sets can't have the same name!"
         }
         require(layers.distinct().size == layers.size) {
             "Different layers can't have the same name!"
+        }
+        val totalGidCount = tileSets.sumBy { it.tileCount }
+        gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)
+        gidToTileId = IntArray(totalGidCount)
+        var firstGid = 1
+        for (tileSet in tileSets) {
+            for (tileId in 0 until tileSet.tileCount) {
+                gidToTileSet[tileId + firstGid - 1] = tileSet
+                gidToTileId[tileId + firstGid - 1] = tileId
+            }
+            firstGid += tileSet.tileCount
         }
     }
 
@@ -117,17 +122,31 @@ class Map(
      * Returns the tile set which contains the given [gid].
      *
      * @param gid the searched global tile id
-     * @return the requested tile set, or `null` if the given [gid] isn't
-     * contained by any tile sets
+     * @return the requested tile set
+     * @throws IllegalArgumentException if the given [gid] is not contained by
+     * any tile set
      */
-    fun getTileSet(gid: Long): TileSet? = gidToTileSet[gid.and(0x1FFFFFFF)]
+    fun getTileSet(gid: Long): TileSet {
+        val normalizedGid = gid.clearFlags() - 1
+        require(normalizedGid in 0 until gidToTileSet.size) {
+            "Gid $normalizedGid is out of bounds!"
+        }
+        return gidToTileSet[normalizedGid] ?: error("Tile set can't be null!")
+    }
 
     /**
      * Returns the local tile id of the given [gid].
      *
      * @param gid the searched global tile id
-     * @return the requested local tile id, or `null` if the given [gid] isn't
-     * contained by any tile sets
+     * @return the requested local tile id
+     * @throws IllegalArgumentException if the given [gid] is not contained by
+     * any tile set
      */
-    fun getTileId(gid: Long): Int? = gidToTileId[gid.and(0x1FFFFFFF)]
+    fun getTileId(gid: Long): Int {
+        val normalizedGid = gid.clearFlags() - 1
+        require(normalizedGid in 0 until gidToTileId.size) {
+            "Gid $normalizedGid is out of bounds!"
+        }
+        return gidToTileId[normalizedGid]
+    }
 }

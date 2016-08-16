@@ -68,9 +68,11 @@ class EventQueue : EventBus {
         while (eventQueue.isNotEmpty()) {
             val event = eventQueue.remove()
             for ((subscriber, handlers) in subscribers) {
-                handlers.filter {
-                    it.parameterTypes[0].isInstance(event)
-                }.forEach { it.invoke(subscriber, event) }
+                for (handler in handlers) {
+                    if (handler.parameterTypes[0].isInstance(event)) {
+                        handler.invoke(subscriber, event)
+                    }
+                }
             }
         }
     }

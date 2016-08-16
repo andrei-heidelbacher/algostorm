@@ -24,7 +24,7 @@ package com.aheidelbacher.algostorm.engine.graphics2d
  */
 class Matrix private constructor(private val values: FloatArray) {
     companion object {
-        val IDENTITY: Matrix = Matrix(floatArrayOf(
+        fun identity(): Matrix = Matrix(floatArrayOf(
                 1F, 0F, 0F,
                 0F, 1F, 0F,
                 0F, 0F, 1F
@@ -81,30 +81,67 @@ class Matrix private constructor(private val values: FloatArray) {
     }
 
     fun postConcat(other: Matrix): Matrix {
-        val result = FloatArray(SIZE * SIZE) { 0F }
-        for (i in 0..SIZE - 1)
-            for (j in 0..SIZE - 1)
-                for (k in 0..SIZE - 1)
-                    result[i * SIZE + j] +=
-                            other.values[i * SIZE + k] * values[k * SIZE + j]
-        return Matrix(result)
+        for (j in 0 until SIZE) {
+            val a = values[j]
+            val b = values[SIZE + j]
+            val c = values[2 * SIZE + j]
+            for (i in 0 until SIZE) {
+                values[i * SIZE + j] = a * other.values[i * SIZE] +
+                        b * other.values[i * SIZE + 1] +
+                        c * other.values[i * SIZE + 2]
+            }
+        }
+        return this
     }
 
-    fun preConcat(other: Matrix): Matrix = other.postConcat(this)
+    //fun preConcat(other: Matrix): Matrix = other.postConcat(this)
 
-    fun postTranslate(dx: Float, dy: Float): Matrix =
-            postConcat(translate(dx, dy))
+    fun postTranslate(dx: Float, dy: Float): Matrix {
+        for (i in 0 until SIZE) {
+            values[i] += values[2 * SIZE + i] * dx
+            values[SIZE + i] += values[2 * SIZE + i] * dy
+        }
+        return this
+    }
 
-    fun preTranslate(dx: Float, dy: Float): Matrix =
-            translate(dx, dy).postConcat(this)
+    //fun preTranslate(dx: Float, dy: Float): Matrix =
+    //        translate(dx, dy).postConcat(this)
 
-    fun postScale(sx: Float, sy: Float): Matrix = postConcat(scale(sx, sy))
+    fun postScale(sx: Float, sy: Float): Matrix {
+        for (i in 0 until SIZE) {
+            values[i] *= sx
+            values[SIZE + i] *= sy
+        }
+        return this
+    }
 
-    fun preScale(sx: Float, sy: Float): Matrix = scale(sx, sy).postConcat(this)
+    //fun preScale(sx: Float, sy: Float): Matrix = scale(sx, sy).postConcat(this)
 
-    fun postRotate(degrees: Float): Matrix = postConcat(rotate(degrees))
+    fun postRotate(degrees: Float): Matrix {
+        val radians = degrees * Math.PI / 180.0
+        val cos = Math.cos(radians).toFloat()
+        val sin = Math.sin(radians).toFloat()
+        for (i in 0 until SIZE) {
+            val a = values[i]
+            val b = values[SIZE + i]
+            values[i] = cos * a + sin * b
+            values[SIZE + i] = -sin * a + cos * b
+        }
+        return this
+    }
 
-    fun preRotate(degrees: Float): Matrix = rotate(degrees).postConcat(this)
+    //fun preRotate(degrees: Float): Matrix = rotate(degrees).postConcat(this)
+
+    fun reset() {
+        for (i in 0 until SIZE * SIZE)
+            values[i] = 0F
+        for (i in 0 until SIZE)
+            values[i * SIZE + i] = 1F
+    }
+
+    operator fun get(index: Int): Float = values[index]
+
+    operator fun get(row: Int, column: Int): Float = values[row * SIZE + column]
 
     fun getValues(): FloatArray = values.copyOf()
 }

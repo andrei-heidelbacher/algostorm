@@ -73,7 +73,8 @@ class RenderingSystem(
         map.tileSets.forEach { canvas.loadBitmap(it.image) }
     }
 
-    private var currentTimeMillis: Long = 0L
+    private var currentTimeMillis: Long = 0
+    private val matrix = Matrix.identity()
 
     private fun drawGid(
             gid: Long,
@@ -84,8 +85,8 @@ class RenderingSystem(
             height: Int,
             rotation: Float
     ) {
-        val tileSet = map.getTileSet(gid) ?: error("Invalid gid $gid!")
-        val localTileId = map.getTileId(gid) ?: error("Invalid gid $gid!")
+        val tileSet = map.getTileSet(gid)
+        val localTileId = map.getTileId(gid)
         val animation = tileSet.tiles[localTileId]?.animation
         val tileId = if (animation == null) {
             localTileId
@@ -99,7 +100,8 @@ class RenderingSystem(
             }.first().tileId
         }
         val viewport = tileSet.getViewport(tileId)
-        val matrix = Matrix.scale(
+        matrix.reset()
+        matrix.postScale(
                 sx = width.toFloat() / viewport.width.toFloat(),
                 sy = height.toFloat() / viewport.height.toFloat()
         ).let {
@@ -124,17 +126,18 @@ class RenderingSystem(
         )
     }
 
-    private fun drawImageLayer(camera: Rectangle, imageLayer: Layer.ImageLayer) {
+    private fun drawImageLayer(camera: Rectangle, layer: Layer.ImageLayer) {
+        matrix.reset()
         canvas.drawBitmap(
                 viewport = Viewport(
-                        image = imageLayer.image,
-                        x = camera.x - imageLayer.offsetX,
-                        y = camera.y - imageLayer.offsetY,
+                        image = layer.image,
+                        x = camera.x - layer.offsetX,
+                        y = camera.y - layer.offsetY,
                         width = camera.width,
                         height = camera.height
                 ),
-                matrix = Matrix.IDENTITY,
-                opacity = imageLayer.opacity
+                matrix = matrix,
+                opacity = layer.opacity
         )
     }
 
@@ -178,7 +181,6 @@ class RenderingSystem(
                 val gid = layer.data[ty * map.width + tx]
                 if (gid != 0L) {
                     val tileSet = map.getTileSet(gid)
-                            ?: error("Invalid gid $gid!")
                     if (isVisible(
                             camera = camera,
                             gid = gid,

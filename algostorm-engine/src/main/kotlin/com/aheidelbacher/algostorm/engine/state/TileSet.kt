@@ -74,7 +74,7 @@ class TileSet(
      * @throws IllegalArgumentException if [animation] is not `null` and
      * contains less than two frames
      */
-    class Tile(val animation: List<Frame>? = null) {
+    data class Tile(val animation: List<Frame>? = null) {
         companion object {
             /**
              * Whether this global tile id is flipped horizontally.
@@ -108,6 +108,11 @@ class TileSet(
              * Flips this global tile id diagonally.
              */
             fun Long.flipDiagonally(): Long = xor(0x20000000)
+
+            /**
+             * Clears all flag bits.
+             */
+            fun Long.clearFlags(): Int = and(0x1FFFFFFF).toInt()
         }
 
         /**
@@ -191,7 +196,7 @@ class TileSet(
      * it is greater than or equal to [tileCount]
      */
     fun getViewport(tileId: Int): Viewport {
-        require(tileId in 0..tileCount - 1)
+        require(tileId in 0 until tileCount)
         val columns = (imageWidth - 2 * margin + spacing) /
                 (tileWidth + spacing)
         val row = tileId / columns
