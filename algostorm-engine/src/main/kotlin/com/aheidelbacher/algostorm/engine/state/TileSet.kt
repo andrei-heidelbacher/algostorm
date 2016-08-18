@@ -54,10 +54,8 @@ class TileSet(
         val tileCount: Int,
         val tileOffset: TileOffset = TileOffset(0, 0),
         val properties: Map<String, Any> = emptyMap(),
-        private val tileProperties: Array<Map<String, Any>> = Array(tileCount) {
-            emptyMap<String, Any>()
-        },
-        private val tiles: Array<Tile> = Array(tileCount) { Tile() }
+        private val tileProperties: Map<Int, Map<String, Any>> = emptyMap(),
+        private val tiles: Map<Int, Tile> = emptyMap()
 ) {
     /**
      * Indicates an offset which should be applied when rendering any tile from
@@ -169,6 +167,10 @@ class TileSet(
         }
     }
 
+    @Transient private val tilesArray = Array(tileCount) { tiles[it] ?: Tile() }
+    @Transient private val tilePropertiesArray = Array(tileCount) {
+        tileProperties[it] ?: emptyMap()
+    }
     @Transient private val viewports = Array(tileCount) {
         val columns = (imageWidth - 2 * margin + spacing) /
                 (tileWidth + spacing)
@@ -201,6 +203,16 @@ class TileSet(
     }
 
     /**
+     * Returns the [Tile] with the given tile id.
+     *
+     * @param tileId the id of the requested tile
+     * @return the requested tile data
+     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
+     * it is greater than or equal to [tileCount]
+     */
+    fun getTile(tileId: Int): Tile = tilesArray[tileId]
+
+    /**
      * Returns the properties associated to the given tile id.
      *
      * @param tileId the id of the requested tile
@@ -209,17 +221,7 @@ class TileSet(
      * it is greater than or equal to [tileCount]
      */
     fun getTileProperties(tileId: Int): Map<String, Any> =
-            tileProperties[tileId]
-
-    /**
-     * Returns the [Tile] with the given tile id.
-     *
-     * @param tileId the id of the requested tile
-     * @return the requested tile data
-     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
-     * it is greater than or equal to [tileCount]
-     */
-    fun getTile(tileId: Int): Tile = tiles[tileId]
+            tilePropertiesArray[tileId]
 
     /**
      * Returns a viewport corresponding to the given tile id, by applying the

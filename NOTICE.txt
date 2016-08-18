@@ -1,0 +1,9 @@
+Software written in this project was developed by Andrei Heidelbacher
+(andrei.heidelbacher@gmail.com) and is licensed under the Apache V2.0 license.
+
+This project uses third party software library jackson-module-kotlin, licensed
+under the Apache V2.0 license (http://www.apache.org/licenses/LICENSE-2.0).
+
+This project uses third party software library mozilla-rhino, licensed under the
+MPL 2.0 license (https://www.mozilla.org/en-US/MPL/2.0). Original source code
+for this library is available at https://github.com/mozilla/rhino.
