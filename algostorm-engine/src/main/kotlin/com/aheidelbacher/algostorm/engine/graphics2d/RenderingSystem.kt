@@ -29,7 +29,7 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import kotlin.comparisons.compareBy
+import java.util.Comparator
 
 /**
  * A system which handles the rendering of all objects in the game to the screen
@@ -45,11 +45,6 @@ class RenderingSystem(
         private val canvas: Canvas
 ) : Subscriber {
     private companion object {
-        fun Matrix.postRotate(degrees: Float, px: Float, py: Float): Matrix =
-                postTranslate(-px, -py)
-                        .postRotate(degrees)
-                        .postTranslate(px, py)
-
         fun isVisible(
                 camera: Rectangle,
                 gid: Long,
@@ -58,7 +53,7 @@ class RenderingSystem(
                 width: Int,
                 height: Int,
                 rotation: Float
-        ) : Boolean = gid != 0L && camera.intersects(x, y, width, height)
+        ): Boolean = gid != 0L && camera.intersects(x, y, width, height)
 
         fun isVisible(camera: Rectangle, obj: Object): Boolean =
                 obj.visible && obj.gid != 0L && camera.intersects(
@@ -69,12 +64,39 @@ class RenderingSystem(
                 )
     }
 
+    private val xRange = when (map.renderOrder) {
+        RenderOrder.RIGHT_DOWN, RenderOrder.RIGHT_UP -> 0 until map.width
+        RenderOrder.LEFT_DOWN, RenderOrder.LEFT_UP -> map.width - 1 downTo 0
+    }
+    private val yRange = when (map.renderOrder) {
+        RenderOrder.RIGHT_DOWN, RenderOrder.LEFT_DOWN -> 0 until map.height
+        RenderOrder.RIGHT_UP, RenderOrder.LEFT_UP -> map.height - 1 downTo 0
+    }
+    private val comparator: Comparator<Object> = when (map.renderOrder) {
+        RenderOrder.RIGHT_DOWN -> Comparator<Object> { o1, o2 ->
+            if (o1.y != o2.y) o1.y - o2.y
+            else o1.x - o2.x
+        }
+        RenderOrder.RIGHT_UP -> Comparator<Object> { o1, o2 ->
+            if (o1.y != o2.y) o2.y - o1.y
+            else o1.x - o2.x
+        }
+        RenderOrder.LEFT_DOWN -> Comparator<Object> { o1, o2 ->
+            if (o1.y != o2.y) o1.y - o2.y
+            else o2.x - o1.x
+        }
+        RenderOrder.LEFT_UP -> Comparator<Object> { o1, o2 ->
+            if (o1.y != o2.y) o2.y - o1.y
+            else o2.x - o1.x
+        }
+    }
+    private val matrix = Matrix.identity()
+
     init {
         map.tileSets.forEach { canvas.loadBitmap(it.image) }
     }
 
     private var currentTimeMillis: Long = 0
-    private val matrix = Matrix.identity()
 
     private fun drawGid(
             gid: Long,
@@ -87,7 +109,7 @@ class RenderingSystem(
     ) {
         val tileSet = map.getTileSet(gid)
         val localTileId = map.getTileId(gid)
-        val animation = tileSet.tiles[localTileId]?.animation
+        val animation = tileSet.getTile(localTileId).animation
         val tileId = if (animation == null) {
             localTileId
         } else {
@@ -142,12 +164,6 @@ class RenderingSystem(
     }
 
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        val comparator = when (map.renderOrder) {
-            RenderOrder.RIGHT_DOWN -> compareBy<Object>({ it.y }, { it.x })
-            RenderOrder.RIGHT_UP -> compareBy<Object>({ -it.y }, { it.x })
-            RenderOrder.LEFT_DOWN -> compareBy<Object>({ it.y }, { -it.x })
-            RenderOrder.LEFT_UP -> compareBy<Object>({ -it.y }, { -it.x })
-        }
         layer.objects.filter {
             isVisible(camera, it)
         }.sortedWith(comparator).forEach {
@@ -164,16 +180,6 @@ class RenderingSystem(
     }
 
     private fun drawTileLayer(camera: Rectangle, layer: Layer.TileLayer) {
-        val (yRange, xRange) = when (map.renderOrder) {
-            RenderOrder.RIGHT_DOWN ->
-                Pair(0 until map.height, 0 until map.width)
-            RenderOrder.RIGHT_UP ->
-                Pair(map.height - 1 downTo 0, 0 until map.width)
-            RenderOrder.LEFT_DOWN ->
-                Pair(0 until map.height, map.width - 1 downTo 0)
-            RenderOrder.LEFT_UP ->
-                Pair(map.height - 1 downTo 0, map.width - 1 downTo 0)
-        }
         for (ty in yRange) {
             for (tx in xRange) {
                 val x = tx * map.tileWidth

@@ -54,8 +54,10 @@ class TileSet(
         val tileCount: Int,
         val tileOffset: TileOffset = TileOffset(0, 0),
         val properties: Map<String, Any> = emptyMap(),
-        val tileProperties: Map<Int, Map<String, Any>> = emptyMap(),
-        val tiles: Map<Int, Tile> = emptyMap()
+        private val tileProperties: Array<Map<String, Any>> = Array(tileCount) {
+            emptyMap<String, Any>()
+        },
+        private val tiles: Array<Tile> = Array(tileCount) { Tile() }
 ) {
     /**
      * Indicates an offset which should be applied when rendering any tile from
@@ -167,6 +169,18 @@ class TileSet(
         }
     }
 
+    @Transient private val viewports = Array(tileCount) {
+        val columns = (imageWidth - 2 * margin + spacing) /
+                (tileWidth + spacing)
+        Viewport(
+                image = image,
+                x = margin + (it % columns) * (tileWidth + spacing),
+                y = margin + (it / columns) * (tileHeight + spacing),
+                width = tileWidth,
+                height = tileHeight
+        )
+    }
+
     init {
         require(tileWidth > 0 && tileHeight > 0) {
             "$name tile sizes ($tileWidth, $tileHeight) must be positive!"
@@ -187,28 +201,36 @@ class TileSet(
     }
 
     /**
+     * Returns the properties associated to the given tile id.
+     *
+     * @param tileId the id of the requested tile
+     * @return the properties of the requested tile
+     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
+     * it is greater than or equal to [tileCount]
+     */
+    fun getTileProperties(tileId: Int): Map<String, Any> =
+            tileProperties[tileId]
+
+    /**
+     * Returns the [Tile] with the given tile id.
+     *
+     * @param tileId the id of the requested tile
+     * @return the requested tile data
+     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
+     * it is greater than or equal to [tileCount]
+     */
+    fun getTile(tileId: Int): Tile = tiles[tileId]
+
+    /**
      * Returns a viewport corresponding to the given tile id, by applying the
      * appropriate margin and spacing offsets.
      *
      * @param tileId the id of the requested tile
      * @return the viewport associated to the requested tile
-     * @throws IllegalArgumentException if the given [tileId] is negative or if
+     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
      * it is greater than or equal to [tileCount]
      */
-    fun getViewport(tileId: Int): Viewport {
-        require(tileId in 0 until tileCount)
-        val columns = (imageWidth - 2 * margin + spacing) /
-                (tileWidth + spacing)
-        val row = tileId / columns
-        val column = tileId % columns
-        return Viewport(
-                image = image,
-                x = margin + column * (tileWidth + spacing),
-                y = margin + row * (tileHeight + spacing),
-                width = tileWidth,
-                height = tileHeight
-        )
-    }
+    fun getViewport(tileId: Int): Viewport = viewports[tileId]
 
     override fun equals(other: Any?): Boolean =
             other is TileSet && name == other.name

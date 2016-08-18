@@ -123,30 +123,19 @@ class Map(
      *
      * @param gid the searched global tile id
      * @return the requested tile set
-     * @throws IllegalArgumentException if the given [gid] is not contained by
-     * any tile set
+     * @throws IndexOutOfBoundsException if the given [gid] is not positive or
+     * is greater than the total number of tiles contained in the map tile sets
      */
-    fun getTileSet(gid: Long): TileSet {
-        val normalizedGid = gid.clearFlags() - 1
-        require(normalizedGid in 0 until gidToTileSet.size) {
-            "Gid $normalizedGid is out of bounds!"
-        }
-        return gidToTileSet[normalizedGid] ?: error("Tile set can't be null!")
-    }
+    fun getTileSet(gid: Long): TileSet = gidToTileSet[gid.clearFlags() - 1]
+            ?: error("Tile set can't be null!")
 
     /**
      * Returns the local tile id of the given [gid].
      *
      * @param gid the searched global tile id
      * @return the requested local tile id
-     * @throws IllegalArgumentException if the given [gid] is not contained by
-     * any tile set
+     * @throws IndexOutOfBoundsException if the given [gid] is not positive or
+     * is greater than the total number of tiles contained in the map tile sets
      */
-    fun getTileId(gid: Long): Int {
-        val normalizedGid = gid.clearFlags() - 1
-        require(normalizedGid in 0 until gidToTileId.size) {
-            "Gid $normalizedGid is out of bounds!"
-        }
-        return gidToTileId[normalizedGid]
-    }
+    fun getTileId(gid: Long): Int = gidToTileId[gid.clearFlags() - 1]
 }

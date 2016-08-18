@@ -130,6 +130,9 @@ class Matrix private constructor(private val values: FloatArray) {
         return this
     }
 
+    fun postRotate(degrees: Float, px: Float, py: Float): Matrix =
+            postTranslate(-px, -py).postRotate(degrees).postTranslate(px, py)
+
     //fun preRotate(degrees: Float): Matrix = rotate(degrees).postConcat(this)
 
     fun reset() {
