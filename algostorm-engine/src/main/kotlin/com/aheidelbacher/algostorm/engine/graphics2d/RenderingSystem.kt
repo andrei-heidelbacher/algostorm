@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Map.RenderOrder
 import com.aheidelbacher.algostorm.engine.state.Object
@@ -44,7 +45,7 @@ class RenderingSystem(
         private val map: Map,
         private val canvas: Canvas
 ) : Subscriber {
-    private companion object {
+    companion object {
         fun isVisible(
                 camera: Rectangle,
                 gid: Long,
@@ -72,23 +73,9 @@ class RenderingSystem(
         RenderOrder.RIGHT_DOWN, RenderOrder.LEFT_DOWN -> 0 until map.height
         RenderOrder.RIGHT_UP, RenderOrder.LEFT_UP -> map.height - 1 downTo 0
     }
-    private val comparator: Comparator<Object> = when (map.renderOrder) {
-        RenderOrder.RIGHT_DOWN -> Comparator<Object> { o1, o2 ->
-            if (o1.y != o2.y) o1.y - o2.y
-            else o1.x - o2.x
-        }
-        RenderOrder.RIGHT_UP -> Comparator<Object> { o1, o2 ->
-            if (o1.y != o2.y) o2.y - o1.y
-            else o1.x - o2.x
-        }
-        RenderOrder.LEFT_DOWN -> Comparator<Object> { o1, o2 ->
-            if (o1.y != o2.y) o1.y - o2.y
-            else o2.x - o1.x
-        }
-        RenderOrder.LEFT_UP -> Comparator<Object> { o1, o2 ->
-            if (o1.y != o2.y) o2.y - o1.y
-            else o2.x - o1.x
-        }
+    private val comparator = Comparator<Object> { o1, o2 ->
+        if (o1.y != o2.y) o1.y - o2.y
+        else o1.id - o2.id
     }
     private val matrix = Matrix.identity()
 
@@ -166,7 +153,12 @@ class RenderingSystem(
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
         layer.objects.filter {
             isVisible(camera, it)
-        }.sortedWith(comparator).forEach {
+        }.let {
+            when (layer.drawOrder) {
+                DrawOrder.TOP_DOWN -> it.sortedWith(comparator)
+                DrawOrder.INDEX -> it
+            }
+        }.forEach {
             drawGid(
                     gid = it.gid,
                     opacity = layer.opacity,

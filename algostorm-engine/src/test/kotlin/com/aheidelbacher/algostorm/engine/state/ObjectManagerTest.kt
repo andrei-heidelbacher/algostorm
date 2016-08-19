@@ -49,7 +49,7 @@ class ObjectManagerTest {
                     name = OBJECT_GROUP_NAME,
                     objects = (FIRST_ID until FIRST_ID + OBJECT_COUNT / 2).map {
                         makeObject(it)
-                    }.toHashSet()
+                    }.let { linkedSetOf(*it.toTypedArray()) }
             )),
             nextObjectId = FIRST_ID + OBJECT_COUNT / 2
     )

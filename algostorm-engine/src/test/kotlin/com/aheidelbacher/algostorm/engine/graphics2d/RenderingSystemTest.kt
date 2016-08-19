@@ -56,6 +56,7 @@ class RenderingSystemTest {
                     name = "test",
                     tileWidth = 24,
                     tileHeight = 24,
+                    columns = 1,
                     tileCount = 1,
                     imageWidth = 24,
                     imageHeight = 24,
@@ -65,7 +66,7 @@ class RenderingSystemTest {
             )),
             layers = listOf(Layer.ObjectGroup(
                     name = "objects",
-                    objects = hashSetOf(Object(
+                    objects = linkedSetOf(Object(
                             id = 1,
                             x = 32,
                             y = 48,

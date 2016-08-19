@@ -32,15 +32,16 @@ import kotlin.collections.Map
  * @property imageHeight the height of the image in pixels
  * @property margin the margin in pixels
  * @property spacing the spacing between adjacent tiles in pixels
+ * @property columns the number of tiles per row
  * @property tileCount the number of tiles present in this tile set
  * @property tileOffset the rendering offset which should be applied
  * @property properties the properties of this tile set
  * @property tileProperties properties of individual tiles
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
- * [imageHeight] or [tileCount] are not positive or if [margin] or [spacing]
- * are negative or if the specified offsets and sizes don't match the image
- * sizes
+ * [imageHeight], [columns] or [tileCount] are not positive or if [margin] or
+ * [spacing] are negative or if the specified offsets, tile sizes and tile count
+ * exceed the image dimensions
  */
 class TileSet(
         val name: String,
@@ -51,6 +52,7 @@ class TileSet(
         val imageHeight: Int,
         val margin: Int,
         val spacing: Int,
+        val columns: Int,
         val tileCount: Int,
         val tileOffset: TileOffset = TileOffset(0, 0),
         val properties: Map<String, Any> = emptyMap(),
@@ -172,8 +174,6 @@ class TileSet(
         tileProperties[it] ?: emptyMap()
     }
     @Transient private val viewports = Array(tileCount) {
-        val columns = (imageWidth - 2 * margin + spacing) /
-                (tileWidth + spacing)
         Viewport(
                 image = image,
                 x = margin + (it % columns) * (tileWidth + spacing),
@@ -192,13 +192,19 @@ class TileSet(
         }
         require(margin >= 0) { "$name margin $margin can't be negative!" }
         require(spacing >= 0) { "$name spacing $spacing can't be negative!" }
+        require(columns > 0) { "$name columns $columns isn't positive!" }
         require(tileCount > 0) { "$name tile count $tileCount isn't positive!" }
-        val widthOffset =
-                (imageWidth - 2 * margin + spacing) % (tileWidth + spacing)
-        val heightOffset =
-                (imageHeight - 2 * margin + spacing) % (tileHeight + spacing)
-        require(widthOffset == 0 && heightOffset == 0) {
-            "$name image sizes don't match margin, spacing and tile sizes!"
+        require(tileCount % columns == 0) {
+            "$name tile count $tileCount must be divisible by columns $columns!"
+        }
+        val rows = tileCount / columns
+        val reqWidth = 2 * margin - spacing + columns * (tileWidth + spacing)
+        val reqHeight = 2 * margin - spacing + rows * (tileHeight + spacing)
+        require(reqWidth <= imageWidth) {
+            "$name image width $imageWidth must be at least $reqWidth!"
+        }
+        require(reqHeight <= imageHeight) {
+            "$name image height $imageHeight must be at least $reqHeight!"
         }
     }
 

@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
+import com.fasterxml.jackson.annotation.JsonProperty
+
+import java.util.LinkedHashSet
 
 /**
  * An abstract layer in the game world.
@@ -110,14 +113,22 @@ sealed class Layer {
      * A layer which contains a set of [objects].
      *
      * @property objects the set of objects contained by this layer
+     * @property drawOrder indicates the order in which the objects should be
+     * drawn
      */
     class ObjectGroup(
             override val name: String,
-            val objects: MutableSet<Object>,
+            val objects: LinkedHashSet<Object>,
+            val drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
             override var visible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
             override val offsetY: Int = 0,
             override val properties: MutableMap<String, Any> = hashMapOf()
-    ) : Layer()
+    ) : Layer() {
+        enum class DrawOrder {
+            @JsonProperty("topdown") TOP_DOWN,
+            @JsonProperty("index") INDEX
+        }
+    }
 }
