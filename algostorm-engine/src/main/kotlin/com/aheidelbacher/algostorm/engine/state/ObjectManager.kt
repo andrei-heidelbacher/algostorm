@@ -89,7 +89,7 @@ class ObjectManager(private val map: Map, name: String) {
             rotation: Float = 0F,
             visible: Boolean = true,
             properties: MutableMap<String, Any> = hashMapOf()
-    ) : Object = with(Object(
+    ) : Object = Object(
             id = map.getNextObjectId(),
             x = x,
             y = y,
@@ -99,10 +99,9 @@ class ObjectManager(private val map: Map, name: String) {
             rotation = rotation,
             visible = visible,
             properties = properties
-    )) {
+    ).apply {
         objectGroup.objects.add(this)
         objectMap[id] = this
-        this
     }
 
     /**
