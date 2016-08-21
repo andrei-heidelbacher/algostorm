@@ -24,9 +24,11 @@ import java.io.FileNotFoundException
 /**
  * A system which handles playing and stopping sounds.
  *
- * @property soundEngine the
- * Methods on this object will be called from the private engine thread. All
- * method calls should be non-blocking and thread-safe.
+ * @property soundEngine the sound engine used to play sounds. Methods on this
+ * object will be called from the private engine thread and a thread-safe
+ * implementation should be provided.
+ * @param soundPaths the locations of the sounds which are loaded at
+ * construction time using the [SoundEngine.loadSound] method
  * @throws FileNotFoundException if any of the given sounds doesn't exist
  */
 class SoundSystem @Throws(FileNotFoundException::class) constructor(

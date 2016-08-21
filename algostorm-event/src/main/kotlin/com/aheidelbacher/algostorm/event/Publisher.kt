@@ -19,14 +19,15 @@ package com.aheidelbacher.algostorm.event
 /**
  * Provides functionality to post events and notify subscribers.
  *
- * It should preserve the order of submitted events (if an event A is posted
- * before an event B, then subscribers will be notified for A before they are
- * notified for B).
+ * It should preserve the order of posted events (if an event A is posted before
+ * an event B, then subscribers will be notified for A before they are notified
+ * for B).
  */
 interface Publisher {
     /**
      * Posts the given [event] and notifies all subscribers which subscribed at
-     * this publisher for this `event` type.
+     * this publisher for this `event` type. This should be an asynchronous
+     * method and return before the event was handled by its subscribers.
      *
      * @param T the type of the event
      * @param event the event that should be posted
@@ -50,4 +51,14 @@ interface Publisher {
     fun post(vararg events: Event) {
         events.forEach { post(it) }
     }
+
+    /**
+     * Immediately publishes the given event and blocks until it was handled by
+     * all subscribers. This is a synchronous method and may not respect the
+     * order of other posted events.
+     *
+     * @param T the type of the event
+     * @param event the event which should be published
+     */
+    fun <T : Event> publish(event: T): Unit
 }

@@ -18,6 +18,9 @@ package com.aheidelbacher.algostorm.engine.sound
 
 import java.io.FileNotFoundException
 
+/**
+ * An object that can play multiple sounds at once.
+ */
 interface SoundEngine {
     /**
      * The maximum number of sounds which can be played at the same time. Must

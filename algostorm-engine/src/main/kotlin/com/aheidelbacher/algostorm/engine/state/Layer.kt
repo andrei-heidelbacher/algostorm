@@ -126,6 +126,9 @@ sealed class Layer {
             override val offsetY: Int = 0,
             override val properties: MutableMap<String, Any> = hashMapOf()
     ) : Layer() {
+        /**
+         * The order in which objects are rendered.
+         */
         enum class DrawOrder {
             @JsonProperty("topdown") TOP_DOWN,
             @JsonProperty("index") INDEX

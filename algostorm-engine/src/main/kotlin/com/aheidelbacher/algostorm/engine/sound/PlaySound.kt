@@ -21,7 +21,7 @@ import com.aheidelbacher.algostorm.event.Event
 /**
  * An event that requests a sound to be played.
  *
- * @property sound the location of the sound which should be played
+ * @property sound the sound which should be played
  * @property loop whether the sound should be looped or not
  * @property onResult the callback which receives the returned stream id
  */

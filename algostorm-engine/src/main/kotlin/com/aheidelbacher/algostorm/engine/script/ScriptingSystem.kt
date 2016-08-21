@@ -26,8 +26,8 @@ import java.io.FileNotFoundException
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scriptPaths the locations of the scripts which are loaded and executed at
- * construction time using the [ScriptEngine.eval] method
+ * @param scriptPaths the locations of the scripts which are loaded and executed
+ * at construction time using the [ScriptEngine.eval] method
  * @throws FileNotFoundException if any of the given scripts doesn't exist
  */
 class ScriptingSystem @Throws(FileNotFoundException::class) constructor(

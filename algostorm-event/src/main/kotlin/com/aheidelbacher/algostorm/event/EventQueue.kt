@@ -66,16 +66,19 @@ class EventQueue : EventBus {
         eventQueue.add(event)
     }
 
-    override fun publishPosts() {
-        while (eventQueue.isNotEmpty()) {
-            val event = eventQueue.remove()
-            for ((subscriber, handlers) in subscribers) {
-                for ((handler, parameterType) in handlers) {
-                    if (parameterType.isInstance(event)) {
-                        handler.invoke(subscriber, event)
-                    }
+    override fun <T : Event> publish(event: T) {
+        for ((subscriber, handlers) in subscribers) {
+            for ((handler, parameterType) in handlers) {
+                if (parameterType.isInstance(event)) {
+                    handler.invoke(subscriber, event)
                 }
             }
+        }
+    }
+
+    override fun publishPosts() {
+        while (eventQueue.isNotEmpty()) {
+            publish(eventQueue.remove())
         }
     }
 }
