@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine
 
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
@@ -59,8 +60,8 @@ abstract class Engine {
         }
 
         /**
-         * Returns the resource file URI with the given name using the [Engine]
-         * class [Class.getResource] method.
+         * Returns the absolute path to the resource file with the given name
+         * using the [Engine] class [Class.getResource] method.
          *
          * @param name the name of the requested resource
          * @throws FileNotFoundException if the given resource doesn't exist
@@ -69,7 +70,7 @@ abstract class Engine {
         @JvmStatic fun getResourcePath(name: String): String {
             val url = Engine::class.java.getResource(name)
                     ?: throw FileNotFoundException("Resource $name not found!")
-            return url.toURI().toString()
+            return File(url.toURI()).absolutePath
         }
     }
 
