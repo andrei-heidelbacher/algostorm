@@ -22,7 +22,7 @@ import org.junit.Test
 class ScriptingSystemTest {
     val system = ScriptingSystem(
             JavascriptEngine(),
-            listOf(JavascriptEngineTest.SCRIPT.byteInputStream())
+            listOf(JavascriptEngineTest.SCRIPT)
     )
 
     @Test

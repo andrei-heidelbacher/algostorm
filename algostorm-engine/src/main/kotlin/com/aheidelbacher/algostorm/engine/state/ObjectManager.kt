@@ -62,18 +62,20 @@ class ObjectManager(private val map: Map, name: String) {
      * Creates an object with the specified parameters, adds it to this object
      * group and returns it.
      *
-     * @property x the x-axis coordinate of the top-left corner of this object
-     * in pixels
-     * @property y the y-axis coordinate of the top-left corner of this object
-     * in pixels
-     * @property width the width of this object in pixels
-     * @property height the height of this object in pixels
-     * @property gid the global id of the object tile. A value of `0` indicates
-     * the empty tile (nothing to draw)
-     * @property rotation the rotation of this object around the top-left corner
-     * in clock-wise degrees
-     * @property visible whether this object should be rendered or not
-     * @property properties the properties of this object
+     * @param name the name of this object
+     * @param type the type of this object
+     * @param x the x-axis coordinate of the top-left corner of this object in
+     * pixels
+     * @param y the y-axis coordinate of the top-left corner of this object in
+     * pixels
+     * @param width the width of this object in pixels
+     * @param height the height of this object in pixels
+     * @param gid the global id of the object tile. A value of `0` indicates the
+     * empty tile (nothing to draw)
+     * @param rotation the rotation of this object around the top-left corner in
+     * clock-wise degrees
+     * @param visible whether this object should be rendered or not
+     * @param properties the properties of this object
      * @return the created object
      * @throws IllegalStateException if there are too many objects in this
      * object group
@@ -81,6 +83,8 @@ class ObjectManager(private val map: Map, name: String) {
      * [height] are not positive
      */
     fun create(
+            name: String = "",
+            type: String = "",
             x: Int,
             y: Int,
             width: Int,
@@ -91,6 +95,8 @@ class ObjectManager(private val map: Map, name: String) {
             properties: MutableMap<String, Any> = hashMapOf()
     ) : Object = Object(
             id = map.getNextObjectId(),
+            name = name,
+            type = type,
             x = x,
             y = y,
             width = width,

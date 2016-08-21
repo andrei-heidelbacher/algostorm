@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * only if they have the same [id].
  *
  * @property id the unique identifier of this object
+ * @property name the name of this object
+ * @property type the type of this object
  * @property x the x-axis coordinate of the bottom-left corner of this object in
  * pixels
  * @property y the y-axis coordinate of the bottom-left corner of this object in
@@ -39,6 +41,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 class Object(
         val id: Int,
+        val name: String = "",
+        val type: String = "",
         var x: Int,
         var y: Int,
         val width: Int,

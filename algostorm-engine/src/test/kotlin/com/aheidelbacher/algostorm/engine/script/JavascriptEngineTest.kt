@@ -21,24 +21,17 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 
+import java.io.File
+
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
 class JavascriptEngineTest {
     companion object {
         const val FUNCTION_NAME: String = "getResult"
-        val SCRIPT: String = """
-            function getResult(id, value) {
-                var Result = Packages.com.aheidelbacher.algostorm.engine.script.Result;
-                return new Result(id, value);
-            };
-        """.trim()
-        val VOID_SCRIPT: String = """
-            function getResult(id, value) {
-                var Result = Packages.com.aheidelbacher.algostorm.engine.script.Result;
-                var res = new Result(id, value);
-            };
-        """.trim()
+        val SCRIPT: String = File("src/test/resources/testScript.js").toString()
+        val VOID_SCRIPT: String =
+                File("src/test/resources/testVoidScript.js").toString()
     }
 
     private val engine = JavascriptEngine()
@@ -51,12 +44,12 @@ class JavascriptEngineTest {
 
     @Test
     fun testLoadScript() {
-        engine.eval(SCRIPT.byteInputStream())
+        engine.eval(SCRIPT)
     }
 
     @Test
     fun testGetResult() {
-        engine.eval(SCRIPT.byteInputStream())
+        engine.eval(SCRIPT)
         val id = 5
         val value = "five"
         val result = engine.invokeFunction<Result>(FUNCTION_NAME, id, value)
@@ -66,7 +59,7 @@ class JavascriptEngineTest {
 
     @Test
     fun testGetUntypedResult() {
-        engine.eval(SCRIPT.byteInputStream())
+        engine.eval(SCRIPT)
         val id = 5
         val value = "five"
         val result = invokeFunction(FUNCTION_NAME, Result::class, id, value)
@@ -81,7 +74,7 @@ class JavascriptEngineTest {
             engine.invokeFunction<Any>(FUNCTION_NAME, id, value)
         }
 
-        engine.eval(SCRIPT.byteInputStream())
+        engine.eval(SCRIPT)
         invokeScript()
         kotlin.repeat(5) {
             thread { invokeScript() }.join()
@@ -91,7 +84,7 @@ class JavascriptEngineTest {
 
     @Test
     fun testVoidFunctionReturnsUndefined() {
-        engine.eval(VOID_SCRIPT.byteInputStream())
+        engine.eval(VOID_SCRIPT)
         val id = 5
         val value = "five"
         val result = engine.invokeFunction<Any>(FUNCTION_NAME, id, value)

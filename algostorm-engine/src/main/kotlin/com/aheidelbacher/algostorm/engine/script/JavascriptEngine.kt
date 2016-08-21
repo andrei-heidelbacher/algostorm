@@ -20,7 +20,9 @@ import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
 
-import java.io.InputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 
 import kotlin.reflect.KClass
@@ -41,9 +43,12 @@ class JavascriptEngine : ScriptEngine {
 
     private val scope = executeWithContext { initStandardObjects() }
 
-    override fun eval(script: InputStream) {
-        executeWithContext {
-            evaluateReader(scope, InputStreamReader(script), "script", 1, null)
+    @Throws(FileNotFoundException::class)
+    override fun eval(scriptPath: String) {
+        InputStreamReader(FileInputStream(File(scriptPath))).use { reader ->
+            executeWithContext {
+                evaluateReader(scope, reader, "script", 1, null)
+            }
         }
     }
 

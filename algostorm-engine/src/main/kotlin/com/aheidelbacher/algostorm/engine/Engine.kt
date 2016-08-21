@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import java.io.InputStream
+import java.io.FileNotFoundException
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -44,16 +44,18 @@ abstract class Engine {
         const val NAME: String = "ALGOSTORM_ENGINE"
 
         /**
-         * Returns the resource with the given name using the [Engine] class
-         * [Class.getResourceAsStream] method.
+         * Returns the resource file URI with the given name using the [Engine]
+         * class [Class.getResource] method.
          *
          * @param name the name of the requested resource
-         * @throws IllegalArgumentException if the given resource doesn't exist
+         * @throws FileNotFoundException if the given resource doesn't exist
          */
-        @JvmStatic fun getResource(name: String): InputStream =
-                requireNotNull(Engine::class.java.getResourceAsStream(name)) {
-                    "Resource $name doesn't exist!"
-                }
+        @Throws(FileNotFoundException::class)
+        @JvmStatic fun getResourcePath(name: String): String {
+            val url = Engine::class.java.getResource(name)
+                    ?: throw FileNotFoundException("Resource $name not found!")
+            return url.toURI().toString()
+        }
     }
 
     /**

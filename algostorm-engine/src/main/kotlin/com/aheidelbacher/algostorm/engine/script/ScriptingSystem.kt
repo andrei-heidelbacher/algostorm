@@ -20,21 +20,22 @@ import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFu
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.InputStream
+import java.io.FileNotFoundException
 
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scripts the scripts which are loaded and executed at construction time
- * using the [ScriptEngine.eval] method
+ * @param scriptPaths the locations of the scripts which are loaded and executed at
+ * construction time using the [ScriptEngine.eval] method
+ * @throws FileNotFoundException if any of the given scripts doesn't exist
  */
-class ScriptingSystem(
+class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
         private val scriptEngine: ScriptEngine,
-        scripts: List<InputStream>
+        scriptPaths: List<String>
 ) : Subscriber {
     init {
-        scripts.forEach { scriptEngine.eval(it) }
+        scriptPaths.forEach { scriptEngine.eval(it) }
     }
 
     /**

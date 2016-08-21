@@ -40,7 +40,7 @@ class RenderingSystemTest {
                 opacity: Float
         ) {}
 
-        override fun loadBitmap(image: String) {}
+        override fun loadBitmap(imagePath: String) {}
 
         override fun lock() {}
 

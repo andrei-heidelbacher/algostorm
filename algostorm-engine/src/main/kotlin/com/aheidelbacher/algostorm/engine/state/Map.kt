@@ -97,7 +97,7 @@ class Map(
         gidToTileId = IntArray(totalGidCount)
         var firstGid = 1
         for (tileSet in tileSets) {
-            for (tileId in 0 until tileSet.tileCount) {
+            for (tileId in 0..tileSet.tileCount - 1) {
                 gidToTileSet[tileId + firstGid - 1] = tileSet
                 gidToTileId[tileId + firstGid - 1] = tileId
             }

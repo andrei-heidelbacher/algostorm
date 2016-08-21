@@ -16,8 +16,41 @@
 
 package com.aheidelbacher.algostorm.engine.sound
 
+import java.io.FileNotFoundException
+
 interface SoundEngine {
+    /**
+     * The maximum number of sounds which can be played at the same time. Must
+     * not be negative.
+     */
     val maxStreams: Int
 
-    fun play(sound: String, loop: Boolean = false): Unit
+    /**
+     * Loads the sound at the specified location, making it available to future
+     * calls of [play].
+     *
+     * @param soundPath the location of the sound which should be loaded
+     * @throws FileNotFoundException if the given sound doesn't exist
+     */
+    @Throws(FileNotFoundException::class)
+    fun loadSound(soundPath: String): Unit
+
+    /**
+     * Plays the given sound and returns the stream id on which the sound is
+     * played.
+     *
+     * @param sound the location of the sound which should be played
+     * @param loop whether the sound should be looped or not
+     * @return the id of the stream on which the sound is played, or `-1` if the
+     * sound could not be played
+     * @throws IllegalArgumentException if the [sound] was not loaded
+     */
+    fun play(sound: String, loop: Boolean = false): Int
+
+    /**
+     * Stops the stream with the given id.
+     *
+     * @param streamId the id of the stream which should stop playing sounds
+     */
+    fun stop(streamId: Int): Unit
 }

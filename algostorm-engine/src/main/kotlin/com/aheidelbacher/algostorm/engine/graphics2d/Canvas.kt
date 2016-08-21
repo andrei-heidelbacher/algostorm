@@ -18,6 +18,8 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
 
+import java.io.FileNotFoundException
+
 /**
  * A canvas that allows `draw` calls.
  *
@@ -30,10 +32,11 @@ interface Canvas {
     /**
      * Loads the image at the given location.
      *
-     * @param image the location of the image
-     * @throws IllegalArgumentException if the given image doesn't exist
+     * @param imagePath the location of the image
+     * @throws FileNotFoundException if the given image doesn't exist
      */
-    fun loadBitmap(image: String): Unit
+    @Throws(FileNotFoundException::class)
+    fun loadBitmap(imagePath: String): Unit
 
     /**
      * The width of this canvas in pixels.

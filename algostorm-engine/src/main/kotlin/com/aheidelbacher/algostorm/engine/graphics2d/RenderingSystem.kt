@@ -30,6 +30,7 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
+import java.io.FileNotFoundException
 import java.util.Comparator
 
 /**
@@ -40,8 +41,9 @@ import java.util.Comparator
  *
  * @property map the map which should be rendered
  * @property canvas the canvas to which the system draws
+ * @throws FileNotFoundException if any of the map tile set images doesn't exist
  */
-class RenderingSystem(
+class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         private val map: Map,
         private val canvas: Canvas
 ) : Subscriber {
@@ -57,7 +59,7 @@ class RenderingSystem(
         ): Boolean = gid != 0L && camera.intersects(x, y, width, height)
 
         fun isVisible(camera: Rectangle, obj: Object): Boolean =
-                obj.visible && obj.gid != 0L && camera.intersects(
+                obj.visible && camera.intersects(
                         x = obj.x,
                         y = obj.y,
                         width = obj.width,

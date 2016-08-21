@@ -19,9 +19,9 @@ package com.aheidelbacher.algostorm.engine.sound
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * An event which signals that the sound played on the given [frequency] should
+ * An event which signals that the sound played on the given [streamId] should
  * be stopped.
  *
- * @property frequency the frequency of the sound that should be stopped
+ * @property streamId the id of the stream which should be stopped
  */
-data class StopSound(val frequency: Int) : Event
+data class StopStream(val streamId: Int) : Event

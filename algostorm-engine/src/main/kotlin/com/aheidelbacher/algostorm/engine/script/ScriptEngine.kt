@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
-import java.io.InputStream
+import java.io.FileNotFoundException
 
 import kotlin.reflect.KClass
 
@@ -47,12 +47,15 @@ interface ScriptEngine {
     }
 
     /**
-     * Executes the given [script]. Every variable and function declaration in
-     * this script should be available to future [invokeFunction] calls.
+     * Executes the script at the given path. Every variable and function
+     * declaration in this script should be available to future [invokeFunction]
+     * calls.
      *
-     * @param script the content of the script
+     * @param scriptPath the path where the script is found
+     * @throws FileNotFoundException if the given script doesn't exist
      */
-    fun eval(script: InputStream): Unit
+    @Throws(FileNotFoundException::class)
+    fun eval(scriptPath: String): Unit
 
     /**
      * Executes the script function with the given [functionName] with the

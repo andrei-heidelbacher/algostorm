@@ -81,11 +81,11 @@ class Matrix private constructor(private val values: FloatArray) {
     }
 
     fun postConcat(other: Matrix): Matrix {
-        for (j in 0 until SIZE) {
+        for (j in 0..SIZE - 1) {
             val a = values[j]
             val b = values[SIZE + j]
             val c = values[2 * SIZE + j]
-            for (i in 0 until SIZE) {
+            for (i in 0..SIZE - 1) {
                 values[i * SIZE + j] = a * other.values[i * SIZE] +
                         b * other.values[i * SIZE + 1] +
                         c * other.values[i * SIZE + 2]
@@ -97,7 +97,7 @@ class Matrix private constructor(private val values: FloatArray) {
     //fun preConcat(other: Matrix): Matrix = other.postConcat(this)
 
     fun postTranslate(dx: Float, dy: Float): Matrix {
-        for (i in 0 until SIZE) {
+        for (i in 0..SIZE - 1) {
             values[i] += values[2 * SIZE + i] * dx
             values[SIZE + i] += values[2 * SIZE + i] * dy
         }
@@ -108,7 +108,7 @@ class Matrix private constructor(private val values: FloatArray) {
     //        translate(dx, dy).postConcat(this)
 
     fun postScale(sx: Float, sy: Float): Matrix {
-        for (i in 0 until SIZE) {
+        for (i in 0..SIZE - 1) {
             values[i] *= sx
             values[SIZE + i] *= sy
         }
@@ -121,7 +121,7 @@ class Matrix private constructor(private val values: FloatArray) {
         val radians = degrees * Math.PI / 180.0
         val cos = Math.cos(radians).toFloat()
         val sin = Math.sin(radians).toFloat()
-        for (i in 0 until SIZE) {
+        for (i in 0..SIZE - 1) {
             val a = values[i]
             val b = values[SIZE + i]
             values[i] = cos * a + sin * b
@@ -136,10 +136,12 @@ class Matrix private constructor(private val values: FloatArray) {
     //fun preRotate(degrees: Float): Matrix = rotate(degrees).postConcat(this)
 
     fun reset() {
-        for (i in 0 until SIZE * SIZE)
+        for (i in 0..SIZE * SIZE - 1) {
             values[i] = 0F
-        for (i in 0 until SIZE)
+        }
+        for (i in 0..SIZE - 1) {
             values[i * SIZE + i] = 1F
+        }
     }
 
     operator fun get(index: Int): Float = values[index]

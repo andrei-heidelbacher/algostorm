@@ -19,14 +19,14 @@ package com.aheidelbacher.algostorm.engine.sound
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * An event that requests a sound to be played on the given [frequency].
+ * An event that requests a sound to be played.
  *
- * @property soundUri the location of the sound which should be played
- * @property frequency the frequency on which the sound should be played
+ * @property sound the location of the sound which should be played
  * @property loop whether the sound should be looped or not
+ * @property onResult the callback which receives the returned stream id
  */
 data class PlaySound(
-        val soundUri: String,
-        val frequency: Int,
-        val loop: Boolean = false
+        val sound: String,
+        val loop: Boolean = false,
+        val onResult: ((Int) -> Unit)? = null
 ) : Event
