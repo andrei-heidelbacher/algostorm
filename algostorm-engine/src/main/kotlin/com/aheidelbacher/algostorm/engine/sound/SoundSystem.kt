@@ -46,7 +46,8 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun onPlaySound(event: PlaySound) {
-        event.onResult?.invoke(soundEngine.play(event.sound, event.loop))
+        val streamId = soundEngine.play(event.sound, event.loop)
+        event.onResult?.invoke(streamId)
     }
 
     /**
