@@ -20,17 +20,20 @@ import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
 
-import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.io.InputStreamReader
 
 import kotlin.reflect.KClass
 
 /**
  * An interpreter of Javascript files using Mozilla Rhino.
+ *
+ * @property loader the object used to load scripts into input streams
  */
-class JavascriptEngine : ScriptEngine {
+class JavascriptEngine(
+        private val loader: (String) -> InputStream
+) : ScriptEngine {
     private companion object {
         inline fun <T> executeWithContext(block: Context.() -> T): T = try {
             ContextFactory.getGlobal().enterContext().apply {
@@ -45,7 +48,8 @@ class JavascriptEngine : ScriptEngine {
 
     @Throws(FileNotFoundException::class)
     override fun eval(scriptPath: String) {
-        InputStreamReader(FileInputStream(File(scriptPath))).use { reader ->
+        loader(scriptPath)
+        InputStreamReader(loader(scriptPath)).use { reader ->
             executeWithContext {
                 evaluateReader(scope, reader, "script", 1, null)
             }

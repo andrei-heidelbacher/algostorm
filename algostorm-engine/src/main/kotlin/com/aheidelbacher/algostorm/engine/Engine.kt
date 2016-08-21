@@ -58,20 +58,6 @@ abstract class Engine {
             return Engine::class.java.getResourceAsStream(name)
                     ?: throw FileNotFoundException("Resource $name not found!")
         }
-
-        /**
-         * Returns the absolute path to the resource file with the given name
-         * using the [Engine] class [Class.getResource] method.
-         *
-         * @param name the name of the requested resource
-         * @throws FileNotFoundException if the given resource doesn't exist
-         */
-        @Throws(FileNotFoundException::class)
-        @JvmStatic fun getResourcePath(name: String): String {
-            val url = Engine::class.java.getResource(name)
-                    ?: throw FileNotFoundException("Resource $name not found!")
-            return File(url.toURI()).absolutePath
-        }
     }
 
     /**
