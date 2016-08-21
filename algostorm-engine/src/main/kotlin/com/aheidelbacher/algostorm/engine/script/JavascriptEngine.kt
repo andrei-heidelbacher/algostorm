@@ -46,14 +46,10 @@ class JavascriptEngine : ScriptEngine {
     @Throws(FileNotFoundException::class)
     override fun eval(scriptPath: String) {
         InputStreamReader(FileInputStream(File(scriptPath))).use { reader ->
-            println("Evaluating script at $scriptPath: ${reader.readLines()}")
-        }
-        InputStreamReader(FileInputStream(File(scriptPath))).use { reader ->
             executeWithContext {
                 evaluateReader(scope, reader, "script", 1, null)
             }
         }
-        println("Script evaluated!")
     }
 
     override fun <T : Any> invokeFunction(
