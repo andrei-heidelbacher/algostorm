@@ -34,6 +34,9 @@ class PublisherMock : Publisher {
         queue.add(event)
     }
 
+    override fun <T : Event> publish(event: T) {
+    }
+
     /**
      * Pops the event in the front of the queue and checks if it is equal to the
      * given [event].
