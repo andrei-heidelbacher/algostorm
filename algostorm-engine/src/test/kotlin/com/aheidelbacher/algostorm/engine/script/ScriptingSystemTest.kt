@@ -19,9 +19,12 @@ package com.aheidelbacher.algostorm.engine.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import java.io.File
+import java.io.FileInputStream
+
 class ScriptingSystemTest {
     val system = ScriptingSystem(
-            JavascriptEngine(),
+            JavascriptEngine { FileInputStream(File(it)) },
             listOf(JavascriptEngineTest.SCRIPT)
     )
 

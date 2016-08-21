@@ -22,6 +22,7 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 
 import java.io.File
+import java.io.FileInputStream
 
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
@@ -34,7 +35,7 @@ class JavascriptEngineTest {
                 File("src/test/resources/testVoidScript.js").toString()
     }
 
-    private val engine = JavascriptEngine()
+    private val engine = JavascriptEngine { FileInputStream(File(it)) }
 
     private fun invokeFunction(
             functionName: String,
