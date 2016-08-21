@@ -23,7 +23,7 @@ interface Camera {
         const val CAMERA_X: String = "cameraX"
         const val CAMERA_Y: String = "cameraY"
 
-        fun Map.getCamera(width: Int, height: Int): Camera = object : Camera {
+        fun Map.getCamera(): Camera = object : Camera {
             override var x: Int
                 get() = properties[CAMERA_X] as Int?
                         ?: error("Map is missing $CAMERA_X property!")
@@ -37,20 +37,10 @@ interface Camera {
                 set(value) {
                     properties[CAMERA_Y] = value
                 }
-
-            override val width: Int
-                get() = width
-
-            override val height: Int
-                get() = height
         }
     }
 
     var x: Int
 
     var y: Int
-
-    val width: Int
-
-    val height: Int
 }
