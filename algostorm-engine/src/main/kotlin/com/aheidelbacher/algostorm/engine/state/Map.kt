@@ -59,12 +59,11 @@ class Map(
      * The orientation of the map.
      */
     enum class Orientation {
-        @JsonProperty("orthogonal") ORTHOGONAL,
-        @JsonProperty("isometric") ISOMETRIC
+        @JsonProperty("orthogonal") ORTHOGONAL
     }
 
     /**
-     * The rendering order of tiles and objects.
+     * The rendering order of tiles.
      */
     enum class RenderOrder {
         @JsonProperty("right-down") RIGHT_DOWN,
@@ -97,7 +96,7 @@ class Map(
         gidToTileId = IntArray(totalGidCount)
         var firstGid = 1
         for (tileSet in tileSets) {
-            for (tileId in 0..tileSet.tileCount - 1) {
+            for (tileId in 0 until tileSet.tileCount) {
                 gidToTileSet[tileId + firstGid - 1] = tileSet
                 gidToTileId[tileId + firstGid - 1] = tileId
             }
