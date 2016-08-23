@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics2d
+package com.aheidelbacher.algostorm.engine.log
 
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * An event which requests the rendering of the entire game state to the screen.
- *
- * @property cameraX the x-axis coordinate of the center of the camera in pixels
- * @property cameraY the y-axis coordinate of the center of the camera in pixels
+ * A logger which writes all events to [System.out].
  */
-data class Render(val cameraX: Int, val cameraY: Int) : Event
+class SystemConsoleLogger : Logger {
+    override fun log(event: Event) {
+        println(event)
+    }
+}

@@ -27,6 +27,7 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlipped
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
+import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -54,8 +55,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 x: Int,
                 y: Int,
                 width: Int,
-                height: Int,
-                rotation: Float
+                height: Int
         ): Boolean = gid != 0L && camera.intersects(x, y, width, height)
 
         fun isVisible(camera: Rectangle, obj: Object): Boolean =
@@ -65,7 +65,38 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                         width = obj.width,
                         height = obj.height
                 )
+
+        fun Map.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
+            val tileSet = getTileSet(gid)
+            val localTileId = getTileId(gid)
+            val animation = tileSet.getTile(localTileId).animation
+            val tileId = if (animation == null) {
+                localTileId
+            } else {
+                var elapsedTimeMillis = currentTimeMillis % animation.sumBy {
+                    it.duration
+                }
+                var i = 0
+                do {
+                    elapsedTimeMillis -= animation[i].duration
+                    ++i
+                } while (elapsedTimeMillis >= 0)
+                animation[i - 1].tileId
+            }
+            return tileSet.getViewport(tileId)
+        }
     }
+
+    /**
+     * An event which requests the rendering of the entire game state to the
+     * screen.
+     *
+     * @property cameraX the x-axis coordinate of the center of the camera in
+     * pixels
+     * @property cameraY the y-axis coordinate of the center of the camera in
+     * pixels
+     */
+    data class Render(val cameraX: Int, val cameraY: Int) : Event
 
     private val xRange = when (map.renderOrder) {
         RenderOrder.RIGHT_DOWN, RenderOrder.RIGHT_UP -> 0 until map.width
@@ -85,7 +116,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         map.tileSets.forEach { canvas.loadBitmap(it.image) }
     }
 
-    private var currentTimeMillis: Long = 0
+    private var currentTimeMillis = 0L
 
     private fun drawGid(
             gid: Long,
@@ -97,20 +128,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             rotation: Float
     ) {
         val tileSet = map.getTileSet(gid)
-        val localTileId = map.getTileId(gid)
-        val animation = tileSet.getTile(localTileId).animation
-        val tileId = if (animation == null) {
-            localTileId
-        } else {
-            var elapsedTimeMillis = currentTimeMillis % animation.sumBy {
-                it.duration
-            }
-            animation.dropWhile {
-                elapsedTimeMillis -= it.duration
-                elapsedTimeMillis >= 0
-            }.first().tileId
-        }
-        val viewport = tileSet.getViewport(tileId)
+        val viewport = map.getViewport(gid, currentTimeMillis)
         matrix.reset()
         matrix.postScale(
                 sx = width.toFloat() / viewport.width.toFloat(),
@@ -153,9 +171,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        layer.objects.filter {
-            isVisible(camera, it)
-        }.let {
+        layer.objects.filter { isVisible(camera, it) }.let {
             when (layer.drawOrder) {
                 DrawOrder.TOP_DOWN -> it.sortedWith(comparator)
                 DrawOrder.INDEX -> it
@@ -187,8 +203,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                             x = x + layer.offsetX,
                             y = y + layer.offsetY,
                             width = tileSet.tileWidth,
-                            height = tileSet.tileHeight,
-                            rotation = 0F
+                            height = tileSet.tileHeight
                     )) {
                         drawGid(
                                 gid = gid,

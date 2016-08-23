@@ -16,15 +16,29 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
+import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 class CameraSystem(
         private val camera: Camera,
         private val objectManager: ObjectManager,
+        private val publisher: Publisher,
         private var followedObjectId: Int? = null
 ) : Subscriber {
+    data class FocusOn(val x: Int, val y: Int) : Event
+
+    data class Follow(val objectId: Int) : Event
+
+    data class Scroll(val dx: Int, val dy: Int) : Event
+
+    object Unfollow : Event
+
+    object UpdateCamera : Event
+
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
             objectManager[id]?.let { obj ->
@@ -52,5 +66,9 @@ class CameraSystem(
 
     @Subscribe fun onUnfollow(event: Unfollow) {
         followedObjectId = null
+    }
+
+    @Subscribe fun onUpdate(event: Update) {
+        publisher.post(UpdateCamera)
     }
 }

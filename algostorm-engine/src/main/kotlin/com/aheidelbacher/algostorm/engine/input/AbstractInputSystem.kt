@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.input
 
+import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -30,6 +31,11 @@ import com.aheidelbacher.algostorm.event.Subscriber
 abstract class AbstractInputSystem<in T : Any>(
         private val inputReader: InputReader<T>
 ) : Subscriber {
+    /**
+     * An event which signals that user input should be processed.
+     */
+    object HandleInput : Event
+
     /**
      * Handles the most recent input from the [inputReader].
      *

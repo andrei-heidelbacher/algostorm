@@ -17,25 +17,75 @@
 package com.aheidelbacher.algostorm.engine.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
+import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import java.io.FileNotFoundException
 
+import kotlin.reflect.KClass
+
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scriptPaths the locations of the scripts which are loaded and executed
- * at construction time using the [ScriptEngine.eval] method
+ * @param scripts the locations of the scripts which are loaded and executed at
+ * construction time using the [ScriptEngine.eval] method
  * @throws FileNotFoundException if any of the given scripts doesn't exist
  */
 class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
         private val scriptEngine: ScriptEngine,
-        scriptPaths: List<String>
+        scripts: List<String>
 ) : Subscriber {
+    /**
+     * An event which requests the execution of a script.
+     *
+     * @property functionName the name of script function that should be
+     * executed
+     * @property args the arguments of the script function
+     */
+    data class RunScript(
+            val functionName: String,
+            val args: List<*>
+    ) : Event {
+        constructor(functionName: String, vararg args: Any?) : this(
+                functionName = functionName,
+                args = args.asList()
+        )
+    }
+
+    /**
+     * An event which requests the execution of a script, attaching a callback
+     * to the result.
+     *
+     * @property functionName the name of script function that should be
+     * executed
+     * @property returnType the expected type of the result
+     * @property args the arguments of the script function
+     * @property onResult the callback which will be called with the script
+     * result
+     */
+    data class RunScriptWithResult(
+            val functionName: String,
+            val returnType: KClass<*>,
+            val args: List<*>,
+            val onResult: (Any?) -> Unit
+    ) : Event {
+        constructor(
+                functionName: String,
+                returnType: KClass<*>,
+                vararg args: Any?,
+                onResult: (Any?) -> Unit
+        ) : this(
+                functionName = functionName,
+                returnType = returnType,
+                args = args.asList(),
+                onResult = onResult
+        )
+    }
+
     init {
-        scriptPaths.forEach { scriptEngine.eval(it) }
+        scripts.forEach { scriptEngine.eval(it) }
     }
 
     /**

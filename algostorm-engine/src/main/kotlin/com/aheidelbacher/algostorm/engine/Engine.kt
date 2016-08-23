@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream

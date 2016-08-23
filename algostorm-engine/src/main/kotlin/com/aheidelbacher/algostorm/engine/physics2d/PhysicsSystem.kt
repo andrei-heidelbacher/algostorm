@@ -17,9 +17,9 @@
 package com.aheidelbacher.algostorm.engine.physics2d
 
 import com.aheidelbacher.algostorm.engine.geometry2d.intersects
-import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -38,6 +38,20 @@ class PhysicsSystem(
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
+        /**
+         * The name of the rigid property. It is of type [Boolean].
+         *
+         * A rigid object will block movement and trigger collisions.
+         */
+        const val IS_RIGID: String = "isRigid"
+
+        /**
+         * Returns `true` if this object contains the rigid property and it is set
+         * to `true`, `false` otherwise.
+         */
+        val Object.isRigid: Boolean
+            get() = properties[IS_RIGID] as? Boolean ?: false
+
         /**
          * Transforms this object with the given amounts.
          *
@@ -102,9 +116,25 @@ class PhysicsSystem(
     }
 
     /**
+     * An event which signals a transformation that should be applied on the
+     * given object.
+     *
+     * @property objectId the id of the object which should be transformed
+     * @property dx the translation amount on the x-axis in pixels
+     * @property dy the translation amount on the y-axis in pixels
+     * @property rotate the rotation amount in radians
+     */
+    data class TransformIntent(
+            val objectId: Int,
+            val dx: Int,
+            val dy: Int,
+            val rotate: Float
+    ) : Event
+
+    /**
      * Upon receiving a [TransformIntent] event, the the object is transformed
-     * by the indicated amount. If the moved object is [Rigid] and there are any
-     * other `Rigid` objects with their boxes overlapping the destination
+     * by the indicated amount. If the moved object is rigid and there are any
+     * other rigid objects with their boxes overlapping the destination
      * location, the object is restored to it's initial location and a
      * [Collision] event is triggered with every overlapping object, having this
      * object as the source and each other object as the target.

@@ -47,9 +47,9 @@ class JavascriptEngine(
     private val scope = executeWithContext { initStandardObjects() }
 
     @Throws(FileNotFoundException::class)
-    override fun eval(scriptPath: String) {
-        loader(scriptPath)
-        InputStreamReader(loader(scriptPath)).use { reader ->
+    override fun eval(script: String) {
+        loader(script)
+        InputStreamReader(loader(script)).use { reader ->
             executeWithContext {
                 evaluateReader(scope, reader, "script", 1, null)
             }

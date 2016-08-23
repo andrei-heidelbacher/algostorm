@@ -51,11 +51,11 @@ interface ScriptEngine {
      * declaration in this script should be available to future [invokeFunction]
      * calls.
      *
-     * @param scriptPath the path where the script is found
+     * @param script the path where the script is found
      * @throws FileNotFoundException if the given script doesn't exist
      */
     @Throws(FileNotFoundException::class)
-    fun eval(scriptPath: String): Unit
+    fun eval(script: String): Unit
 
     /**
      * Executes the script function with the given [functionName] with the

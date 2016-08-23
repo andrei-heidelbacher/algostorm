@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
@@ -40,7 +41,7 @@ class RenderingSystemTest {
                 opacity: Float
         ) {}
 
-        override fun loadBitmap(imagePath: String) {}
+        override fun loadBitmap(image: String) {}
 
         override fun lock() {}
 
