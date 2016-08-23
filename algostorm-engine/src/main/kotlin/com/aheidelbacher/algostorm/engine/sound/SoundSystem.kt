@@ -34,6 +34,7 @@ import java.io.FileNotFoundException
  */
 class SoundSystem @Throws(FileNotFoundException::class) constructor(
         private val soundEngine: SoundEngine,
+        musicSounds: List<String>,
         sounds: List<String>
 ) : Subscriber {
     /**
@@ -73,6 +74,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
     data class StopStream(val streamId: Int) : Event
 
     init {
+        musicSounds.forEach { soundEngine.loadMusic(it) }
         sounds.forEach { soundEngine.loadSound(it) }
     }
 

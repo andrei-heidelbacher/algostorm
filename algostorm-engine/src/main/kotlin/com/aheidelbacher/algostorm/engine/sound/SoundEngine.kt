@@ -24,10 +24,22 @@ import java.io.FileNotFoundException
 interface SoundEngine {
     /**
      * Loads the sound at the specified location, making it available to future
-     * calls of [playSound] and [playMusic].
+     * calls of [playMusic].
+     *
+     * @param musicSound the location of the sound which should be loaded
+     * @throws FileNotFoundException if the given sound doesn't exist
+     * @throws IllegalStateException if this sound engine was released
+     */
+    @Throws(FileNotFoundException::class)
+    fun loadMusic(musicSound: String): Unit
+
+    /**
+     * Loads the sound at the specified location, making it available to future
+     * calls of [playSound].
      *
      * @param sound the location of the sound which should be loaded
      * @throws FileNotFoundException if the given sound doesn't exist
+     * @throws IllegalStateException if this sound engine was released
      */
     @Throws(FileNotFoundException::class)
     fun loadSound(sound: String): Unit
@@ -42,12 +54,15 @@ interface SoundEngine {
      * @return the id of the stream on which the sound is played, or `-1` if the
      * sound could not be played
      * @throws IllegalArgumentException if the [sound] was not loaded
+     * @throws IllegalStateException if this sound engine was released
      */
     fun playMusic(sound: String, loop: Boolean = false): Unit
 
     /**
      * Stops the stream dedicated to longer sounds. This will stop any sounds
      * played with [playMusic].
+     *
+     * @throws IllegalStateException if this sound engine was released
      */
     fun stopMusic(): Unit
 
@@ -60,6 +75,7 @@ interface SoundEngine {
      * @return the id of the stream on which the sound is played, or `-1` if the
      * sound could not be played
      * @throws IllegalArgumentException if the [sound] was not loaded
+     * @throws IllegalStateException if this sound engine was released
      */
     fun playSound(sound: String, loop: Boolean = false): Int
 
@@ -67,6 +83,14 @@ interface SoundEngine {
      * Stops the stream with the given id.
      *
      * @param streamId the id of the stream which should stop playing sounds
+     * @throws IllegalStateException if this sound engine was released
      */
     fun stopStream(streamId: Int): Unit
+
+    /**
+     * Release all resources associated with this sound engine.
+     *
+     * @throws IllegalStateException if this sound engine was already released
+     */
+    fun release(): Unit
 }

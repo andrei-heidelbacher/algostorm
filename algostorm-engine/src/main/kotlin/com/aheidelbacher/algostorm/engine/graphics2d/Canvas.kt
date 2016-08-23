@@ -39,6 +39,12 @@ interface Canvas {
     fun loadBitmap(image: String): Unit
 
     /**
+     * Releases all loaded bitmap resources, making them unavailable to future
+     * [drawBitmap] calls, unless explicitly loaded again.
+     */
+    fun unloadBitmaps(): Unit
+
+    /**
      * The width of this canvas in pixels.
      *
      * @throws IllegalStateException if the canvas is not locked
