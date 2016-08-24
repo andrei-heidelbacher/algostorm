@@ -20,6 +20,11 @@ package com.aheidelbacher.algostorm.engine.state
  * A manager which offers easy creation, deletion and retrieval of objects from
  * a specified [Layer.ObjectGroup] of a given [Map].
  *
+ * At most one `ObjectManager` should be associated to an `ObjectGroup`. If an
+ * `ObjectManager` is associated to an `ObjectGroup`, the objects should be
+ * referenced only through the `ObjectManager`, otherwise the `ObjectManager`
+ * state might be corrupted.
+ *
  * @property map the associated map
  * @param name the name of the associated [Layer.ObjectGroup]
  * @throws IllegalArgumentException if the given `map` doesn't contain an
