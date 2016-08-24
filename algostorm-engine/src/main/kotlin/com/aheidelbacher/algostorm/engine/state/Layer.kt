@@ -24,8 +24,6 @@ import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 import com.fasterxml.jackson.annotation.JsonProperty
 
-import java.util.LinkedHashSet
-
 /**
  * An abstract layer in the game world.
  */
@@ -118,7 +116,7 @@ sealed class Layer {
      */
     class ObjectGroup(
             override val name: String,
-            val objects: LinkedHashSet<Object>,
+            val objects: MutableList<Object>,
             val drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
             override var visible: Boolean = true,
             override var opacity: Float = 1F,

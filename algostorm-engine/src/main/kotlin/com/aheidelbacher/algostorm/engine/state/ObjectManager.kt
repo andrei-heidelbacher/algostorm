@@ -38,7 +38,7 @@ class ObjectManager(private val map: Map, name: String) {
     /**
      * A lazy view of all the objects in the associated object group.
      */
-    val objects: Set<Object>
+    val objects: List<Object>
         get() = objectGroup.objects
 
     /**

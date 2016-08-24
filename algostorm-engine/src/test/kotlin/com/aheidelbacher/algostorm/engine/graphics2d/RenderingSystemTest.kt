@@ -43,6 +43,8 @@ class RenderingSystemTest {
 
         override fun loadBitmap(image: String) {}
 
+        override fun unloadBitmaps() {}
+
         override fun lock() {}
 
         override fun unlockAndPost() {}
@@ -67,7 +69,7 @@ class RenderingSystemTest {
             )),
             layers = listOf(Layer.ObjectGroup(
                     name = "objects",
-                    objects = linkedSetOf(Object(
+                    objects = mutableListOf(Object(
                             id = 1,
                             x = 32,
                             y = 48,
