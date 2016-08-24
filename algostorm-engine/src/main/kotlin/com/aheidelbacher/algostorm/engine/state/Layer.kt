@@ -112,12 +112,17 @@ sealed class Layer {
      *
      * @property objects the set of objects contained by this layer
      * @property drawOrder indicates the order in which the objects should be
-     * drawn
+     * rendered
+     * @property color the color with which objects that have their `gid` set to
+     * `0` will be filled
+     * @throws IllegalArgumentException if [color] is not in the format
+     * "#RRGGBB" (base 16, case insensitive)
      */
     class ObjectGroup(
             override val name: String,
             val objects: MutableList<Object>,
             val drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
+            val color: String? = null,
             override var visible: Boolean = true,
             override var opacity: Float = 1F,
             override val offsetX: Int = 0,
@@ -130,6 +135,17 @@ sealed class Layer {
         enum class DrawOrder {
             @JsonProperty("topdown") TOP_DOWN,
             @JsonProperty("index") INDEX
+        }
+
+        init {
+            if (color != null) {
+                require(color.length == 7 && color[0] == '#') {
+                    "Invalid color $color!"
+                }
+                require(color.drop(1).all { Character.digit(it, 16) != -1 }) {
+                    "Color $color contains invalid characters!"
+                }
+            }
         }
     }
 }

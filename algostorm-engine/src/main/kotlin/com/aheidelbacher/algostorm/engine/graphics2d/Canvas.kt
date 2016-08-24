@@ -76,14 +76,63 @@ interface Canvas {
      * Draws the viewport projected on the indicated bitmap to the canvas using
      * the specified [matrix].
      *
-     * @param viewport the viewport which should be rendered
+     * @param image the location of the bitmap
+     * @param x the x-axis coordinate in pixels of the top-left corner of the
+     * bitmap viewport which should be rendered
+     * @param y the y-axis coordinate in pixels of the top-left corner of the
+     * bitmap viewport which should be rendered
+     * @param width the width in pixels of the bitmap viewport which should be
+     * rendered
+     * @param height the height in pixels of the bitmap viewport which should be
+     * rendered
      * @param matrix the matrix that should be applied to the viewport when
      * rendering. Initially, the viewport rectangle is considered to have the
      * top-left corner overlap with the top-left corner of the canvas.
      * @param opacity the opacity of the image. Should be between `0` and `1`.
      * @throws IllegalStateException if the canvas is not locked
+     * @throws IllegalArgumentException if [opacity] is not in the range `0..1`
      */
-    fun drawBitmap(viewport: Viewport, matrix: Matrix, opacity: Float): Unit
+    fun drawBitmap(
+            image: String,
+            x: Int,
+            y: Int,
+            width: Int,
+            height: Int,
+            matrix: Matrix,
+            opacity: Float
+    ): Unit
+
+    /**
+     * Draws the viewport projected on the indicated bitmap to the canvas using
+     * the specified [matrix].
+     *
+     * @param color the color with which the rectangle should be filled in
+     * ARGB8888 format
+     * @param width the width in pixels of the rectangle which should be
+     * rendered
+     * @param height the height in pixels of the rectangle which should be
+     * rendered
+     * @param matrix the matrix that should be applied to the rectangle when
+     * rendering. Initially, the rectangle is considered to have the top-left
+     * corner overlap with the top-left corner of the canvas.
+     * @param opacity the opacity of the image. Should be between `0` and `1`.
+     * @throws IllegalStateException if the canvas is not locked
+     * @throws IllegalArgumentException if [opacity] is not in the range `0..1`
+     */
+    fun drawRectangle(
+            color: Int,
+            width: Int,
+            height: Int,
+            matrix: Matrix,
+            opacity: Float
+    )
+
+    /**
+     * Fills the entire canvas with the given color.
+     *
+     * @param color the color which should fill the canvas in ARGB8888 format
+     */
+    fun drawColor(color: Int) : Unit
 
     /**
      * Unlocks this canvas and posts all the changes made since the canvas was

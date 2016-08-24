@@ -115,7 +115,13 @@ class Matrix private constructor(private val values: FloatArray) {
         return this
     }
 
-    //fun preScale(sx: Float, sy: Float): Matrix = scale(sx, sy).postConcat(this)
+    fun preScale(sx: Float, sy: Float): Matrix {
+        for (i in 0..SIZE - 1) {
+            values[i * SIZE] *= sx
+            values[i * SIZE + 1] *= sy
+        }
+        return this
+    }
 
     fun postRotate(degrees: Float): Matrix {
         val radians = degrees * Math.PI / 180.0

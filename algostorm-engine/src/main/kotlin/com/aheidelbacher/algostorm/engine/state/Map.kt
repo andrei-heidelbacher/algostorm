@@ -35,12 +35,14 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlag
  * @property tileSets the tile sets used for rendering
  * @property layers the layers of the game
  * @property properties the properties of this map
+ * @property backgroundColor the color of the map background in the format
+ * "#AARRGGBB" (base 16, case insensitive)
  * @property version the version of this map
  * @property nextObjectId the next available id for an object
  * @throws IllegalArgumentException if [nextObjectId] is negative or if there
  * are multiple tile sets with the same name or multiple layers with the same
  * name or if [width] or [height] or [tileWidth] or [tileHeight] are not
- * positive
+ * positive or if [backgroundColor] is an invalid color
  */
 class Map(
         val width: Int,
@@ -52,6 +54,7 @@ class Map(
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
         val properties: MutableMap<String, Any> = hashMapOf(),
+        val backgroundColor: String? = null,
         val version: Float = 1F,
         private var nextObjectId: Int
 ) {
@@ -90,6 +93,17 @@ class Map(
         }
         require(layers.distinct().size == layers.size) {
             "Different layers can't have the same name!"
+        }
+        if (backgroundColor != null) {
+            require(backgroundColor.length == 9 && backgroundColor[0] == '#') {
+                "Invalid background color $backgroundColor!"
+            }
+            val containsInvalidCharacters = backgroundColor.drop(1).any {
+                Character.digit(it, 16) == -1
+            }
+            require(!containsInvalidCharacters) {
+                "Background color $backgroundColor contains invalid characters!"
+            }
         }
         val totalGidCount = tileSets.sumBy { it.tileCount }
         gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)

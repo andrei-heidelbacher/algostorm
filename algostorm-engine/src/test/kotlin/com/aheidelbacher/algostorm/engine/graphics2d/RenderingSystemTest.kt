@@ -36,10 +36,24 @@ class RenderingSystemTest {
         override fun clear() {}
 
         override fun drawBitmap(
-                viewport: TileSet.Viewport,
+                image: String,
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int,
                 matrix: Matrix,
                 opacity: Float
         ) {}
+
+        override fun drawRectangle(
+                color: Int,
+                width: Int,
+                height: Int,
+                matrix: Matrix,
+                opacity: Float
+        ) {}
+
+        override fun drawColor(color: Int) {}
 
         override fun loadBitmap(image: String) {}
 
