@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * pixels
  * @property y the y-axis coordinate of the bottom-left corner of this object in
  * pixels
- * @property width the width of this object in pixels
- * @property height the height of this object in pixels
- * @param gid the initial value of the [gid] property
+ * @property width the initial width of this object in pixels
+ * @property height the initial height of this object in pixels
+ * @param gid the initial value of the `gid` property
  * @property rotation the clock-wise rotation of this object around the
  * bottom-left corner in degrees
  * @property visible whether this object should be rendered or not
@@ -45,30 +45,67 @@ class Object(
         val type: String = "",
         var x: Int,
         var y: Int,
-        val width: Int,
-        val height: Int,
+        @JsonProperty("width") width: Int,
+        @JsonProperty("height") height: Int,
         @JsonProperty("gid") gid: Long = 0L,
         var rotation: Float = 0F,
         var visible: Boolean = true,
         val properties: MutableMap<String, Any> = hashMapOf()
 ) {
-    init {
-        require(id >= 0) { "Object id $id can't be negative!" }
-        require(gid >= 0L) { "Object $id gid $gid can't be negative!" }
-        require(width > 0 && height > 0) {
-            "Object $id sizes ($width, $height) must be positive!"
+    private companion object {
+        fun validateWidth(id: Int, width: Int) {
+            require(width > 0) { "Object $id width $width must be positive!" }
+        }
+
+        fun validateHeight(id: Int, height: Int) {
+            require(height > 0) {
+                "Object $id height $height must be positive!"
+            }
+        }
+
+        fun validateGid(id: Int, gid: Long) {
+            require(gid >= 0L) { "Object $id gid $gid can't be negative!" }
         }
     }
+
+    init {
+        require(id >= 0) { "Object id $id can't be negative!" }
+        validateWidth(id, width)
+        validateHeight(id, height)
+        validateGid(id, gid)
+    }
+
+    /**
+     * The width of this object in pixels.
+     *
+     * @throws IllegalArgumentException if the set value is not positive
+     */
+    var width: Int = width
+        set(value) {
+            validateWidth(id, value)
+            field = value
+        }
+
+    /**
+     * The height of this object in pixels. Must be positive.
+     *
+     * @throws IllegalArgumentException if the set value is not positive
+     */
+    var height: Int = height
+        set(value) {
+            validateHeight(id, value)
+            field = value
+        }
 
     /**
      * The global id of the object tile. A value of `0` indicates the empty tile
      * (nothing to draw).
      *
-     * @throws IllegalArgumentException if the value is negative
+     * @throws IllegalArgumentException if the set value is negative
      */
     var gid: Long = gid
         set(value) {
-            require(value >= 0L) { "Object $id gid $value can't be negative!" }
+            validateGid(id, value)
             field = value
         }
 
