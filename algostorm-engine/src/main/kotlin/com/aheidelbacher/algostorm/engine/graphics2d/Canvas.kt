@@ -131,6 +131,7 @@ interface Canvas {
      * Fills the entire canvas with the given color.
      *
      * @param color the color which should fill the canvas in ARGB8888 format
+     * @throws IllegalStateException if the canvas is not locked
      */
     fun drawColor(color: Int) : Unit
 
