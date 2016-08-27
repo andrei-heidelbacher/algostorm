@@ -48,22 +48,6 @@ object Color {
     /**
      * Converts the given html color code to ARGB8888.
      *
-     * @param htmlColorCode the requested color in "#RRGGBB" format (base 16,
-     * case insensitive)
-     * @return the requested color in ARGB8888 format
-     * @throws IllegalArgumentException if the given [htmlColorCode] doesn't
-     * conform to the "#RRGGBB" format
-     */
-    @JvmStatic fun fromHtmlRGB888(htmlColorCode: String): Int {
-        require(htmlColorCode.length == 7 && htmlColorCode[0] == '#') {
-            "Invalid color $htmlColorCode!"
-        }
-        return Integer.parseInt(htmlColorCode.drop(1), 16)
-    }
-
-    /**
-     * Converts the given html color code to ARGB8888.
-     *
      * @param htmlColorCode the requested color in "#AARRGGBB" format (base 16,
      * case insensitive)
      * @return the requested color in ARGB8888 format

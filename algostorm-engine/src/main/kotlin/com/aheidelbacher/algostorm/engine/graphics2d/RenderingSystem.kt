@@ -110,9 +110,6 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         else o1.id - o2.id
     }
     private val matrix = Matrix.identity()
-    private val mapBackgroundColor = map.backgroundColor?.let {
-        Color.fromHtmlARGB8888(it)
-    }
 
     init {
         map.tileSets.forEach { canvas.loadBitmap(it.image) }
@@ -189,7 +186,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        val color = layer.color?.let { Color.fromHtmlRGB888(it) }
+        val color = layer.color?.let { Color.fromHtmlARGB8888(it) }
         layer.objects.let { objects ->
             when (layer.drawOrder) {
                 DrawOrder.TOP_DOWN ->
@@ -282,7 +279,9 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
-            mapBackgroundColor?.let { canvas.drawColor(it) }
+            map.backgroundColor?.let {
+                canvas.drawColor(Color.fromHtmlARGB8888(it))
+            }
             map.layers.filter { it.visible }.forEach { layer ->
                 when (layer) {
                     is Layer.ImageLayer -> drawImageLayer(camera, layer)
