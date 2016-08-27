@@ -146,7 +146,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         }.let {
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
-        }.postRotate(rotation, 0F, height.toFloat()).postTranslate(
+        }.postRotate(rotation).postTranslate(
                 dx = tileSet.tileOffset.x.toFloat() + x,
                 dy = tileSet.tileOffset.y.toFloat() + y
         )
@@ -171,8 +171,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             rotation: Float
     ) {
         matrix.reset()
-        matrix.postRotate(rotation, 0F, height.toFloat())
-                .postTranslate(x.toFloat(), y.toFloat())
+        matrix.postRotate(rotation).postTranslate(x.toFloat(), y.toFloat())
         canvas.drawRectangle(color, width, height, matrix, opacity)
     }
 
@@ -283,9 +282,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
-            if (mapBackgroundColor != null) {
-                canvas.drawColor(mapBackgroundColor)
-            }
+            mapBackgroundColor?.let { canvas.drawColor(it) }
             map.layers.filter { it.visible }.forEach { layer ->
                 when (layer) {
                     is Layer.ImageLayer -> drawImageLayer(camera, layer)

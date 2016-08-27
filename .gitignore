@@ -1,7 +1,14 @@
+# Gradle
+.gradle
+build
+
 # IntelliJ IDEA
 *.iml
 .idea
 
-# Gradle
-.gradle
-build
+# Eclipse
+.project
+.settings
+.classpath
+.cache
+bin

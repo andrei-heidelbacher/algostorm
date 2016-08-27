@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
-import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
-
 import java.io.FileNotFoundException
 
 /**

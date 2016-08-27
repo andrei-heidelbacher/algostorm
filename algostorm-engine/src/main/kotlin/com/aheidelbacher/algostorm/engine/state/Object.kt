@@ -25,15 +25,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @property id the unique identifier of this object
  * @property name the name of this object
  * @property type the type of this object
- * @property x the x-axis coordinate of the bottom-left corner of this object in
+ * @property x the x-axis coordinate of the top-left corner of this object in
  * pixels
- * @property y the y-axis coordinate of the bottom-left corner of this object in
+ * @property y the y-axis coordinate of the top-left corner of this object in
  * pixels
  * @property width the initial width of this object in pixels
  * @property height the initial height of this object in pixels
  * @param gid the initial value of the `gid` property
- * @property rotation the clock-wise rotation of this object around the
- * bottom-left corner in degrees
+ * @property rotation the clock-wise rotation of this object around the top-left
+ * corner in degrees
  * @property visible whether this object should be rendered or not
  * @property properties the properties of this object
  * @throws IllegalArgumentException if [id] or [gid] is negative or if [width]

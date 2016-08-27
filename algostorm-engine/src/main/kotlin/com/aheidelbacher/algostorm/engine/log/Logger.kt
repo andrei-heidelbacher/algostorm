@@ -22,6 +22,25 @@ import com.aheidelbacher.algostorm.event.Event
  * An object which provides logging facilities.
  */
 interface Logger {
+    companion object {
+        /**
+         * Returns a logger that writes all filtered events to [System.out]. If
+         * no filter is given, all events are logged.
+         *
+         * @param eventFilter the filter which should return `true` for all
+         * logged events
+         * @return the system console logger
+         */
+        operator fun invoke(eventFilter: ((Event) -> Boolean)? = null): Logger =
+                object : Logger {
+                    override fun log(event: Event) {
+                        if (eventFilter?.invoke(event) ?: true) {
+                            println(event)
+                        }
+                    }
+                }
+    }
+
     /**
      * Logs the given event.
      *

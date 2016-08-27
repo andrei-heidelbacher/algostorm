@@ -114,9 +114,9 @@ sealed class Layer {
      * @property drawOrder indicates the order in which the objects should be
      * rendered
      * @property color the color with which objects that have their `gid` set to
-     * `0` will be filled
-     * @throws IllegalArgumentException if [color] is not in the format
-     * "#RRGGBB" (base 16, case insensitive)
+     * `0` will be filled given in the "#AARRGGBB" format (base 16, case
+     * insensitive)
+     * @throws IllegalArgumentException if [color] is an invalid color
      */
     class ObjectGroup(
             override val name: String,
@@ -138,14 +138,7 @@ sealed class Layer {
         }
 
         init {
-            if (color != null) {
-                require(color.length == 7 && color[0] == '#') {
-                    "Invalid color $color!"
-                }
-                require(color.drop(1).all { Character.digit(it, 16) != -1 }) {
-                    "Color $color contains invalid characters!"
-                }
-            }
+            Map.validateColor(color)
         }
     }
 }

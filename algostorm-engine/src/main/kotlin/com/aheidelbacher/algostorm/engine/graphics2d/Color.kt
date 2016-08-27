@@ -16,6 +16,9 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
+/**
+ * Utility methods for manipulating colors.
+ */
 object Color {
     private const val BITS = 8
     private const val ALPHA_OFFSET = 3 * BITS

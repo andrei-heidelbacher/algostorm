@@ -35,8 +35,8 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlag
  * @property tileSets the tile sets used for rendering
  * @property layers the layers of the game
  * @property properties the properties of this map
- * @property backgroundColor the color of the map background in the format
- * "#AARRGGBB" (base 16, case insensitive)
+ * @property backgroundColor the color of the map background given in the
+ * "#AARRGGBB" format (base 16, case insensitive)
  * @property version the version of this map
  * @property nextObjectId the next available id for an object
  * @throws IllegalArgumentException if [nextObjectId] is negative or if there
@@ -58,6 +58,26 @@ class Map(
         val version: Float = 1F,
         private var nextObjectId: Int
 ) {
+    companion object {
+        /**
+         * Validates the given color.
+         *
+         * @param color the validated color
+         * @throws IllegalArgumentException if the given [color] doesn't conform
+         * to the "#AARRGGBB" format
+         */
+        @JvmStatic fun validateColor(color: String?) {
+            if (color != null) {
+                require(color.length == 9 && color[0] == '#') {
+                    "Invalid color $color format!"
+                }
+                require(color.drop(1).all { Character.digit(it, 16) != -1 }) {
+                    "Color $color contains invalid characters!"
+                }
+            }
+        }
+    }
+
     /**
      * The orientation of the map.
      */
@@ -94,17 +114,7 @@ class Map(
         require(layers.distinct().size == layers.size) {
             "Different layers can't have the same name!"
         }
-        if (backgroundColor != null) {
-            require(backgroundColor.length == 9 && backgroundColor[0] == '#') {
-                "Invalid background color $backgroundColor!"
-            }
-            val containsInvalidCharacters = backgroundColor.drop(1).any {
-                Character.digit(it, 16) == -1
-            }
-            require(!containsInvalidCharacters) {
-                "Background color $backgroundColor contains invalid characters!"
-            }
-        }
+        validateColor(backgroundColor)
         val totalGidCount = tileSets.sumBy { it.tileCount }
         gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)
         gidToTileId = IntArray(totalGidCount)
