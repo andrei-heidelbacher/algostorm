@@ -1,0 +1,20 @@
+{
+  "primitiveTestField": 1,
+  "innerTestData": {
+    "testField": "non-empty"
+  },
+  "testProperties": {
+    "inner": {
+      "@class": "com.aheidelbacher.algostorm.engine.serialization.TestDataMock$InnerTestDataMock"
+    },
+    "number": 5,
+    "string": "five"
+  },
+  "testList": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ]
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.script
+package com.aheidelbacher.algostorm.test.engine.script
 
 import org.junit.Assert.assertEquals
 import org.junit.Before

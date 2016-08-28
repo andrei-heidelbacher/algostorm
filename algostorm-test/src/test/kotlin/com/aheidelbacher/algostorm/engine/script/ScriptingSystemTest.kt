@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.engine.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.test.script.ScriptResult
+import com.aheidelbacher.algostorm.test.engine.script.ScriptResult
 
 import java.io.File
 import java.io.FileInputStream

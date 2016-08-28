@@ -38,7 +38,7 @@ class ObjectManagerTest {
         )
     }
 
-    private val map = Map(
+    val map = Map(
             width = 32,
             height = 32,
             tileWidth = TILE_WIDTH,
@@ -53,8 +53,7 @@ class ObjectManagerTest {
             )),
             nextObjectId = FIRST_ID + OBJECT_COUNT / 2
     )
-
-    private val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
+    val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
 
     @Before
     fun setUp() {

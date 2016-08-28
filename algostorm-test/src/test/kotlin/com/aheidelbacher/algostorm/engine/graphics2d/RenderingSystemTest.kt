@@ -18,51 +18,15 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
-    val canvas = object : Canvas {
-        override val height: Int
-            get() = 320
-
-        override val width: Int
-            get() = 320
-
-        override fun clear() {}
-
-        override fun drawBitmap(
-                image: String,
-                x: Int,
-                y: Int,
-                width: Int,
-                height: Int,
-                matrix: Matrix,
-                opacity: Float
-        ) {}
-
-        override fun drawRectangle(
-                color: Int,
-                width: Int,
-                height: Int,
-                matrix: Matrix,
-                opacity: Float
-        ) {}
-
-        override fun drawColor(color: Int) {}
-
-        override fun loadBitmap(image: String) {}
-
-        override fun unloadBitmaps() {}
-
-        override fun lock() {}
-
-        override fun unlockAndPost() {}
-    }
+    val canvas = CanvasMock()
     val map = Map(
             width = 12,
             height = 12,
@@ -96,8 +60,8 @@ class RenderingSystemTest {
     )
 
     @Test
-    fun testRender() {
+    fun testOnRender() {
         val renderingSystem = RenderingSystem(map, canvas)
-        renderingSystem.onRender(Render(44, 60))
+        renderingSystem.onRender(RenderingSystem.Render(44, 60))
     }
 }

@@ -18,15 +18,15 @@ package com.aheidelbacher.algostorm.engine.physics2d
 
 import org.junit.Test
 
-//import com.aheidelbacher.algostorm.test.event.PublisherMock
+import com.aheidelbacher.algostorm.test.event.PublisherMock
 
 class PhysicsSystemTest {
     val tileWidth: Int = 32
     val tileHeight: Int = 32
 
     @Test
-    fun helloWorld() {
-        //val publisherMock = PublisherMock()
+    fun instantiatePublisherMock() {
+        val publisherMock = PublisherMock()
     }
 
     /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): Map<String, Any> = mapOf(

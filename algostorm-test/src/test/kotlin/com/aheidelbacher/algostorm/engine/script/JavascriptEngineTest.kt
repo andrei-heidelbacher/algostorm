@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.engine.script
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
-import com.aheidelbacher.algostorm.test.script.ScriptEngineTest
+import com.aheidelbacher.algostorm.test.engine.script.ScriptEngineTest
 
 import java.io.File
 import java.io.FileInputStream

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.script
+package com.aheidelbacher.algostorm.engine.serialization
 
-/**
- * Utility result type for scripts.
- */
-data class ScriptResult(val id: Int, val value: String)
+data class TestDataMock(
+        val primitiveTestField: Int,
+        val defaultPrimitiveTestField: Float = 1.5F,
+        val innerTestData: InnerTestDataMock,
+        val testProperties: Map<String, Any> = hashMapOf(),
+        val testList: List<Int>
+) {
+    data class InnerTestDataMock(val testField: String = "")
+}

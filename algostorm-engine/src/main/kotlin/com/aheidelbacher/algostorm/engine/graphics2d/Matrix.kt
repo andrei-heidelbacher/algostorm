@@ -16,6 +16,8 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
+import java.util.Arrays
+
 /**
  * Used to apply a sequence of transformations to a bitmap before drawing to the
  * canvas.
@@ -157,4 +159,9 @@ class Matrix private constructor(private val values: FloatArray) {
     fun getValues(): FloatArray = values.copyOf()
 
     fun getRawValues(): FloatArray = values
+
+    override fun equals(other: Any?): Boolean =
+            other is Matrix && Arrays.equals(values, other.values)
+
+    override fun hashCode(): Int = Arrays.hashCode(values)
 }

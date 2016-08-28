@@ -1,5 +1,5 @@
 function getResult(id, value) {
-    var Result = Packages.com.aheidelbacher.algostorm.test.script.ScriptResult;
+    var Result = Packages.com.aheidelbacher.algostorm.test.engine.script.ScriptResult;
     return new Result(id, value);
 };
 

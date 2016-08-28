@@ -26,6 +26,7 @@ object Color {
     private const val GREEN_OFFSET = 1 * BITS
     private const val BLUE_OFFSET = 0 * BITS
     private const val MAX = (1 shl BITS) - 1
+    private const val BASE = 16
 
     /**
      * @param a the alpha component of the color
@@ -58,7 +59,11 @@ object Color {
         require(htmlColorCode.length == 9 && htmlColorCode[0] == '#') {
             "Invalid color $htmlColorCode!"
         }
-        return java.lang.Long.parseLong(htmlColorCode.drop(1), 16).toInt()
+        val colorString = htmlColorCode.drop(1)
+        require(colorString.all { Character.digit(it, BASE) != -1 }) {
+            "Invalid characters in color $htmlColorCode!"
+        }
+        return java.lang.Long.parseLong(colorString, BASE).toInt()
     }
     /**
      * The alpha component of this color. It is guaranteed to be in the range
