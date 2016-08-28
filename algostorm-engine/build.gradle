@@ -10,5 +10,7 @@ dependencies {
 }
 
 dokka {
-    outputFormat = 'jekyll'
+    outputFormat = 'markdown'
+    outputDirectory = "$projectDir/docs"
+    dependsOn cleanDocs
 }

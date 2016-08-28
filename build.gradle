@@ -1,12 +1,12 @@
 allprojects {
     group 'com.aheidelbacher'
-    version '0.1.50'
+    version '0.1.51'
 }
 
 subprojects {
     buildscript {
         ext.kotlin_version = '1.0.3'
-        ext.dokka_version = '0.9.8'
+        ext.dokka_version = '0.9.9'
 
         repositories {
             mavenCentral()
@@ -35,8 +35,11 @@ subprojects {
 
     jar {
         from {
-            ["${rootProject.projectDir}/LICENSE.txt",
-                    "${rootProject.projectDir}/NOTICE.txt"]
+            ["$rootDir/LICENSE", "$rootDir/NOTICE"]
         }
+    }
+
+    task cleanDocs(type: Delete) {
+        delete 'docs'
     }
 }
