@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.test.event
+
+import com.aheidelbacher.algostorm.event.Event
 
 /**
  * An event that should be used for testing purposes.

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.test.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Ignore
 import org.junit.Test
+
+import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.event.Subscribe
+import com.aheidelbacher.algostorm.event.Subscriber
 
 /**
  * An abstract test class for an [EventBus].
@@ -44,6 +48,20 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
         eventBus.post(postedEvent)
         eventBus.publishPosts()
         assertEquals(postedEvent, handledEvent)
+    }
+
+    @Test
+    fun publishShouldNotifySubscribers() {
+        val publishedEvent = EventMock(5)
+        var handledEvent: EventMock? = null
+        val subscriber = object : Subscriber {
+            @Subscribe fun handleEventMock(event: EventMock) {
+                handledEvent = event
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.publish(publishedEvent)
+        assertEquals(publishedEvent, handledEvent)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -87,7 +105,7 @@ abstract class EventBusTest(protected val eventBus: EventBus) {
     fun privateHandlerShouldBeIgnored() {
         val postedEvent = EventMock(5)
         val subscriber = object : Subscriber {
-            @Subscribe private  fun handleEventMock(event: EventMock) {
+            @Subscribe private fun handleEventMock(event: EventMock) {
                 fail()
             }
         }

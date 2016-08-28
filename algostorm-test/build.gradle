@@ -3,9 +3,12 @@ apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
     compile project(':algostorm-event')
+    compile project(':algostorm-engine')
+    compile group: 'junit', name: 'junit', version: '4.12'
 }
 
 dokka {
     outputFormat = 'gfm'
     outputDirectory = "$projectDir/docs"
 }
+

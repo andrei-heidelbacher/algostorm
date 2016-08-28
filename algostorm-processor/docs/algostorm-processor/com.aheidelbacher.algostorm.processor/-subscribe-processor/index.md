@@ -6,10 +6,14 @@
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `SubscribeProcessor()` |
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [getSupportedAnnotationTypes](get-supported-annotation-types.md) | `fun getSupportedAnnotationTypes(): MutableSet<String>` |
 | [getSupportedSourceVersion](get-supported-source-version.md) | `fun getSupportedSourceVersion(): `[`SourceVersion`](http://docs.oracle.com/javase/6/docs/api/javax/lang/model/SourceVersion.html) |
 | [init](init.md) | `fun init(processingEnv: `[`ProcessingEnvironment`](http://docs.oracle.com/javase/6/docs/api/javax/annotation/processing/ProcessingEnvironment.html)`): Unit` |
@@ -17,5 +21,6 @@
 
 ### Companion Object Properties
 
+| Name | Summary |
+|---|---|
 | [SUBSCRIBE](-s-u-b-s-c-r-i-b-e.md) | `val SUBSCRIBE: String` |
-

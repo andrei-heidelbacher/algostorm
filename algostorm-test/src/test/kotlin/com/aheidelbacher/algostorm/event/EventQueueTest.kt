@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.script
+package com.aheidelbacher.algostorm.event
 
-data class Result(val id: Int, val value: String)
+import com.aheidelbacher.algostorm.test.event.EventBusTest
+
+class EventQueueTest : EventBusTest(eventBus = EventQueue())

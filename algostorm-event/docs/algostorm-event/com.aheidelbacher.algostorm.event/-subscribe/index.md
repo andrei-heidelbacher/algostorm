@@ -15,5 +15,6 @@ upon subscription.
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `Subscribe()`<br>Annotation to mark a method of a [Subscriber](../-subscriber.md) as an event handler. |
-

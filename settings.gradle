@@ -2,4 +2,5 @@ rootProject.name = 'algostorm'
 include 'algostorm-engine'
 include 'algostorm-processor'
 include 'algostorm-event'
+include 'algostorm-test'
 

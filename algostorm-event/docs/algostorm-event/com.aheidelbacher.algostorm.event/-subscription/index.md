@@ -8,5 +8,6 @@ Allows a [Subscriber](../-subscriber.md) to cancel its subscription to an [Event
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [unsubscribe](unsubscribe.md) | `abstract fun unsubscribe(): Unit`<br>Cancels the subscription. Can only be called once. |
-

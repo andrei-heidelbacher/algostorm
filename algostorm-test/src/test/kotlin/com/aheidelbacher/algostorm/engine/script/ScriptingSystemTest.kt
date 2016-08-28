@@ -19,23 +19,26 @@ package com.aheidelbacher.algostorm.engine.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScript
-import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
+import com.aheidelbacher.algostorm.test.script.ScriptResult
 
 import java.io.File
 import java.io.FileInputStream
 
 class ScriptingSystemTest {
+    companion object {
+        const val FUNCTION_NAME: String = "getResult"
+    }
+
     val system = ScriptingSystem(
             JavascriptEngine { FileInputStream(File(it)) },
-            listOf(JavascriptEngineTest.SCRIPT)
+            listOf("src/test/resources/testScript.js")
     )
 
     @Test
     fun testRunScript() {
         val id = 5
         val value = "five"
-        val event = RunScript(JavascriptEngineTest.FUNCTION_NAME, id, value)
+        val event = ScriptingSystem.RunScript(FUNCTION_NAME, id, value)
         system.onRunScript(event)
     }
 
@@ -44,14 +47,12 @@ class ScriptingSystemTest {
         val id = 5
         val value = "five"
         var isOk = false
-        val event = RunScriptWithResult(
-                JavascriptEngineTest.FUNCTION_NAME,
-                Result::class,
+        val event = ScriptingSystem.RunScriptWithResult(
+                FUNCTION_NAME,
+                ScriptResult::class,
                 id,
                 value
-        ) {
-            isOk = it == Result(id, value)
-        }
+        ) { isOk = it == ScriptResult(id, value) }
         system.onRunScriptWithResult(event)
         assertEquals(true, isOk)
     }
