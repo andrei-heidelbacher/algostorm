@@ -8,14 +8,20 @@ A layer which contains a set of [objects](objects.md).
 
 ### Types
 
+| Name | Summary |
+|---|---|
 | [DrawOrder](-draw-order/index.md) | `enum class DrawOrder`<br>The order in which objects are rendered. |
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `ObjectGroup(name: String, objects: MutableList<`[`Object`](../../-object/index.md)`>, drawOrder: `[`DrawOrder`](-draw-order/index.md)` = DrawOrder.TOP_DOWN, color: String? = null, visible: Boolean = true, opacity: Float = 1F, offsetX: Int = 0, offsetY: Int = 0, properties: MutableMap<String, Any> = hashMapOf())`<br>A layer which contains a set of [objects](-init-.md#com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup$<init>(kotlin.String, kotlin.collections.MutableList((com.aheidelbacher.algostorm.engine.state.Object)), com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder, kotlin.String, kotlin.Boolean, kotlin.Float, kotlin.Int, kotlin.Int, kotlin.collections.MutableMap((kotlin.String, kotlin.Any)))/objects). |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [color](color.md) | `val color: String?`<br>the color with which objects that have their `gid` set to
 `0` will be filled given in the "#AARRGGBB" format (base 16, case
 insensitive) |
@@ -32,6 +38,7 @@ same name. |
 
 ### Inherited Functions
 
+| Name | Summary |
+|---|---|
 | [equals](../equals.md) | `fun equals(other: Any?): Boolean` |
 | [hashCode](../hash-code.md) | `fun hashCode(): Int` |
-

@@ -12,10 +12,13 @@ Thread-safe input socket which allows setting and retrieving inputs.
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `InputSocket()`<br>Thread-safe input socket which allows setting and retrieving inputs. |
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [readInput](read-input.md) | `fun readInput(): T?`<br>Retrieves the most recent input and resets the last input to `null`. |
 | [writeInput](write-input.md) | `fun writeInput(input: T?): Unit`<br>Writes the given input. |
-

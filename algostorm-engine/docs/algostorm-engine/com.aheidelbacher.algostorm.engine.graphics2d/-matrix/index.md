@@ -9,6 +9,8 @@ canvas.
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [get](get.md) | `operator fun get(index: Int): Float`<br>`operator fun get(row: Int, column: Int): Float` |
 | [getRawValues](get-raw-values.md) | `fun getRawValues(): FloatArray` |
 | [getValues](get-values.md) | `fun getValues(): FloatArray` |
@@ -21,6 +23,8 @@ canvas.
 
 ### Companion Object Properties
 
+| Name | Summary |
+|---|---|
 | [PERSPECTIVE_0](-p-e-r-s-p-e-c-t-i-v-e_0.md) | `const val PERSPECTIVE_0: Int` |
 | [PERSPECTIVE_1](-p-e-r-s-p-e-c-t-i-v-e_1.md) | `const val PERSPECTIVE_1: Int` |
 | [PERSPECTIVE_2](-p-e-r-s-p-e-c-t-i-v-e_2.md) | `const val PERSPECTIVE_2: Int` |
@@ -33,8 +37,9 @@ canvas.
 
 ### Companion Object Functions
 
+| Name | Summary |
+|---|---|
 | [identity](identity.md) | `fun identity(): Matrix` |
 | [rotate](rotate.md) | `fun rotate(degrees: Float): Matrix` |
 | [scale](scale.md) | `fun scale(sx: Float, sy: Float): Matrix` |
 | [translate](translate.md) | `fun translate(dx: Float, dy: Float): Matrix` |
-

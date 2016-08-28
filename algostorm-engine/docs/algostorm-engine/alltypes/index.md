@@ -2,6 +2,8 @@
 
 ### All Types
 
+| Name | Summary |
+|---|---|
 | [com.aheidelbacher.algostorm.engine.input.AbstractInputSystem](../com.aheidelbacher.algostorm.engine.input/-abstract-input-system/index.md) | A system which handles user input. |
 | [com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera](../com.aheidelbacher.algostorm.engine.graphics2d.camera/-camera/index.md) |  |
 | [com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem](../com.aheidelbacher.algostorm.engine.graphics2d.camera/-camera-system/index.md) |  |
@@ -48,4 +50,3 @@ have elapsed. |
 | [com.aheidelbacher.algostorm.engine.Update](../com.aheidelbacher.algostorm.engine/-update/index.md) | An event which signals that all game logic should advance by an atomic time
 unit. It is recommended to not change the game state after this event has
 been processed by its subscribers. |
-

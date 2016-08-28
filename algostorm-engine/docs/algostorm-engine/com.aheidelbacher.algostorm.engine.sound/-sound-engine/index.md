@@ -8,6 +8,8 @@ An object that can play multiple sounds at once.
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [loadMusic](load-music.md) | `abstract fun loadMusic(musicSound: String): Unit`<br>Loads the sound at the specified location, making it available to future
 calls of [playMusic](play-music.md). |
 | [loadSound](load-sound.md) | `abstract fun loadSound(sound: String): Unit`<br>Loads the sound at the specified location, making it available to future
@@ -21,4 +23,3 @@ played. This should be used for short sounds (at most a few seconds). |
 | [stopMusic](stop-music.md) | `abstract fun stopMusic(): Unit`<br>Stops the stream dedicated to longer sounds. This will stop any sounds
 played with [playMusic](play-music.md). |
 | [stopStream](stop-stream.md) | `abstract fun stopStream(streamId: Int): Unit`<br>Stops the stream with the given id. |
-

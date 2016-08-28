@@ -8,11 +8,14 @@ An event that requests a short sound to be played.
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `PlaySound(sound: String, loop: Boolean = false, onResult: (Int) -> Unit = null)`<br>An event that requests a short sound to be played. |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [loop](loop.md) | `val loop: Boolean`<br>whether the sound should be looped or not |
 | [onResult](on-result.md) | `val onResult: (Int) -> Unit`<br>the callback which receives the returned stream id |
 | [sound](sound.md) | `val sound: String`<br>the sound which should be played |
-

@@ -4,6 +4,7 @@
 
 ### Types
 
+| Name | Summary |
+|---|---|
 | [Camera](-camera/index.md) | `interface Camera` |
 | [CameraSystem](-camera-system/index.md) | `class CameraSystem : Subscriber` |
-

@@ -12,10 +12,14 @@ A layer which consists of a single [image](image.md).
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `ImageLayer(name: String, image: String, visible: Boolean = true, opacity: Float = 1F, offsetX: Int = 0, offsetY: Int = 0, properties: MutableMap<String, Any> = hashMapOf())`<br>A layer which consists of a single [image](-init-.md#com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer$<init>(kotlin.String, kotlin.String, kotlin.Boolean, kotlin.Float, kotlin.Int, kotlin.Int, kotlin.collections.MutableMap((kotlin.String, kotlin.Any)))/image). |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [image](image.md) | `var image: String` |
 | [name](name.md) | `val name: String`<br>The name of this layer. Two layers are equal if and only if they have the
 same name. |
@@ -27,6 +31,7 @@ same name. |
 
 ### Inherited Functions
 
+| Name | Summary |
+|---|---|
 | [equals](../equals.md) | `fun equals(other: Any?): Boolean` |
 | [hashCode](../hash-code.md) | `fun hashCode(): Int` |
-

@@ -10,7 +10,7 @@ dependencies {
 }
 
 dokka {
-    outputFormat = 'markdown'
+    outputFormat = 'gfm'
     outputDirectory = "$projectDir/docs"
     dependsOn cleanDocs
 }

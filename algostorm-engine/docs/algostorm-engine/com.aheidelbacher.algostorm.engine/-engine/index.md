@@ -17,14 +17,20 @@ call.
 
 ### Types
 
+| Name | Summary |
+|---|---|
 | [Status](-status/index.md) | `enum class Status`<br>An enum which represents the status of an engine. |
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `Engine()`<br>An asynchronous engine that runs the game loop on its own private thread. |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [isShutdown](is-shutdown.md) | `val isShutdown: Boolean`<br>The current shutdown status of this engine. |
 | [millisPerUpdate](millis-per-update.md) | `abstract val millisPerUpdate: Int`<br>The number of milliseconds spent in an update cycle and the resolution of
 an atomic time unit. |
@@ -32,6 +38,8 @@ an atomic time unit. |
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [clearState](clear-state.md) | `abstract fun clearState(): Unit`<br>Clears the current game state for a clean shutdown. The call to this
 method is synchronized with the state lock. |
 | [onHandleInput](on-handle-input.md) | `abstract fun onHandleInput(): Unit`<br>This method is invoked right before [onUpdate](on-update.md) is called from this
@@ -56,10 +64,13 @@ The call to this method is synchronized with the state lock. |
 
 ### Companion Object Properties
 
+| Name | Summary |
+|---|---|
 | [NAME](-n-a-m-e.md) | `const val NAME: String`<br>Name of the engine thread. |
 
 ### Companion Object Functions
 
+| Name | Summary |
+|---|---|
 | [getResourceStream](get-resource-stream.md) | `fun getResourceStream(name: String): `[`InputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html)<br>Returns the resource file with the given name using the Engine
 class [Class.getResource](http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html#getResource(java.lang.String)) method. |
-

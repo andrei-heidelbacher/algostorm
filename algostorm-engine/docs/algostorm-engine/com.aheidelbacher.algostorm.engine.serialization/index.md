@@ -4,5 +4,6 @@
 
 ### Types
 
+| Name | Summary |
+|---|---|
 | [Serializer](-serializer/index.md) | `object Serializer`<br>Serialization and deserialization utility methods. |
-

@@ -8,5 +8,6 @@ The orientation of the map.
 
 ### Enum Values
 
+| Name | Summary |
+|---|---|
 | [ORTHOGONAL](-o-r-t-h-o-g-o-n-a-l.md) |  |
-

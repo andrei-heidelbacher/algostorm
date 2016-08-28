@@ -13,11 +13,15 @@ After the canvas was locked, it must be unlocked.
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [height](height.md) | `abstract val height: Int`<br>The height of this canvas in pixels. |
 | [width](width.md) | `abstract val width: Int`<br>The width of this canvas in pixels. |
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [clear](clear.md) | `abstract fun clear(): Unit`<br>Clears the canvas. |
 | [drawBitmap](draw-bitmap.md) | `abstract fun drawBitmap(image: String, x: Int, y: Int, width: Int, height: Int, matrix: `[`Matrix`](../-matrix/index.md)`, opacity: Float): Unit`<br>Draws the viewport projected on the indicated bitmap to the canvas using
 the specified [matrix](draw-bitmap.md#com.aheidelbacher.algostorm.engine.graphics2d.Canvas$drawBitmap(kotlin.String, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int, com.aheidelbacher.algostorm.engine.graphics2d.Matrix, kotlin.Float)/matrix). |
@@ -30,4 +34,3 @@ the specified [matrix](draw-rectangle.md#com.aheidelbacher.algostorm.engine.grap
 [drawBitmap](draw-bitmap.md) calls, unless explicitly loaded again. |
 | [unlockAndPost](unlock-and-post.md) | `abstract fun unlockAndPost(): Unit`<br>Unlocks this canvas and posts all the changes made since the canvas was
 locked. |
-

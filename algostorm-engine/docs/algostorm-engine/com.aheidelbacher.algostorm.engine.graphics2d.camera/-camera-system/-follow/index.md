@@ -6,9 +6,12 @@
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `Follow(objectId: Int)` |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [objectId](object-id.md) | `val objectId: Int` |
-

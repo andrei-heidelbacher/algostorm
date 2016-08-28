@@ -12,9 +12,12 @@ Allows writing input.
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [writeInput](write-input.md) | `abstract fun writeInput(input: T?): Unit`<br>Writes the given input. |
 
 ### Inheritors
 
+| Name | Summary |
+|---|---|
 | [InputSocket](../-input-socket/index.md) | `class InputSocket<T : Any> : `[`InputReader`](../-input-reader/index.md)`<T>, InputWriter<T>`<br>Thread-safe input socket which allows setting and retrieving inputs. |
-

@@ -10,10 +10,13 @@ Only the [PhysicsSystem](../-physics-system/index.md) should post this event.
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `Collision(sourceId: Int, targetId: Int)`<br>An event which signals that [sourceId](-init-.md#com.aheidelbacher.algostorm.engine.physics2d.Collision$<init>(kotlin.Int, kotlin.Int)/sourceId) collided with [targetId](-init-.md#com.aheidelbacher.algostorm.engine.physics2d.Collision$<init>(kotlin.Int, kotlin.Int)/targetId). |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [sourceId](source-id.md) | `val sourceId: Int`<br>the id of the object that triggered the collision |
 | [targetId](target-id.md) | `val targetId: Int`<br>the id of the object that was collided |
-

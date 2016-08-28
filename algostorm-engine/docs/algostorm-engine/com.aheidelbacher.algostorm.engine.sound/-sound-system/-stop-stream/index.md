@@ -9,10 +9,13 @@ should be stopped.
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `StopStream(streamId: Int)`<br>An event which signals that the sound played on the given [streamId](-init-.md#com.aheidelbacher.algostorm.engine.sound.SoundSystem.StopStream$<init>(kotlin.Int)/streamId)
 should be stopped. |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [streamId](stream-id.md) | `val streamId: Int`<br>the id of the stream which should be stopped |
-

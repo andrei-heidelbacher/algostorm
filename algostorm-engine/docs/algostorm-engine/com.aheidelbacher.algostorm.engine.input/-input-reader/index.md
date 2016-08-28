@@ -12,9 +12,12 @@ Allows reading input.
 
 ### Functions
 
+| Name | Summary |
+|---|---|
 | [readInput](read-input.md) | `abstract fun readInput(): T?`<br>Retrieves the most recent input and resets the last input to `null`. |
 
 ### Inheritors
 
+| Name | Summary |
+|---|---|
 | [InputSocket](../-input-socket/index.md) | `class InputSocket<T : Any> : InputReader<T>, `[`InputWriter`](../-input-writer/index.md)`<T>`<br>Thread-safe input socket which allows setting and retrieving inputs. |
-

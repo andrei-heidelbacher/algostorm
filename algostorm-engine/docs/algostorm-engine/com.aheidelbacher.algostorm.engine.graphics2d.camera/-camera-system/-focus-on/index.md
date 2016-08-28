@@ -6,10 +6,13 @@
 
 ### Constructors
 
+| Name | Summary |
+|---|---|
 | [&lt;init&gt;](-init-.md) | `FocusOn(x: Int, y: Int)` |
 
 ### Properties
 
+| Name | Summary |
+|---|---|
 | [x](x.md) | `val x: Int` |
 | [y](y.md) | `val y: Int` |
-

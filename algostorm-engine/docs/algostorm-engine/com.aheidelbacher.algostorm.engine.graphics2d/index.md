@@ -4,10 +4,11 @@
 
 ### Types
 
+| Name | Summary |
+|---|---|
 | [Canvas](-canvas/index.md) | `interface Canvas`<br>A canvas that allows `draw` calls. |
 | [Color](-color/index.md) | `object Color`<br>Utility methods for manipulating colors. |
 | [Matrix](-matrix/index.md) | `class Matrix`<br>Used to apply a sequence of transformations to a bitmap before drawing to the
 canvas. |
 | [RenderingSystem](-rendering-system/index.md) | `class RenderingSystem : Subscriber`<br>A system which handles the rendering of all objects in the game to the screen
 canvas. |
-
