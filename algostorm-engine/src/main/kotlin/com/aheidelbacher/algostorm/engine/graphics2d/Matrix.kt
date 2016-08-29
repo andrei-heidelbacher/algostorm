@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
-import java.util.Arrays
-
 /**
  * Used to apply a sequence of transformations to a bitmap before drawing to the
  * canvas.
@@ -26,35 +24,6 @@ import java.util.Arrays
  */
 class Matrix private constructor(private val values: FloatArray) {
     companion object {
-        fun identity(): Matrix = Matrix(floatArrayOf(
-                1F, 0F, 0F,
-                0F, 1F, 0F,
-                0F, 0F, 1F
-        ))
-
-        fun translate(dx: Float, dy: Float): Matrix = Matrix(floatArrayOf(
-                1F, 0F, dx,
-                0F, 1F, dy,
-                0F, 0F, 1F
-        ))
-
-        fun scale(sx: Float, sy: Float): Matrix = Matrix(floatArrayOf(
-                sx, 0F, 0F,
-                0F, sy, 0F,
-                0F, 0F, 1F
-        ))
-
-        fun rotate(degrees: Float): Matrix {
-            val radians = degrees * Math.PI / 180.0
-            val cos = Math.cos(radians).toFloat()
-            val sin = Math.sin(radians).toFloat()
-            return Matrix(floatArrayOf(
-                    cos, sin, 0F,
-                    -sin, cos, 0F,
-                    0F, 0F, 1F
-            ))
-        }
-
         private const val SIZE = 3
 
         const val SCALE_X: Int = 0
@@ -74,6 +43,17 @@ class Matrix private constructor(private val values: FloatArray) {
         const val PERSPECTIVE_1: Int = 7
 
         const val PERSPECTIVE_2: Int = 8
+
+        /**
+         * Returns the identity matrix.
+         *
+         * @return the identity matrix
+         */
+        fun identity(): Matrix = Matrix(floatArrayOf(
+                1F, 0F, 0F,
+                0F, 1F, 0F,
+                0F, 0F, 1F
+        ))
     }
 
     init {
@@ -160,8 +140,17 @@ class Matrix private constructor(private val values: FloatArray) {
 
     fun getRawValues(): FloatArray = values
 
-    override fun equals(other: Any?): Boolean =
-            other is Matrix && Arrays.equals(values, other.values)
-
-    override fun hashCode(): Int = Arrays.hashCode(values)
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append('[')
+        for (i in 0..SIZE - 1) {
+            sb.append('[')
+            for (j in 0..SIZE - 1) {
+                sb.append(values[i * SIZE + j])
+                sb.append(if (j == SIZE - 1) ']' else ',')
+            }
+            sb.append(if (i == SIZE - 1) ']' else ',')
+        }
+        return sb.toString()
+    }
 }

@@ -6,7 +6,7 @@
 
 An asynchronous implementation of an [EventBus](../-event-bus/index.md).
 
-The [post](post.md) method adds the event to the event postQueue and it will be processed
+The [post](post.md) method adds the event to the event queue and it will be processed
 only when [publishPosts](publish-posts.md) is called.
 
 ### Constructors

@@ -17,5 +17,5 @@ Serialization and deserialization utility methods.
 
 | Name | Summary |
 |---|---|
-| [readValue](read-value.md) | `fun <T : Any> readValue(src: `[`InputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html)`, type: KClass<T>): T`<br>`fun <T : Any> readValue(src: String, type: KClass<T>): T`<br>`fun <T : Any> readValue(src: `[`InputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html)`): T` |
+| [readValue](read-value.md) | `fun <T : Any> readValue(src: `[`InputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html)`, type: KClass<T>): T`<br>`fun <T : Any> readValue(src: `[`InputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html)`): T` |
 | [writeValue](write-value.md) | `fun writeValue(out: `[`OutputStream`](http://docs.oracle.com/javase/6/docs/api/java/io/OutputStream.html)`, value: Any): Unit` |

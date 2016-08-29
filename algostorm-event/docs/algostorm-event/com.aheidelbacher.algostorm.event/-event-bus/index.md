@@ -30,4 +30,4 @@ order of other posted events. |
 
 | Name | Summary |
 |---|---|
-| [EventQueue](../-event-postQueue/index.md) | `class EventQueue : EventBus`<br>An asynchronous implementation of an EventBus. |
+| [EventQueue](../-event-queue/index.md) | `class EventQueue : EventBus`<br>An asynchronous implementation of an EventBus. |

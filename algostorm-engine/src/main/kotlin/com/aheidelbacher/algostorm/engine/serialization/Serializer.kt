@@ -81,14 +81,6 @@ object Serializer {
             JsonParseException::class,
             JsonMappingException::class
     )
-    @JvmStatic fun <T : Any> readValue(src: String, type: KClass<T>): T =
-            objectMapper.readValue(src, type.java)
-
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
     @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
             objectMapper.readValue(src)
 }

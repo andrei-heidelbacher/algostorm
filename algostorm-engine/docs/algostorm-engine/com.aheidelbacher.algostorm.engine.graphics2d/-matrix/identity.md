@@ -3,3 +3,9 @@
 # identity
 
 `fun identity(): `[`Matrix`](index.md)
+
+Returns the identity matrix.
+
+**Return**
+the identity matrix
+

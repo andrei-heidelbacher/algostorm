@@ -20,6 +20,7 @@ canvas.
 | [postTranslate](post-translate.md) | `fun postTranslate(dx: Float, dy: Float): Matrix` |
 | [preScale](pre-scale.md) | `fun preScale(sx: Float, sy: Float): Matrix` |
 | [reset](reset.md) | `fun reset(): Unit` |
+| [toString](to-string.md) | `fun toString(): String` |
 
 ### Companion Object Properties
 
@@ -39,7 +40,4 @@ canvas.
 
 | Name | Summary |
 |---|---|
-| [identity](identity.md) | `fun identity(): Matrix` |
-| [rotate](rotate.md) | `fun rotate(degrees: Float): Matrix` |
-| [scale](scale.md) | `fun scale(sx: Float, sy: Float): Matrix` |
-| [translate](translate.md) | `fun translate(dx: Float, dy: Float): Matrix` |
+| [identity](identity.md) | `fun identity(): Matrix`<br>Returns the identity matrix. |

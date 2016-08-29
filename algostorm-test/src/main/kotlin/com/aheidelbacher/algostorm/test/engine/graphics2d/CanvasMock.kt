@@ -23,6 +23,19 @@ import java.util.LinkedList
 import java.util.Queue
 
 class CanvasMock : Canvas {
+    companion object {
+        const val TOLERANCE: Float = 1e-7F
+
+        fun Float.equals(other: Float): Boolean =
+                Math.abs(this - other) < TOLERANCE
+
+        fun FloatArray.equals(other: FloatArray): Boolean =
+                size == other.size && indices.all { get(it).equals(other[it]) }
+
+        fun Matrix.equals(other: Matrix): Boolean =
+                getRawValues().equals(other.getRawValues())
+    }
+
     private interface DrawCall {
         data class Bitmap(
                 val image: String,
@@ -32,7 +45,14 @@ class CanvasMock : Canvas {
                 val height: Int,
                 val matrix: Matrix,
                 val opacity: Float
-        ) : DrawCall
+        ) : DrawCall {
+            override fun equals(other: Any?): Boolean = other is Bitmap &&
+                    image == other.image && x == other.x && y == other.y &&
+                    width == other.width && height == other.height &&
+                    matrix.equals(other.matrix) && opacity.equals(other.opacity)
+
+            override fun hashCode(): Int = super.hashCode()
+        }
 
         data class Color(val color: Int) : DrawCall
 
@@ -42,7 +62,14 @@ class CanvasMock : Canvas {
                 val height: Int,
                 val matrix: Matrix,
                 val opacity: Float
-        ) : DrawCall
+        ) : DrawCall {
+            override fun equals(other: Any?): Boolean = other is Rectangle &&
+                    color == other.color &&
+                    width == other.width && height == other.height &&
+                    matrix.equals(other.matrix) && opacity.equals(other.opacity)
+
+            override fun hashCode(): Int = super.hashCode()
+        }
 
         object Clear : DrawCall
     }
