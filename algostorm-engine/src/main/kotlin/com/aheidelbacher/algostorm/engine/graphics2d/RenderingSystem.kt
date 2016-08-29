@@ -136,7 +136,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             if (!gid.isFlippedDiagonally) it
             else it.postRotate(90F)
                     .postScale(1F, -1F)
-                    .postTranslate(width.toFloat(), 0F)
+                    .postTranslate(width.toFloat(), height.toFloat())
         }.let {
             if (!gid.isFlippedHorizontally) it
             else it.postScale(-1F, 1F).postTranslate(width.toFloat(), 0F)

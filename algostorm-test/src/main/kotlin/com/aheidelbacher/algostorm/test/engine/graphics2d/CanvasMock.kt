@@ -26,14 +26,14 @@ class CanvasMock : Canvas {
     companion object {
         const val TOLERANCE: Float = 1e-7F
 
-        fun Float.equals(other: Float): Boolean =
+        fun Float.eq(other: Float): Boolean =
                 Math.abs(this - other) < TOLERANCE
 
-        fun FloatArray.equals(other: FloatArray): Boolean =
+        fun FloatArray.eq(other: FloatArray): Boolean =
                 size == other.size && indices.all { get(it).equals(other[it]) }
 
-        fun Matrix.equals(other: Matrix): Boolean =
-                getRawValues().equals(other.getRawValues())
+        fun Matrix.eq(other: Matrix): Boolean =
+                getRawValues().eq(other.getRawValues())
     }
 
     private interface DrawCall {
@@ -49,7 +49,7 @@ class CanvasMock : Canvas {
             override fun equals(other: Any?): Boolean = other is Bitmap &&
                     image == other.image && x == other.x && y == other.y &&
                     width == other.width && height == other.height &&
-                    matrix.equals(other.matrix) && opacity.equals(other.opacity)
+                    matrix.eq(other.matrix) && opacity.eq(other.opacity)
 
             override fun hashCode(): Int = super.hashCode()
         }
@@ -66,7 +66,7 @@ class CanvasMock : Canvas {
             override fun equals(other: Any?): Boolean = other is Rectangle &&
                     color == other.color &&
                     width == other.width && height == other.height &&
-                    matrix.equals(other.matrix) && opacity.equals(other.opacity)
+                    matrix.eq(other.matrix) && opacity.eq(other.opacity)
 
             override fun hashCode(): Int = super.hashCode()
         }
@@ -119,7 +119,8 @@ class CanvasMock : Canvas {
     ) {
         require(isLocked) { "Canvas is not locked!" }
         require(image in bitmaps) { "Invalid bitmap $image!" }
-        queue.add(DrawCall.Bitmap(image, x, y, width, height, matrix, opacity))
+        val m = matrix.copy()
+        queue.add(DrawCall.Bitmap(image, x, y, width, height, m, opacity))
     }
 
     override fun drawColor(color: Int) {
@@ -135,7 +136,8 @@ class CanvasMock : Canvas {
             opacity: Float
     ) {
         require(isLocked) { "Canvas is not locked!" }
-        queue.add(DrawCall.Rectangle(color, width, height, matrix, opacity))
+        val m = matrix.copy()
+        queue.add(DrawCall.Rectangle(color, width, height, m, opacity))
     }
 
     override fun unlockAndPost() {

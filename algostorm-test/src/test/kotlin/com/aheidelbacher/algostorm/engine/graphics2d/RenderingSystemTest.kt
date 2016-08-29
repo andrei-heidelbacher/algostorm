@@ -24,7 +24,9 @@ import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipVertically
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
@@ -34,14 +36,22 @@ class RenderingSystemTest {
     val tileWidth = 24
     val tileHeight = 24
     val image = "testImage.png"
-    val map = Map(
-            width = width,
-            height = height,
-            tileWidth = tileWidth,
-            tileHeight = tileHeight,
-            orientation = Map.Orientation.ORTHOGONAL,
-            backgroundColor = "#00000000",
-            tileSets = listOf(TileSet(
+    val cameraX = 44
+    val cameraY = 60
+    val camera = run {
+        canvas.lock()
+        val rect = Rectangle(
+                x = cameraX - canvas.width / 2,
+                y = cameraY - canvas.height / 2,
+                width = canvas.width,
+                height = canvas.height
+        )
+        canvas.unlockAndPost()
+        rect
+    }
+
+    fun makeMap(
+            tileSets: List<TileSet> = listOf(TileSet(
                     name = "test",
                     tileWidth = tileWidth,
                     tileHeight = tileHeight,
@@ -53,42 +63,31 @@ class RenderingSystemTest {
                     margin = 0,
                     spacing = 0
             )),
-            layers = listOf(
-                    Layer.TileLayer(
-                            name = "floor",
-                            data = LongArray(width * height) { 1 }
-                    ),
-                    Layer.ObjectGroup(
-                            name = "objects",
-                            objects = mutableListOf(Object(
-                                    id = 1,
-                                    x = 32,
-                                    y = 48,
-                                    width = 32,
-                                    height = 32,
-                                    gid = 1L.flipHorizontally()
-                            ))
-                    )
-            ),
-            nextObjectId = 2
+            layers: List<Layer> = emptyList()
+    ): Map = Map(
+            width = width,
+            height = height,
+            tileWidth = tileWidth,
+            tileHeight = tileHeight,
+            orientation = Map.Orientation.ORTHOGONAL,
+            backgroundColor = "#ffffffff",
+            tileSets = tileSets,
+            layers = layers,
+            nextObjectId = layers.filterIsInstance<Layer.ObjectGroup>()
+                    .flatMap { it.objects }.maxBy { it.id }?.id ?: 1
     )
 
     @Test
-    fun testOnRender() {
-        val cameraX = 44
-        val cameraY = 60
-        canvas.lock()
-        val camera = Rectangle(
-                x = cameraX - canvas.width / 2,
-                y = cameraY - canvas.height / 2,
-                width = canvas.width,
-                height = canvas.height
+    fun testRenderTileLayer() {
+        val tileLayer = Layer.TileLayer(
+                name = "floor",
+                data = LongArray(width * height) { 1 }
         )
-        canvas.unlockAndPost()
+        val map = makeMap(layers = listOf(tileLayer))
         val renderingSystem = RenderingSystem(map, canvas)
         renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
         canvas.verifyClear()
-        canvas.verifyColor(0)
+        canvas.verifyColor(-1)
         for (ty in 0 until height) {
             for (tx in 0 until width) {
                 val y = ty * tileHeight
@@ -101,13 +100,146 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             matrix = Matrix.identity().postTranslate(
-                                    dx = x - cameraX.toFloat(),
-                                    dy = y - cameraY.toFloat()
+                                    dx = x - camera.x.toFloat(),
+                                    dy = y - camera.y.toFloat()
                             ),
                             opacity = 1F
                     )
                 }
             }
         }
+        canvas.verifyEmptyDrawQueue()
+    }
+
+    @Test
+    fun testRenderColoredObjects() {
+        val objectGroup = Layer.ObjectGroup(
+                name = "objects",
+                color = "#000000ff",
+                objects = mutableListOf(Object(
+                        id = 1,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight
+                ))
+        )
+        val map = makeMap(layers = listOf(objectGroup))
+        val renderingSystem = RenderingSystem(map, canvas)
+        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
+        canvas.verifyClear()
+        canvas.verifyColor(-1)
+        canvas.verifyRectangle(
+                color = 255,
+                width = tileWidth,
+                height = tileHeight,
+                matrix = Matrix.identity().postTranslate(
+                        dx = -camera.x.toFloat(),
+                        dy = -camera.y.toFloat()
+                ),
+                opacity = 1F
+        )
+        canvas.verifyEmptyDrawQueue()
+    }
+
+    @Test
+    fun testRenderFlippedHorizontallyObject() {
+        val objectGroup = Layer.ObjectGroup(
+                name = "objects",
+                objects = mutableListOf(Object(
+                        id = 1,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight,
+                        gid = 1L.flipHorizontally()
+                ))
+        )
+        val map = makeMap(layers = listOf(objectGroup))
+        val renderingSystem = RenderingSystem(map, canvas)
+        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
+        canvas.verifyClear()
+        canvas.verifyColor(-1)
+        canvas.verifyBitmap(
+                image = image,
+                x = 0,
+                y = 0,
+                width = tileWidth,
+                height = tileHeight,
+                matrix = Matrix.identity().postScale(-1F, 1F).postTranslate(
+                        dx = tileWidth - camera.x.toFloat(),
+                        dy = -camera.y.toFloat()
+                ),
+                opacity = 1F
+        )
+        canvas.verifyEmptyDrawQueue()
+    }
+
+    @Test
+    fun testRenderFlippedVerticallyObject() {
+        val objectGroup = Layer.ObjectGroup(
+                name = "objects",
+                objects = mutableListOf(Object(
+                        id = 1,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight,
+                        gid = 1L.flipVertically()
+                ))
+        )
+        val map = makeMap(layers = listOf(objectGroup))
+        val renderingSystem = RenderingSystem(map, canvas)
+        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
+        canvas.verifyClear()
+        canvas.verifyColor(-1)
+        canvas.verifyBitmap(
+                image = image,
+                x = 0,
+                y = 0,
+                width = tileWidth,
+                height = tileHeight,
+                matrix = Matrix.identity().postScale(1F, -1F).postTranslate(
+                        dx = -camera.x.toFloat(),
+                        dy = tileHeight - camera.y.toFloat()
+                ),
+                opacity = 1F
+        )
+        canvas.verifyEmptyDrawQueue()
+    }
+
+    @Test
+    fun testRenderFlippedDiagonallyObject() {
+        val objectGroup = Layer.ObjectGroup(
+                name = "objects",
+                objects = mutableListOf(Object(
+                        id = 1,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight,
+                        gid = 1L.flipDiagonally()
+                ))
+        )
+        val map = makeMap(layers = listOf(objectGroup))
+        val renderingSystem = RenderingSystem(map, canvas)
+        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
+        canvas.verifyClear()
+        canvas.verifyColor(-1)
+        canvas.verifyBitmap(
+                image = image,
+                x = 0,
+                y = 0,
+                width = tileWidth,
+                height = tileHeight,
+                matrix = Matrix.identity()
+                        .postRotate(90F)
+                        .postScale(1F, -1F).postTranslate(
+                        dx = tileWidth - camera.x.toFloat(),
+                        dy = tileHeight - camera.y.toFloat()
+                ),
+                opacity = 1F
+        )
+        canvas.verifyEmptyDrawQueue()
     }
 }

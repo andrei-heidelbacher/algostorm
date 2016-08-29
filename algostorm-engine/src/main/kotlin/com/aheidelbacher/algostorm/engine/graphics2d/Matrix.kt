@@ -132,6 +132,8 @@ class Matrix private constructor(private val values: FloatArray) {
         }
     }
 
+    fun copy(): Matrix = Matrix(values.copyOf())
+
     operator fun get(index: Int): Float = values[index]
 
     operator fun get(row: Int, column: Int): Float = values[row * SIZE + column]
