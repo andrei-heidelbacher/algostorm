@@ -18,24 +18,12 @@ package com.aheidelbacher.algostorm.test.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.test.engine.graphics2d.MatrixUtil.eq
 
 import java.util.LinkedList
 import java.util.Queue
 
 class CanvasMock : Canvas {
-    companion object {
-        const val TOLERANCE: Float = 1e-7F
-
-        fun Float.eq(other: Float): Boolean =
-                Math.abs(this - other) < TOLERANCE
-
-        fun FloatArray.eq(other: FloatArray): Boolean =
-                size == other.size && indices.all { get(it).equals(other[it]) }
-
-        fun Matrix.eq(other: Matrix): Boolean =
-                getRawValues().eq(other.getRawValues())
-    }
-
     private interface DrawCall {
         data class Bitmap(
                 val image: String,
