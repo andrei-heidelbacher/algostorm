@@ -38,6 +38,32 @@ class MatrixTest {
     }
 
     @Test
+    fun testPreScale() {
+        val sx = 5938F
+        val sy = -9385F
+        val expected = floatArrayOf(
+                sx, 0F, 0F,
+                0F, sy, 0F,
+                0F, 0F, 1F
+        )
+        val actual = Matrix.identity().preScale(sx, sy).getRawValues()
+        assertArrayEquals(expected, actual, TOLERANCE)
+    }
+
+    @Test
+    fun testPostTranslate() {
+        val dx = 9458F
+        val dy = -3948F
+        val expected = floatArrayOf(
+                1F, 0F, dx,
+                0F, 1F, dy,
+                0F, 0F, 1F
+        )
+        val actual = Matrix.identity().postTranslate(dx, dy).getRawValues()
+        assertArrayEquals(expected, actual, TOLERANCE)
+    }
+
+    @Test
     fun testGetIndices() {
         val matrix = matrixOf(floatArrayOf(
                 0F, 1F, 2F,
