@@ -21,12 +21,22 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 object MatrixUtil {
     const val TOLERANCE: Float = 1e-7F
 
-    fun Float.eq(other: Float): Boolean =
+    @JvmStatic fun Float.eq(other: Float): Boolean =
             Math.abs(this - other) < TOLERANCE
 
-    fun FloatArray.eq(other: FloatArray): Boolean =
+    @JvmStatic fun FloatArray.eq(other: FloatArray): Boolean =
             size == other.size && indices.all { get(it).equals(other[it]) }
 
-    fun Matrix.eq(other: Matrix): Boolean =
+    @JvmStatic fun Matrix.eq(other: Matrix): Boolean =
             getRawValues().eq(other.getRawValues())
+
+    @JvmStatic fun matrixOf(values: FloatArray): Matrix {
+        require(values.size == 9)
+        val matrix = Matrix.identity()
+        val rawValues = matrix.getRawValues()
+        for (i in 0..8) {
+            rawValues[i] = values[i]
+        }
+        return matrix
+    }
 }
