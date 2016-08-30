@@ -23,6 +23,8 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Engine.Status
 
+import java.io.FileNotFoundException
+
 /**
  * An abstract test class for an [Engine].
  *
@@ -94,5 +96,10 @@ abstract class EngineTest {
         val targetFps = 1000.0 / engine.millisPerUpdate
         val fps = 1.0 * getElapsedFrames() / 10.0
         assertEquals(1.0, fps / targetFps, FPS_TOLERANCE)
+    }
+
+    @Test(expected = FileNotFoundException::class)
+    fun testGetNonExistingResourceStreamShouldThrow() {
+        Engine.getResourceStream("/non_existing.txt")
     }
 }
