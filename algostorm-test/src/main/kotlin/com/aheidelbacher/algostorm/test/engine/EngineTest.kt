@@ -34,13 +34,11 @@ import java.io.FileNotFoundException
  * @property engine the engine instance that should be tested
  */
 @Ignore
-abstract class EngineTest {
+abstract class EngineTest(protected val engine: Engine) {
     companion object {
         const val MAX_TIME_LIMIT: Long = 5000
         const val FPS_TOLERANCE: Double = 0.1
     }
-
-    protected abstract val engine: Engine
 
     protected abstract fun getElapsedFrames(): Int
 

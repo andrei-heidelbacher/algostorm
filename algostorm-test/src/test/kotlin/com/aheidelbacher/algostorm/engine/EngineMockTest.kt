@@ -24,9 +24,7 @@ import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
 
-class EngineMockTest : EngineTest() {
-    override val engine: EngineMock = EngineMock()
-
+class EngineMockTest : EngineTest(EngineMock()) {
     private fun getState(): List<Int> {
         val outputStream = ByteArrayOutputStream()
         engine.serializeState(outputStream)
