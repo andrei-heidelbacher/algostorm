@@ -86,11 +86,13 @@ abstract class EngineTest(protected val engine: Engine) {
         engine.stop()
     }
 
-    @Test(timeout = MAX_TIME_LIMIT + 10000)
+    @Test(timeout = MAX_TIME_LIMIT + 10 * 1000)
     fun testAverageFpsShouldEqualTargetFps() {
-        engine.start()
-        Thread.sleep(10000)
-        engine.stop()
+        repeat(10) {
+            engine.start()
+            Thread.sleep(1000)
+            engine.stop()
+        }
         val targetFps = 1000.0 / engine.millisPerUpdate
         val fps = 1.0 * getElapsedFrames() / 10.0
         assertEquals(1.0, fps / targetFps, FPS_TOLERANCE)
