@@ -65,8 +65,17 @@ class MatrixTest {
 
     @Test
     fun testPostRotate() {
-        // do nothing
-        // do nothing another way
+        val degrees = 30F
+        val radians = degrees * Math.PI / 180.0
+        val cos = Math.cos(radians).toFloat()
+        val sin = Math.sin(radians).toFloat()
+        val expected = floatArrayOf(
+                cos, sin, 0F,
+                -sin, cos, 0F,
+                0F, 0F, 1F
+        )
+        val actual = Matrix.identity().postRotate(degrees).getRawValues()
+        assertArrayEquals(expected, actual, TOLERANCE)
     }
 
     @Test
