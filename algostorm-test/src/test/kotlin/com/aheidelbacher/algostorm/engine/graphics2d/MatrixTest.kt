@@ -64,6 +64,11 @@ class MatrixTest {
     }
 
     @Test
+    fun testPostRotate() {
+        // do nothing
+    }
+
+    @Test
     fun testGetIndices() {
         val matrix = matrixOf(floatArrayOf(
                 0F, 1F, 2F,
