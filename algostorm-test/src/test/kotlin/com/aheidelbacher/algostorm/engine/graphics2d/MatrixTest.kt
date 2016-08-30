@@ -34,4 +34,17 @@ class MatrixTest {
         val actual = Matrix.identity().postScale(sx, sy).getRawValues()
         assertArrayEquals(expected, actual, TOLERANCE)
     }
+
+    @Test
+    fun testPostTranslate() {
+        val dx = 9485F
+        val dy = -3918F
+        val expected = floatArrayOf(
+                1F, 0F, dx,
+                0F, 1F, dy,
+                0F, 0F, 1F
+        )
+        val actual = Matrix.identity().postTranslate(dx, dy).getRawValues()
+        assertArrayEquals(expected, actual, TOLERANCE)
+    }
 }
