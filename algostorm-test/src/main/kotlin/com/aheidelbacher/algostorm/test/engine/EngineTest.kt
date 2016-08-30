@@ -23,6 +23,8 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Engine.Status
 
+import java.io.FileNotFoundException
+
 /**
  * An abstract test class for an [Engine].
  *
@@ -32,8 +34,17 @@ import com.aheidelbacher.algostorm.engine.Engine.Status
  * @property engine the engine instance that should be tested
  */
 @Ignore
-abstract class EngineTest(protected val engine: Engine) {
-    @Test(timeout = 1000)
+abstract class EngineTest {
+    companion object {
+        const val MAX_TIME_LIMIT: Long = 5000
+        const val FPS_TOLERANCE: Double = 0.1
+    }
+
+    protected abstract val engine: Engine
+
+    protected abstract fun getElapsedFrames(): Int
+
+    @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantStop() {
         assertEquals(Status.STOPPED, engine.status)
         assertEquals(false, engine.isShutdown)
@@ -44,7 +55,7 @@ abstract class EngineTest(protected val engine: Engine) {
         assertEquals(false, engine.isShutdown)
     }
 
-    @Test
+    @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantShutdown() {
         assertEquals(false, engine.isShutdown)
         engine.start()
@@ -52,21 +63,43 @@ abstract class EngineTest(protected val engine: Engine) {
         assertEquals(true, engine.isShutdown)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalStateException::class, timeout = MAX_TIME_LIMIT)
     fun testStartTwiceShouldThrow() {
         engine.start()
         engine.start()
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalStateException::class, timeout = MAX_TIME_LIMIT)
     fun testShutdownTwiceShouldThrow() {
         engine.shutdown()
         engine.shutdown()
     }
 
-    @Test
+    @Test(timeout = MAX_TIME_LIMIT)
     fun testStopMultipleTimesShouldNotThrow() {
         engine.start()
         repeat(10) { engine.stop() }
+    }
+
+    @Test(timeout = MAX_TIME_LIMIT)
+    fun testRunOneSecondShouldNotThrow() {
+        engine.start()
+        Thread.sleep(1000)
+        engine.stop()
+    }
+
+    @Test(timeout = MAX_TIME_LIMIT + 10000)
+    fun testAverageFpsShouldEqualTargetFps() {
+        engine.start()
+        Thread.sleep(10000)
+        engine.stop()
+        val targetFps = 1000.0 / engine.millisPerUpdate
+        val fps = 1.0 * getElapsedFrames() / 10.0
+        assertEquals(1.0, fps / targetFps, FPS_TOLERANCE)
+    }
+
+    @Test(expected = FileNotFoundException::class)
+    fun testGetNonExistingResourceStreamShouldThrow() {
+        Engine.getResourceStream("/non_existing.txt")
     }
 }
