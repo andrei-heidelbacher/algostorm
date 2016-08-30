@@ -190,8 +190,6 @@ class CanvasMock : Canvas {
     }
 
     fun verifyEmptyDrawQueue() {
-        check(queue.isEmpty()) {
-            "There were more draw calls issued!!\nFound: ${queue.toList()}"
-        }
+        check(queue.isEmpty()) { "There were more draw calls issued!!\n" }
     }
 }
