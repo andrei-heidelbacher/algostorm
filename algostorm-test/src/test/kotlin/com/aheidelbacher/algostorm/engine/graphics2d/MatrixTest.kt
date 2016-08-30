@@ -54,4 +54,22 @@ class MatrixTest {
         assertEquals(7F, matrix[Matrix.PERSPECTIVE_1], TOLERANCE)
         assertEquals(8F, matrix[Matrix.PERSPECTIVE_2], TOLERANCE)
     }
+
+    @Test
+    fun testGetIndices() {
+        val matrix = matrixOf(floatArrayOf(
+                0F, 1F, 2F,
+                3F, 4F, 5F,
+                6F, 7F, 8F
+        ))
+        assertEquals(0F, matrix[Matrix.SCALE_X], TOLERANCE)
+        assertEquals(1F, matrix[Matrix.SKEW_X], TOLERANCE)
+        assertEquals(2F, matrix[Matrix.TRANSLATE_X], TOLERANCE)
+        assertEquals(3F, matrix[Matrix.SKEW_Y], TOLERANCE)
+        assertEquals(4F, matrix[Matrix.SCALE_Y], TOLERANCE)
+        assertEquals(5F, matrix[Matrix.TRANSLATE_Y], TOLERANCE)
+        assertEquals(6F, matrix[Matrix.PERSPECTIVE_0], TOLERANCE)
+        assertEquals(7F, matrix[Matrix.PERSPECTIVE_1], TOLERANCE)
+        assertEquals(8F, matrix[Matrix.PERSPECTIVE_2], TOLERANCE)
+    }
 }
