@@ -88,7 +88,7 @@ abstract class Engine {
      * The number of milliseconds spent in an update cycle and the resolution of
      * an atomic time unit.
      */
-    protected abstract val millisPerUpdate: Int
+    abstract val millisPerUpdate: Int
 
     /**
      * This method is invoked right before [onUpdate] is called from this
