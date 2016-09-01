@@ -60,8 +60,12 @@ object Serializer {
     }
 
     @Throws(IOException::class)
+    @JvmStatic fun <T : Any> readValue(src: InputStream, type: Class<T>): T =
+            objectMapper.readValue(src, type)
+
+    @Throws(IOException::class)
     @JvmStatic fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
-            objectMapper.readValue(src, type.java)
+            readValue(src, type.java)
 
     @Throws(IOException::class)
     @JvmStatic fun <T : Any> readValue(
