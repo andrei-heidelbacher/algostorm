@@ -2,4 +2,4 @@
 
 # getViewport
 
-`fun `[`Map`](../../com.aheidelbacher.algostorm.engine.state/-map/index.md)`.getViewport(gid: Long, currentTimeMillis: Long): `[`Viewport`](../../com.aheidelbacher.algostorm.engine.state/-tile-set/-viewport/index.md)
+`fun `[`Map`](../../com.aheidelbacher.algostorm.engine.tiled/-map/index.md)`.getViewport(gid: Long, currentTimeMillis: Long): `[`Viewport`](../../com.aheidelbacher.algostorm.engine.tiled/-tile-set/-viewport/index.md)

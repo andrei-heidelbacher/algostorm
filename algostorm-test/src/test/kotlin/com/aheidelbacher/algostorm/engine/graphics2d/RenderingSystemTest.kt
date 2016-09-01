@@ -20,13 +20,15 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Companion.isVisible
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.TileSet
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipDiagonally
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
+import com.aheidelbacher.algostorm.engine.tiled.Properties.File
+import com.aheidelbacher.algostorm.engine.tiled.TileSet
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipDiagonally
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipVertically
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
@@ -35,7 +37,7 @@ class RenderingSystemTest {
     val height = 12
     val tileWidth = 24
     val tileHeight = 24
-    val image = "testImage.png"
+    val image = File("testImage.png")
     val cameraX = 44
     val cameraY = 60
     val camera = run {
@@ -70,7 +72,7 @@ class RenderingSystemTest {
             tileWidth = tileWidth,
             tileHeight = tileHeight,
             orientation = Map.Orientation.ORTHOGONAL,
-            backgroundColor = "#ffffffff",
+            backgroundColor = Color("#ffffffff"),
             tileSets = tileSets,
             layers = layers,
             nextObjectId = layers.filterIsInstance<Layer.ObjectGroup>()
@@ -94,7 +96,7 @@ class RenderingSystemTest {
                 val x = tx * tileWidth
                 if (isVisible(camera, 1L, x, y, tileWidth, tileHeight)) {
                     canvas.verifyBitmap(
-                            image = image,
+                            image = image.path,
                             x = 0,
                             y = 0,
                             width = tileWidth,
@@ -115,7 +117,7 @@ class RenderingSystemTest {
     fun testRenderColoredObjects() {
         val objectGroup = Layer.ObjectGroup(
                 name = "objects",
-                color = "#000000ff",
+                color = Color("#000000ff"),
                 objects = mutableListOf(Object(
                         id = 1,
                         x = 0,
@@ -161,7 +163,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image,
+                image = image.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -194,7 +196,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image,
+                image = image.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -227,7 +229,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image,
+                image = image.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,

@@ -34,15 +34,3 @@
 | [verifyColor](verify-color.md) | `fun verifyColor(color: Int): Unit` |
 | [verifyEmptyDrawQueue](verify-empty-draw-queue.md) | `fun verifyEmptyDrawQueue(): Unit` |
 | [verifyRectangle](verify-rectangle.md) | `fun verifyRectangle(color: Int, width: Int, height: Int, matrix: Matrix, opacity: Float): Unit` |
-
-### Companion Object Properties
-
-| Name | Summary |
-|---|---|
-| [TOLERANCE](-t-o-l-e-r-a-n-c-e.md) | `const val TOLERANCE: Float` |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [equals](equals.md) | `fun Float.equals(other: Float): Boolean`<br>`fun FloatArray.equals(other: FloatArray): Boolean`<br>`fun Matrix.equals(other: Matrix): Boolean` |

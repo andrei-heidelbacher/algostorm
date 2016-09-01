@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
+@file:JvmName("MatrixUtil")
+
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
-object MatrixUtil {
-    const val TOLERANCE: Float = 1e-7F
+const val TOLERANCE: Float = 1e-7F
 
-    @JvmStatic fun Float.eq(other: Float): Boolean =
-            Math.abs(this - other) < TOLERANCE
+fun Float.eq(other: Float): Boolean =
+        Math.abs(this - other) < TOLERANCE
 
-    @JvmStatic fun FloatArray.eq(other: FloatArray): Boolean =
-            size == other.size && indices.all { get(it).equals(other[it]) }
+fun FloatArray.eq(other: FloatArray): Boolean =
+        size == other.size && indices.all { get(it).equals(other[it]) }
 
-    @JvmStatic fun Matrix.eq(other: Matrix): Boolean =
-            getRawValues().eq(other.getRawValues())
+fun Matrix.eq(other: Matrix): Boolean =
+        getRawValues().eq(other.getRawValues())
 
-    @JvmStatic fun matrixOf(values: FloatArray): Matrix {
-        require(values.size == 9)
-        val matrix = Matrix.identity()
-        val rawValues = matrix.getRawValues()
-        for (i in 0..8) {
-            rawValues[i] = values[i]
-        }
-        return matrix
+fun matrixOf(values: FloatArray): Matrix {
+    require(values.size == 9)
+    val matrix = Matrix.identity()
+    val rawValues = matrix.getRawValues()
+    for (i in 0..8) {
+        rawValues[i] = values[i]
     }
+    return matrix
 }

@@ -2,7 +2,7 @@
 
 # intersects
 
-`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.intersects(other: `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`): Boolean`
+`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.intersects(other: `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`): Boolean`
 
 Returns whether the two objects intersect (that is, there exists a
 pixel `(x, y)` such that it lies inside both objects).
@@ -14,7 +14,7 @@ pixel `(x, y)` such that it lies inside both objects).
 **Return**
 `true` if the two objects overlap, `false` otherwise
 
-`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.intersects(x: Int, y: Int, width: Int, height: Int): Boolean`
+`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.intersects(x: Int, y: Int, width: Int, height: Int): Boolean`
 
 Returns whether this object intersects with the specified rectangle
 (that is, there exists a pixel `(x, y)` such that it lies inside this
@@ -34,7 +34,7 @@ rectangle in pixels
 
 ### Exceptions
 
-`IllegalArgumentException` - if the given [width](intersects.md#com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion$intersects(com.aheidelbacher.algostorm.engine.state.Object, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/width) or [height](intersects.md#com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion$intersects(com.aheidelbacher.algostorm.engine.state.Object, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/height) are
+`IllegalArgumentException` - if the given [width](intersects.md#com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion$intersects(com.aheidelbacher.algostorm.engine.tiled.Object, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/width) or [height](intersects.md#com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion$intersects(com.aheidelbacher.algostorm.engine.tiled.Object, kotlin.Int, kotlin.Int, kotlin.Int, kotlin.Int)/height) are
 not positive
 
 **Return**

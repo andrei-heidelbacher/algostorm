@@ -20,7 +20,7 @@ screen. |
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `RenderingSystem(map: `[`Map`](../../com.aheidelbacher.algostorm.engine.state/-map/index.md)`, canvas: `[`Canvas`](../-canvas/index.md)`)`<br>A system which handles the rendering of all objects in the game to the screen
+| [&lt;init&gt;](-init-.md) | `RenderingSystem(map: `[`Map`](../../com.aheidelbacher.algostorm.engine.tiled/-map/index.md)`, canvas: `[`Canvas`](../-canvas/index.md)`)`<br>A system which handles the rendering of all objects in the game to the screen
 canvas. |
 
 ### Functions
@@ -37,5 +37,5 @@ game, followed by [Canvas.unlockAndPost](../-canvas/unlock-and-post.md). |
 
 | Name | Summary |
 |---|---|
-| [getViewport](get-viewport.md) | `fun `[`Map`](../../com.aheidelbacher.algostorm.engine.state/-map/index.md)`.getViewport(gid: Long, currentTimeMillis: Long): `[`Viewport`](../../com.aheidelbacher.algostorm.engine.state/-tile-set/-viewport/index.md) |
-| [isVisible](is-visible.md) | `fun isVisible(camera: `[`Rectangle`](../../com.aheidelbacher.algostorm.engine.geometry2d/-rectangle/index.md)`, gid: Long, x: Int, y: Int, width: Int, height: Int): Boolean`<br>`fun isVisible(camera: `[`Rectangle`](../../com.aheidelbacher.algostorm.engine.geometry2d/-rectangle/index.md)`, obj: `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`, color: Int?): Boolean` |
+| [getViewport](get-viewport.md) | `fun `[`Map`](../../com.aheidelbacher.algostorm.engine.tiled/-map/index.md)`.getViewport(gid: Long, currentTimeMillis: Long): `[`Viewport`](../../com.aheidelbacher.algostorm.engine.tiled/-tile-set/-viewport/index.md) |
+| [isVisible](is-visible.md) | `fun isVisible(camera: `[`Rectangle`](../../com.aheidelbacher.algostorm.engine.geometry2d/-rectangle/index.md)`, gid: Long, x: Int, y: Int, width: Int, height: Int): Boolean`<br>`fun isVisible(camera: `[`Rectangle`](../../com.aheidelbacher.algostorm.engine.geometry2d/-rectangle/index.md)`, obj: `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`, color: Int?): Boolean` |

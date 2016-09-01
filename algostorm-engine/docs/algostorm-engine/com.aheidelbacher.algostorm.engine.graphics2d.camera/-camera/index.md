@@ -22,4 +22,4 @@
 
 | Name | Summary |
 |---|---|
-| [getCamera](get-camera.md) | `fun `[`Map`](../../com.aheidelbacher.algostorm.engine.state/-map/index.md)`.getCamera(): Camera` |
+| [getCamera](get-camera.md) | `fun `[`Map`](../../com.aheidelbacher.algostorm.engine.tiled/-map/index.md)`.getCamera(): Camera` |

@@ -11,6 +11,7 @@ canvas.
 
 | Name | Summary |
 |---|---|
+| [copy](copy.md) | `fun copy(): Matrix` |
 | [get](get.md) | `operator fun get(index: Int): Float`<br>`operator fun get(row: Int, column: Int): Float` |
 | [getRawValues](get-raw-values.md) | `fun getRawValues(): FloatArray` |
 | [getValues](get-values.md) | `fun getValues(): FloatArray` |

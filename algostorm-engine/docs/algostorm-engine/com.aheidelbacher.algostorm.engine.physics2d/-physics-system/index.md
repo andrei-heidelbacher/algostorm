@@ -18,7 +18,7 @@ given object. |
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `PhysicsSystem(objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.state/-object-manager/index.md)`, publisher: Publisher)`<br>A system that handles [TransformIntent](-transform-intent/index.md) events and publishes [Transformed](../-transformed/index.md)
+| [&lt;init&gt;](-init-.md) | `PhysicsSystem(objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.tiled/-object-manager/index.md)`, publisher: Publisher)`<br>A system that handles [TransformIntent](-transform-intent/index.md) events and publishes [Transformed](../-transformed/index.md)
 and [Collision](../-collision/index.md) events. |
 
 ### Functions
@@ -37,15 +37,15 @@ object as the source and each other object as the target. |
 | Name | Summary |
 |---|---|
 | [IS_RIGID](-i-s_-r-i-g-i-d.md) | `const val IS_RIGID: String`<br>The name of the rigid property. It is of type [Boolean](#). |
-| [isRigid](is-rigid.md) | `val `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.isRigid: Boolean`<br>Returns `true` if this object contains the rigid property and it is set
+| [isRigid](is-rigid.md) | `val `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.isRigid: Boolean`<br>Returns `true` if this object contains the rigid property and it is set
 to `true`, `false` otherwise. |
 
 ### Companion Object Functions
 
 | Name | Summary |
 |---|---|
-| [intersects](intersects.md) | `fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.intersects(other: `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`): Boolean`<br>Returns whether the two objects intersect (that is, there exists a
-pixel `(x, y)` such that it lies inside both objects).`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.intersects(x: Int, y: Int, width: Int, height: Int): Boolean`<br>Returns whether this object intersects with the specified rectangle
+| [intersects](intersects.md) | `fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.intersects(other: `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`): Boolean`<br>Returns whether the two objects intersect (that is, there exists a
+pixel `(x, y)` such that it lies inside both objects).`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.intersects(x: Int, y: Int, width: Int, height: Int): Boolean`<br>Returns whether this object intersects with the specified rectangle
 (that is, there exists a pixel `(x, y)` such that it lies inside this
 object and inside the given rectangle). |
-| [transform](transform.md) | `fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.transform(dx: Int, dy: Int, rotate: Float): Unit`<br>Transforms this object with the given amounts. |
+| [transform](transform.md) | `fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.transform(dx: Int, dy: Int, rotate: Float): Unit`<br>Transforms this object with the given amounts. |

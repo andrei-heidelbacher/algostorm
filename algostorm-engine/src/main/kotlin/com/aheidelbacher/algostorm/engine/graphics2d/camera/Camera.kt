@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
-import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.tiled.Map
 
 interface Camera {
     companion object {
@@ -25,17 +25,17 @@ interface Camera {
 
         fun Map.getCamera(): Camera = object : Camera {
             override var x: Int
-                get() = properties[CAMERA_X] as Int?
+                get() = getInt(CAMERA_X)
                         ?: error("Map is missing $CAMERA_X property!")
                 set(value) {
-                    properties[CAMERA_X] = value
+                    set(CAMERA_X, value)
                 }
 
             override var y: Int
-                get() = properties[CAMERA_Y] as Int?
+                get() = getInt(CAMERA_Y)
                         ?: error("Map is missing $CAMERA_Y property!")
                 set(value) {
-                    properties[CAMERA_Y] = value
+                    set(CAMERA_Y, value)
                 }
         }
     }

@@ -18,15 +18,15 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.Map.RenderOrder
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.engine.tiled.TileSet.Viewport
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -112,7 +112,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
-        map.tileSets.forEach { canvas.loadBitmap(it.image) }
+        map.tileSets.forEach { canvas.loadBitmap(it.image.path) }
     }
 
     private var currentTimeMillis = 0L
@@ -148,7 +148,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 dy = tileSet.tileOffset.y.toFloat() + y
         )
         canvas.drawBitmap(
-                image = viewport.image,
+                image = viewport.image.path,
                 x = viewport.x,
                 y = viewport.y,
                 width = viewport.width,
@@ -175,7 +175,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private fun drawImageLayer(camera: Rectangle, layer: Layer.ImageLayer) {
         matrix.reset()
         canvas.drawBitmap(
-                image = layer.image,
+                image = layer.image.path,
                 x = camera.x - layer.offsetX,
                 y = camera.y - layer.offsetY,
                 width = camera.width,
@@ -186,7 +186,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        val color = layer.color?.let { Color.fromHtmlARGB8888(it) }
+        val color = layer.color?.let { it.color }
         layer.objects.let { objects ->
             when (layer.drawOrder) {
                 DrawOrder.TOP_DOWN ->
@@ -279,9 +279,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
-            map.backgroundColor?.let {
-                canvas.drawColor(Color.fromHtmlARGB8888(it))
-            }
+            map.backgroundColor?.let { canvas.drawColor(it.color) }
             map.layers.filter { it.visible }.forEach { layer ->
                 when (layer) {
                     is Layer.ImageLayer -> drawImageLayer(camera, layer)

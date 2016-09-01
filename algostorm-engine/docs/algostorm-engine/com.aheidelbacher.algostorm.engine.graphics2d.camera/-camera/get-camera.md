@@ -2,4 +2,4 @@
 
 # getCamera
 
-`fun `[`Map`](../../com.aheidelbacher.algostorm.engine.state/-map/index.md)`.getCamera(): `[`Camera`](index.md)
+`fun `[`Map`](../../com.aheidelbacher.algostorm.engine.tiled/-map/index.md)`.getCamera(): `[`Camera`](index.md)

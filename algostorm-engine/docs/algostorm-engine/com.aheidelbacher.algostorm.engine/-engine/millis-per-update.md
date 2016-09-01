@@ -2,7 +2,7 @@
 
 # millisPerUpdate
 
-`protected abstract val millisPerUpdate: Int`
+`abstract val millisPerUpdate: Int`
 
 The number of milliseconds spent in an update cycle and the resolution of
 an atomic time unit.

@@ -20,8 +20,8 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.test.engine.graphics2d.MatrixUtil.TOLERANCE
-import com.aheidelbacher.algostorm.test.engine.graphics2d.MatrixUtil.matrixOf
+import com.aheidelbacher.algostorm.test.engine.graphics2d.TOLERANCE
+import com.aheidelbacher.algostorm.test.engine.graphics2d.matrixOf
 
 class MatrixTest {
     @Test

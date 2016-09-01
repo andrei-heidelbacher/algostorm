@@ -18,7 +18,6 @@ package com.aheidelbacher.algostorm.test.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.test.engine.graphics2d.MatrixUtil.eq
 
 import java.util.LinkedList
 import java.util.Queue

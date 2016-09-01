@@ -2,7 +2,7 @@
 
 # transform
 
-`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.state/-object/index.md)`.transform(dx: Int, dy: Int, rotate: Float): Unit`
+`fun `[`Object`](../../com.aheidelbacher.algostorm.engine.tiled/-object/index.md)`.transform(dx: Int, dy: Int, rotate: Float): Unit`
 
 Transforms this object with the given amounts.
 

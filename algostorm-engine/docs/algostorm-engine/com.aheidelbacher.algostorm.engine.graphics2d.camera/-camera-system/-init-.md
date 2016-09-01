@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`CameraSystem(camera: `[`Camera`](../-camera/index.md)`, objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.state/-object-manager/index.md)`, publisher: Publisher, followedObjectId: Int? = null)`
+`CameraSystem(camera: `[`Camera`](../-camera/index.md)`, objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.tiled/-object-manager/index.md)`, publisher: Publisher, followedObjectId: Int? = null)`

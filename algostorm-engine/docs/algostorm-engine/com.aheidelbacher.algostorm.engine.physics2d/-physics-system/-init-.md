@@ -2,7 +2,7 @@
 
 # &lt;init&gt;
 
-`PhysicsSystem(objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.state/-object-manager/index.md)`, publisher: Publisher)`
+`PhysicsSystem(objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.tiled/-object-manager/index.md)`, publisher: Publisher)`
 
 A system that handles [TransformIntent](-transform-intent/index.md) events and publishes [Transformed](../-transformed/index.md)
 and [Collision](../-collision/index.md) events.

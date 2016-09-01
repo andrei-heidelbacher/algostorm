@@ -18,7 +18,7 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `CameraSystem(camera: `[`Camera`](../-camera/index.md)`, objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.state/-object-manager/index.md)`, publisher: Publisher, followedObjectId: Int? = null)` |
+| [&lt;init&gt;](-init-.md) | `CameraSystem(camera: `[`Camera`](../-camera/index.md)`, objectManager: `[`ObjectManager`](../../com.aheidelbacher.algostorm.engine.tiled/-object-manager/index.md)`, publisher: Publisher, followedObjectId: Int? = null)` |
 
 ### Functions
 

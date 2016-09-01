@@ -19,15 +19,11 @@ package com.aheidelbacher.algostorm.engine.serialization
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.core.JsonGenerationException
-import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 
 import java.io.IOException
 import java.io.InputStream
@@ -47,10 +43,9 @@ object Serializer {
     /**
      * The object that handles serialization and deserialization.
      */
-    @JvmField val objectMapper = jacksonObjectMapper().apply {
+    private val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         enableDefaultTyping(
@@ -59,28 +54,22 @@ object Serializer {
         )
     }
 
-    @Throws(
-            IOException::class,
-            JsonGenerationException::class,
-            JsonMappingException::class
-    )
+    @Throws(IOException::class)
     @JvmStatic fun writeValue(out: OutputStream, value: Any) {
         objectMapper.writeValue(out, value)
     }
 
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
+    @Throws(IOException::class)
     @JvmStatic fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
             objectMapper.readValue(src, type.java)
 
-    @Throws(
-            IOException::class,
-            JsonParseException::class,
-            JsonMappingException::class
-    )
+    @Throws(IOException::class)
+    @JvmStatic fun <T : Any> readValue(
+            src: InputStream,
+            typeReference: TypeReference<T>
+    ): T = objectMapper.readValue(src, typeReference)
+
+    @Throws(IOException::class)
     @JvmStatic inline fun <reified T : Any> readValue(src: InputStream): T =
-            objectMapper.readValue(src)
+            readValue(src, object : TypeReference<T>() {})
 }
