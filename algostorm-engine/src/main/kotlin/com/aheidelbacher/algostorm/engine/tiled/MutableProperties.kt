@@ -16,11 +16,23 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 import com.aheidelbacher.algostorm.engine.tiled.Properties.File
 import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 
+import java.io.ByteArrayOutputStream
+
 interface MutableProperties : Properties {
+    companion object {
+        operator fun <T : Any> MutableProperties.set(name: String, value: T) {
+            ByteArrayOutputStream().use {
+                Serializer.writeValue(it, value)
+                set(name, it.toString())
+            }
+        }
+    }
+
     override val properties: MutableMap<String, Any>
     override val propertyTypes: MutableMap<String, PropertyType>
 

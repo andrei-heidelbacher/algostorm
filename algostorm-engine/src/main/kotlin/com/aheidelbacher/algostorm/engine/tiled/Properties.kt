@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
@@ -34,6 +35,11 @@ interface Properties {
             override val propertyTypes: Map<String, PropertyType>
                 get() = propertyTypes
         }
+
+        inline fun <reified T : Any> Properties.get(name: String): T? =
+                getString(name)?.let {
+                    Serializer.readValue(it.byteInputStream())
+                }
     }
 
     enum class PropertyType {
