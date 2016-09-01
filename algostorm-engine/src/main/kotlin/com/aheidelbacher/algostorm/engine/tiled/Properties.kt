@@ -49,6 +49,8 @@ interface Properties {
     /**
      * A color in the ARGB8888 format.
      *
+     * Two colors are equal if and only if they have the same [color] property.
+     *
      * @param string the color code
      * @throws IllegalArgumentException if the given [string] doesn't conform to
      * the "#AARRGGBB" or "#RRGGBB" format (base 16, case insensitive)
@@ -101,13 +103,18 @@ interface Properties {
         val b: Int
             get() = color and 255
 
+        override fun equals(other: Any?): Boolean =
+                other is Color && color == other.color
+
+        override fun hashCode(): Int = color
+
         @JsonValue override fun toString(): String = string
     }
 
     /**
      * A path to a file.
      *
-     * @param string the raw path of this file
+     * @param string the path of this file
      */
     data class File @JsonCreator constructor(
             @JsonIgnore private val string: String
@@ -115,9 +122,15 @@ interface Properties {
         /**
          * The relative or absolute path of this file.
          */
-        val path: String = string
+        val path: String
+            get() = string
 
-        @JsonValue override fun toString(): String = path
+        override fun equals(other: Any?): Boolean =
+                other is File && path == other.path
+
+        override fun hashCode(): Int = path.hashCode()
+
+        @JsonValue override fun toString(): String = string
     }
 
     /**

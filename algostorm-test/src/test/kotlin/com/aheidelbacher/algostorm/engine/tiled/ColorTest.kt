@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
@@ -80,5 +81,12 @@ class ColorTest {
         val color = Color("#FF01AAb2")
         val blue = 0xB2
         assertEquals(blue, color.b)
+    }
+
+    @Test
+    fun testEquals() {
+        val argbRed = Color("#FFFF0000")
+        val rgbRed = Color("#FF0000")
+        assertTrue(argbRed == rgbRed)
     }
 }
