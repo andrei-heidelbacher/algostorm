@@ -27,9 +27,8 @@ package com.aheidelbacher.algostorm.engine.geometry2d
  */
 data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
     init {
-        require(width > 0 && height > 0) {
-            "Rectangle dimensions ($width x $height) must be positive!"
-        }
+        require(width > 0) { "Rectangle width $width must be positive!" }
+        require(height > 0) { "Rectangle height $height must be positive!" }
     }
 
     /**

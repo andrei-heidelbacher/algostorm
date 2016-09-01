@@ -72,7 +72,7 @@ class Object(
         require(id >= 0) { "Object id $id can't be negative!" }
         require(width > 0) { "Object $id width $width must be positive!" }
         require(height > 0) { "Object $id height $height must be positive!" }
-        this.gid = gid
+        require(gid >= 0L) { "Object $id gid $gid can't be negative!" }
     }
 
     override fun equals(other: Any?): Boolean =

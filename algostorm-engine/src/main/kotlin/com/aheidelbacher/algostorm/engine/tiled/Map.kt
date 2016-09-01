@@ -85,11 +85,11 @@ class Map(
     @Transient private lateinit var gidToTileId: IntArray
 
     init {
-        require(width > 0 && height > 0) {
-            "Map sizes ($width, $height) must be positive!"
-        }
-        require(tileWidth > 0 && tileHeight > 0) {
-            "Map tile sizes ($tileWidth, $tileHeight) must be positive!"
+        require(width > 0) { "Map width $width must be positive!" }
+        require(height > 0) { "Map height $height must be positive!" }
+        require(tileWidth > 0) { "Map tile width $tileWidth must be positive!" }
+        require(tileHeight > 0) {
+            "Map tile height $tileHeight must be positive!"
         }
         require(nextObjectId >= 0) {
             "Map next object id $nextObjectId can't be negative!"
@@ -120,7 +120,7 @@ class Map(
      * @throws IllegalStateException if there are too many objects
      */
     fun getAndIncrementNextObjectId(): Int {
-        check(nextObjectId < Int.MAX_VALUE) { "Too many objects!" }
+        check(nextObjectId < Int.MAX_VALUE) { "Too many objects in the map!" }
         val id = nextObjectId
         nextObjectId++
         return id

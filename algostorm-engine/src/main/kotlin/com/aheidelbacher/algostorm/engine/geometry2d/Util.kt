@@ -34,12 +34,10 @@ fun intersects(
         otherWidth: Int,
         otherHeight: Int
 ): Boolean {
-    require(width > 0 && height > 0) {
-        "Rectangle sizes ($width x $height) must be positive!"
-    }
-    require(otherWidth > 0 && otherHeight > 0) {
-        "Other rectangle sizes ($otherWidth x $otherHeight) must be positive!"
-    }
+    require(width > 0) { "Rectangle width must be positive!" }
+    require(height > 0) { "Rectangle height must be positive!" }
+    require(otherWidth > 0) { "Other rectangle width must be positive!" }
+    require(otherHeight > 0) { "Other rectangle height must be positive!" }
     return x < otherX + otherWidth && x + width > otherX &&
             y < otherY + otherHeight && y + height > otherY
 }

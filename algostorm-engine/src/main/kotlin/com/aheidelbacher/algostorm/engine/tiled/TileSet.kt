@@ -210,9 +210,8 @@ data class TileSet(
             val height: Int
     ) {
         init {
-            require(width >= 0 && height >= 0) {
-                "Viewport sizes ($width, $height) can't be negative!"
-            }
+            require(width >= 0) { "Viewport width can't be negative!" }
+            require(height >= 0) { "Viewport height can't be negative!" }
         }
     }
 
@@ -234,16 +233,24 @@ data class TileSet(
     }
 
     init {
-        require(tileWidth > 0 && tileHeight > 0) {
-            "$name tile sizes ($tileWidth, $tileHeight) must be positive!"
+        require(tileWidth > 0) {
+            "$name tile width $tileWidth must be positive!"
         }
-        require(imageWidth > 0 && imageHeight > 0) {
-            "$name image sizes ($imageWidth, $imageHeight) must be positive!"
+        require(tileHeight > 0) {
+            "$name tile height $tileHeight must be positive!"
+        }
+        require(imageWidth > 0) {
+            "$name image width $imageWidth must be positive!"
+        }
+        require(imageHeight > 0) {
+            "$name image height $imageHeight must be positive!"
         }
         require(margin >= 0) { "$name margin $margin can't be negative!" }
         require(spacing >= 0) { "$name spacing $spacing can't be negative!" }
-        require(columns > 0) { "$name columns $columns isn't positive!" }
-        require(tileCount > 0) { "$name tile count $tileCount isn't positive!" }
+        require(columns > 0) { "$name columns $columns must be positive!" }
+        require(tileCount > 0) {
+            "$name tile count $tileCount must be positive!"
+        }
         require(tileCount % columns == 0) {
             "$name tile count $tileCount must be divisible by columns $columns!"
         }

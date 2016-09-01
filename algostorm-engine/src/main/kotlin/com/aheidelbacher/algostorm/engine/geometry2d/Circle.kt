@@ -18,7 +18,7 @@ package com.aheidelbacher.algostorm.engine.geometry2d
 
 data class Circle(val x: Int, val y: Int, val radius: Int) {
     init {
-        require(radius >= 0) { "Circle radius $radius must not be negative!" }
+        require(radius >= 0) { "Circle radius $radius can't be negative!" }
     }
 
     fun contains(x: Int, y: Int): Boolean =
