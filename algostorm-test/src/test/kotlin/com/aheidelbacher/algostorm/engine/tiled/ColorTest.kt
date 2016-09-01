@@ -89,4 +89,10 @@ class ColorTest {
         val rgbRed = Color("#FF0000")
         assertTrue(argbRed == rgbRed)
     }
+
+    @Test
+    fun testToString() {
+        val color = Color("#FF00FF")
+        assertEquals("#ffff00ff", color.toString())
+    }
 }

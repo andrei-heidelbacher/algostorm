@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 
@@ -52,12 +51,10 @@ interface Properties {
      * Two colors are equal if and only if they have the same [color] property.
      *
      * @param string the color code
-     * @throws IllegalArgumentException if the given [string] doesn't conform to
+     * @throws IllegalArgumentException if the given string doesn't conform to
      * the "#AARRGGBB" or "#RRGGBB" format (base 16, case insensitive)
      */
-    data class Color @JsonCreator constructor(
-            @JsonIgnore private val string: String
-    ) {
+    class Color @JsonCreator constructor(string: String) {
         /**
          * The ARGB8888 encoded color.
          */
@@ -108,7 +105,8 @@ interface Properties {
 
         override fun hashCode(): Int = color
 
-        @JsonValue override fun toString(): String = string
+        @JsonValue override fun toString(): String =
+                "#${java.lang.Integer.toHexString(color)}"
     }
 
     /**
@@ -116,21 +114,18 @@ interface Properties {
      *
      * @param string the path of this file
      */
-    data class File @JsonCreator constructor(
-            @JsonIgnore private val string: String
-    ) {
+    class File @JsonCreator constructor(string: String) {
         /**
          * The relative or absolute path of this file.
          */
-        val path: String
-            get() = string
+        val path: String = string
 
         override fun equals(other: Any?): Boolean =
                 other is File && path == other.path
 
         override fun hashCode(): Int = path.hashCode()
 
-        @JsonValue override fun toString(): String = string
+        @JsonValue override fun toString(): String = path
     }
 
     /**
