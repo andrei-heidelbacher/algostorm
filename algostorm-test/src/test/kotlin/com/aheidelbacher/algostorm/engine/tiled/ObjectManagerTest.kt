@@ -99,23 +99,23 @@ class ObjectManagerTest {
     }
 
     @Test
-    fun deleteExistingShouldReturnTrue() {
+    fun removeExistingShouldReturnTrue() {
         for (id in ID_RANGE) {
-            assertEquals(true, objectManager.delete(id))
+            assertEquals(true, objectManager.remove(id))
         }
     }
 
     @Test
-    fun getAfterDeleteShouldReturnNull() {
+    fun getAfterRemoveShouldReturnNull() {
         for (id in ID_RANGE) {
-            objectManager.delete(id)
+            objectManager.remove(id)
             assertEquals(null, objectManager[id])
         }
     }
 
     @Test
-    fun deleteNonExistingShouldReturnFalse() {
-        assertEquals(false, objectManager.delete(ID_RANGE.endInclusive + 1))
+    fun removeNonExistingShouldReturnFalse() {
+        assertEquals(false, objectManager.remove(ID_RANGE.endInclusive + 1))
     }
 
     @Test

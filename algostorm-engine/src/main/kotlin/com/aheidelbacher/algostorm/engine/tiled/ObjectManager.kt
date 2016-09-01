@@ -18,6 +18,8 @@ package com.aheidelbacher.algostorm.engine.tiled
 
 import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 
+import java.util.HashMap
+
 /**
  * A manager which offers easy creation, deletion and retrieval of objects from
  * a specified [Layer.ObjectGroup] of a given [Map].
@@ -112,21 +114,21 @@ class ObjectManager(private val map: Map, name: String) {
             gid = gid,
             rotation = rotation,
             visible = visible,
-            properties = properties,
-            propertyTypes = propertyTypes
+            properties = HashMap(properties),
+            propertyTypes = HashMap(propertyTypes)
     ).apply {
         objectGroup.objects.add(this)
         objectMap[id] = this
     }
 
     /**
-     * Deletes the object with the given id.
+     * Removes the object with the given id from this object manager.
      *
-     * @param objectId the id of the object that should be deleted
-     * @return `true` if the specified object was successfully deleted, `false`
+     * @param objectId the id of the object that should be removed
+     * @return `true` if the specified object was successfully removed, `false`
      * if it didn't exist in this object group
      */
-    fun delete(objectId: Int): Boolean = objectMap[objectId]?.let { obj ->
+    fun remove(objectId: Int): Boolean = objectMap[objectId]?.let { obj ->
         objectMap.remove(objectId)
         objectGroup.objects.remove(obj)
     } ?: false
