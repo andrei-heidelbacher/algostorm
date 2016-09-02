@@ -112,6 +112,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
+        //map.tileSets.map(TileSet::image).map(File::path).forEach { canvas.loadBitmap(it) }
         map.tileSets.forEach { canvas.loadBitmap(it.image.path) }
     }
 
@@ -186,7 +187,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        val color = layer.color?.let { it.color }
+        val color = layer.color?.color
         layer.objects.let { objects ->
             when (layer.drawOrder) {
                 DrawOrder.TOP_DOWN ->
@@ -279,8 +280,8 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
-            map.backgroundColor?.let { canvas.drawColor(it.color) }
-            map.layers.filter { it.visible }.forEach { layer ->
+            map.backgroundColor?.color?.let { canvas.drawColor(it) }
+            map.layers.filter(Layer::visible).forEach { layer ->
                 when (layer) {
                     is Layer.ImageLayer -> drawImageLayer(camera, layer)
                     is Layer.ObjectGroup -> drawObjectGroup(camera, layer)

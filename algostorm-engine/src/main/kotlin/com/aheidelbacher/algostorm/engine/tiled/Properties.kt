@@ -37,8 +37,8 @@ interface Properties {
         }
 
         inline fun <reified T : Any> Properties.get(name: String): T? =
-                getString(name)?.let {
-                    Serializer.readValue(it.byteInputStream())
+                getString(name)?.byteInputStream()?.use {
+                    Serializer.readValue(it)
                 }
     }
 
@@ -54,8 +54,6 @@ interface Properties {
     /**
      * A color in the ARGB8888 format.
      *
-     * Two colors are equal if and only if they have the same [color] property.
-     *
      * @param string the color code
      * @throws IllegalArgumentException if the given string doesn't conform to
      * the "#AARRGGBB" or "#RRGGBB" format (base 16, case insensitive)
@@ -64,48 +62,58 @@ interface Properties {
         /**
          * The ARGB8888 encoded color.
          */
-        val color: Int
-
-        init {
+        val color: Int = run {
+            if (string == "") {
+                return@run 0
+            }
             val code = string
             require((code.length == 7 || code.length == 9) && code[0] == '#') {
                 "Invalid color code $code format!"
             }
             val argbCode = code.drop(1)
-            require(argbCode.all { Character.digit(it, 16) != -1 }) {
+            require(argbCode.none { Character.digit(it, 16) == -1 }) {
                 "Color $code contains invalid characters!"
             }
             val argb = java.lang.Long.parseLong(argbCode, 16).toInt()
-            color = if (code.length == 9) argb else argb or (255 shl 24)
+            if (code.length == 9) argb else argb or (255 shl 24)
         }
 
         /**
-         * The alpha component of this color. It is a value between `0` and
-         * `255`.
+         * The alpha component of this color.
+         *
+         * It is a value between `0` and `255`.
          */
         val a: Int
             get() = color shr 24 and 255
 
         /**
-         * The red component of this color. It is a value between `0` and `255`.
+         * The red component of this color.
+         *
+         * It is a value between `0` and `255`.
          */
         val r: Int
             get() = color shr 16 and 255
 
         /**
-         * The green component of this color. It is a value between `0` and
-         * `255`.
+         * The green component of this color.
+         *
+         * It is a value between `0` and `255`.
          */
         val g: Int
             get() = color shr 8 and 255
 
         /**
-         * The blue component of this color. It is a value between `0` and
-         * `255`.
+         * The blue component of this color.
+         *
+         * It is a value between `0` and `255`.
          */
         val b: Int
             get() = color and 255
 
+        /**
+         * Two colors are equal if and only if they have the same [color]
+         * property.
+         */
         override fun equals(other: Any?): Boolean =
                 other is Color && color == other.color
 
@@ -141,6 +149,9 @@ interface Properties {
 
     /**
      * The types of the existing properties.
+     *
+     * If the type for a given property is missing, it should be assumed the
+     * property is of type [PropertyType.STRING].
      */
     val propertyTypes: Map<String, PropertyType>
 

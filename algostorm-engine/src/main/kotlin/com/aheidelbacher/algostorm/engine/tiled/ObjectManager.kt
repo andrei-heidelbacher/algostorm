@@ -42,7 +42,7 @@ class ObjectManager(private val map: Map, name: String) {
     }
 
     private val objectMap =
-            objectGroup.objects.associateByTo(hashMapOf()) { it.id }
+            objectGroup.objects.associateByTo(hashMapOf(), Object::id)
 
     /**
      * A lazy view of all the objects in the associated object group.

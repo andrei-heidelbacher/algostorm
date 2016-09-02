@@ -42,7 +42,8 @@ import kotlin.collections.Map
  * @property spacing the spacing between adjacent tiles in pixels
  * @property columns the number of tiles per row
  * @property tileCount the number of tiles present in this tile set
- * @property tileOffset the rendering offset which should be applied
+ * @property tileOffset the rendering offset in pixels which should be applied
+ * when rendering tiles from this tile set
  * @property properties the properties of this tile set
  * @property tileProperties properties of individual tiles
  * @property tiles meta-data associated to particular tiles of this tile set
@@ -63,7 +64,7 @@ data class TileSet(
         val spacing: Int,
         val columns: Int,
         @JsonProperty("tilecount") val tileCount: Int,
-        @JsonProperty("tileoffset") val tileOffset: Offset = Offset(0, 0),
+        @JsonProperty("tileoffset") val tileOffset: Point = Point(0, 0),
         @JsonProperty("transparentcolor") val transparentColor: Color? = null,
         private val tiles: Map<Int, Tile> = emptyMap(),
         override val properties: Map<String, Any> = emptyMap(),
@@ -74,15 +75,6 @@ data class TileSet(
         @JsonProperty("tilepropertytypes") private val tilePropertyTypes
         : Map<Int, Map<String, PropertyType>> = emptyMap()
 ) : Properties {
-    /**
-     * Indicates an offset which should be applied when rendering any tile from
-     * this tile set.
-     *
-     * @property x the x-axis offset in pixels
-     * @property y the y-axis offset in pixels
-     */
-    data class Offset(val x: Int, val y: Int)
-
     /**
      * An object containing meta-data associated to this tile.
      *
@@ -184,7 +176,7 @@ data class TileSet(
             require(animation?.isNotEmpty() ?: true) {
                 "Animation can't have empty frame sequence!"
             }
-            require(objectGroup?.objects?.all { it.gid == 0L } ?: true) {
+            require(objectGroup?.objects?.none { it is Object.Tile } ?: true) {
                 "Tile collision object group can't contain tile objects!"
             }
         }
