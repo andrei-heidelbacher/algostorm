@@ -36,13 +36,17 @@ import kotlin.system.measureNanoTime
  * All the engine methods are thread safe as long as the complete construction
  * of the engine and initialization of the state happen-before any other method
  * call.
+ *
+ * @property millisPerUpdate the number of milliseconds spent in an update cycle
+ * and the resolution of an atomic time unit
+ * @throws IllegalArgumentException if [millisPerUpdate] is not positive
  */
-abstract class Engine {
+abstract class Engine(val millisPerUpdate: Int) {
     companion object {
         /**
          * Name of the engine thread.
          */
-        const val NAME: String = "ALGOSTORM_ENGINE"
+        const val NAME: String = "ALGOSTORM"
 
         /**
          * Returns the resource file with the given name using the [Engine]
@@ -72,6 +76,12 @@ abstract class Engine {
     private val internalStatus = AtomicReference(Status.STOPPED)
     private val internalShutdownStatus = AtomicBoolean(false)
 
+    init {
+        require(millisPerUpdate > 0) {
+            "Millis spent in an update cycle must be positive!"
+        }
+    }
+
     /**
      * The current status of this engine.
      */
@@ -85,40 +95,35 @@ abstract class Engine {
         get() = internalShutdownStatus.get()
 
     /**
-     * The number of milliseconds spent in an update cycle and the resolution of
-     * an atomic time unit.
-     */
-    abstract val millisPerUpdate: Int
-
-    /**
+     * The entry point into the input-handling logic.
+     *
      * This method is invoked right before [onUpdate] is called from this
      * engine's thread while this engine is running. The call to this method is
      * synchronized with the state lock.
-     *
-     * It is the entry point into the input-handling logic.
      */
     protected abstract fun onHandleInput(): Unit
 
     /**
+     * The entry point into the game logic.
+     *
      * This method is invoked at most once every [millisPerUpdate] from this
      * engine's thread while this engine is running. The call to this method is
      * synchronized with the state lock.
-     *
-     * It is the entry point into the game logic.
      */
     protected abstract fun onUpdate(): Unit
 
     /**
+     * The entry point into the rendering logic.
+     *
      * This method is invoked right after [onUpdate] returns from this engine's
      * thread while this engine is running. The call to this method is
      * synchronized with the state lock.
-     *
-     * It is the entry point into the rendering logic.
      */
     protected abstract fun onRender(): Unit
 
     /**
      * Retrieves the current game state and serializes it to the given stream.
+     *
      * The call to this method is synchronized with the state lock.
      *
      * @param outputStream the stream to which the game state is written
@@ -126,14 +131,14 @@ abstract class Engine {
     protected abstract fun writeStateToStream(outputStream: OutputStream): Unit
 
     /**
-     * Clears the current game state for a clean shutdown. The call to this
-     * method is synchronized with the state lock.
+     * Clears the current game state for a clean shutdown.
+     *
+     * The call to this method is synchronized with the state lock.
      */
     protected abstract fun clearState(): Unit
 
     /**
-     * Sets the [status] to [Status.RUNNING] and starts the engine thread. The
-     * engine `status` must be [Status.STOPPED] at the time of calling.
+     * Sets the [status] to [Status.RUNNING] and starts the engine thread.
      *
      * The engine thread automatically sets the `status` to `Status.STOPPED`
      * after terminating (either normally or exceptionally).
@@ -186,8 +191,9 @@ abstract class Engine {
 
     /**
      * Sets the engine [status] to [Status.STOPPING] and then joins the engine
-     * thread to the current thread. If the join succeeds, the `status` will be
-     * set to [Status.STOPPED].
+     * thread to the current thread.
+     *
+     * If the join succeeds, the `status` will be set to [Status.STOPPED].
      *
      * If this engine attempts to stop itself, it will signal to stop processing
      * ticks, but will not join. As a consequence, subsequent calls to `status`
@@ -208,8 +214,8 @@ abstract class Engine {
     }
 
     /**
-     * [Stops][stop] and [clears][clearState] this engine, unsubscribes all its
-     * systems from the event bus and sets the [isShutdown] flag to `true`.
+     * [Stops][stop] and [clears][clearState] this engine and sets the
+     * [isShutdown] flag to `true`.
      *
      * @throws IllegalStateException if the engine is already shutdown
      * @throws InterruptedException if the current thread is interrupted while

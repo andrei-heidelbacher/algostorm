@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 import com.aheidelbacher.algostorm.engine.tiled.Properties.File
 import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
-import com.fasterxml.jackson.annotation.JsonInclude
 
 import kotlin.collections.Map
 
@@ -64,7 +64,7 @@ data class TileSet(
         val spacing: Int,
         val columns: Int,
         @JsonProperty("tilecount") val tileCount: Int,
-        @JsonProperty("tileoffset") val tileOffset: Point = Point(0, 0),
+        @JsonProperty("tileoffset") val tileOffset: Offset = Offset(0, 0),
         @JsonProperty("transparentcolor") val transparentColor: Color? = null,
         private val tiles: Map<Int, Tile> = emptyMap(),
         override val properties: Map<String, Any> = emptyMap(),
@@ -75,6 +75,15 @@ data class TileSet(
         @JsonProperty("tilepropertytypes") private val tilePropertyTypes
         : Map<Int, Map<String, PropertyType>> = emptyMap()
 ) : Properties {
+    /**
+     * Indicates an offset which should be applied when rendering any tile from
+     * this tile set.
+     *
+     * @property x the x-axis offset in pixels
+     * @property y the y-axis offset in pixels
+     */
+    data class Offset(val x: Int, val y: Int)
+
     /**
      * An object containing meta-data associated to this tile.
      *
@@ -121,28 +130,6 @@ data class TileSet(
              * Flips this global tile id diagonally.
              */
             fun Long.flipDiagonally(): Long = xor(0x20000000)
-
-            /**
-             * Returns the set flags on this global tile id.
-             */
-            val Long.flags: Long
-                get() = and(0xE0000000)
-
-            /**
-             * Clears the flags on this global tile id and then sets the given
-             * flags.
-             *
-             * @param flags the flags which should replaced the current flags
-             */
-            fun Long.setFlags(flags: Long): Long =
-                    clearFlags().toLong() or flags
-
-            /**
-             * Sets the given flags on this local tile id.
-             *
-             * @param flags the flags which should be set
-             */
-            fun Int.setFlags(flags: Long): Long = toLong() or flags
 
             /**
              * Clears all flag bits.

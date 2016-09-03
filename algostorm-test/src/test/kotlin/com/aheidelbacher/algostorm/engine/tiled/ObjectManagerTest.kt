@@ -93,8 +93,6 @@ class ObjectManagerTest {
             val obj = objectManager[id]
             assertEquals(obj?.x, id * TILE_WIDTH)
             assertEquals(obj?.y, id * TILE_HEIGHT)
-            assertEquals(obj?.width, TILE_WIDTH)
-            assertEquals(obj?.height, TILE_HEIGHT)
         }
     }
 

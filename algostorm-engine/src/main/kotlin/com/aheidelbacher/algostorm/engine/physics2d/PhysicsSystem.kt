@@ -16,9 +16,10 @@
 
 package com.aheidelbacher.algostorm.engine.physics2d
 
-import com.aheidelbacher.algostorm.engine.geometry2d.intersects
+import com.aheidelbacher.algostorm.engine.geometry2d.intersectShapes
 import com.aheidelbacher.algostorm.engine.tiled.Object
 import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.getShape
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -72,47 +73,8 @@ class PhysicsSystem(
          * @param other the object with which the intersection is checked
          * @return `true` if the two objects overlap, `false` otherwise
          */
-        fun Object.intersects(other: Object): Boolean = intersects(
-                x = x,
-                y = y,
-                width = width,
-                height = height,
-                otherX = other.x,
-                otherY = other.y,
-                otherWidth = other.width,
-                otherHeight = other.height
-        )
-
-        /**
-         * Returns whether this object intersects with the specified rectangle
-         * (that is, there exists a pixel `(x, y)` such that it lies inside this
-         * object and inside the given rectangle).
-         *
-         * @param x the x-axis coordinate of the top-left corner of the
-         * rectangle in pixels
-         * @param y the y-axis coordinate of the top-left corner of the
-         * rectangle in pixels
-         * @param width the width of the rectangle in pixels
-         * @param height the height of the rectangle in pixels
-         * @return `true` if the two objects overlap, `false` otherwise
-         * @throws IllegalArgumentException if the given [width] or [height] are
-         * not positive
-         */
-        fun Object.intersects(
-                x: Int,
-                y: Int,
-                width: Int,
-                height: Int
-        ): Boolean = intersects(
-                x = this.x,
-                y = this.y,
-                width = this.width,
-                height = this.height,
-                otherX = x,
-                otherY = y,
-                otherWidth = width,
-                otherHeight = height
-        )
+        fun Object.intersects(other: Object): Boolean =
+                intersectShapes(getShape(), other.getShape())
     }
 
     /**

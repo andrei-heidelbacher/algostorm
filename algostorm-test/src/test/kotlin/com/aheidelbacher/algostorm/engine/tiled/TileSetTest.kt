@@ -21,8 +21,6 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -48,7 +46,8 @@ class TileSetTest {
 
     @Test
     fun testTileSetDeserialization() {
-        println(Serializer.readValue<TileSet>(fileStream))
+        val ts = Serializer.readValue<TileSet>(fileStream)
+        println(ts)
     }
 
     @Test
@@ -56,30 +55,6 @@ class TileSetTest {
         val bos = ByteArrayOutputStream()
         val ts = Serializer.readValue<TileSet>(fileStream)
         Serializer.writeValue(bos, ts)
-        println(bos.toString("UTF-8"))
-    }
-
-    sealed class A(val a: Int) {
-        companion object {
-            @JvmStatic @JsonCreator operator fun invoke(
-                    a: Int,
-                    b: Int? = null,
-                    c: Int? = null
-            ): A = if (b != null) B(a, b) else if (c != null) C(a, c) else
-                throw IllegalArgumentException()
-        }
-        class B(a: Int, val b: Int): A(a)
-        class C(a: Int, val c: Int): A(a)
-    }
-
-    @Test
-    fun testABC() {
-        val a = A.B(5, 6)
-        val bos = ByteArrayOutputStream()
-        Serializer.writeValue(bos, a)
-        val bis = bos.toByteArray().inputStream()
-        val desA = Serializer.readValue<A>(bis)
-        println(desA.a)
-        println(desA is A.B)
+        println(bos.toString())
     }
 }

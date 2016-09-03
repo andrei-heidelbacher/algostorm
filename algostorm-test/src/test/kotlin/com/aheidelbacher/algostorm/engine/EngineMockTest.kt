@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 
 class EngineMockTest : EngineTest(EngineMock()) {
     private fun getState(): List<Int> {
@@ -50,5 +51,27 @@ class EngineMockTest : EngineTest(EngineMock()) {
         Thread.sleep(1000)
         engine.shutdown()
         assertEquals(0, getState().size)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testCreateEngineWithZeroMillisPerUpdateShouldThrow() {
+        object : Engine(0) {
+            override fun clearState() {}
+            override fun onHandleInput() {}
+            override fun onRender() {}
+            override fun onUpdate() {}
+            override fun writeStateToStream(outputStream: OutputStream) {}
+        }
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testCreateEngineWithNegativeMillisPerUpdateShouldThrow() {
+        object : Engine(-25) {
+            override fun clearState() {}
+            override fun onHandleInput() {}
+            override fun onRender() {}
+            override fun onUpdate() {}
+            override fun writeStateToStream(outputStream: OutputStream) {}
+        }
     }
 }

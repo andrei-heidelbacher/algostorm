@@ -103,7 +103,7 @@ class RenderingSystemTest {
                             height = tileHeight,
                             matrix = Matrix.identity().postTranslate(
                                     dx = x - camera.x.toFloat(),
-                                    dy = y - camera.y.toFloat()
+                                    dy = y - tileHeight + 1 - camera.y.toFloat()
                             ),
                             opacity = 1F
                     )
@@ -170,7 +170,7 @@ class RenderingSystemTest {
                 height = tileHeight,
                 matrix = Matrix.identity().postScale(-1F, 1F).postTranslate(
                         dx = tileWidth - camera.x.toFloat(),
-                        dy = -camera.y.toFloat()
+                        dy = -camera.y.toFloat() - tileHeight + 1
                 ),
                 opacity = 1F
         )
@@ -203,7 +203,7 @@ class RenderingSystemTest {
                 height = tileHeight,
                 matrix = Matrix.identity().postScale(1F, -1F).postTranslate(
                         dx = -camera.x.toFloat(),
-                        dy = tileHeight - camera.y.toFloat()
+                        dy = -camera.y.toFloat() + 1
                 ),
                 opacity = 1F
         )
@@ -238,7 +238,7 @@ class RenderingSystemTest {
                         .postRotate(90F)
                         .postScale(1F, -1F).postTranslate(
                         dx = tileWidth - camera.x.toFloat(),
-                        dy = tileHeight - camera.y.toFloat()
+                        dy = -camera.y.toFloat() + 1
                 ),
                 opacity = 1F
         )

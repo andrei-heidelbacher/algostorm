@@ -42,8 +42,8 @@ class CameraSystem(
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
             objectManager[id]?.let { obj ->
-                camera.x = obj.x + obj.width / 2
-                camera.y = obj.y + obj.height / 2
+                camera.x = obj.x //+ obj.width / 2
+                camera.y = obj.y //+ obj.height / 2
             }
         }
     }

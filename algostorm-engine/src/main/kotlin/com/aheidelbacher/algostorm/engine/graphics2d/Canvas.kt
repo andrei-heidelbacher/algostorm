@@ -31,10 +31,12 @@ interface Canvas {
      * Loads the image at the given location.
      *
      * @param image the location of the image
+     * @param transparentColor the color which should be remapped to
+     * `0x00000000` when loading the bitmap
      * @throws FileNotFoundException if the given image doesn't exist
      */
     @Throws(FileNotFoundException::class)
-    fun loadBitmap(image: String): Unit
+    fun loadBitmap(image: String, transparentColor: Int): Unit
 
     /**
      * Releases all loaded bitmap resources, making them unavailable to future
@@ -121,6 +123,33 @@ interface Canvas {
             color: Int,
             width: Int,
             height: Int,
+            matrix: Matrix,
+            opacity: Float
+    )
+
+    fun drawEllipse(
+            color: Int,
+            width: Int,
+            height: Int,
+            matrix: Matrix,
+            opacity: Float
+    )
+
+    fun drawLine(
+            color: Int,
+            fromX: Int,
+            fromY: Int,
+            toX: Int,
+            toY: Int,
+            matrix: Matrix,
+            opacity: Float
+    )
+
+    fun drawPolygon(
+            color: Int,
+            vertexCount: Int,
+            verticesX: IntArray,
+            verticesY: IntArray,
             matrix: Matrix,
             opacity: Float
     )

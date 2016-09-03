@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -27,19 +28,18 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 import com.aheidelbacher.algostorm.engine.tiled.Properties.File
 import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
-import com.fasterxml.jackson.annotation.JsonInclude
+
+import kotlin.collections.Map
 
 /**
  * An abstract layer in the game world.
  *
- * Two layers are equal if and only if they have the same name.
- *
  * @property name the name of this layer
  * @property visible whether this layer should be rendered or not
- * @property opacity the opacity of this layer; should be a value between `0`
- * and `1`
+ * @property opacity the opacity of this layer
  * @property offsetX the x-axis rendering offset in pixels
  * @property offsetY the y-axis rendering offset in pixels
+ * @throws IllegalArgumentException if [opacity] is not in the range `0..1`
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -58,18 +58,30 @@ sealed class Layer(
         @JsonProperty("offsetx") val offsetX: Int = 0,
         @JsonProperty("offsety") val offsetY: Int = 0
 ) : MutableProperties {
+    final override val properties: MutableMap<String, Any> = hashMapOf()
+
+    @JsonProperty("propertytypes")
+    final override val propertyTypes: MutableMap<String, PropertyType> =
+            hashMapOf()
+
     init {
         require(0F <= opacity && opacity <= 1F) {
             "$name opacity $opacity must be in the range 0..1!"
         }
     }
 
+    /**
+     * Two layers are equal if and only if they have the same name.
+     *
+     * @param other the layer with which equality is checked
+     * @return `true` if the two layers have the same name, `false` otherwise
+     */
     final override fun equals(other: Any?): Boolean =
             other is Layer && name == other.name
 
     final override fun hashCode(): Int = name.hashCode()
 
-    override fun toString(): String = "${javaClass.simpleName}($name)"
+    final override fun toString(): String = "${javaClass.simpleName}($name)"
 
     /**
      * A layer which consists of `width x height` tiles, where `width` and
@@ -80,22 +92,13 @@ sealed class Layer(
      * `y = i / width`.
      */
     class TileLayer(
-            @JsonProperty("name") name: String,
+            name: String,
             val data: LongArray,
-            @JsonProperty("visible") visible: Boolean = true,
-            @JsonProperty("opacity") opacity: Float = 1F,
+            visible: Boolean = true,
+            opacity: Float = 1F,
             @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0,
-            override val properties: MutableMap<String, Any> = hashMapOf(),
-            @JsonProperty("propertytypes") override val propertyTypes
-            : MutableMap<String, PropertyType> = hashMapOf()
-    ) : Layer(
-            name = name,
-            visible = visible,
-            opacity = opacity,
-            offsetX = offsetX,
-            offsetY = offsetY
-    )
+            @JsonProperty("offsety") offsetY: Int = 0
+    ) : Layer(name, visible, opacity, offsetX, offsetY)
 
     /**
      * A layer which consists of a single [image].
@@ -103,22 +106,13 @@ sealed class Layer(
      * @param image the URI of the image that should be rendered
      */
     class ImageLayer(
-            @JsonProperty("name") name: String,
+            name: String,
             var image: File,
-            @JsonProperty("visible") visible: Boolean = true,
-            @JsonProperty("opacity") opacity: Float = 1F,
+            visible: Boolean = true,
+            opacity: Float = 1F,
             @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0,
-            override val properties: MutableMap<String, Any> = hashMapOf(),
-            @JsonProperty("propertytpes") override val propertyTypes
-            : MutableMap<String, PropertyType> = hashMapOf()
-    ) : Layer(
-            name = name,
-            visible = visible,
-            opacity = opacity,
-            offsetX = offsetX,
-            offsetY = offsetY
-    )
+            @JsonProperty("offsety") offsetY: Int = 0
+    ) : Layer(name, visible, opacity, offsetX, offsetY)
 
     /**
      * A layer which contains a set of [objects].
@@ -131,24 +125,15 @@ sealed class Layer(
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     class ObjectGroup(
-            @JsonProperty("name") name: String,
+            name: String,
             val objects: MutableList<Object>,
             @JsonProperty("draworder") val drawOrder: DrawOrder = TOP_DOWN,
             val color: Color? = null,
-            @JsonProperty("visible") visible: Boolean = true,
-            @JsonProperty("opacity") opacity: Float = 1F,
+            visible: Boolean = true,
+            opacity: Float = 1F,
             @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0,
-            override val properties: MutableMap<String, Any> = hashMapOf(),
-            @JsonProperty("propertytypes") override val propertyTypes
-            : MutableMap<String, PropertyType> = hashMapOf()
-    ) : Layer(
-            name = name,
-            visible = visible,
-            opacity = opacity,
-            offsetX = offsetX,
-            offsetY = offsetY
-    ) {
+            @JsonProperty("offsety") offsetY: Int = 0
+    ) : Layer(name, visible, opacity, offsetX, offsetY) {
         /**
          * The order in which objects are rendered.
          */

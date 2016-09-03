@@ -16,9 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
-
-import java.util.HashMap
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
 
 /**
  * A manager which offers easy creation, deletion and retrieval of objects from
@@ -84,8 +82,6 @@ class ObjectManager(private val map: Map, name: String) {
      * @param rotation the rotation of this object around the top-left corner in
      * clock-wise degrees
      * @param visible whether this object should be rendered or not
-     * @param properties the properties of this object
-     * @return the created object
      * @throws IllegalStateException if there are too many objects in this
      * object group
      * @throws IllegalArgumentException if [gid] is negative or if [width] or
@@ -96,26 +92,28 @@ class ObjectManager(private val map: Map, name: String) {
             type: String = "",
             x: Int,
             y: Int,
-            width: Int,
-            height: Int,
-            gid: Long = 0L,
+            width: Int = 0,
+            height: Int = 0,
             rotation: Float = 0F,
             visible: Boolean = true,
-            properties: MutableMap<String, Any> = hashMapOf(),
-            propertyTypes: MutableMap<String, PropertyType> = hashMapOf()
+            gid: Long? = null,
+            ellipse: Boolean? = null,
+            polygon: List<Point>? = null,
+            polyline: List<Point>? = null
     ) : Object = Object(
             id = map.getAndIncrementNextObjectId(),
             name = name,
             type = type,
+            visible = visible,
             x = x,
             y = y,
+            rotation = rotation,
             width = width,
             height = height,
             gid = gid,
-            rotation = rotation,
-            visible = visible,
-            properties = HashMap(properties),
-            propertyTypes = HashMap(propertyTypes)
+            ellipse = ellipse,
+            polygon = polygon,
+            polyline = polyline
     ).apply {
         objectGroup.objects.add(this)
         objectMap[id] = this

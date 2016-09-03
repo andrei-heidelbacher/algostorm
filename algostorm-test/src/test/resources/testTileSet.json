@@ -32,14 +32,23 @@
             "visible":true,
             "width":24,
             "x":0,
-            "y":0
+            "y":0,
+            "properties":{
+              "z":5
+            },
+            "propertytypes":{
+              "z":"int"
+            }
           }],
         "opacity":1,
         "type":"objectgroup",
         "visible":true,
         "width":0,
         "x":0,
-        "y":0
+        "y":0,
+        "properties":{
+          "z":"alabala"
+        }
       }
     },
     "81":

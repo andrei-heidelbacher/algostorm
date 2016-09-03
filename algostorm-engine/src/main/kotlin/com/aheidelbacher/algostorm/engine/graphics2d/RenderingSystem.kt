@@ -23,10 +23,12 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.tiled.Map
 import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder
 import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Viewport
+import com.aheidelbacher.algostorm.engine.tiled.getBoundingBox
+import com.aheidelbacher.algostorm.engine.tiled.getViewport
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -56,34 +58,11 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 y: Int,
                 width: Int,
                 height: Int
-        ): Boolean = gid != 0L && camera.intersects(x, y, width, height)
+        ): Boolean = gid != 0L &&
+                camera.intersects(x, y - height + 1, width, height)
 
-        @JvmStatic fun isVisible(
-                camera: Rectangle,
-                obj: Object,
-                color: Int?
-        ): Boolean = obj.visible && (obj.gid != 0L || color != null) &&
-                camera.intersects(obj.x, obj.y, obj.width, obj.height)
-
-        fun Map.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
-            val tileSet = getTileSet(gid)
-            val localTileId = getTileId(gid)
-            val animation = tileSet.getTile(localTileId).animation
-            val tileId = if (animation == null) {
-                localTileId
-            } else {
-                var elapsedTimeMillis = currentTimeMillis % animation.sumBy {
-                    it.duration
-                }
-                var i = 0
-                do {
-                    elapsedTimeMillis -= animation[i].duration
-                    ++i
-                } while (elapsedTimeMillis >= 0)
-                animation[i - 1].tileId
-            }
-            return tileSet.getViewport(tileId)
-        }
+        @JvmStatic fun Object.isVisible(camera: Rectangle): Boolean =
+                visible && camera.intersects(getBoundingBox())
     }
 
     /**
@@ -112,20 +91,21 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
-        //map.tileSets.map(TileSet::image).map(File::path).forEach { canvas.loadBitmap(it) }
-        map.tileSets.forEach { canvas.loadBitmap(it.image.path) }
+        map.tileSets.forEach {
+            canvas.loadBitmap(it.image.path, it.transparentColor?.color ?: 0)
+        }
     }
 
     private var currentTimeMillis = 0L
 
     private fun drawGid(
             gid: Long,
-            opacity: Float,
             x: Int,
             y: Int,
             width: Int,
             height: Int,
-            rotation: Float
+            rotation: Float,
+            opacity: Float
     ) {
         val tileSet = map.getTileSet(gid)
         val viewport = map.getViewport(gid, currentTimeMillis)
@@ -146,7 +126,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
         }.postRotate(rotation).postTranslate(
                 dx = tileSet.tileOffset.x.toFloat() + x,
-                dy = tileSet.tileOffset.y.toFloat() + y
+                dy = tileSet.tileOffset.y.toFloat() + y - height + 1
         )
         canvas.drawBitmap(
                 image = viewport.image.path,
@@ -159,97 +139,165 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         )
     }
 
-    private fun drawRectangle(
-            color: Int,
-            opacity: Float,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            rotation: Float
-    ) {
-        matrix.reset()
-        matrix.postRotate(rotation).postTranslate(x.toFloat(), y.toFloat())
-        canvas.drawRectangle(color, width, height, matrix, opacity)
+    private fun Object.Tile.draw(offsetX: Int, offsetY: Int, opacity: Float) {
+        drawGid(gid, x + offsetX, y + offsetY, width, height, rotation, opacity)
     }
 
-    private fun drawImageLayer(camera: Rectangle, layer: Layer.ImageLayer) {
+    private fun Object.Rectangle.draw(
+            color: Color,
+            offsetX: Int,
+            offsetY: Int,
+            opacity: Float
+    ) {
         matrix.reset()
-        canvas.drawBitmap(
-                image = layer.image.path,
-                x = camera.x - layer.offsetX,
-                y = camera.y - layer.offsetY,
-                width = camera.width,
-                height = camera.height,
+        matrix.postRotate(rotation)
+                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
+        canvas.drawRectangle(color.color, width, height, matrix, opacity)
+    }
+
+    private fun Object.Ellipse.draw(
+            color: Color,
+            offsetX: Int,
+            offsetY: Int,
+            opacity: Float
+    ) {
+        matrix.reset()
+        matrix.postRotate(rotation)
+                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
+        canvas.drawEllipse(color.color, width, height, matrix, opacity)
+    }
+
+    private fun Object.Polygon.draw(
+            color: Color,
+            offsetX: Int,
+            offsetY: Int,
+            opacity: Float
+    ) {
+        matrix.reset()
+        matrix.postRotate(rotation)
+                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
+        canvas.drawPolygon(
+                color = color.color,
+                vertexCount = polygon.size,
+                verticesX = IntArray(polygon.size) { polygon[it].x },
+                verticesY = IntArray(polygon.size) { polygon[it].y },
                 matrix = matrix,
-                opacity = layer.opacity
+                opacity = opacity
         )
     }
 
-    private fun drawObjectGroup(camera: Rectangle, layer: Layer.ObjectGroup) {
-        val color = layer.color?.color
-        layer.objects.let { objects ->
-            when (layer.drawOrder) {
-                DrawOrder.TOP_DOWN ->
-                    objects.filter { obj ->
-                        isVisible(camera, obj, color)
-                    }.sortedWith(comparator)
-                DrawOrder.INDEX -> objects
-            }
-        }.forEach { obj ->
-            if (isVisible(camera, obj, color)) {
-                if (obj.gid != 0L) {
-                    drawGid(
-                            gid = obj.gid,
-                            opacity = layer.opacity,
-                            x = obj.x + layer.offsetX - camera.x,
-                            y = obj.y + layer.offsetY - camera.y,
-                            width = obj.width,
-                            height = obj.height,
-                            rotation = obj.rotation
-                    )
-                } else if (color != null) {
-                    drawRectangle(
-                            color = color,
-                            opacity = layer.opacity,
-                            x = obj.x + layer.offsetX - camera.x,
-                            y = obj.y + layer.offsetY - camera.y,
-                            width = obj.width,
-                            height = obj.height,
-                            rotation = obj.rotation
-                    )
+    private fun Object.Polyline.draw(
+            color: Color,
+            offsetX: Int,
+            offsetY: Int,
+            opacity: Float
+    ) {
+        matrix.reset()
+        matrix.postRotate(rotation)
+                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
+        for (i in 0..polyline.size - 2) {
+            canvas.drawLine(
+                    color = color.color,
+                    fromX = polyline[i].x,
+                    fromY = polyline[i].y,
+                    toX = polyline[i + 1].x,
+                    toY = polyline[i + 1].y,
+                    matrix = matrix,
+                    opacity = opacity
+            )
+        }
+    }
+
+    private fun Object.draw(
+            color: Color?,
+            offsetX: Int,
+            offsetY: Int,
+            opacity: Float
+    ) {
+        if (visible) {
+            when (this) {
+                is Object.Tile -> if (gid != 0L) {
+                    draw(offsetX, offsetY, opacity)
+                }
+                is Object.Rectangle -> if (color != null) {
+                    draw(color, offsetX, offsetY, opacity)
+                }
+                is Object.Ellipse -> if (color != null) {
+                    draw(color, offsetX, offsetY, opacity)
+                }
+                is Object.Polygon -> if (color != null) {
+                    draw(color, offsetX, offsetY, opacity)
+                }
+                is Object.Polyline -> if (color != null) {
+                    draw(color, offsetX, offsetY, opacity)
                 }
             }
         }
     }
 
-    private fun drawTileLayer(camera: Rectangle, layer: Layer.TileLayer) {
+    private fun Layer.TileLayer.draw(camera: Rectangle) {
         for (ty in yRange) {
             for (tx in xRange) {
                 val x = tx * map.tileWidth
                 val y = ty * map.tileHeight
-                val gid = layer.data[ty * map.width + tx]
+                val gid = data[ty * map.width + tx]
                 if (gid != 0L) {
                     val tileSet = map.getTileSet(gid)
                     if (isVisible(
                             camera = camera,
                             gid = gid,
-                            x = x + layer.offsetX,
-                            y = y + layer.offsetY,
+                            x = x + offsetX,
+                            y = y + offsetY,
                             width = tileSet.tileWidth,
                             height = tileSet.tileHeight
                     )) {
                         drawGid(
                                 gid = gid,
-                                opacity = layer.opacity,
-                                x = x + layer.offsetX - camera.x,
-                                y = y + layer.offsetY - camera.y,
+                                opacity = opacity,
+                                x = x + offsetX - camera.x,
+                                y = y + offsetY - camera.y,
                                 width = tileSet.tileWidth,
                                 height = tileSet.tileHeight,
                                 rotation = 0F
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun Layer.ObjectGroup.draw(camera: Rectangle) {
+        when (drawOrder) {
+            DrawOrder.TOP_DOWN -> objects.filter {
+                it.isVisible(camera)
+            }.sortedWith(comparator)
+            DrawOrder.INDEX -> objects
+        }.forEach {
+            if (it.isVisible(camera)) {
+                it.draw(color, offsetX - camera.x, offsetY - camera.y, opacity)
+            }
+        }
+    }
+
+    private fun Layer.ImageLayer.draw(camera: Rectangle) {
+        matrix.reset()
+        canvas.drawBitmap(
+                image = image.path,
+                x = camera.x - offsetX,
+                y = camera.y - offsetY,
+                width = camera.width,
+                height = camera.height,
+                matrix = matrix,
+                opacity = opacity
+        )
+    }
+
+    private fun Layer.draw(camera: Rectangle) {
+        if (visible) {
+            when (this) {
+                is Layer.TileLayer -> draw(camera)
+                is Layer.ObjectGroup -> draw(camera)
+                is Layer.ImageLayer -> draw(camera)
             }
         }
     }
@@ -281,13 +329,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             canvas.clear()
             map.backgroundColor?.color?.let { canvas.drawColor(it) }
-            map.layers.filter(Layer::visible).forEach { layer ->
-                when (layer) {
-                    is Layer.ImageLayer -> drawImageLayer(camera, layer)
-                    is Layer.ObjectGroup -> drawObjectGroup(camera, layer)
-                    is Layer.TileLayer -> drawTileLayer(camera, layer)
-                }
-            }
+            map.layers.forEach { it.draw(camera) }
         }
         canvas.unlockAndPost()
     }

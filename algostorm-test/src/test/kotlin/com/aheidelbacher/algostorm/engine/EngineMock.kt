@@ -20,13 +20,10 @@ import com.aheidelbacher.algostorm.engine.serialization.Serializer
 
 import java.io.OutputStream
 
-class EngineMock : Engine() {
+class EngineMock : Engine(25) {
     private var i = 0
     private var registeredValues = mutableListOf<Int>()
     private var state = 0
-
-    override val millisPerUpdate: Int
-        get() = 25
 
     override fun clearState() {
         i = 0

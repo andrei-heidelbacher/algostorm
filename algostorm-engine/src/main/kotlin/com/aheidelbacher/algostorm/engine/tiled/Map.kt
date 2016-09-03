@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlags
-import com.fasterxml.jackson.annotation.JsonInclude
 
 /**
  * A map which contains all the game state.
@@ -59,10 +59,7 @@ class Map(
         val layers: List<Layer>,
         @JsonProperty("backgroundcolor") val backgroundColor: Color? = null,
         val version: Float = 1F,
-        @JsonProperty("nextobjectid") private var nextObjectId: Int,
-        override val properties: MutableMap<String, Any> = hashMapOf(),
-        @JsonProperty("propertytypes") override val propertyTypes
-        : MutableMap<String, PropertyType> = hashMapOf()
+        @JsonProperty("nextobjectid") private var nextObjectId: Int
 ) : MutableProperties {
     /**
      * The orientation of the map.
@@ -80,6 +77,11 @@ class Map(
         @JsonProperty("left-down") LEFT_DOWN,
         @JsonProperty("left-up") LEFT_UP
     }
+
+    override val properties: MutableMap<String, Any> = hashMapOf()
+
+    @JsonProperty("propertytypes")
+    override val propertyTypes: MutableMap<String, PropertyType> = hashMapOf()
 
     @Transient private lateinit var gidToTileSet: Array<TileSet?>
     @Transient private lateinit var gidToTileId: IntArray
