@@ -16,12 +16,8 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder.RIGHT_DOWN
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlags
 
 /**
@@ -38,7 +34,6 @@ import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlag
  * @property renderOrder the order in which objects and tiles are rendered
  * @property tileSets the tile sets used for rendering
  * @property layers the layers of the game
- * @property properties the properties of this map
  * @property backgroundColor the color of the map background
  * @property version the version of this map
  * @property nextObjectId the next available id for an object
@@ -47,19 +42,18 @@ import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlag
  * name or if [width] or [height] or [tileWidth] or [tileHeight] or [version]
  * are not positive
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class Map(
         val width: Int,
         val height: Int,
-        @JsonProperty("tilewidth") val tileWidth: Int,
-        @JsonProperty("tileheight") val tileHeight: Int,
-        val orientation: Orientation,
-        @JsonProperty("renderdorder") val renderOrder: RenderOrder = RIGHT_DOWN,
-        @JsonProperty("tilesets") val tileSets: List<TileSet>,
+        val tileWidth: Int,
+        val tileHeight: Int,
+        val orientation: Orientation = Orientation.ORTHOGONAL,
+        val renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
+        val tileSets: List<TileSet>,
         val layers: List<Layer>,
-        @JsonProperty("backgroundcolor") val backgroundColor: Color? = null,
-        val version: Float = 1F,
-        @JsonProperty("nextobjectid") private var nextObjectId: Int
+        val backgroundColor: Color? = null,
+        val version: String = "1.0",
+        private var nextObjectId: Int
 ) : MutableProperties {
     /**
      * The orientation of the map.
@@ -78,13 +72,13 @@ class Map(
         @JsonProperty("left-up") LEFT_UP
     }
 
-    override val properties: MutableMap<String, Any> = hashMapOf()
+    /**
+     * The properties of this map.
+     */
+    override val properties: MutableMap<String, Property> = hashMapOf()
 
-    @JsonProperty("propertytypes")
-    override val propertyTypes: MutableMap<String, PropertyType> = hashMapOf()
-
-    @Transient private lateinit var gidToTileSet: Array<TileSet?>
-    @Transient private lateinit var gidToTileId: IntArray
+    @Transient private var gidToTileSet: Array<TileSet?>
+    @Transient private var gidToTileId: IntArray
 
     init {
         require(width > 0) { "Map width $width must be positive!" }

@@ -7,7 +7,7 @@
 A canvas that allows `draw` calls.
 
 Every change to the canvas should be performed after it was locked and the
-changes should become visible after it was unlocked.
+changes should become isVisible after it was unlocked.
 
 After the canvas was locked, it must be unlocked.
 

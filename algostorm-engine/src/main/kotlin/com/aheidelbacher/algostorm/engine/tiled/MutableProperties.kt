@@ -17,9 +17,6 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.Properties.File
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 
 import java.io.ByteArrayOutputStream
 
@@ -33,8 +30,7 @@ interface MutableProperties : Properties {
         }
     }
 
-    override val properties: MutableMap<String, Any>
-    override val propertyTypes: MutableMap<String, PropertyType>
+    override val properties: MutableMap<String, Property>
 
     /**
      * Removes the property with the given name.
@@ -43,36 +39,29 @@ interface MutableProperties : Properties {
      */
     fun remove(name: String) {
         properties.remove(name)
-        propertyTypes.remove(name)
     }
 
     operator fun set(name: String, value: Int) {
-        properties[name] = value
-        propertyTypes[name] = PropertyType.INT
+        properties[name] = Property(value)
     }
 
     operator fun set(name: String, value: Float) {
-        properties[name] = value
-        propertyTypes[name] = PropertyType.FLOAT
+        properties[name] = Property(value)
     }
 
     operator fun set(name: String, value: Boolean) {
-        properties[name] = value
-        propertyTypes[name] = PropertyType.BOOLEAN
+        properties[name] = Property(value)
     }
 
     operator fun set(name: String, value: String) {
-        properties[name] = value
-        propertyTypes[name] = PropertyType.STRING
-    }
-
-    operator fun set(name: String, value: Color) {
-        properties[name] = value.color
-        propertyTypes[name] = PropertyType.COLOR
+        properties[name] = Property(value)
     }
 
     operator fun set(name: String, value: File) {
-        properties[name] = value.path
-        propertyTypes[name] = PropertyType.FILE
+        properties[name] = Property(value)
+    }
+
+    operator fun set(name: String, value: Color) {
+        properties[name] = Property(value)
     }
 }

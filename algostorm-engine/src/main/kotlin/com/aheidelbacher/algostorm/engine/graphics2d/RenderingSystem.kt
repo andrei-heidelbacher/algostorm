@@ -23,7 +23,7 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.tiled.Map
 import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder
 import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
+import com.aheidelbacher.algostorm.engine.tiled.Color
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedVertically
@@ -293,7 +293,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun Layer.draw(camera: Rectangle) {
-        if (visible) {
+        if (isVisible) {
             when (this) {
                 is Layer.TileLayer -> draw(camera)
                 is Layer.ObjectGroup -> draw(camera)

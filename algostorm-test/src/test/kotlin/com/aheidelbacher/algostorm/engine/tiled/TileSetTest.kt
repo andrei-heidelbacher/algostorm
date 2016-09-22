@@ -20,7 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
+import com.aheidelbacher.algostorm.engine.tiled.Color
 
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -34,7 +34,7 @@ class TileSetTest {
             name = "testTileSet",
             tileWidth = 24,
             tileHeight = 24,
-            image = Properties.File("testTileSet.png"),
+            image = com.aheidelbacher.algostorm.engine.tiled.File("testTileSet.png"),
             imageWidth = 24 * 3,
             imageHeight = 24 * 2,
             columns = 3,

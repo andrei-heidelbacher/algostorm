@@ -25,9 +25,6 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder.TOP_DOWN
 import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.Properties.File
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 
 import kotlin.collections.Map
 
@@ -35,11 +32,9 @@ import kotlin.collections.Map
  * An abstract layer in the game world.
  *
  * @property name the name of this layer
- * @property visible whether this layer should be rendered or not
- * @property opacity the opacity of this layer
+ * @property isVisible whether this layer should be rendered or not
  * @property offsetX the x-axis rendering offset in pixels
  * @property offsetY the y-axis rendering offset in pixels
- * @throws IllegalArgumentException if [opacity] is not in the range `0..1`
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -47,28 +42,17 @@ import kotlin.collections.Map
         property = "type"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = TileLayer::class, name = "tilelayer"),
-        JsonSubTypes.Type(value = ImageLayer::class, name = "imagelayer"),
-        JsonSubTypes.Type(value = ObjectGroup::class, name = "objectgroup")
+        JsonSubTypes.Type(value = TileLayer::class, name = "TileLayer"),
+        JsonSubTypes.Type(value = ImageLayer::class, name = "ImageLayer"),
+        JsonSubTypes.Type(value = ObjectGroup::class, name = "ObjectGroup")
 )
 sealed class Layer(
         val name: String,
-        var visible: Boolean = true,
-        val opacity: Float = 1F,
-        @JsonProperty("offsetx") val offsetX: Int = 0,
-        @JsonProperty("offsety") val offsetY: Int = 0
+        var isVisible: Boolean = true,
+        val offsetX: Int = 0,
+        val offsetY: Int = 0
 ) : MutableProperties {
-    final override val properties: MutableMap<String, Any> = hashMapOf()
-
-    @JsonProperty("propertytypes")
-    final override val propertyTypes: MutableMap<String, PropertyType> =
-            hashMapOf()
-
-    init {
-        require(0F <= opacity && opacity <= 1F) {
-            "$name opacity $opacity must be in the range 0..1!"
-        }
-    }
+    final override val properties: MutableMap<String, Property> = hashMapOf()
 
     /**
      * Two layers are equal if and only if they have the same name.
@@ -94,11 +78,10 @@ sealed class Layer(
     class TileLayer(
             name: String,
             val data: LongArray,
-            visible: Boolean = true,
-            opacity: Float = 1F,
-            @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0
-    ) : Layer(name, visible, opacity, offsetX, offsetY)
+            isVisible: Boolean = true,
+            offsetX: Int = 0,
+            offsetY: Int = 0
+    ) : Layer(name, isVisible, offsetX, offsetY)
 
     /**
      * A layer which consists of a single [image].
@@ -108,11 +91,10 @@ sealed class Layer(
     class ImageLayer(
             name: String,
             var image: File,
-            visible: Boolean = true,
-            opacity: Float = 1F,
-            @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0
-    ) : Layer(name, visible, opacity, offsetX, offsetY)
+            isVisible: Boolean = true,
+            offsetX: Int = 0,
+            offsetY: Int = 0
+    ) : Layer(name, isVisible, offsetX, offsetY)
 
     /**
      * A layer which contains a set of [objects].
@@ -127,13 +109,12 @@ sealed class Layer(
     class ObjectGroup(
             name: String,
             val objects: MutableList<Object>,
-            @JsonProperty("draworder") val drawOrder: DrawOrder = TOP_DOWN,
+            val drawOrder: DrawOrder = TOP_DOWN,
             val color: Color? = null,
-            visible: Boolean = true,
-            opacity: Float = 1F,
-            @JsonProperty("offsetx") offsetX: Int = 0,
-            @JsonProperty("offsety") offsetY: Int = 0
-    ) : Layer(name, visible, opacity, offsetX, offsetY) {
+            isVisible: Boolean = true,
+            offsetX: Int = 0,
+            offsetY: Int = 0
+    ) : Layer(name, isVisible, offsetX, offsetY) {
         /**
          * The order in which objects are rendered.
          */

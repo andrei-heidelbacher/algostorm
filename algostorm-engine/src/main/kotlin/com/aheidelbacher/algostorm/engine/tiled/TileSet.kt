@@ -17,12 +17,6 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
-
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.Properties.File
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 
 import kotlin.collections.Map
 
@@ -52,28 +46,21 @@ import kotlin.collections.Map
  * [spacing] are negative or if the specified offsets, tile sizes and tile count
  * exceed the image dimensions
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class TileSet(
         val name: String,
-        @JsonProperty("tilewidth") val tileWidth: Int,
-        @JsonProperty("tileheight") val tileHeight: Int,
+        val tileWidth: Int,
+        val tileHeight: Int,
         val image: File,
-        @JsonProperty("imagewidth") val imageWidth: Int,
-        @JsonProperty("imageheight") val imageHeight: Int,
+        val imageWidth: Int,
+        val imageHeight: Int,
         val margin: Int,
         val spacing: Int,
         val columns: Int,
-        @JsonProperty("tilecount") val tileCount: Int,
-        @JsonProperty("tileoffset") val tileOffset: Offset = Offset(0, 0),
-        @JsonProperty("transparentcolor") val transparentColor: Color? = null,
+        val tileCount: Int,
+        val tileOffset: Offset = Offset(0, 0),
         private val tiles: Map<Int, Tile> = emptyMap(),
-        override val properties: Map<String, Any> = emptyMap(),
-        @JsonProperty("propertytypes") override val propertyTypes
-        : Map<String, PropertyType> = emptyMap(),
-        @JsonProperty("tileproperties") private val tileProperties
-        : Map<Int, Map<String, Any>> = emptyMap(),
-        @JsonProperty("tilepropertytypes") private val tilePropertyTypes
-        : Map<Int, Map<String, PropertyType>> = emptyMap()
+        override val properties: Map<String, Property> = emptyMap(),
+        private val tileProperties: Map<Int, Map<String, Property>> = emptyMap()
 ) : Properties {
     /**
      * Indicates an offset which should be applied when rendering any tile from
@@ -93,10 +80,7 @@ data class TileSet(
      * contains less than two frames
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    data class Tile(
-            val animation: List<Frame>? = null,
-            @JsonProperty("objectgroup") val objectGroup: ObjectGroup? = null
-    ) {
+    data class Tile(val animation: List<Frame>? = null) {
         companion object {
             /**
              * Whether this global tile id is flipped horizontally.
@@ -145,10 +129,7 @@ data class TileSet(
          * @throws IllegalArgumentException if [tileId] is negative or if
          * [duration] is not positive
          */
-        data class Frame(
-                @JsonProperty("tileid") val tileId: Int,
-                val duration: Int
-        ) {
+        data class Frame(val tileId: Int, val duration: Int) {
             init {
                 require(tileId >= 0) {
                     "Frame tile id $tileId can't be negative!"
@@ -162,9 +143,6 @@ data class TileSet(
         init {
             require(animation?.isNotEmpty() ?: true) {
                 "Animation can't have empty frame sequence!"
-            }
-            require(objectGroup?.objects?.none { it is Object.Tile } ?: true) {
-                "Tile collision object group can't contain tile objects!"
             }
         }
     }
@@ -197,9 +175,6 @@ data class TileSet(
     @Transient private val tilesArray = Array(tileCount) { tiles[it] ?: Tile() }
     @Transient private val tilePropertiesArray = Array(tileCount) {
         tileProperties[it] ?: emptyMap()
-    }
-    @Transient private val tilePropertyTypesArray = Array(tileCount) {
-        tilePropertyTypes[it] ?: emptyMap()
     }
     @Transient private val viewports = Array(tileCount) {
         Viewport(
@@ -262,10 +237,8 @@ data class TileSet(
      * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
      * it is greater than or equal to [tileCount]
      */
-    fun getTileProperties(tileId: Int): Properties = Properties(
-            properties = tilePropertiesArray[tileId],
-            propertyTypes = tilePropertyTypesArray[tileId]
-    )
+    fun getTileProperties(tileId: Int): Properties =
+            Properties(tilePropertiesArray[tileId])
 
     /**
      * Returns a viewport corresponding to the given tile id, by applying the

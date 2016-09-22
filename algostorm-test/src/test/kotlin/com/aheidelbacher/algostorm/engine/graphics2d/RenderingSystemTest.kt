@@ -23,8 +23,8 @@ import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Companion.i
 import com.aheidelbacher.algostorm.engine.tiled.Layer
 import com.aheidelbacher.algostorm.engine.tiled.Map
 import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.Properties.File
+import com.aheidelbacher.algostorm.engine.tiled.Color
+import com.aheidelbacher.algostorm.engine.tiled.File
 import com.aheidelbacher.algostorm.engine.tiled.TileSet
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipHorizontally
