@@ -3,7 +3,7 @@
 build
 
 # IntelliJ IDEA
-*.iml
+.ipr
 .idea
 
 # Eclipse

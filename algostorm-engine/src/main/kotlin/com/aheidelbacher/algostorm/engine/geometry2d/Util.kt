@@ -68,6 +68,9 @@ else sgn(det(from, to, otherFrom)) * sgn(det(from, to, otherTo)) <= 0 &&
         sgn(det(otherFrom, otherTo, from)) *
                 sgn(det(otherFrom, otherTo, to)) <= 0
 
+fun isInsidePolygon(point: Point, polygon: List<Point>) {
+}
+
 fun intersectShapes(shape: List<Point>, otherShape: List<Point>): Boolean {
     if (!boundingBox(shape).intersects(boundingBox(otherShape))) {
         return false
