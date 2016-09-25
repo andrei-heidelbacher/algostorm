@@ -30,13 +30,12 @@ class CanvasMock : Canvas {
                 val y: Int,
                 val width: Int,
                 val height: Int,
-                val matrix: Matrix,
-                val opacity: Float
+                val matrix: Matrix
         ) : DrawCall {
             override fun equals(other: Any?): Boolean = other is Bitmap &&
                     image == other.image && x == other.x && y == other.y &&
                     width == other.width && height == other.height &&
-                    matrix.eq(other.matrix) && opacity.eq(other.opacity)
+                    matrix.eq(other.matrix)
 
             override fun hashCode(): Int = super.hashCode()
         }
@@ -47,43 +46,15 @@ class CanvasMock : Canvas {
                 val color: Int,
                 val width: Int,
                 val height: Int,
-                val matrix: Matrix,
-                val opacity: Float
+                val matrix: Matrix
         ) : DrawCall {
             override fun equals(other: Any?): Boolean = other is Rectangle &&
                     color == other.color &&
                     width == other.width && height == other.height &&
-                    matrix.eq(other.matrix) && opacity.eq(other.opacity)
+                    matrix.eq(other.matrix)
 
             override fun hashCode(): Int = super.hashCode()
         }
-
-        data class Ellipse(
-                val color: Int,
-                val width: Int,
-                val height: Int,
-                val matrix: Matrix,
-                val opacity: Float
-        ) : DrawCall
-
-        data class Line(
-                val color: Int,
-                val fromX: Int,
-                val fromY: Int,
-                val toX: Int,
-                val toY: Int,
-                val matrix: Matrix,
-                val opacity: Float
-        ) : DrawCall
-
-        data class Polygon(
-                val color: Int,
-                val vertexCount: Int,
-                val verticesX: List<Int>,
-                val verticesY: List<Int>,
-                val matrix: Matrix,
-                val opacity: Float
-        ) : DrawCall
 
         object Clear : DrawCall
     }
@@ -104,7 +75,7 @@ class CanvasMock : Canvas {
             return 230
         }
 
-    override fun loadBitmap(image: String, transparentColor: Int) {
+    override fun loadBitmap(image: String) {
         bitmaps.add(image)
     }
 
@@ -128,13 +99,12 @@ class CanvasMock : Canvas {
             y: Int,
             width: Int,
             height: Int,
-            matrix: Matrix,
-            opacity: Float
+            matrix: Matrix
     ) {
         require(isLocked) { "Canvas is not locked!" }
         require(image in bitmaps) { "Invalid bitmap $image!" }
         val m = matrix.copy()
-        queue.add(DrawCall.Bitmap(image, x, y, width, height, m, opacity))
+        queue.add(DrawCall.Bitmap(image, x, y, width, height, m))
     }
 
     override fun drawColor(color: Int) {
@@ -146,58 +116,11 @@ class CanvasMock : Canvas {
             color: Int,
             width: Int,
             height: Int,
-            matrix: Matrix,
-            opacity: Float
+            matrix: Matrix
     ) {
         require(isLocked) { "Canvas is not locked!" }
         val m = matrix.copy()
-        queue.add(DrawCall.Rectangle(color, width, height, m, opacity))
-    }
-
-    override fun drawEllipse(
-            color: Int,
-            width: Int,
-            height: Int,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        require(isLocked) { "Canvas is not locked!" }
-        val m = matrix.copy()
-        queue.add(DrawCall.Ellipse(color, width, height, m, opacity))
-    }
-
-    override fun drawLine(
-            color: Int,
-            fromX: Int,
-            fromY: Int,
-            toX: Int,
-            toY: Int,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        require(isLocked) { "Canvas is not locked!" }
-        val m = matrix.copy()
-        queue.add(DrawCall.Line(color, fromX, fromY, toX, toY, m, opacity))
-    }
-
-    override fun drawPolygon(
-            color: Int,
-            vertexCount: Int,
-            verticesX: IntArray,
-            verticesY: IntArray,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        require(isLocked) { "Canvas is not locked!" }
-        val m = matrix.copy()
-        queue.add(DrawCall.Polygon(
-                color = color,
-                vertexCount = vertexCount,
-                verticesX = verticesX.asList(),
-                verticesY = verticesY.asList(),
-                matrix = m,
-                opacity = opacity
-        ))
+        queue.add(DrawCall.Rectangle(color, width, height, m))
     }
 
     override fun unlockAndPost() {
@@ -211,12 +134,10 @@ class CanvasMock : Canvas {
             y: Int,
             width: Int,
             height: Int,
-            matrix: Matrix,
-            opacity: Float
+            matrix: Matrix
     ) {
         val actualCall = queue.poll()
-        val expectedCall =
-                DrawCall.Bitmap(image, x, y, width, height, matrix, opacity)
+        val expectedCall = DrawCall.Bitmap(image, x, y, width, height, matrix)
         check(actualCall == expectedCall) {
             "The bitmap was not drawn!\n" +
                     "Expected: $expectedCall\n" +
@@ -234,78 +155,12 @@ class CanvasMock : Canvas {
         }
     }
 
-    fun verifyRectangle(
-            color: Int,
-            width: Int,
-            height: Int,
-            matrix: Matrix,
-            opacity: Float
-    ) {
+    fun verifyRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
         val actualCall = queue.poll()
         val expectedCall =
-                DrawCall.Rectangle(color, width, height, matrix, opacity)
+                DrawCall.Rectangle(color, width, height, matrix)
         check(actualCall == expectedCall) {
             "The rectangle was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
-    }
-
-    fun verifyEllipse(
-            color: Int,
-            width: Int,
-            height: Int,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        val actualCall = queue.poll()
-        val expectedCall =
-                DrawCall.Ellipse(color, width, height, matrix, opacity)
-        check(actualCall == expectedCall) {
-            "The ellipse was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
-    }
-
-    fun verifyLine(
-            color: Int,
-            fromX: Int,
-            fromY: Int,
-            toX: Int,
-            toY: Int,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        val actualCall = queue.poll()
-        val expectedCall =
-                DrawCall.Line(color, fromX, fromY, toX, toY, matrix, opacity)
-        check(actualCall == expectedCall) {
-            "The line was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
-    }
-
-    fun verifyPolygon(
-            color: Int,
-            vertexCount: Int,
-            verticesX: IntArray,
-            verticesY: IntArray,
-            matrix: Matrix,
-            opacity: Float
-    ) {
-        val actualCall = queue.poll()
-        val expectedCall = DrawCall.Polygon(
-                color = color,
-                vertexCount = vertexCount,
-                verticesX = verticesX.asList(),
-                verticesY = verticesY.asList(),
-                matrix = matrix,
-                opacity = opacity
-        )
-        check(actualCall == expectedCall) {
-            "The polygon was not drawn!\n" +
                     "Expected: $expectedCall\n" +
                     "Actual: $actualCall"
         }

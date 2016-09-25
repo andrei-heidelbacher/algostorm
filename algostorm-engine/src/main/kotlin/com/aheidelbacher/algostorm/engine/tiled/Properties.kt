@@ -18,8 +18,6 @@ package com.aheidelbacher.algostorm.engine.tiled
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 
-import kotlin.collections.Map
-
 interface Properties {
     companion object {
         operator fun invoke(properties: Map<String, Property>): Properties =

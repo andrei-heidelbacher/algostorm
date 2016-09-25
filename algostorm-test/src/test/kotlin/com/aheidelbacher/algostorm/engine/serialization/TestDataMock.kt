@@ -18,10 +18,10 @@ package com.aheidelbacher.algostorm.engine.serialization
 
 data class TestDataMock(
         val primitiveTestField: Int,
-        val defaultPrimitiveTestField: Float = 1.5F,
+        val defaultPrimitiveTestField: Float,
         val innerTestData: InnerTestDataMock,
-        val testProperties: Map<String, Any> = hashMapOf(),
+        val testProperties: Map<String, Any>,
         val testList: List<Int>
 ) {
-    data class InnerTestDataMock(val testField: String = "")
+    data class InnerTestDataMock(val testField: String)
 }

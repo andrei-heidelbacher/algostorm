@@ -42,17 +42,17 @@ import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlag
  * name or if [width] or [height] or [tileWidth] or [tileHeight] or [version]
  * are not positive
  */
-class Map(
+class MapObject(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
-        val orientation: Orientation = Orientation.ORTHOGONAL,
-        val renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
+        val orientation: Orientation,
+        val renderOrder: RenderOrder,
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
-        val backgroundColor: Color? = null,
-        val version: String = "1.0",
+        val backgroundColor: Color?,
+        val version: String,
         private var nextObjectId: Int
 ) : MutableProperties {
     /**

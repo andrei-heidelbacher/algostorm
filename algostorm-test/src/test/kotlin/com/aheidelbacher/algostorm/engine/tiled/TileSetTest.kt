@@ -20,28 +20,25 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.Color
 
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.FileInputStream
 
 class TileSetTest {
     val fileStream = FileInputStream(
-            File("src/test/resources/testTileSet.json")
+            java.io.File("src/test/resources/testTileSet.json")
     )
-    val tileSet = TileSet(
+    val tileSet = tileSetOf(
             name = "testTileSet",
             tileWidth = 24,
             tileHeight = 24,
-            image = com.aheidelbacher.algostorm.engine.tiled.File("testTileSet.png"),
+            image = File("testTileSet.png"),
             imageWidth = 24 * 3,
             imageHeight = 24 * 2,
             columns = 3,
             tileCount = 6,
             margin = 0,
-            spacing = 0,
-            transparentColor = Color("#00000000")
+            spacing = 0
     )
 
     @Test

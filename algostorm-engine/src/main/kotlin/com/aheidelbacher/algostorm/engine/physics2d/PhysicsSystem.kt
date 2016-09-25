@@ -16,10 +16,9 @@
 
 package com.aheidelbacher.algostorm.engine.physics2d
 
-import com.aheidelbacher.algostorm.engine.geometry2d.intersectShapes
+import com.aheidelbacher.algostorm.engine.geometry2d.intersects
 import com.aheidelbacher.algostorm.engine.tiled.Object
 import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
-import com.aheidelbacher.algostorm.engine.tiled.getShape
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -58,23 +57,29 @@ class PhysicsSystem(
          *
          * @param dx the translation amount on the x-axis
          * @param dy the translation amount on the y-axis
-         * @param rotate the rotation amount in radians
          */
-        fun Object.transform(dx: Int, dy: Int, rotate: Float) {
+        fun Object.transform(dx: Int, dy: Int) {
             x += dx
             y += dy
-            rotation += rotate
         }
 
         /**
          * Returns whether the two objects intersect (that is, there exists a
-         * pixel `(x, y)` such that it lies inside both objects).
+         * pixel `(x, y)` that lies inside both objects).
          *
          * @param other the object with which the intersection is checked
          * @return `true` if the two objects overlap, `false` otherwise
          */
-        fun Object.intersects(other: Object): Boolean =
-                intersectShapes(getShape(), other.getShape())
+        fun Object.intersects(other: Object): Boolean = intersects(
+                x = x,
+                y = y - height + 1,
+                width = width,
+                height = height,
+                otherX = other.x,
+                otherY = other.y - other.height + 1,
+                otherWidth = other.width,
+                otherHeight = other.height
+        )
     }
 
     /**
@@ -105,7 +110,7 @@ class PhysicsSystem(
      */
     @Subscribe fun onTranslateIntent(event: TransformIntent) {
         objectManager[event.objectId]?.let { obj ->
-            obj.transform(event.dx, event.dy, event.rotate)
+            obj.transform(event.dx, event.dy)
             val overlappingObjects = objectManager.objects.filter {
                 it != obj && it.isRigid && it.intersects(obj)
             }
@@ -113,11 +118,10 @@ class PhysicsSystem(
                 publisher.post(Transformed(
                         objectId = event.objectId,
                         dx = event.dx,
-                        dy = event.dy,
-                        rotate = event.rotate
+                        dy = event.dy
                 ))
             } else {
-                obj.transform(-event.dx, -event.dy, -event.rotate)
+                obj.transform(-event.dx, -event.dy)
                 overlappingObjects.forEach {
                     publisher.post(Collision(event.objectId, it.id))
                 }

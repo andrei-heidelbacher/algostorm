@@ -1,76 +1,58 @@
 { "columns":12,
   "image":"D:\/Dropbox\/Private\/Oryx tileset\/algoventure\/world.png",
-  "imageheight":240,
-  "imagewidth":288,
+  "imageHeight":240,
+  "imageWidth":288,
   "margin":0,
   "name":"world",
   "spacing":0,
-  "transparentcolor":"#000000",
-  "terrains":[
-    {
-      "name":"web",
-      "tile":-1
-    }],
-  "tilecount":120,
-  "tileheight":24,
+  "tileCount":120,
+  "tileHeight":24,
   "tiles":
   {
     "2":
     {
-      "objectgroup":
+      "animation": null,
+      "objectGroup":
       {
-        "draworder":"index",
-        "height":0,
+        "drawOrder":"index",
         "name":"",
         "objects":[
           {
             "height":24,
             "id":1,
             "name":"",
-            "rotation":0,
             "type":"",
-            "visible":true,
+            "isVisible":true,
             "width":24,
             "x":0,
             "y":0,
+            "gid":0,
             "properties":{
-              "z":5
-            },
-            "propertytypes":{
-              "z":"int"
+              "z":{
+                "type":"int",
+                "value":5
+              }
             }
           }],
-        "opacity":1,
-        "type":"objectgroup",
-        "visible":true,
-        "width":0,
-        "x":0,
-        "y":0,
+        "type":"ObjectGroup",
+        "isVisible":true,
         "properties":{
-          "z":"alabala"
-        }
-      }
-    },
-    "81":
-    {
-      "terrain":[0, -1, -1, -1]
-    },
-    "82":
-    {
-      "terrain":[-1, 0, -1, -1]
-    },
-    "83":
-    {
-      "terrain":[-1, -1, -1, 0]
-    },
-    "84":
-    {
-      "terrain":[-1, -1, 0, -1]
-    },
-    "85":
-    {
-      "terrain":[0, 0, 0, 0]
+          "z": {
+            "type":"string",
+            "value":"alabala"
+          }
+        },
+        "offsetX": 0,
+        "offsetY": 0,
+        "color": null
+      },
+      "properties": {}
     }
   },
-  "tilewidth":24
+  "tileOffset": {
+    "x": 0,
+    "y": 0
+  },
+  "properties": {},
+  "tileWidth":24
 }

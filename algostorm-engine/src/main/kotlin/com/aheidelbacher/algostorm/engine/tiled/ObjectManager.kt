@@ -16,27 +16,25 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-
 /**
  * A manager which offers easy creation, deletion and retrieval of objects from
- * a specified [Layer.ObjectGroup] of a given [Map].
+ * a specified [Layer.ObjectGroup] of a given [MapObject].
  *
  * At most one `ObjectManager` should be associated to an `ObjectGroup`. If an
  * `ObjectManager` is associated to an `ObjectGroup`, the objects should be
  * referenced only through the `ObjectManager`, otherwise the `ObjectManager`
  * state might be corrupted.
  *
- * @property map the associated map
+ * @property mapObject the associated mapObject
  * @param name the name of the associated [Layer.ObjectGroup]
- * @throws IllegalArgumentException if the given `map` doesn't contain an
+ * @throws IllegalArgumentException if the given `mapObject` doesn't contain an
  * `ObjectGroup` layer with the given `name`
  */
-class ObjectManager(private val map: Map, name: String) {
-    private val objectGroup = requireNotNull(map.layers.find {
+class ObjectManager(private val mapObject: MapObject, name: String) {
+    private val objectGroup = requireNotNull(mapObject.layers.find {
         it.name == name
     } as Layer.ObjectGroup?) {
-        "Map doesn't contain an object group named $name!"
+        "MapObject doesn't contain an object group named $name!"
     }
 
     private val objectMap =
@@ -79,9 +77,7 @@ class ObjectManager(private val map: Map, name: String) {
      * @param height the height of this object in pixels
      * @param gid the global id of the object tile. A value of `0` indicates the
      * empty tile (nothing to draw)
-     * @param rotation the rotation of this object around the top-left corner in
-     * clock-wise degrees
-     * @param visible whether this object should be rendered or not
+     * @param isVisible whether this object should be rendered or not
      * @throws IllegalStateException if there are too many objects in this
      * object group
      * @throws IllegalArgumentException if [gid] is negative or if [width] or
@@ -92,28 +88,20 @@ class ObjectManager(private val map: Map, name: String) {
             type: String = "",
             x: Int,
             y: Int,
-            width: Int = 0,
-            height: Int = 0,
-            rotation: Float = 0F,
-            visible: Boolean = true,
-            gid: Long? = null,
-            ellipse: Boolean? = null,
-            polygon: List<Point>? = null,
-            polyline: List<Point>? = null
+            width: Int,
+            height: Int,
+            isVisible: Boolean = true,
+            gid: Long = 0L
     ) : Object = Object(
-            id = map.getAndIncrementNextObjectId(),
+            id = mapObject.getAndIncrementNextObjectId(),
             name = name,
             type = type,
-            visible = visible,
             x = x,
             y = y,
-            rotation = rotation,
             width = width,
             height = height,
             gid = gid,
-            ellipse = ellipse,
-            polygon = polygon,
-            polyline = polyline
+            isVisible = isVisible
     ).apply {
         objectGroup.objects.add(this)
         objectMap[id] = this

@@ -21,14 +21,18 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Companion.isVisible
 import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.MapObject
 import com.aheidelbacher.algostorm.engine.tiled.Color
 import com.aheidelbacher.algostorm.engine.tiled.File
 import com.aheidelbacher.algostorm.engine.tiled.TileSet
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.engine.tiled.mapObjectOf
+import com.aheidelbacher.algostorm.engine.tiled.objectGroupOf
+import com.aheidelbacher.algostorm.engine.tiled.objectOf
+import com.aheidelbacher.algostorm.engine.tiled.tileLayerOf
+import com.aheidelbacher.algostorm.engine.tiled.tileSetOf
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
@@ -53,7 +57,7 @@ class RenderingSystemTest {
     }
 
     fun makeMap(
-            tileSets: List<TileSet> = listOf(TileSet(
+            tileSets: List<TileSet> = listOf(tileSetOf(
                     name = "test",
                     tileWidth = tileWidth,
                     tileHeight = tileHeight,
@@ -61,17 +65,14 @@ class RenderingSystemTest {
                     tileCount = 1,
                     imageWidth = tileWidth,
                     imageHeight = tileHeight,
-                    image = image,
-                    margin = 0,
-                    spacing = 0
+                    image = image
             )),
             layers: List<Layer> = emptyList()
-    ): Map = Map(
+    ): MapObject = mapObjectOf(
             width = width,
             height = height,
             tileWidth = tileWidth,
             tileHeight = tileHeight,
-            orientation = Map.Orientation.ORTHOGONAL,
             backgroundColor = Color("#ffffffff"),
             tileSets = tileSets,
             layers = layers,
@@ -81,7 +82,7 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderTileLayer() {
-        val tileLayer = Layer.TileLayer(
+        val tileLayer = tileLayerOf(
                 name = "floor",
                 data = LongArray(width * height) { 1 }
         )
@@ -104,8 +105,7 @@ class RenderingSystemTest {
                             matrix = Matrix.identity().postTranslate(
                                     dx = x - camera.x.toFloat(),
                                     dy = y - tileHeight + 1 - camera.y.toFloat()
-                            ),
-                            opacity = 1F
+                            )
                     )
                 }
             }
@@ -115,13 +115,13 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderColoredObjects() {
-        val objectGroup = Layer.ObjectGroup(
+        val objectGroup = objectGroupOf(
                 name = "objects",
                 color = Color("#000000ff"),
-                objects = mutableListOf(Object(
+                objects = mutableListOf(objectOf(
                         id = 1,
                         x = 0,
-                        y = 0,
+                        y = tileHeight - 1,
                         width = tileWidth,
                         height = tileHeight
                 ))
@@ -138,17 +138,16 @@ class RenderingSystemTest {
                 matrix = Matrix.identity().postTranslate(
                         dx = -camera.x.toFloat(),
                         dy = -camera.y.toFloat()
-                ),
-                opacity = 1F
+                )
         )
         canvas.verifyEmptyDrawQueue()
     }
 
     @Test
     fun testRenderFlippedHorizontallyObject() {
-        val objectGroup = Layer.ObjectGroup(
+        val objectGroup = objectGroupOf(
                 name = "objects",
-                objects = mutableListOf(Object(
+                objects = mutableListOf(objectOf(
                         id = 1,
                         x = 0,
                         y = 0,
@@ -171,17 +170,16 @@ class RenderingSystemTest {
                 matrix = Matrix.identity().postScale(-1F, 1F).postTranslate(
                         dx = tileWidth - camera.x.toFloat(),
                         dy = -camera.y.toFloat() - tileHeight + 1
-                ),
-                opacity = 1F
+                )
         )
         canvas.verifyEmptyDrawQueue()
     }
 
     @Test
     fun testRenderFlippedVerticallyObject() {
-        val objectGroup = Layer.ObjectGroup(
+        val objectGroup = objectGroupOf(
                 name = "objects",
-                objects = mutableListOf(Object(
+                objects = mutableListOf(objectOf(
                         id = 1,
                         x = 0,
                         y = 0,
@@ -204,17 +202,16 @@ class RenderingSystemTest {
                 matrix = Matrix.identity().postScale(1F, -1F).postTranslate(
                         dx = -camera.x.toFloat(),
                         dy = -camera.y.toFloat() + 1
-                ),
-                opacity = 1F
+                )
         )
         canvas.verifyEmptyDrawQueue()
     }
 
     @Test
     fun testRenderFlippedDiagonallyObject() {
-        val objectGroup = Layer.ObjectGroup(
+        val objectGroup = objectGroupOf(
                 name = "objects",
-                objects = mutableListOf(Object(
+                objects = mutableListOf(objectOf(
                         id = 1,
                         x = 0,
                         y = 0,
@@ -236,11 +233,11 @@ class RenderingSystemTest {
                 height = tileHeight,
                 matrix = Matrix.identity()
                         .postRotate(90F)
-                        .postScale(1F, -1F).postTranslate(
-                        dx = tileWidth - camera.x.toFloat(),
-                        dy = -camera.y.toFloat() + 1
-                ),
-                opacity = 1F
+                        .postScale(1F, -1F)
+                        .postTranslate(
+                                dx = tileWidth - camera.x.toFloat(),
+                                dy = -camera.y.toFloat() + 1
+                        )
         )
         canvas.verifyEmptyDrawQueue()
     }

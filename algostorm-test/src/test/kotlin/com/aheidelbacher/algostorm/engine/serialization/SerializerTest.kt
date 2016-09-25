@@ -18,8 +18,8 @@ package com.aheidelbacher.algostorm.engine.serialization
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.io.ByteArrayOutputStream
 
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 
@@ -30,11 +30,12 @@ class SerializerTest {
             primitiveTestField = 1,
             innerTestData = TestDataMock.InnerTestDataMock("non-empty"),
             testProperties = mapOf(
-                    "inner" to TestDataMock.InnerTestDataMock(),
+                    "inner" to TestDataMock.InnerTestDataMock(""),
                     "number" to 5,
                     "string" to "five"
             ),
-            testList = listOf(1, 2, 3, 4, 5)
+            testList = listOf(1, 2, 3, 4, 5),
+            defaultPrimitiveTestField = 1.5F
     )
 
     @Test

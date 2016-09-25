@@ -15,9 +15,6 @@ class Color @JsonCreator constructor(string: String) {
      * The ARGB8888 encoded color.
      */
     val color: Int = run {
-        if (string == "") {
-            return@run 0
-        }
         val code = string
         require((code.length == 7 || code.length == 9) && code[0] == '#') {
             "Invalid color code $code format!"

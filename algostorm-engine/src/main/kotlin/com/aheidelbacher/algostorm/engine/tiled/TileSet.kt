@@ -16,9 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.fasterxml.jackson.annotation.JsonInclude
-
-import kotlin.collections.Map
+import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
 
 /**
  * A tile set used for rendering. Tiles are indexed starting from `0`,
@@ -39,7 +37,6 @@ import kotlin.collections.Map
  * @property tileOffset the rendering offset in pixels which should be applied
  * when rendering tiles from this tile set
  * @property properties the properties of this tile set
- * @property tileProperties properties of individual tiles
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
  * [imageHeight], [columns] or [tileCount] are not positive or if [margin] or
@@ -57,11 +54,13 @@ data class TileSet(
         val spacing: Int,
         val columns: Int,
         val tileCount: Int,
-        val tileOffset: Offset = Offset(0, 0),
-        private val tiles: Map<Int, Tile> = emptyMap(),
-        override val properties: Map<String, Property> = emptyMap(),
-        private val tileProperties: Map<Int, Map<String, Property>> = emptyMap()
+        val tileOffset: Offset,
+        val tiles: Map<Int, Tile>,
+        override val properties: Map<String, Property>
 ) : Properties {
+    companion object {
+    }
+
     /**
      * Indicates an offset which should be applied when rendering any tile from
      * this tile set.
@@ -76,11 +75,15 @@ data class TileSet(
      *
      * @property animation a list of frames representing an animation. Must be
      * `null` (indicating no animation) or must contain at least two frames.
+     * @property properties the properties of this tile
      * @throws IllegalArgumentException if [animation] is not `null` and
      * contains less than two frames
      */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    data class Tile(val animation: List<Frame>? = null) {
+    data class Tile(
+            val animation: List<Frame>?,
+            val objectGroup: ObjectGroup?,
+            override val properties: Map<String, Property>
+    ) : Properties {
         companion object {
             /**
              * Whether this global tile id is flipped horizontally.
@@ -144,6 +147,9 @@ data class TileSet(
             require(animation?.isNotEmpty() ?: true) {
                 "Animation can't have empty frame sequence!"
             }
+            require(objectGroup?.objects?.all { it.gid == 0L } ?: true) {
+                "Tile object group can't contain tile objects!"
+            }
         }
     }
 
@@ -172,9 +178,8 @@ data class TileSet(
         }
     }
 
-    @Transient private val tilesArray = Array(tileCount) { tiles[it] ?: Tile() }
-    @Transient private val tilePropertiesArray = Array(tileCount) {
-        tileProperties[it] ?: emptyMap()
+    @Transient private val tilesArray = Array(tileCount) {
+        tiles[it] ?: Tile(null, null, emptyMap())
     }
     @Transient private val viewports = Array(tileCount) {
         Viewport(
@@ -228,17 +233,6 @@ data class TileSet(
      * it is greater than or equal to [tileCount]
      */
     fun getTile(tileId: Int): Tile = tilesArray[tileId]
-
-    /**
-     * Returns the properties associated to the given tile id.
-     *
-     * @param tileId the id of the requested tile
-     * @return the properties of the requested tile
-     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
-     * it is greater than or equal to [tileCount]
-     */
-    fun getTileProperties(tileId: Int): Properties =
-            Properties(tilePropertiesArray[tileId])
 
     /**
      * Returns a viewport corresponding to the given tile id, by applying the

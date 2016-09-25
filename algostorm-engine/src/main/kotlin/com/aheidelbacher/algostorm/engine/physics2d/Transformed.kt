@@ -26,11 +26,9 @@ import com.aheidelbacher.algostorm.event.Event
  * @property objectId the id of the transformed object
  * @property dx the amount the object translated on the x-axis in pixels
  * @property dy the amount the object translated on the y-axis in pixels
- * @property rotate the amount the object rotated in radians
  */
 data class Transformed(
         val objectId: Int,
         val dx: Int,
-        val dy: Int,
-        val rotate: Float
+        val dy: Int
 ) : Event

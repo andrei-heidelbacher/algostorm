@@ -29,7 +29,7 @@ class PhysicsSystemTest {
         val publisherMock = PublisherMock()
     }
 
-    /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): Map<String, Any> = mapOf(
+    /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): MapObject<String, Any> = mapOf(
             Box.PROPERTY to Box(x, y, tileWidth, tileHeight),
             Rigid.PROPERTY to isRigid
     )

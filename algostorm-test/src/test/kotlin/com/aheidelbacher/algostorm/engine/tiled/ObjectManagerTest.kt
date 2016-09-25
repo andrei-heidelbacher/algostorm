@@ -29,7 +29,7 @@ class ObjectManagerTest {
         val OBJECT_COUNT = 1000
         val ID_RANGE = FIRST_ID until FIRST_ID + OBJECT_COUNT
 
-        fun makeObject(id: Int) = Object(
+        fun makeObject(id: Int) = objectOf(
                 id = id,
                 x = id * TILE_WIDTH,
                 y = id * TILE_HEIGHT,
@@ -38,14 +38,12 @@ class ObjectManagerTest {
         )
     }
 
-    val map = Map(
+    val map = mapObjectOf(
             width = 32,
             height = 32,
             tileWidth = TILE_WIDTH,
             tileHeight = TILE_HEIGHT,
-            orientation = Map.Orientation.ORTHOGONAL,
-            tileSets = emptyList(),
-            layers = listOf(Layer.ObjectGroup(
+            layers = listOf(objectGroupOf(
                     name = OBJECT_GROUP_NAME,
                     objects = (FIRST_ID until FIRST_ID + OBJECT_COUNT / 2).map {
                         makeObject(it)

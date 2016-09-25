@@ -44,20 +44,6 @@ class Object(
         var isVisible: Boolean,
         gid: Long
 ) : MutableProperties {
-    companion object {
-        operator fun invoke(
-                id: Int,
-                name: String = "",
-                type: String = "",
-                x: Int,
-                y: Int,
-                width: Int,
-                height: Int,
-                isVisible: Boolean = true,
-                gid: Long = 0L
-        ) = Object(id, name, type, x, y, width, height, isVisible, gid)
-    }
-
     override val properties: MutableMap<String, Property> = hashMapOf()
 
     var gid: Long = gid

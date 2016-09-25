@@ -20,14 +20,13 @@ import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.tiled.Layer
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Map.RenderOrder
+import com.aheidelbacher.algostorm.engine.tiled.MapObject
+import com.aheidelbacher.algostorm.engine.tiled.MapObject.RenderOrder
 import com.aheidelbacher.algostorm.engine.tiled.Object
 import com.aheidelbacher.algostorm.engine.tiled.Color
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.engine.tiled.getBoundingBox
 import com.aheidelbacher.algostorm.engine.tiled.getViewport
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -42,12 +41,12 @@ import java.util.Comparator
  *
  * Every method call to the [canvas] is made from the private engine thread.
  *
- * @property map the map which should be rendered
+ * @property map the map object which should be rendered
  * @property canvas the canvas to which the system draws
  * @throws FileNotFoundException if any of the map tile set images doesn't exist
  */
 class RenderingSystem @Throws(FileNotFoundException::class) constructor(
-        private val map: Map,
+        private val map: MapObject,
         private val canvas: Canvas
 ) : Subscriber {
     companion object {
@@ -62,7 +61,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 camera.intersects(x, y - height + 1, width, height)
 
         @JvmStatic fun Object.isVisible(camera: Rectangle): Boolean =
-                visible && camera.intersects(getBoundingBox())
+                isVisible && camera.intersects(x, y - height + 1, width, height)
     }
 
     /**
@@ -91,9 +90,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
-        map.tileSets.forEach {
-            canvas.loadBitmap(it.image.path, it.transparentColor?.color ?: 0)
-        }
+        map.tileSets.forEach { canvas.loadBitmap(it.image.path) }
     }
 
     private var currentTimeMillis = 0L
@@ -103,9 +100,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             x: Int,
             y: Int,
             width: Int,
-            height: Int,
-            rotation: Float,
-            opacity: Float
+            height: Int
     ) {
         val tileSet = map.getTileSet(gid)
         val viewport = map.getViewport(gid, currentTimeMillis)
@@ -124,7 +119,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         }.let {
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
-        }.postRotate(rotation).postTranslate(
+        }.postTranslate(
                 dx = tileSet.tileOffset.x.toFloat() + x,
                 dy = tileSet.tileOffset.y.toFloat() + y - height + 1
         )
@@ -134,104 +129,20 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 y = viewport.y,
                 width = viewport.width,
                 height = viewport.height,
-                matrix = matrix,
-                opacity = opacity
+                matrix = matrix
         )
     }
 
-    private fun Object.Tile.draw(offsetX: Int, offsetY: Int, opacity: Float) {
-        drawGid(gid, x + offsetX, y + offsetY, width, height, rotation, opacity)
-    }
-
-    private fun Object.Rectangle.draw(
-            color: Color,
-            offsetX: Int,
-            offsetY: Int,
-            opacity: Float
-    ) {
-        matrix.reset()
-        matrix.postRotate(rotation)
-                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
-        canvas.drawRectangle(color.color, width, height, matrix, opacity)
-    }
-
-    private fun Object.Ellipse.draw(
-            color: Color,
-            offsetX: Int,
-            offsetY: Int,
-            opacity: Float
-    ) {
-        matrix.reset()
-        matrix.postRotate(rotation)
-                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
-        canvas.drawEllipse(color.color, width, height, matrix, opacity)
-    }
-
-    private fun Object.Polygon.draw(
-            color: Color,
-            offsetX: Int,
-            offsetY: Int,
-            opacity: Float
-    ) {
-        matrix.reset()
-        matrix.postRotate(rotation)
-                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
-        canvas.drawPolygon(
-                color = color.color,
-                vertexCount = polygon.size,
-                verticesX = IntArray(polygon.size) { polygon[it].x },
-                verticesY = IntArray(polygon.size) { polygon[it].y },
-                matrix = matrix,
-                opacity = opacity
-        )
-    }
-
-    private fun Object.Polyline.draw(
-            color: Color,
-            offsetX: Int,
-            offsetY: Int,
-            opacity: Float
-    ) {
-        matrix.reset()
-        matrix.postRotate(rotation)
-                .postTranslate(x.toFloat() + offsetX, y.toFloat() + offsetY)
-        for (i in 0..polyline.size - 2) {
-            canvas.drawLine(
-                    color = color.color,
-                    fromX = polyline[i].x,
-                    fromY = polyline[i].y,
-                    toX = polyline[i + 1].x,
-                    toY = polyline[i + 1].y,
-                    matrix = matrix,
-                    opacity = opacity
+    private fun Object.draw(color: Color?, offsetX: Int, offsetY: Int) {
+        if (gid != 0L) {
+            drawGid(gid, x + offsetX, y + offsetY, width, height)
+        } else if (color != null) {
+            matrix.reset()
+            matrix.postTranslate(
+                    dx = offsetX + x.toFloat(),
+                    dy = offsetY + y.toFloat() - height + 1
             )
-        }
-    }
-
-    private fun Object.draw(
-            color: Color?,
-            offsetX: Int,
-            offsetY: Int,
-            opacity: Float
-    ) {
-        if (visible) {
-            when (this) {
-                is Object.Tile -> if (gid != 0L) {
-                    draw(offsetX, offsetY, opacity)
-                }
-                is Object.Rectangle -> if (color != null) {
-                    draw(color, offsetX, offsetY, opacity)
-                }
-                is Object.Ellipse -> if (color != null) {
-                    draw(color, offsetX, offsetY, opacity)
-                }
-                is Object.Polygon -> if (color != null) {
-                    draw(color, offsetX, offsetY, opacity)
-                }
-                is Object.Polyline -> if (color != null) {
-                    draw(color, offsetX, offsetY, opacity)
-                }
-            }
+            canvas.drawRectangle(color.color, width, height, matrix)
         }
     }
 
@@ -253,12 +164,10 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                     )) {
                         drawGid(
                                 gid = gid,
-                                opacity = opacity,
                                 x = x + offsetX - camera.x,
                                 y = y + offsetY - camera.y,
                                 width = tileSet.tileWidth,
-                                height = tileSet.tileHeight,
-                                rotation = 0F
+                                height = tileSet.tileHeight
                         )
                     }
                 }
@@ -274,7 +183,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             DrawOrder.INDEX -> objects
         }.forEach {
             if (it.isVisible(camera)) {
-                it.draw(color, offsetX - camera.x, offsetY - camera.y, opacity)
+                it.draw(color, offsetX - camera.x, offsetY - camera.y)
             }
         }
     }
@@ -287,8 +196,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 y = camera.y - offsetY,
                 width = camera.width,
                 height = camera.height,
-                matrix = matrix,
-                opacity = opacity
+                matrix = matrix
         )
     }
 

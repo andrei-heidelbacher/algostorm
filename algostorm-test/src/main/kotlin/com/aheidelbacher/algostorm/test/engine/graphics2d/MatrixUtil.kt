@@ -26,7 +26,7 @@ fun Float.eq(other: Float): Boolean =
         Math.abs(this - other) < TOLERANCE
 
 fun FloatArray.eq(other: FloatArray): Boolean =
-        size == other.size && indices.all { get(it).equals(other[it]) }
+        size == other.size && indices.all { get(it).eq(other[it]) }
 
 fun Matrix.eq(other: Matrix): Boolean =
         getRawValues().eq(other.getRawValues())

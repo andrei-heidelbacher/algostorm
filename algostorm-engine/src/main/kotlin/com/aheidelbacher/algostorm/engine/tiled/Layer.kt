@@ -16,17 +16,13 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder.TOP_DOWN
 import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
-
-import kotlin.collections.Map
 
 /**
  * An abstract layer in the game world.
@@ -48,9 +44,9 @@ import kotlin.collections.Map
 )
 sealed class Layer(
         val name: String,
-        var isVisible: Boolean = true,
-        val offsetX: Int = 0,
-        val offsetY: Int = 0
+        var isVisible: Boolean,
+        val offsetX: Int,
+        val offsetY: Int
 ) : MutableProperties {
     final override val properties: MutableMap<String, Property> = hashMapOf()
 
@@ -69,7 +65,7 @@ sealed class Layer(
 
     /**
      * A layer which consists of `width x height` tiles, where `width` and
-     * `height` are the dimensions of the containing [Map].
+     * `height` are the dimensions of the containing [MapObject].
      *
      * @property data the global ids of the tiles on the containing map. Index
      * `i` of this array represents the tile with `x = i % width` and
@@ -78,9 +74,9 @@ sealed class Layer(
     class TileLayer(
             name: String,
             val data: LongArray,
-            isVisible: Boolean = true,
-            offsetX: Int = 0,
-            offsetY: Int = 0
+            isVisible: Boolean,
+            offsetX: Int,
+            offsetY: Int
     ) : Layer(name, isVisible, offsetX, offsetY)
 
     /**
@@ -91,9 +87,9 @@ sealed class Layer(
     class ImageLayer(
             name: String,
             var image: File,
-            isVisible: Boolean = true,
-            offsetX: Int = 0,
-            offsetY: Int = 0
+            isVisible: Boolean,
+            offsetX: Int,
+            offsetY: Int
     ) : Layer(name, isVisible, offsetX, offsetY)
 
     /**
@@ -105,21 +101,20 @@ sealed class Layer(
      * @property color the color with which objects that have their `gid` set to
      * `0` will be filled
      */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     class ObjectGroup(
             name: String,
             val objects: MutableList<Object>,
-            val drawOrder: DrawOrder = TOP_DOWN,
-            val color: Color? = null,
-            isVisible: Boolean = true,
-            offsetX: Int = 0,
-            offsetY: Int = 0
+            val drawOrder: DrawOrder,
+            val color: Color?,
+            isVisible: Boolean,
+            offsetX: Int,
+            offsetY: Int
     ) : Layer(name, isVisible, offsetX, offsetY) {
         /**
          * The order in which objects are rendered.
          */
         enum class DrawOrder {
-            @JsonProperty("topdown") TOP_DOWN,
+            @JsonProperty("top-down") TOP_DOWN,
             @JsonProperty("index") INDEX
         }
     }
