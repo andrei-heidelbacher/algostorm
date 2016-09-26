@@ -39,7 +39,7 @@
         "properties":{
           "z": {
             "type":"string",
-            "value":"alabala"
+            "value":"someString"
           }
         },
         "offsetX": 0,
@@ -49,10 +49,8 @@
       "properties": {}
     }
   },
-  "tileOffset": {
-    "x": 0,
-    "y": 0
-  },
+  "tileOffsetX": 0,
+  "tileOffsetY": 0,
   "properties": {},
   "tileWidth":24
 }

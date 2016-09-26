@@ -29,29 +29,51 @@ class TileSetTest {
             java.io.File("src/test/resources/testTileSet.json")
     )
     val tileSet = tileSetOf(
-            name = "testTileSet",
+            name = "world",
             tileWidth = 24,
             tileHeight = 24,
-            image = File("testTileSet.png"),
-            imageWidth = 24 * 3,
-            imageHeight = 24 * 2,
-            columns = 3,
-            tileCount = 6,
-            margin = 0,
-            spacing = 0
+            image = File(
+                    "D:/Dropbox/Private/Oryx tileset/algoventure/world.png"
+            ),
+            imageHeight = 240,
+            imageWidth = 288,
+            columns = 12,
+            tileCount = 120,
+            tiles = mapOf(
+                    2 to tileOf(objectGroup = objectGroupOf(
+                            name = "",
+                            properties = mapOf(
+                                    "z" to propertyOf("someString")
+                            ),
+                            objects = mutableListOf(objectOf(
+                                    height = 24,
+                                    width = 24,
+                                    id = 1,
+                                    name = "",
+                                    type = "",
+                                    properties = mapOf(
+                                            "z" to propertyOf(5)
+                                    ),
+                                    x = 0,
+                                    y = 0
+                            ))
+                    ))
+            )
     )
 
     @Test
     fun testTileSetDeserialization() {
-        val ts = Serializer.readValue<TileSet>(fileStream)
-        println(ts)
+        val actualTileSet = Serializer.readValue<TileSet>(fileStream)
+        assertEquals(tileSet, actualTileSet)
     }
 
     @Test
     fun testTileSetSerialization() {
         val bos = ByteArrayOutputStream()
-        val ts = Serializer.readValue<TileSet>(fileStream)
-        Serializer.writeValue(bos, ts)
-        println(bos.toString())
+        Serializer.writeValue(bos, tileSet)
+        val actualTileSet = Serializer.readValue<TileSet>(
+                src = bos.toByteArray().inputStream()
+        )
+        assertEquals(tileSet, actualTileSet)
     }
 }

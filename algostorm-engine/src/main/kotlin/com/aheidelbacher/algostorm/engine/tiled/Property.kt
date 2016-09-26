@@ -1,42 +1,38 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-data class Property private constructor(val type: Type, val value: Any) {
-    companion object {
-        operator fun invoke(type: Type, rawValue: Any): Property = when(type) {
-            Type.INT -> Property(type, rawValue as Int)
-            Type.FLOAT -> Property(type, rawValue as Float)
-            Type.BOOLEAN -> Property(type, rawValue as Boolean)
-            Type.STRING -> Property(type, rawValue as String)
-            Type.FILE -> Property(type, File(rawValue as String))
-            Type.COLOR -> Property(type, Color(rawValue as String))
-        }
+import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
 
-        operator fun invoke(value: Int): Property = Property(Type.INT, value)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes(
+        JsonSubTypes.Type(value = IntProperty::class, name = "int"),
+        JsonSubTypes.Type(value = FloatProperty::class, name = "float"),
+        JsonSubTypes.Type(value = BooleanProperty::class, name = "bool"),
+        JsonSubTypes.Type(value = StringProperty::class, name = "string"),
+        JsonSubTypes.Type(value = FileProperty::class, name = "file"),
+        JsonSubTypes.Type(value = ColorProperty::class, name = "color")
+)
+sealed class Property {
+    class IntProperty(val value: Int) : Property()
 
-        operator fun invoke(value: Float): Property =
-                Property(Type.FLOAT, value)
+    class FloatProperty(val value: Float) : Property()
 
-        operator fun invoke(value: Boolean): Property =
-                Property(Type.BOOLEAN, value)
+    class BooleanProperty(val value: Boolean) : Property()
 
-        operator fun invoke(value: String): Property =
-                Property(Type.STRING, value)
+    class StringProperty(val value: String) : Property()
 
-        operator fun invoke(value: File): Property =
-                Property(Type.FILE, value)
+    class FileProperty(val value: File) : Property()
 
-        operator fun invoke(value: Color): Property =
-                Property(Type.COLOR, value)
-    }
-
-    enum class Type {
-        @JsonProperty("int") INT,
-        @JsonProperty("float") FLOAT,
-        @JsonProperty("bool") BOOLEAN,
-        @JsonProperty("string") STRING,
-        @JsonProperty("file") FILE,
-        @JsonProperty("color") COLOR
-    }
+    class ColorProperty(val value: Color) : Property()
 }

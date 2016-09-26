@@ -16,22 +16,14 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
 
 interface Properties {
-    companion object {
-        operator fun invoke(properties: Map<String, Property>): Properties =
-                object : Properties {
-                    override val properties: Map<String, Property>
-                        get() = properties
-                }
-
-        inline fun <reified T : Any> Properties.get(name: String): T? =
-                getString(name)?.byteInputStream()?.use {
-                    Serializer.readValue(it)
-                }
-    }
-
     /**
      * The existing properties.
      */
@@ -46,15 +38,20 @@ interface Properties {
      */
     operator fun contains(name: String): Boolean = name in properties
 
-    fun getInt(name: String): Int? = properties[name]?.value as Int?
+    fun getInt(name: String): Int? = (properties[name] as IntProperty?)?.value
 
-    fun getFloat(name: String): Float? = properties[name]?.value as Float?
+    fun getFloat(name: String): Float? =
+            (properties[name] as FloatProperty?)?.value
 
-    fun getBoolean(name: String): Boolean? = properties[name]?.value as Boolean?
+    fun getBoolean(name: String): Boolean? =
+            (properties[name] as BooleanProperty?)?.value
 
-    fun getString(name: String): String? = properties[name]?.value as String?
+    fun getString(name: String): String? =
+            (properties[name] as StringProperty?)?.value
 
-    fun getFile(name: String): File? = properties[name]?.value as File?
+    fun getFile(name: String): File? =
+            (properties[name] as FileProperty?)?.value
 
-    fun getColor(name: String): Color? = properties[name]?.value as Color?
+    fun getColor(name: String): Color? =
+            (properties[name] as ColorProperty?)?.value
 }

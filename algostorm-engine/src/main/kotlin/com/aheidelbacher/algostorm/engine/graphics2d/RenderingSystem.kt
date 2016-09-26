@@ -120,8 +120,8 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
         }.postTranslate(
-                dx = tileSet.tileOffset.x.toFloat() + x,
-                dy = tileSet.tileOffset.y.toFloat() + y - height + 1
+                dx = tileSet.tileOffsetX.toFloat() + x,
+                dy = tileSet.tileOffsetY.toFloat() + y - height + 1
         )
         canvas.drawBitmap(
                 image = viewport.image.path,

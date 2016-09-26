@@ -16,20 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
-
-import java.io.ByteArrayOutputStream
-
 interface MutableProperties : Properties {
-    companion object {
-        operator fun <T : Any> MutableProperties.set(name: String, value: T) {
-            ByteArrayOutputStream().use {
-                Serializer.writeValue(it, value)
-                set(name, it.toString())
-            }
-        }
-    }
-
     override val properties: MutableMap<String, Property>
 
     /**
@@ -42,26 +29,26 @@ interface MutableProperties : Properties {
     }
 
     operator fun set(name: String, value: Int) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 
     operator fun set(name: String, value: Float) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 
     operator fun set(name: String, value: Boolean) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 
     operator fun set(name: String, value: String) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 
     operator fun set(name: String, value: File) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 
     operator fun set(name: String, value: Color) {
-        properties[name] = Property(value)
+        properties[name] = propertyOf(value)
     }
 }

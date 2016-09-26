@@ -23,10 +23,6 @@ data class Point(val x: Int, val y: Int) {
 
     operator fun minus(other: Point): Point = Point(x - other.x, y - other.y)
 
-    fun distanceTo(other: Point): Float = distance(x, y, other.x, other.y)
-
-    fun distanceTo(x: Int, y: Int): Float = distance(this.x, this.y, x, y)
-
     fun squareDistanceTo(other: Point): Long =
             squareDistance(x, y, other.x, other.y)
 

@@ -34,8 +34,10 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
  * @property spacing the spacing between adjacent tiles in pixels
  * @property columns the number of tiles per row
  * @property tileCount the number of tiles present in this tile set
- * @property tileOffset the rendering offset in pixels which should be applied
- * when rendering tiles from this tile set
+ * @property tileOffsetX the x-axis rendering offset in pixels which should be
+ * applied when rendering tiles from this tile set
+ * @property tileOffsetY the y-axis rendering offset in pixels which should be
+ * applied when rendering tiles from this tile set
  * @property properties the properties of this tile set
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
@@ -54,22 +56,11 @@ data class TileSet(
         val spacing: Int,
         val columns: Int,
         val tileCount: Int,
-        val tileOffset: Offset,
+        val tileOffsetX: Int,
+        val tileOffsetY: Int,
         val tiles: Map<Int, Tile>,
         override val properties: Map<String, Property>
 ) : Properties {
-    companion object {
-    }
-
-    /**
-     * Indicates an offset which should be applied when rendering any tile from
-     * this tile set.
-     *
-     * @property x the x-axis offset in pixels
-     * @property y the y-axis offset in pixels
-     */
-    data class Offset(val x: Int, val y: Int)
-
     /**
      * An object containing meta-data associated to this tile.
      *

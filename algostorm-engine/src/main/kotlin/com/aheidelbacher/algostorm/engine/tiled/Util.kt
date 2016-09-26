@@ -18,16 +18,24 @@
 
 package com.aheidelbacher.algostorm.engine.tiled
 
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
 import com.aheidelbacher.algostorm.engine.tiled.MapObject.Orientation
 import com.aheidelbacher.algostorm.engine.tiled.MapObject.RenderOrder
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Offset
+import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.engine.tiled.TileSet.Viewport
+
+import java.io.ByteArrayOutputStream
 
 fun mapObjectOf(
         width: Int,
@@ -40,7 +48,8 @@ fun mapObjectOf(
         layers: List<Layer> = emptyList(),
         backgroundColor: Color? = null,
         version: String = "1.0",
-        nextObjectId: Int = 1
+        nextObjectId: Int = 1,
+        properties: Map<String, Property> = emptyMap()
 ): MapObject = MapObject(
         width = width,
         height = height,
@@ -53,7 +62,19 @@ fun mapObjectOf(
         backgroundColor = backgroundColor,
         version = version,
         nextObjectId = nextObjectId
-)
+).apply { this.properties.putAll(properties) }
+
+fun propertyOf(value: Int): Property = IntProperty(value)
+
+fun propertyOf(value: Float): Property = FloatProperty(value)
+
+fun propertyOf(value: Boolean): Property = BooleanProperty(value)
+
+fun propertyOf(value: String): Property = StringProperty(value)
+
+fun propertyOf(value: File): Property = FileProperty(value)
+
+fun propertyOf(value: Color): Property = ColorProperty(value)
 
 fun tileSetOf(
         name: String,
@@ -66,7 +87,8 @@ fun tileSetOf(
         spacing: Int = 0,
         columns: Int,
         tileCount: Int,
-        tileOffset: Offset = Offset(0, 0),
+        tileOffsetX: Int = 0,
+        tileOffsetY: Int = 0,
         tiles: Map<Int, Tile> = emptyMap(),
         properties: Map<String, Property> = emptyMap()
 ): TileSet = TileSet(
@@ -80,7 +102,8 @@ fun tileSetOf(
         spacing = spacing,
         columns = columns,
         tileCount = tileCount,
-        tileOffset = tileOffset,
+        tileOffsetX = tileOffsetX,
+        tileOffsetY = tileOffsetY,
         tiles = tiles,
         properties = properties
 )
@@ -111,16 +134,22 @@ fun tileLayerOf(
         data: LongArray,
         isVisible: Boolean = true,
         offsetX: Int = 0,
-        offsetY: Int = 0
-): TileLayer = TileLayer(name, data, isVisible, offsetX, offsetY)
+        offsetY: Int = 0,
+        properties: Map<String, Property> = emptyMap()
+): TileLayer = TileLayer(name, data, isVisible, offsetX, offsetY).apply {
+    this.properties.putAll(properties)
+}
 
 fun imageLayerOf(
         name: String,
         image: File,
         isVisible: Boolean = true,
         offsetX: Int = 0,
-        offsetY: Int = 0
-): ImageLayer = ImageLayer(name, image, isVisible, offsetX, offsetY)
+        offsetY: Int = 0,
+        properties: Map<String, Property> = emptyMap()
+): ImageLayer = ImageLayer(name, image, isVisible, offsetX, offsetY).apply {
+    this.properties.putAll(properties)
+}
 
 fun objectGroupOf(
         name: String,
@@ -129,8 +158,17 @@ fun objectGroupOf(
         color: Color? = null,
         isVisible: Boolean = true,
         offsetX: Int = 0,
-        offsetY: Int = 0
-): ObjectGroup = ObjectGroup(name, objects, drawOrder, color, isVisible, offsetX, offsetY)
+        offsetY: Int = 0,
+        properties: Map<String, Property> = emptyMap()
+): ObjectGroup = ObjectGroup(
+        name,
+        objects,
+        drawOrder,
+        color,
+        isVisible,
+        offsetX,
+        offsetY
+).apply { this.properties.putAll(properties) }
 
 fun MapObject.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
     val tileSet = getTileSet(gid)
@@ -149,4 +187,16 @@ fun MapObject.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
         animation[i - 1].tileId
     }
     return tileSet.getViewport(tileId)
+}
+
+inline fun <reified T : Any> Properties.get(name: String): T? =
+        getString(name)?.byteInputStream()?.use {
+            Serializer.readValue(it)
+        }
+
+operator fun <T : Any> MutableProperties.set(name: String, value: T) {
+    ByteArrayOutputStream().use {
+        Serializer.writeValue(it, value)
+        set(name, it.toString())
+    }
 }
