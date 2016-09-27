@@ -9,11 +9,25 @@ import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 
-import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.memberProperties
 
 class MapObjectTest {
+    companion object {
+        fun <T : Any> assertEquals(
+                expected: T,
+                actual: T,
+                props: Iterable<T.() -> Any?>
+        ) {
+            props.forEach { prop -> assertEquals(expected.prop(), actual.prop()) }
+        }
+
+        inline fun <reified T : Any> assertPropsEquals(expected: T, actual: T) {
+            val props = T::class.memberProperties.filter { it.isAccessible }
+            assertEquals(expected, actual, props)
+        }
+    }
+
     val fileStream = FileInputStream(
             java.io.File("src/test/resources/testMapObject.json")
     )
@@ -23,23 +37,18 @@ class MapObjectTest {
             tileWidth = 24,
             tileHeight = 24,
             backgroundColor = Color("#FFFFFF5f"),
-            tileSets = listOf(
-                    tileSetOf(
-                            name = "world",
-                            tileWidth = 24,
-                            tileHeight = 24,
-                            image = File("/world.png"),
-                            columns = 2,
-                            tileCount = 6,
-                            imageWidth = 48,
-                            imageHeight = 72
-                    )
-            ),
+            tileSets = listOf(tileSetOf(
+                    name = "world",
+                    tileWidth = 24,
+                    tileHeight = 24,
+                    image = File("/world.png"),
+                    columns = 2,
+                    tileCount = 6,
+                    imageWidth = 48,
+                    imageHeight = 72
+            )),
             layers = listOf(
-                    imageLayerOf(
-                            name = "bg",
-                            image = File("/bg.png")
-                    ),
+                    imageLayerOf(name = "bg", image = File("/bg.png")),
                     tileLayerOf(
                             name = "floor",
                             data = LongArray(2 * 2) { 1 },
@@ -67,27 +76,6 @@ class MapObjectTest {
             nextObjectId = 2
     )
 
-    private fun <T : Any> assertEquals(
-            expected: T,
-            actual: T,
-            vararg props: T.() -> Any?
-    ) {
-        props.forEach { prop -> println(expected.prop()); assertEquals(expected.prop(), actual.prop()) }
-    }
-
-    private inline fun <reified T : Any> assertPropertyEquals(
-            expected: T,
-            actual: T
-    ) {
-        assertEquals(
-                expected,
-                actual,
-                *T::class.memberProperties
-                        .filter(KProperty1<T, *>::isAccessible)
-                        .toTypedArray()
-        )
-    }
-
     private fun assertMapObjectEquals(
             expectedMapObject: MapObject,
             actualMapObject: MapObject
@@ -96,11 +84,11 @@ class MapObjectTest {
             val (expected, actual) = it
             when {
                 expected is Layer.ImageLayer && actual is Layer.ImageLayer ->
-                    assertPropertyEquals(expected, actual)
+                    assertPropsEquals(expected, actual)
                 expected is Layer.ObjectGroup && actual is Layer.ObjectGroup ->
-                    assertPropertyEquals(expected, actual)
+                    assertPropsEquals(expected, actual)
                 expected is Layer.TileLayer && actual is Layer.TileLayer -> {
-                    assertPropertyEquals<Layer>(expected, actual)
+                    assertPropsEquals<Layer>(expected, actual)
                     assertArrayEquals(expected.data, actual.data)
                 }
             }
@@ -114,7 +102,7 @@ class MapObjectTest {
     @Test
     fun testMapObjectDeserialization() {
         val actualMapObject = Serializer.readValue<MapObject>(fileStream)
-        assertPropertyEquals(mapObject, actualMapObject)
+        assertPropsEquals(mapObject, actualMapObject)
         assertMapObjectEquals(mapObject, actualMapObject)
     }
 
