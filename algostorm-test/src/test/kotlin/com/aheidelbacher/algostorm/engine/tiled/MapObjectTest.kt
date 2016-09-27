@@ -1,12 +1,17 @@
 package com.aheidelbacher.algostorm.engine.tiled
 
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import java.io.ByteArrayOutputStream
 
+import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+
+import kotlin.reflect.KProperty1
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.memberProperties
 
 class MapObjectTest {
     val fileStream = FileInputStream(
@@ -17,6 +22,7 @@ class MapObjectTest {
             height = 2,
             tileWidth = 24,
             tileHeight = 24,
+            backgroundColor = Color("#FFFFFF5f"),
             tileSets = listOf(
                     tileSetOf(
                             name = "world",
@@ -61,15 +67,55 @@ class MapObjectTest {
             nextObjectId = 2
     )
 
-    private fun assertEquals(expected: MapObject, actual: MapObject) {
-        fun assertEquals() = 0
-        assertEquals(expected.width, actual.width)
+    private fun <T : Any> assertEquals(
+            expected: T,
+            actual: T,
+            vararg props: T.() -> Any?
+    ) {
+        props.forEach { prop -> println(expected.prop()); assertEquals(expected.prop(), actual.prop()) }
+    }
+
+    private inline fun <reified T : Any> assertPropertyEquals(
+            expected: T,
+            actual: T
+    ) {
+        assertEquals(
+                expected,
+                actual,
+                *T::class.memberProperties
+                        .filter(KProperty1<T, *>::isAccessible)
+                        .toTypedArray()
+        )
+    }
+
+    private fun assertMapObjectEquals(
+            expectedMapObject: MapObject,
+            actualMapObject: MapObject
+    ) {
+        expectedMapObject.layers.zip(actualMapObject.layers).forEach {
+            val (expected, actual) = it
+            when {
+                expected is Layer.ImageLayer && actual is Layer.ImageLayer ->
+                    assertPropertyEquals(expected, actual)
+                expected is Layer.ObjectGroup && actual is Layer.ObjectGroup ->
+                    assertPropertyEquals(expected, actual)
+                expected is Layer.TileLayer && actual is Layer.TileLayer -> {
+                    assertPropertyEquals<Layer>(expected, actual)
+                    assertArrayEquals(expected.data, actual.data)
+                }
+            }
+        }
+        assertEquals(
+                expectedMapObject.getAndIncrementNextObjectId(),
+                actualMapObject.getAndIncrementNextObjectId()
+        )
     }
 
     @Test
     fun testMapObjectDeserialization() {
         val actualMapObject = Serializer.readValue<MapObject>(fileStream)
-        assertEquals(mapObject, actualMapObject)
+        assertPropertyEquals(mapObject, actualMapObject)
+        assertMapObjectEquals(mapObject, actualMapObject)
     }
 
     @Test
@@ -79,6 +125,6 @@ class MapObjectTest {
         val actualMapObject = Serializer.readValue<MapObject>(
                 src = bos.toByteArray().inputStream()
         )
-        assertEquals(mapObject, actualMapObject)
+        assertMapObjectEquals(mapObject, actualMapObject)
     }
 }
