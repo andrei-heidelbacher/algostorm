@@ -1,0 +1,84 @@
+{
+  "width": 2,
+  "height": 2,
+  "tileWidth": 24,
+  "tileHeight": 24,
+  "version": "1.0",
+  "orientation": "orthogonal",
+  "renderOrder": "right-down",
+  "backgroundColor": "#ffffff5f",
+  "tileSets": [{
+    "name": "world",
+    "tileWidth": 24,
+    "tileHeight": 24,
+    "image": "/world.png",
+    "columns": 2,
+    "tileCount": 6,
+    "imageWidth": 48,
+    "imageHeight": 72,
+    "margin": 0,
+    "spacing": 0,
+    "properties": {},
+    "tiles": {},
+    "tileOffsetX": 0,
+    "tileOffsetY": 0
+  }],
+  "layers": [
+    {
+      "type": "ImageLayer",
+      "name": "bg",
+      "image": "/bg.png",
+      "offsetX": 0,
+      "offsetY": 0,
+      "isVisible": true
+    },
+    {
+      "type": "TileLayer",
+      "name": "floor",
+      "data": [1, 1, 1, 1],
+      "properties": {
+        "collider": {
+          "type": "bool",
+          "value": false
+        }
+      },
+      "isVisible": true,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "type": "ObjectGroup",
+      "name": "objects",
+      "color": null,
+      "drawOrder": "top-down",
+      "objects": [{
+        "id": 1,
+        "name": "",
+        "type": "",
+        "x": 0,
+        "y": 0,
+        "width": 24,
+        "height": 24,
+        "isVisible": true,
+        "gid": 1,
+        "properties": {
+          "z": {
+            "type": "int",
+            "value": 2
+          },
+          "sound": {
+            "type": "file",
+            "value": "s.mp3"
+          }
+        }
+      }]
+    }
+  ],
+  "nextObjectId": 2,
+  "properties": {
+    "time": {
+      "type": "float",
+      "value": "0.0"
+    }
+  }
+}

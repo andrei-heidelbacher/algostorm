@@ -24,15 +24,45 @@ import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
         JsonSubTypes.Type(value = ColorProperty::class, name = "color")
 )
 sealed class Property {
-    class IntProperty(val value: Int) : Property()
+    class IntProperty(val value: Int) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is IntProperty && value == other.value
 
-    class FloatProperty(val value: Float) : Property()
+        override fun hashCode(): Int = value
+    }
 
-    class BooleanProperty(val value: Boolean) : Property()
+    class FloatProperty(val value: Float) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is FloatProperty && value == other.value
 
-    class StringProperty(val value: String) : Property()
+        override fun hashCode(): Int = value.hashCode()
+    }
 
-    class FileProperty(val value: File) : Property()
+    class BooleanProperty(val value: Boolean) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is BooleanProperty && value == other.value
 
-    class ColorProperty(val value: Color) : Property()
+        override fun hashCode(): Int = if (value) 1 else 0
+    }
+
+    class StringProperty(val value: String) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is StringProperty && value == other.value
+
+        override fun hashCode(): Int = value.hashCode()
+    }
+
+    class FileProperty(val value: File) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is FileProperty && value == other.value
+
+        override fun hashCode(): Int = value.hashCode()
+    }
+
+    class ColorProperty(val value: Color) : Property() {
+        override fun equals(other: Any?): Boolean =
+                other is ColorProperty && value == other.value
+
+        override fun hashCode(): Int = value.hashCode()
+    }
 }
