@@ -16,13 +16,12 @@ type-check the event subscribers
 * asset management (tile sets, sounds, scripts)
 * thread-safe input bridge between raw user input and game-specific commands
 * JSON serialization utilities
-* supports reading Tiled JSON maps
 
 ### Using Algostorm
 To use the engine, you need the following dependencies:
-* kotlin-stdlib-1.0.3 or newer
-* kotlin-reflect-1.0.3 or newer
-* jackson-module-kotlin-2.8.1 or newer
+* kotlin-stdlib-1.0.4 or newer
+* kotlin-reflect-1.0.4 or newer
+* jackson-module-kotlin-2.7.7 or newer
 * mozilla-rhino-1.7.7.1 or newer
 
 You may download the latest release [here](https://github.com/andrei-heidelbacher/algostorm/releases).
