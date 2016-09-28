@@ -1,8 +1,9 @@
 language: java
 jdk:
- - openjdk6
+# - openjdk6
+ - oraclejdk6
 
 sudo: required
 
-before_install:
- - sudo apt-get install libjna-java
+#before_install:
+# - sudo apt-get install libjna-java
