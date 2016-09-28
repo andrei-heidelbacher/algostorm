@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 /**
  * A manager which offers easy creation, deletion and retrieval of objects from
@@ -75,9 +75,9 @@ class ObjectManager(private val mapObject: MapObject, name: String) {
      * pixels
      * @param width the width of this object in pixels
      * @param height the height of this object in pixels
+     * @param isVisible whether this object should be rendered or not
      * @param gid the global id of the object tile. A value of `0` indicates the
      * empty tile (nothing to draw)
-     * @param isVisible whether this object should be rendered or not
      * @throws IllegalStateException if there are too many objects in this
      * object group
      * @throws IllegalArgumentException if [gid] is negative or if [width] or
@@ -91,8 +91,9 @@ class ObjectManager(private val mapObject: MapObject, name: String) {
             width: Int,
             height: Int,
             isVisible: Boolean = true,
-            gid: Long = 0L
-    ) : Object = Object(
+            gid: Long = 0L,
+            properties: Map<String, Property> = emptyMap()
+    ) : Object = objectOf(
             id = mapObject.getAndIncrementNextObjectId(),
             name = name,
             type = type,
@@ -100,8 +101,9 @@ class ObjectManager(private val mapObject: MapObject, name: String) {
             y = y,
             width = width,
             height = height,
+            isVisible = isVisible,
             gid = gid,
-            isVisible = isVisible
+            properties = properties
     ).apply {
         objectGroup.objects.add(this)
         objectMap[id] = this

@@ -17,8 +17,8 @@
 package com.aheidelbacher.algostorm.engine.physics2d
 
 import com.aheidelbacher.algostorm.engine.geometry2d.intersects
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe

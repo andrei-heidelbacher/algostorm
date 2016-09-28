@@ -1,4 +1,4 @@
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue

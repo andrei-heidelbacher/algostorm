@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 /**
  * A physical and renderable object in the game.

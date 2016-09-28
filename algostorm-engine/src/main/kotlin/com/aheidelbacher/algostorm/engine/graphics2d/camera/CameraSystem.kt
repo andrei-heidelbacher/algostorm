@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe

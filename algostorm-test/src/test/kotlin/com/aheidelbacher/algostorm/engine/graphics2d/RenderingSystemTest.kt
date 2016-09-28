@@ -20,19 +20,19 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Companion.isVisible
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.MapObject
-import com.aheidelbacher.algostorm.engine.tiled.Color
-import com.aheidelbacher.algostorm.engine.tiled.File
-import com.aheidelbacher.algostorm.engine.tiled.TileSet
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipDiagonally
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipHorizontally
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.engine.tiled.mapObjectOf
-import com.aheidelbacher.algostorm.engine.tiled.objectGroupOf
-import com.aheidelbacher.algostorm.engine.tiled.objectOf
-import com.aheidelbacher.algostorm.engine.tiled.tileLayerOf
-import com.aheidelbacher.algostorm.engine.tiled.tileSetOf
+import com.aheidelbacher.algostorm.engine.state.Color
+import com.aheidelbacher.algostorm.engine.state.File
+import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipDiagonally
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.engine.state.mapObjectOf
+import com.aheidelbacher.algostorm.engine.state.objectGroupOf
+import com.aheidelbacher.algostorm.engine.state.objectOf
+import com.aheidelbacher.algostorm.engine.state.tileLayerOf
+import com.aheidelbacher.algostorm.engine.state.tileSetOf
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {

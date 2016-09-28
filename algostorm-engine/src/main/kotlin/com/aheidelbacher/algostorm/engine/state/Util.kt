@@ -16,26 +16,23 @@
 
 @file:JvmName("Util")
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ImageLayer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
-import com.aheidelbacher.algostorm.engine.tiled.MapObject.Orientation
-import com.aheidelbacher.algostorm.engine.tiled.MapObject.RenderOrder
-import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Frame
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Viewport
-
-import java.io.ByteArrayOutputStream
+import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.engine.state.MapObject.Orientation
+import com.aheidelbacher.algostorm.engine.state.MapObject.RenderOrder
+import com.aheidelbacher.algostorm.engine.state.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.state.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.state.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
 
 fun mapObjectOf(
         width: Int,
@@ -187,16 +184,4 @@ fun MapObject.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
         animation[i - 1].tileId
     }
     return tileSet.getViewport(tileId)
-}
-
-inline fun <reified T : Any> Properties.get(name: String): T? =
-        getString(name)?.byteInputStream()?.use {
-            Serializer.readValue(it)
-        }
-
-operator fun <T : Any> MutableProperties.set(name: String, value: T) {
-    ByteArrayOutputStream().use {
-        Serializer.writeValue(it, value)
-        set(name, it.toString())
-    }
 }

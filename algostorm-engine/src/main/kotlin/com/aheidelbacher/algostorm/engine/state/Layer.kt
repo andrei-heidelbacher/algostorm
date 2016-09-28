@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ImageLayer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.tiled.Layer.TileLayer
+import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 
 /**
  * An abstract layer in the game world.

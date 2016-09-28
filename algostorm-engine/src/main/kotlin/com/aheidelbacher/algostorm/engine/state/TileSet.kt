@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 
 /**
  * A tile set used for rendering. Tiles are indexed starting from `0`,
@@ -38,7 +38,6 @@ import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup
  * applied when rendering tiles from this tile set
  * @property tileOffsetY the y-axis rendering offset in pixels which should be
  * applied when rendering tiles from this tile set
- * @property properties the properties of this tile set
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
  * [imageHeight], [columns] or [tileCount] are not positive or if [margin] or
@@ -66,9 +65,11 @@ data class TileSet(
      *
      * @property animation a list of frames representing an animation. Must be
      * `null` (indicating no animation) or must contain at least two frames.
-     * @property properties the properties of this tile
+     * @property objectGroup an object group containing tile collision
+     * information
      * @throws IllegalArgumentException if [animation] is not `null` and
-     * contains less than two frames
+     * contains less than two frames or if [objectGroup] is not `null` and
+     * contains an object with a non-zero `gid`
      */
     data class Tile(
             val animation: List<Frame>?,

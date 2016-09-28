@@ -1,15 +1,18 @@
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
+import com.aheidelbacher.algostorm.engine.state.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.state.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.state.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
 
+/**
+ * An immutable value of a property.
+ */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,

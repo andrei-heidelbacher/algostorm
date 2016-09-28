@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.clearFlags
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlags
 
 /**
  * A map which contains all the game state.
@@ -90,13 +90,13 @@ class MapObject(
         require(nextObjectId >= 0) {
             "Map next object id $nextObjectId can't be negative!"
         }
-        require(tileSets.distinct().size == tileSets.size) {
+        require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
             "Different tile sets can't have the same name!"
         }
-        require(layers.distinct().size == layers.size) {
+        require(layers.distinctBy(Layer::name).size == layers.size) {
             "Different layers can't have the same name!"
         }
-        val totalGidCount = tileSets.sumBy { it.tileCount }
+        val totalGidCount = tileSets.sumBy(TileSet::tileCount)
         gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)
         gidToTileId = IntArray(totalGidCount)
         var firstGid = 1

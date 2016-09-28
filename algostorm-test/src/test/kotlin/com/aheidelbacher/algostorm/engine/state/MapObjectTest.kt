@@ -1,4 +1,4 @@
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals

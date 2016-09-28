@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
-import com.aheidelbacher.algostorm.engine.tiled.MapObject
+import com.aheidelbacher.algostorm.engine.state.MapObject
 
 interface Camera {
     companion object {

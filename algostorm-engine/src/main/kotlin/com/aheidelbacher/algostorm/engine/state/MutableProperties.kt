@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
+/**
+ * A bag of mutable properties.
+ */
 interface MutableProperties : Properties {
     override val properties: MutableMap<String, Property>
 

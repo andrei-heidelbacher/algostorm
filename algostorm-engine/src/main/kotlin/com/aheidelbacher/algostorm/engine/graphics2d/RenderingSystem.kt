@@ -18,16 +18,16 @@ package com.aheidelbacher.algostorm.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.MapObject
-import com.aheidelbacher.algostorm.engine.tiled.MapObject.RenderOrder
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.Color
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.engine.tiled.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.engine.tiled.getViewport
+import com.aheidelbacher.algostorm.engine.state.Color
+import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.MapObject.RenderOrder
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.engine.state.getViewport
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber

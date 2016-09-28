@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.tiled
+package com.aheidelbacher.algostorm.engine.state
 
-import com.aheidelbacher.algostorm.engine.tiled.Property.BooleanProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.ColorProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FileProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.FloatProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.IntProperty
-import com.aheidelbacher.algostorm.engine.tiled.Property.StringProperty
+import com.aheidelbacher.algostorm.engine.state.Property.BooleanProperty
+import com.aheidelbacher.algostorm.engine.state.Property.ColorProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FileProperty
+import com.aheidelbacher.algostorm.engine.state.Property.FloatProperty
+import com.aheidelbacher.algostorm.engine.state.Property.IntProperty
+import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
 
+/**
+ * A read-only view of a bag properties.
+ */
 interface Properties {
     /**
      * The existing properties.
