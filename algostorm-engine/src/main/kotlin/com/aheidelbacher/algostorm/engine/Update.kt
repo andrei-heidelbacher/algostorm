@@ -20,8 +20,10 @@ import com.aheidelbacher.algostorm.event.Event
 
 /**
  * An event which signals that all game logic should advance by an atomic time
- * unit. It is recommended to not change the game state after this event has
- * been processed by its subscribers.
+ * unit.
+ *
+ * It is recommended to not change the game state after this event has been
+ * processed by its subscribers.
  *
  * @property elapsedMillis the number of milliseconds of an atomic time unit
  */

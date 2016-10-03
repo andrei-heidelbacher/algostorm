@@ -31,9 +31,7 @@ import com.aheidelbacher.algostorm.event.Subscriber
 abstract class AbstractInputSystem<in T : Any>(
         private val inputReader: InputReader<T>
 ) : Subscriber {
-    /**
-     * An event which signals that user input should be processed.
-     */
+    /** An event which signals that user input should be processed. */
     object HandleInput : Event
 
     /**

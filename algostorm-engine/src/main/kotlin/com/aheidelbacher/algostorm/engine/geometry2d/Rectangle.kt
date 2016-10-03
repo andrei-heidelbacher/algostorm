@@ -27,21 +27,9 @@ package com.aheidelbacher.algostorm.engine.geometry2d
  */
 data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
     init {
-        require(width > 0) { "Rectangle width $width must be positive!" }
-        require(height > 0) { "Rectangle height $height must be positive!" }
+        require(width > 0) { "$this width must be positive!" }
+        require(height > 0) { "$this height must be positive!" }
     }
-
-    /**
-     * The x-axis coordinate of the center of the rectangle.
-     */
-    val centerX: Int
-        get() = x + width / 2
-
-    /**
-     * The y-axis coordinate of the center of the rectangle.
-     */
-    val centerY: Int
-        get() = y + height / 2
 
     /**
      * Returns whether the two rectangles intersect (that is, there is at least
@@ -94,8 +82,9 @@ data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
      * @return `true` if the given point is contained in this rectangle, `false`
      * otherwise
      */
-    fun contains(x: Int, y: Int): Boolean = this.x <= x && x < this.x + width &&
-            this.y <= y && y < this.y + height
+    fun contains(x: Int, y: Int): Boolean =
+            this.x <= x && x < this.x + width &&
+                    this.y <= y && y < this.y + height
 
     /**
      * Checks if the given point is inside this rectangle.
@@ -110,8 +99,8 @@ data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
      * Returns a copy of this rectangle with the top-left corner translated by
      * the given amount.
      *
-     * @param dx the x-axis translation amount
-     * @param dy the y-axis translation amount
+     * @param dx the horizontal translation amount
+     * @param dy the vertical translation amount (positive is down)
      * @return the translated rectangle
      */
     fun translate(dx: Int, dy: Int): Rectangle = copy(x = x + dx, y = y + dy)

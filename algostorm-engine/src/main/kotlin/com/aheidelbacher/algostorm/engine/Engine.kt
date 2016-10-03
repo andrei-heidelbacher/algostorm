@@ -43,9 +43,7 @@ import kotlin.system.measureNanoTime
  */
 abstract class Engine(val millisPerUpdate: Int) {
     companion object {
-        /**
-         * Name of the engine thread.
-         */
+        /** Name of the engine thread. */
         const val NAME: String = "ALGOSTORM"
 
         /**
@@ -63,9 +61,7 @@ abstract class Engine(val millisPerUpdate: Int) {
         }
     }
 
-    /**
-     * An enum which represents the status of an engine.
-     */
+    /** The status of an engine. */
     enum class Status {
         RUNNING, STOPPING, STOPPED
     }
@@ -82,15 +78,11 @@ abstract class Engine(val millisPerUpdate: Int) {
         }
     }
 
-    /**
-     * The current status of this engine.
-     */
+    /** The current status of this engine. */
     val status: Status
         get() = internalStatus.get()
 
-    /**
-     * The current shutdown status of this engine.
-     */
+    /** The current shutdown status of this engine. */
     val isShutdown: Boolean
         get() = internalShutdownStatus.get()
 

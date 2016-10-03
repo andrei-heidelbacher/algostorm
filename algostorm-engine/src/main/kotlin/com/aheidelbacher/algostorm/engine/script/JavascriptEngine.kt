@@ -48,10 +48,9 @@ class JavascriptEngine(
 
     @Throws(FileNotFoundException::class)
     override fun eval(script: String) {
-        loader(script)
         InputStreamReader(loader(script)).use { reader ->
             executeWithContext {
-                evaluateReader(scope, reader, "script", 1, null)
+                evaluateReader(scope, reader, script, 1, null)
             }
         }
     }
@@ -62,12 +61,8 @@ class JavascriptEngine(
             vararg args: Any?
     ): T? = returnType.java.cast(Context.jsToJava(
             executeWithContext {
-                (scope.get(functionName, scope) as Function).call(
-                        this,
-                        scope,
-                        scope,
-                        args
-                )
+                val function = scope.get(functionName, scope) as Function
+                function.call(this, scope, scope, args)
             },
             returnType.java
     ))

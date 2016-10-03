@@ -23,13 +23,9 @@ import com.aheidelbacher.algostorm.engine.state.Property.FloatProperty
 import com.aheidelbacher.algostorm.engine.state.Property.IntProperty
 import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
 
-/**
- * A read-only view of a bag properties.
- */
+/** A read-only view of a bag of properties. */
 interface Properties {
-    /**
-     * The existing properties.
-     */
+    /** The existing properties. */
     val properties: Map<String, Property>
 
     /**
@@ -41,20 +37,68 @@ interface Properties {
      */
     operator fun contains(name: String): Boolean = name in properties
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [IntProperty]
+     */
     fun getInt(name: String): Int? = (properties[name] as IntProperty?)?.value
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [FloatProperty]
+     */
     fun getFloat(name: String): Float? =
             (properties[name] as FloatProperty?)?.value
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [BooleanProperty]
+     */
     fun getBoolean(name: String): Boolean? =
             (properties[name] as BooleanProperty?)?.value
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [StringProperty]
+     */
     fun getString(name: String): String? =
             (properties[name] as StringProperty?)?.value
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [FileProperty]
+     */
     fun getFile(name: String): File? =
             (properties[name] as FileProperty?)?.value
 
+    /**
+     * Returns the value of the requested property.
+     *
+     * @param name the name of the requested property
+     * @return the value of the property or `null` if the property doesn't exist
+     * @throws ClassCastException if the property exists, but is not of type
+     * [ColorProperty]
+     */
     fun getColor(name: String): Color? =
             (properties[name] as ColorProperty?)?.value
 }

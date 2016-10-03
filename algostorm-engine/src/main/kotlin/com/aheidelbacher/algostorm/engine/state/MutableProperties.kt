@@ -16,9 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.state
 
-/**
- * A bag of mutable properties.
- */
+/** A bag of mutable properties. */
 interface MutableProperties : Properties {
     override val properties: MutableMap<String, Property>
 
@@ -31,27 +29,67 @@ interface MutableProperties : Properties {
         properties.remove(name)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the integer property
+     */
     operator fun set(name: String, value: Int) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the float property
+     */
     operator fun set(name: String, value: Float) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the boolean property
+     */
     operator fun set(name: String, value: Boolean) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the string property
+     */
     operator fun set(name: String, value: String) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * The string representation of the file property is saved.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the file property
+     */
     operator fun set(name: String, value: File) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 
+    /**
+     * Sets the value of the property with the given name.
+     *
+     * The string representation of the color property is saved.
+     *
+     * @param name the name of the property that should be set
+     * @param value the value of the color property
+     */
     operator fun set(name: String, value: Color) {
-        properties[name] = propertyOf(value)
+        properties[name] = Property(value)
     }
 }

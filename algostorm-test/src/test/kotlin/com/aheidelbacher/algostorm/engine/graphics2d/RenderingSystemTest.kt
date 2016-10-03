@@ -22,6 +22,7 @@ import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Companion.isVisible
 import com.aheidelbacher.algostorm.engine.state.Color
 import com.aheidelbacher.algostorm.engine.state.File
+import com.aheidelbacher.algostorm.engine.state.Image
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.MapObject
 import com.aheidelbacher.algostorm.engine.state.TileSet
@@ -41,7 +42,7 @@ class RenderingSystemTest {
     val height = 12
     val tileWidth = 24
     val tileHeight = 24
-    val image = File("testImage.png")
+    val image = Image(File("testImage.png"), tileWidth, tileHeight)
     val cameraX = 44
     val cameraY = 60
     val camera = run {
@@ -63,8 +64,6 @@ class RenderingSystemTest {
                     tileHeight = tileHeight,
                     columns = 1,
                     tileCount = 1,
-                    imageWidth = tileWidth,
-                    imageHeight = tileHeight,
                     image = image
             )),
             layers: List<Layer> = emptyList()
@@ -97,7 +96,7 @@ class RenderingSystemTest {
                 val x = tx * tileWidth
                 if (isVisible(camera, 1L, x, y, tileWidth, tileHeight)) {
                     canvas.verifyBitmap(
-                            image = image.path,
+                            image = image.source.path,
                             x = 0,
                             y = 0,
                             width = tileWidth,
@@ -162,7 +161,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image.path,
+                image = image.source.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -194,7 +193,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image.path,
+                image = image.source.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -226,7 +225,7 @@ class RenderingSystemTest {
         canvas.verifyClear()
         canvas.verifyColor(-1)
         canvas.verifyBitmap(
-                image = image.path,
+                image = image.source.path,
                 x = 0,
                 y = 0,
                 width = tileWidth,

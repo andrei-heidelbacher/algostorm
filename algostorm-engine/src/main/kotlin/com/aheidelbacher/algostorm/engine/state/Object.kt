@@ -33,7 +33,7 @@ package com.aheidelbacher.algostorm.engine.state
  * @throws IllegalArgumentException if [id], [width] or [height] are not
  * positive or if [gid] is negative
  */
-class Object(
+class Object private constructor(
         val id: Int,
         val name: String,
         val type: String,
@@ -44,8 +44,30 @@ class Object(
         var isVisible: Boolean,
         gid: Long
 ) : MutableProperties {
+    companion object {
+        /** Object factory method. */
+        operator fun invoke(
+                id: Int,
+                name: String = "",
+                type: String = "",
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int,
+                isVisible: Boolean = true,
+                gid: Long = 0L,
+                properties: Map<String, Property> = emptyMap()
+        ) = Object(id, name, type, x, y, width, height, isVisible, gid)
+                .apply { this.properties.putAll(properties) }
+    }
+
     override val properties: MutableMap<String, Property> = hashMapOf()
 
+    /**
+     * The global tile id of this object.
+     *
+     * @throws IllegalArgumentException if the set value is negative
+     */
     var gid: Long = gid
         set(value) {
             require(value >= 0L) { "Object $id gid $gid can't be negative!" }

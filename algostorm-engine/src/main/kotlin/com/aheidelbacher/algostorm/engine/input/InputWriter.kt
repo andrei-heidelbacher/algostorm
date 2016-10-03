@@ -22,8 +22,6 @@ package com.aheidelbacher.algostorm.engine.input
  * @param T the input type
  */
 interface InputWriter<in T : Any> {
-    /**
-     * Writes the given input.
-     */
+    /** Writes the given input. */
     fun writeInput(input: T?): Unit
 }

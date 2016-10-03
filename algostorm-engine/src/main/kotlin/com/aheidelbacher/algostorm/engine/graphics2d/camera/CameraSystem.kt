@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.engine.graphics2d.camera
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -25,7 +25,7 @@ import com.aheidelbacher.algostorm.event.Subscriber
 
 class CameraSystem(
         private val camera: Camera,
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher,
         private var followedObjectId: Int? = null
 ) : Subscriber {
@@ -41,7 +41,7 @@ class CameraSystem(
 
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
-            objectManager[id]?.let { obj ->
+            objectGroup[id]?.let { obj ->
                 camera.x = obj.x //+ obj.width / 2
                 camera.y = obj.y //+ obj.height / 2
             }

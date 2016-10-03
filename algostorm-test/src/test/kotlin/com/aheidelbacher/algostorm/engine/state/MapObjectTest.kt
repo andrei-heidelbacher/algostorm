@@ -8,8 +8,9 @@ import com.aheidelbacher.algostorm.engine.serialization.Serializer
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+import java.lang.reflect.Modifier
 
-import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.memberProperties
 
 class MapObjectTest {
@@ -19,11 +20,15 @@ class MapObjectTest {
                 actual: T,
                 props: Iterable<T.() -> Any?>
         ) {
-            props.forEach { prop -> assertEquals(expected.prop(), actual.prop()) }
+            props.forEach { prop ->
+                assertEquals(expected.prop(), actual.prop())
+            }
         }
 
         inline fun <reified T : Any> assertPropsEquals(expected: T, actual: T) {
-            val props = T::class.memberProperties.filter { it.isAccessible }
+            val props = T::class.memberProperties.filter {
+                it.javaGetter?.modifiers?.let(Modifier::isPublic) ?: false
+            }
             assertEquals(expected, actual, props)
         }
     }
@@ -41,18 +46,19 @@ class MapObjectTest {
                     name = "world",
                     tileWidth = 24,
                     tileHeight = 24,
-                    image = File("/world.png"),
+                    image = Image(File("/world.png"), 48, 72),
                     columns = 2,
-                    tileCount = 6,
-                    imageWidth = 48,
-                    imageHeight = 72
+                    tileCount = 6
             )),
             layers = listOf(
-                    imageLayerOf(name = "bg", image = File("/bg.png")),
+                    imageLayerOf(
+                            name = "bg",
+                            image = Image(File("/bg.png"), 24, 24)
+                    ),
                     tileLayerOf(
                             name = "floor",
                             data = LongArray(2 * 2) { 1 },
-                            properties = mapOf("collide" to propertyOf(false))
+                            properties = mapOf("collider" to false)
                     ),
                     objectGroupOf(
                             name = "objects",
@@ -66,13 +72,13 @@ class MapObjectTest {
                                     height = 24,
                                     gid = 1,
                                     properties = mapOf(
-                                            "z" to propertyOf(2),
-                                            "sound" to propertyOf(File("s.mp3"))
+                                            "z" to 2,
+                                            "sound" to "s.mp3"
                                     )
                             ))
                     )
             ),
-            properties = mapOf("time" to propertyOf(0.0F)),
+            properties = mapOf("time" to 0),
             nextObjectId = 2
     )
 
@@ -80,6 +86,7 @@ class MapObjectTest {
             expectedMapObject: MapObject,
             actualMapObject: MapObject
     ) {
+        assertPropsEquals(expectedMapObject, actualMapObject)
         expectedMapObject.layers.zip(actualMapObject.layers).forEach {
             val (expected, actual) = it
             when {
@@ -102,7 +109,6 @@ class MapObjectTest {
     @Test
     fun testMapObjectDeserialization() {
         val actualMapObject = Serializer.readValue<MapObject>(fileStream)
-        assertPropsEquals(mapObject, actualMapObject)
         assertMapObjectEquals(mapObject, actualMapObject)
     }
 

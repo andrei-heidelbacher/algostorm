@@ -35,14 +35,10 @@ import kotlin.reflect.KClass
  * Serialization and deserialization utility methods.
  */
 object Serializer {
-    /**
-     * The serialization format.
-     */
+    /** The serialization format. */
     const val FORMAT: String = "json"
 
-    /**
-     * The object that handles serialization and deserialization.
-     */
+    /** The object that handles serialization and deserialization. */
     private val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

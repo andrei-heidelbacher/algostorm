@@ -11,11 +11,13 @@
     "name": "world",
     "tileWidth": 24,
     "tileHeight": 24,
-    "image": "/world.png",
+    "image": {
+      "source": "/world.png",
+      "width": 48,
+      "height": 72
+    },
     "columns": 2,
     "tileCount": 6,
-    "imageWidth": 48,
-    "imageHeight": 72,
     "margin": 0,
     "spacing": 0,
     "properties": {},
@@ -27,7 +29,11 @@
     {
       "type": "ImageLayer",
       "name": "bg",
-      "image": "/bg.png",
+      "image": {
+        "source": "/bg.png",
+        "width": 24,
+        "height": 24
+      },
       "offsetX": 0,
       "offsetY": 0,
       "isVisible": true
@@ -37,10 +43,7 @@
       "name": "floor",
       "data": [1, 1, 1, 1],
       "properties": {
-        "collider": {
-          "type": "bool",
-          "value": false
-        }
+        "collider": false
       },
       "isVisible": true,
       "offsetX": 0,
@@ -50,6 +53,7 @@
       "type": "ObjectGroup",
       "name": "objects",
       "color": null,
+      "isVisible": true,
       "drawOrder": "top-down",
       "objects": [{
         "id": 1,
@@ -62,23 +66,14 @@
         "isVisible": true,
         "gid": 1,
         "properties": {
-          "z": {
-            "type": "int",
-            "value": 2
-          },
-          "sound": {
-            "type": "file",
-            "value": "s.mp3"
-          }
+          "z": 2,
+          "sound": "s.mp3"
         }
       }]
     }
   ],
   "nextObjectId": 2,
   "properties": {
-    "time": {
-      "type": "float",
-      "value": "0.0"
-    }
+    "time": 0
   }
 }

@@ -10,9 +10,7 @@ import com.aheidelbacher.algostorm.engine.state.Property.FloatProperty
 import com.aheidelbacher.algostorm.engine.state.Property.IntProperty
 import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
 
-/**
- * An immutable value of a property.
- */
+/** An immutable value of a property. */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -27,6 +25,15 @@ import com.aheidelbacher.algostorm.engine.state.Property.StringProperty
         JsonSubTypes.Type(value = ColorProperty::class, name = "color")
 )
 sealed class Property {
+    companion object {
+        operator fun invoke(value: Int): Property = IntProperty(value)
+        operator fun invoke(value: Float): Property = FloatProperty(value)
+        operator fun invoke(value: Boolean): Property = BooleanProperty(value)
+        operator fun invoke(value: String): Property = StringProperty(value)
+        operator fun invoke(value: File): Property = FileProperty(value)
+        operator fun invoke(value: Color): Property = ColorProperty(value)
+    }
+
     class IntProperty(val value: Int) : Property() {
         override fun equals(other: Any?): Boolean =
                 other is IntProperty && value == other.value

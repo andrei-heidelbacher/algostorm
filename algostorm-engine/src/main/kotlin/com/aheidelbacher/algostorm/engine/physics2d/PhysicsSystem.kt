@@ -17,8 +17,8 @@
 package com.aheidelbacher.algostorm.engine.physics2d
 
 import com.aheidelbacher.algostorm.engine.geometry2d.intersects
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -28,13 +28,13 @@ import com.aheidelbacher.algostorm.event.Subscriber
  * A system that handles [TransformIntent] events and publishes [Transformed]
  * and [Collision] events.
  *
- * @property objectManager the object manager used to retrieve and update the
+ * @property objectGroup the object group used to retrieve and update the
  * objects
  * @property publisher the publisher used to post `Transformed` and `Collision`
  * events
  */
 class PhysicsSystem(
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
@@ -45,18 +45,15 @@ class PhysicsSystem(
          */
         const val IS_RIGID: String = "isRigid"
 
-        /**
-         * Returns `true` if this object contains the rigid property and it is set
-         * to `true`, `false` otherwise.
-         */
+        /** Returns whether this object contains the [IS_RIGID] property. */
         val Object.isRigid: Boolean
             get() = getBoolean(IS_RIGID) ?: false
 
         /**
          * Transforms this object with the given amounts.
          *
-         * @param dx the translation amount on the x-axis
-         * @param dy the translation amount on the y-axis
+         * @param dx the horizontal translation amount
+         * @param dy the vertical translation amount (positive is down)
          */
         fun Object.transform(dx: Int, dy: Int) {
             x += dx
@@ -80,6 +77,22 @@ class PhysicsSystem(
                 otherWidth = other.width,
                 otherHeight = other.height
         )
+
+        fun Object.intersects(
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int
+        ): Boolean = intersects(
+                x = this.x,
+                y = this.y - this.height + 1,
+                width = this.width,
+                height = this.height,
+                otherX = x,
+                otherY = y,
+                otherWidth = width,
+                otherHeight = height
+        )
     }
 
     /**
@@ -89,13 +102,11 @@ class PhysicsSystem(
      * @property objectId the id of the object which should be transformed
      * @property dx the translation amount on the x-axis in pixels
      * @property dy the translation amount on the y-axis in pixels
-     * @property rotate the rotation amount in radians
      */
     data class TransformIntent(
             val objectId: Int,
             val dx: Int,
-            val dy: Int,
-            val rotate: Float
+            val dy: Int
     ) : Event
 
     /**
@@ -109,17 +120,13 @@ class PhysicsSystem(
      * @param event the [TransformIntent] event
      */
     @Subscribe fun onTranslateIntent(event: TransformIntent) {
-        objectManager[event.objectId]?.let { obj ->
+        objectGroup[event.objectId]?.let { obj ->
             obj.transform(event.dx, event.dy)
-            val overlappingObjects = objectManager.objects.filter {
+            val overlappingObjects = objectGroup.objectSet.filter {
                 it != obj && it.isRigid && it.intersects(obj)
             }
             if (!obj.isRigid || overlappingObjects.size == 0) {
-                publisher.post(Transformed(
-                        objectId = event.objectId,
-                        dx = event.dx,
-                        dy = event.dy
-                ))
+                publisher.post(Transformed(event.objectId, event.dx, event.dy))
             } else {
                 obj.transform(-event.dx, -event.dy)
                 overlappingObjects.forEach {

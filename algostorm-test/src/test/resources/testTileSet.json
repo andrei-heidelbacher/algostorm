@@ -1,7 +1,9 @@
 { "columns":12,
-  "image":"D:\/Dropbox\/Private\/Oryx tileset\/algoventure\/world.png",
-  "imageHeight":240,
-  "imageWidth":288,
+  "image": {
+    "source": "/tileset/algoventure/world.png",
+    "width": 288,
+    "height": 240
+  },
   "margin":0,
   "name":"world",
   "spacing":0,
@@ -28,19 +30,13 @@
             "y":0,
             "gid":0,
             "properties":{
-              "z":{
-                "type":"int",
-                "value":5
-              }
+              "z":5
             }
           }],
         "type":"ObjectGroup",
         "isVisible":true,
         "properties":{
-          "z": {
-            "type":"string",
-            "value":"someString"
-          }
+          "z": "someString"
         },
         "offsetX": 0,
         "offsetY": 0,

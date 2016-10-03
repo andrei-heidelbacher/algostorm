@@ -27,7 +27,8 @@ import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.engine.state.getViewport
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.engine.state.TileSet.Viewport
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -62,6 +63,28 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
 
         @JvmStatic fun Object.isVisible(camera: Rectangle): Boolean =
                 isVisible && camera.intersects(x, y - height + 1, width, height)
+
+        fun MapObject.getViewport(
+                gid: Long,
+                currentTimeMillis: Long
+        ): Viewport {
+            val tileSet = getTileSet(gid)
+            val localTileId = getTileId(gid)
+            val animation = tileSet.getTile(localTileId).animation
+            val tileId = if (animation == null) {
+                localTileId
+            } else {
+                var elapsedTimeMillis =
+                        currentTimeMillis % animation.sumBy(Frame::duration)
+                var i = 0
+                do {
+                    elapsedTimeMillis -= animation[i].duration
+                    ++i
+                } while (elapsedTimeMillis >= 0)
+                animation[i - 1].tileId
+            }
+            return tileSet.getViewport(tileId)
+        }
     }
 
     /**
@@ -90,7 +113,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
-        map.tileSets.forEach { canvas.loadBitmap(it.image.path) }
+        map.tileSets.forEach { canvas.loadBitmap(it.image.source.path) }
     }
 
     private var currentTimeMillis = 0L
@@ -124,7 +147,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 dy = tileSet.tileOffsetY.toFloat() + y - height + 1
         )
         canvas.drawBitmap(
-                image = viewport.image.path,
+                image = viewport.image.source.path,
                 x = viewport.x,
                 y = viewport.y,
                 width = viewport.width,
@@ -177,10 +200,10 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
 
     private fun Layer.ObjectGroup.draw(camera: Rectangle) {
         when (drawOrder) {
-            DrawOrder.TOP_DOWN -> objects.filter {
+            DrawOrder.TOP_DOWN -> objectSet.filter {
                 it.isVisible(camera)
             }.sortedWith(comparator)
-            DrawOrder.INDEX -> objects
+            DrawOrder.INDEX -> objectSet
         }.forEach {
             if (it.isVisible(camera)) {
                 it.draw(color, offsetX - camera.x, offsetY - camera.y)
@@ -191,7 +214,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private fun Layer.ImageLayer.draw(camera: Rectangle) {
         matrix.reset()
         canvas.drawBitmap(
-                image = image.path,
+                image = image.source.path,
                 x = camera.x - offsetX,
                 y = camera.y - offsetY,
                 width = camera.width,

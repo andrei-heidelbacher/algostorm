@@ -29,8 +29,8 @@ import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
  *
  * @property name the name of this layer
  * @property isVisible whether this layer should be rendered or not
- * @property offsetX the x-axis rendering offset in pixels
- * @property offsetY the y-axis rendering offset in pixels
+ * @property offsetX the horizontal rendering offset in pixels
+ * @property offsetY the vertical rendering offset in pixels (positive is down)
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -71,26 +71,57 @@ sealed class Layer(
      * `i` of this array represents the tile with `x = i % width` and
      * `y = i / width`.
      */
-    class TileLayer(
+    class TileLayer private constructor(
             name: String,
             val data: LongArray,
             isVisible: Boolean,
             offsetX: Int,
             offsetY: Int
-    ) : Layer(name, isVisible, offsetX, offsetY)
+    ) : Layer(name, isVisible, offsetX, offsetY) {
+        companion object {
+            /** Tile layer factory method. */
+            operator fun invoke(
+                    name: String,
+                    data: LongArray,
+                    isVisible: Boolean = true,
+                    offsetX: Int = 0,
+                    offsetY: Int = 0,
+                    properties: Map<String, Property> = emptyMap()
+            ): TileLayer = TileLayer(
+                    name = name,
+                    data = data.copyOf(),
+                    isVisible = isVisible,
+                    offsetX = offsetX,
+                    offsetY = offsetY
+            ).apply { this.properties.putAll(properties) }
+        }
+    }
 
     /**
      * A layer which consists of a single [image].
      *
-     * @param image the URI of the image that should be rendered
+     * @param image the image that should be rendered
      */
-    class ImageLayer(
+    class ImageLayer private constructor(
             name: String,
-            var image: File,
+            var image: Image,
             isVisible: Boolean,
             offsetX: Int,
             offsetY: Int
-    ) : Layer(name, isVisible, offsetX, offsetY)
+    ) : Layer(name, isVisible, offsetX, offsetY) {
+        companion object {
+            /** Image layer factory method. */
+            operator fun invoke(
+                    name: String,
+                    image: Image,
+                    isVisible: Boolean = true,
+                    offsetX: Int = 0,
+                    offsetY: Int = 0,
+                    properties: Map<String, Property> = emptyMap()
+            ): ImageLayer = ImageLayer(name, image, isVisible, offsetX, offsetY)
+                    .apply { this.properties.putAll(properties) }
+        }
+    }
 
     /**
      * A layer which contains a set of [objects].
@@ -100,22 +131,107 @@ sealed class Layer(
      * rendered
      * @property color the color with which objects that have their `gid` set to
      * `0` will be filled
+     * @throws IllegalArgumentException if [objects] contains multiple objects
+     * with the same id
      */
-    class ObjectGroup(
+    class ObjectGroup private constructor(
             name: String,
-            val objects: MutableList<Object>,
+            private val objects: MutableList<Object>,
             val drawOrder: DrawOrder,
             val color: Color?,
             isVisible: Boolean,
             offsetX: Int,
             offsetY: Int
     ) : Layer(name, isVisible, offsetX, offsetY) {
-        /**
-         * The order in which objects are rendered.
-         */
+        companion object {
+            /** Object group factory method. */
+            operator fun invoke(
+                    name: String,
+                    objects: MutableList<Object>,
+                    drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
+                    color: Color? = null,
+                    isVisible: Boolean = true,
+                    offsetX: Int = 0,
+                    offsetY: Int = 0,
+                    properties: Map<String, Property> = emptyMap()
+            ): ObjectGroup = ObjectGroup(
+                    name,
+                    objects.toMutableList(),
+                    drawOrder,
+                    color,
+                    isVisible,
+                    offsetX,
+                    offsetY
+            ).apply { this.properties.putAll(properties) }
+        }
+
+        /** The order in which objects are rendered. */
         enum class DrawOrder {
             @JsonProperty("top-down") TOP_DOWN,
             @JsonProperty("index") INDEX
+        }
+
+        @Transient private val objectMap =
+                objects.associateByTo(hashMapOf(), Object::id)
+
+        init {
+            require(objects.size == objectMap.size) {
+                "$this contains multiple objects with the same id!"
+            }
+        }
+
+        /** A read-only view of the objects in this group. */
+        val objectSet: List<Object>
+            get() = objects
+
+        /**
+         * Returns the object with the given id.
+         *
+         * @param objectId the id of the requested object
+         * @return the requested object, or `null` if it doesn't exist
+         */
+        operator fun get(objectId: Int): Object? = objectMap[objectId]
+
+        /**
+         * Checks whether this object group contains an object with the given
+         * id.
+         *
+         * @param objectId the id of the requested object
+         * @return `true` if the object with the given id exists in this object
+         * group, `false` otherwise
+         */
+        operator fun contains(objectId: Int): Boolean = objectId in objectMap
+
+        /**
+         * Adds the given objects to this object group.
+         *
+         * @throws IllegalArgumentException if the id of the given object is not
+         * unique among the objects in this object group
+         */
+        fun add(obj: Object) {
+            require(obj.id !in objectMap) {
+                "$obj id is not unique within $this!"
+            }
+            objects.add(obj)
+            objectMap[obj.id] = obj
+        }
+
+        /**
+         * Removes the object with the given id from this object group.
+         *
+         * @param objectId the id of the object that should be removed
+         * @return `true` if the specified object was successfully removed,
+         * `false` if it didn't exist in this object group
+         */
+        fun remove(objectId: Int): Boolean = objectMap[objectId]?.let { obj ->
+            objectMap.remove(objectId)
+            objects.remove(obj)
+        } ?: false
+
+        /** Removes all objects from this object group. */
+        fun clear() {
+            objects.clear()
+            objectMap.clear()
         }
     }
 }

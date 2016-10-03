@@ -19,17 +19,15 @@ package com.aheidelbacher.algostorm.engine.state
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 
 /**
- * A tile set used for rendering. Tiles are indexed starting from `0`,
- * increasing from left to right and then from top to bottom.
+ * A tile set used for rendering.
  *
- * Two tile sets are equal if and only if they have the same [name].
+ * Tiles are indexed starting from `0`, increasing from left to right and then
+ * from top to bottom.
  *
  * @property name the name of this tile set
  * @property tileWidth the width of each tile in this tile set in pixels
  * @property tileHeight the height of each tile in this tile set in pixels
  * @property image the path to the image represented by this tile set
- * @property imageWidth the width of the image in pixels
- * @property imageHeight the height of the image in pixels
  * @property margin the margin in pixels
  * @property spacing the spacing between adjacent tiles in pixels
  * @property columns the number of tiles per row
@@ -39,18 +37,15 @@ import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
  * @property tileOffsetY the y-axis rendering offset in pixels which should be
  * applied when rendering tiles from this tile set
  * @property tiles meta-data associated to particular tiles of this tile set
- * @throws IllegalArgumentException if [tileWidth], [tileHeight], [imageWidth],
- * [imageHeight], [columns] or [tileCount] are not positive or if [margin] or
- * [spacing] are negative or if the specified offsets, tile sizes and tile count
- * exceed the image dimensions
+ * @throws IllegalArgumentException if [tileWidth], [tileHeight], [columns] or
+ * [tileCount] are not positive or if [margin] or [spacing] are negative or if
+ * the specified offsets, tile sizes and tile count exceed the image dimensions
  */
-data class TileSet(
+data class TileSet private constructor(
         val name: String,
         val tileWidth: Int,
         val tileHeight: Int,
-        val image: File,
-        val imageWidth: Int,
-        val imageHeight: Int,
+        val image: Image,
         val margin: Int,
         val spacing: Int,
         val columns: Int,
@@ -60,8 +55,39 @@ data class TileSet(
         val tiles: Map<Int, Tile>,
         override val properties: Map<String, Property>
 ) : Properties {
+    companion object {
+        /** Tile set factory method. */
+        operator fun invoke(
+                name: String,
+                tileWidth: Int,
+                tileHeight: Int,
+                image: Image,
+                margin: Int = 0,
+                spacing: Int = 0,
+                columns: Int,
+                tileCount: Int,
+                tileOffsetX: Int = 0,
+                tileOffsetY: Int = 0,
+                tiles: Map<Int, Tile> = emptyMap(),
+                properties: Map<String, Property> = emptyMap()
+        ): TileSet = TileSet(
+                name = name,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                image = image,
+                margin = margin,
+                spacing = spacing,
+                columns = columns,
+                tileCount = tileCount,
+                tileOffsetX = tileOffsetX,
+                tileOffsetY = tileOffsetY,
+                tiles = tiles,
+                properties = properties
+        )
+    }
+
     /**
-     * An object containing meta-data associated to this tile.
+     * Meta-data associated to a tile.
      *
      * @property animation a list of frames representing an animation. Must be
      * `null` (indicating no animation) or must contain at least two frames.
@@ -71,48 +97,41 @@ data class TileSet(
      * contains less than two frames or if [objectGroup] is not `null` and
      * contains an object with a non-zero `gid`
      */
-    data class Tile(
+    data class Tile private constructor(
             val animation: List<Frame>?,
             val objectGroup: ObjectGroup?,
             override val properties: Map<String, Property>
     ) : Properties {
         companion object {
-            /**
-             * Whether this global tile id is flipped horizontally.
-             */
+            /** Tile factory method. */
+            operator fun invoke(
+                    animation: List<Frame>? = null,
+                    objectGroup: ObjectGroup? = null,
+                    properties: Map<String, Property> = emptyMap()
+            ): Tile = Tile(animation, objectGroup, properties)
+
+            /** Whether this global tile id is flipped horizontally. */
             val Long.isFlippedHorizontally: Boolean
                 get() = and(0x80000000) != 0L
 
-            /**
-             * Whether this global tile id is flipped vertically.
-             */
+            /** Whether this global tile id is flipped vertically. */
             val Long.isFlippedVertically: Boolean
                 get() = and(0x40000000) != 0L
 
-            /**
-             * Whether this global tile id is flipped diagonally.
-             */
+            /** Whether this global tile id is flipped diagonally. */
             val Long.isFlippedDiagonally: Boolean
                 get() = and(0x20000000) != 0L
 
-            /**
-             * Flips this global tile id horizontally.
-             */
+            /** Flips this global tile id horizontally. */
             fun Long.flipHorizontally(): Long = xor(0x80000000)
 
-            /**
-             * Flips this global tile id vertically.
-             */
+            /** Flips this global tile id vertically. */
             fun Long.flipVertically(): Long = xor(0x40000000)
 
-            /**
-             * Flips this global tile id diagonally.
-             */
+            /** Flips this global tile id diagonally. */
             fun Long.flipDiagonally(): Long = xor(0x20000000)
 
-            /**
-             * Clears all flag bits.
-             */
+            /** Clears all flag bits. */
             fun Long.clearFlags(): Int = and(0x1FFFFFFF).toInt()
         }
 
@@ -126,47 +145,50 @@ data class TileSet(
          */
         data class Frame(val tileId: Int, val duration: Int) {
             init {
-                require(tileId >= 0) {
-                    "Frame tile id $tileId can't be negative!"
-                }
-                require(duration > 0) {
-                    "Frame duration $duration must be positive!"
-                }
+                require(tileId >= 0) { "$this tile id can't be negative!" }
+                require(duration > 0) { "$this duration must be positive!" }
             }
         }
 
         init {
             require(animation?.isNotEmpty() ?: true) {
-                "Animation can't have empty frame sequence!"
+                "$this animation can't have empty frame sequence!"
             }
-            require(objectGroup?.objects?.all { it.gid == 0L } ?: true) {
-                "Tile object group can't contain tile objects!"
+            require(objectGroup?.objectSet?.all { it.gid == 0L } ?: true) {
+                "$this object group can't contain tile objects!"
             }
         }
     }
 
     /**
-     * A rectangle projected over the image at the specified location.
+     * A rectangle projected over an image at the specified location.
      *
-     * @property image the image file
-     * @property x the x-axis coordinate of the top-left corner of this viewport
-     * in pixels
-     * @property y the y-axis coordinate of the top-left corner of this viewport
-     * in pixels
-     * @property width the width of this viewport in pixels
-     * @property height the height of this viewport in pixels
-     * @throws IllegalArgumentException if [width] or [height] are negative
+     * @property image the source image
+     * @property x the horizontal coordinate in pixels of the top-left corner of
+     * this viewport
+     * @property y the vertical coordinate in pixels of the top-left corner of
+     * this viewport (positive is down)
+     * @property width the width in pixels of this viewport
+     * @property height the height in pixels of this viewport
+     * @throws IllegalArgumentException if [width] or [height] are negative or
+     * if this viewport is not entirely contained within the image
      */
     data class Viewport(
-            val image: File,
+            val image: Image,
             val x: Int,
             val y: Int,
             val width: Int,
             val height: Int
     ) {
         init {
-            require(width >= 0) { "Viewport width can't be negative!" }
-            require(height >= 0) { "Viewport height can't be negative!" }
+            require(width >= 0) { "$this width can't be negative!" }
+            require(height >= 0) { "$this height can't be negative!" }
+            require(0 <= x && x + width <= image.width) {
+                "$this horizontally exceeds the image bounds!"
+            }
+            require(0 <= y && y + height <= image.height) {
+                "$this vertically exceeds the image bounds!"
+            }
         }
     }
 
@@ -184,35 +206,23 @@ data class TileSet(
     }
 
     init {
-        require(tileWidth > 0) {
-            "$name tile width $tileWidth must be positive!"
-        }
-        require(tileHeight > 0) {
-            "$name tile height $tileHeight must be positive!"
-        }
-        require(imageWidth > 0) {
-            "$name image width $imageWidth must be positive!"
-        }
-        require(imageHeight > 0) {
-            "$name image height $imageHeight must be positive!"
-        }
-        require(margin >= 0) { "$name margin $margin can't be negative!" }
-        require(spacing >= 0) { "$name spacing $spacing can't be negative!" }
-        require(columns > 0) { "$name columns $columns must be positive!" }
-        require(tileCount > 0) {
-            "$name tile count $tileCount must be positive!"
-        }
+        require(tileWidth > 0) { "$this tile width must be positive!" }
+        require(tileHeight > 0) { "$this tile height must be positive!" }
+        require(margin >= 0) { "$this margin can't be negative!" }
+        require(spacing >= 0) { "$this spacing can't be negative!" }
+        require(columns > 0) { "$this columns must be positive!" }
+        require(tileCount > 0) { "$this tile count must be positive!" }
         require(tileCount % columns == 0) {
-            "$name tile count $tileCount must be divisible by columns $columns!"
+            "$this tile count must be divisible by columns!"
         }
         val rows = tileCount / columns
         val reqWidth = 2 * margin - spacing + columns * (tileWidth + spacing)
         val reqHeight = 2 * margin - spacing + rows * (tileHeight + spacing)
-        require(reqWidth <= imageWidth) {
-            "$name image width $imageWidth must be at least $reqWidth!"
+        require(reqWidth <= image.width) {
+            "$this image width must be at least $reqWidth!"
         }
-        require(reqHeight <= imageHeight) {
-            "$name image height $imageHeight must be at least $reqHeight!"
+        require(reqHeight <= image.height) {
+            "$this image height must be at least $reqHeight!"
         }
     }
 

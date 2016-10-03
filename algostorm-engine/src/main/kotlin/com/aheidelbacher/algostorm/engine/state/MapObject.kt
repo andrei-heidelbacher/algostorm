@@ -42,7 +42,7 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlag
  * name or if [width] or [height] or [tileWidth] or [tileHeight] or [version]
  * are not positive
  */
-class MapObject(
+class MapObject private constructor(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
@@ -55,16 +55,42 @@ class MapObject(
         val version: String,
         private var nextObjectId: Int
 ) : MutableProperties {
-    /**
-     * The orientation of the map.
-     */
+    companion object {
+        /** Map object factory method. */
+        operator fun invoke(
+                width: Int,
+                height: Int,
+                tileWidth: Int,
+                tileHeight: Int,
+                orientation: Orientation = Orientation.ORTHOGONAL,
+                renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
+                tileSets: List<TileSet> = emptyList(),
+                layers: List<Layer> = emptyList(),
+                backgroundColor: Color? = null,
+                version: String = "1.0",
+                nextObjectId: Int = 1,
+                properties: Map<String, Property> = emptyMap()
+        ): MapObject = MapObject(
+                width = width,
+                height = height,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                orientation = orientation,
+                renderOrder = renderOrder,
+                tileSets = tileSets,
+                layers = layers,
+                backgroundColor = backgroundColor,
+                version = version,
+                nextObjectId = nextObjectId
+        ).apply { this.properties.putAll(properties) }
+    }
+
+    /** The orientation of the map. */
     enum class Orientation {
         @JsonProperty("orthogonal") ORTHOGONAL
     }
 
-    /**
-     * The rendering order of tiles.
-     */
+    /** The rendering order of tiles. */
     enum class RenderOrder {
         @JsonProperty("right-down") RIGHT_DOWN,
         @JsonProperty("right-up") RIGHT_UP,
@@ -72,29 +98,22 @@ class MapObject(
         @JsonProperty("left-up") LEFT_UP
     }
 
-    /**
-     * The properties of this map.
-     */
     override val properties: MutableMap<String, Property> = hashMapOf()
 
     @Transient private var gidToTileSet: Array<TileSet?>
     @Transient private var gidToTileId: IntArray
 
     init {
-        require(width > 0) { "Map width $width must be positive!" }
-        require(height > 0) { "Map height $height must be positive!" }
-        require(tileWidth > 0) { "Map tile width $tileWidth must be positive!" }
-        require(tileHeight > 0) {
-            "Map tile height $tileHeight must be positive!"
-        }
-        require(nextObjectId >= 0) {
-            "Map next object id $nextObjectId can't be negative!"
-        }
+        require(width > 0) { "$this width must be positive!" }
+        require(height > 0) { "$this height must be positive!" }
+        require(tileWidth > 0) { "$this tile width must be positive!" }
+        require(tileHeight > 0) { "$this tile height must be positive!" }
+        require(nextObjectId >= 0) { "$this next object id can't be negative!" }
         require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
-            "Different tile sets can't have the same name!"
+            "Different tile sets in $this can't have the same name!"
         }
         require(layers.distinctBy(Layer::name).size == layers.size) {
-            "Different layers can't have the same name!"
+            "Different layers in $this can't have the same name!"
         }
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
         gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)
@@ -115,12 +134,53 @@ class MapObject(
      * @return the next available object id
      * @throws IllegalStateException if there are too many objects
      */
-    fun getAndIncrementNextObjectId(): Int {
-        check(nextObjectId < Int.MAX_VALUE) { "Too many objects in the map!" }
+    private fun getAndIncrementNextObjectId(): Int {
+        check(nextObjectId < Int.MAX_VALUE) { "Too many objects in $this!" }
         val id = nextObjectId
         nextObjectId++
         return id
     }
+
+    /**
+     * Creates an object with the specified parameters.
+     *
+     * @param name the name of this object
+     * @param type the type of this object
+     * @param x the horizontal coordinate in pixels of the top-left corner of
+     * this object
+     * @param y the vertical coordinate in pixels of the top-left corner of this
+     * object (positive is down)
+     * @param width the width in pixels of this object
+     * @param height the height in pixels of this object
+     * @param isVisible whether this object should be rendered or not
+     * @param gid the global id of the object tile. A value of `0` indicates the
+     * empty tile (nothing to draw)
+     * @throws IllegalStateException if there are too many objects in this map
+     * @throws IllegalArgumentException if [gid] is negative or if [width] or
+     * [height] are not positive
+     */
+    fun createObject(
+            name: String = "",
+            type: String = "",
+            x: Int,
+            y: Int,
+            width: Int,
+            height: Int,
+            isVisible: Boolean = true,
+            gid: Long = 0L,
+            properties: Map<String, Property> = emptyMap()
+    ): Object = Object(
+            id = getAndIncrementNextObjectId(),
+            name = name,
+            type = type,
+            x = x,
+            y = y,
+            width = width,
+            height = height,
+            isVisible = isVisible,
+            gid = gid,
+            properties = properties
+    )
 
     /**
      * Returns the tile set which contains the given [gid].

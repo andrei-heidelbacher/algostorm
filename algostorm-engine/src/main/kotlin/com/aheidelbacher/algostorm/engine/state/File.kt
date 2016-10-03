@@ -7,16 +7,17 @@ import com.fasterxml.jackson.annotation.JsonValue
  * A path to a file.
  *
  * @param string the path of this file
+ * @throws IllegalArgumentException if [path] is empty
  */
 class File @JsonCreator constructor(string: String) {
-    /**
-     * The relative or absolute path of this file.
-     */
+    /** The relative or absolute path of this file. */
     val path: String = string
 
-    /**
-     * Two files are equal if and only if they have the same file [path].
-     */
+    init {
+        require(path.isNotEmpty()) { "File path $path can't be empty!" }
+    }
+
+    /** Two files are equal if and only if they have the same file [path]. */
     override fun equals(other: Any?): Boolean =
             other is File && path == other.path
 

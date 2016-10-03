@@ -32,28 +32,20 @@ class TileSetTest {
             name = "world",
             tileWidth = 24,
             tileHeight = 24,
-            image = File(
-                    "D:/Dropbox/Private/Oryx tileset/algoventure/world.png"
-            ),
-            imageHeight = 240,
-            imageWidth = 288,
+            image = Image(File("/tileset/algoventure/world.png"), 288, 240),
             columns = 12,
             tileCount = 120,
             tiles = mapOf(
                     2 to tileOf(objectGroup = objectGroupOf(
                             name = "",
-                            properties = mapOf(
-                                    "z" to propertyOf("someString")
-                            ),
+                            properties = mapOf("z" to "someString"),
                             objects = mutableListOf(objectOf(
                                     height = 24,
                                     width = 24,
                                     id = 1,
                                     name = "",
                                     type = "",
-                                    properties = mapOf(
-                                            "z" to propertyOf(5)
-                                    ),
+                                    properties = mapOf("z" to 5),
                                     x = 0,
                                     y = 0
                             ))
