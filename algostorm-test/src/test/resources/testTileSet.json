@@ -30,13 +30,19 @@
             "y":0,
             "gid":0,
             "properties":{
-              "z":5
+              "z": {
+                "type": "int",
+                "value": 5
+              }
             }
           }],
         "type":"ObjectGroup",
         "isVisible":true,
         "properties":{
-          "z": "someString"
+          "z": {
+            "type": "string",
+            "value": "someString"
+          }
         },
         "offsetX": 0,
         "offsetY": 0,

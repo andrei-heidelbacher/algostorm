@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.state
 
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +30,7 @@ class ObjectManagerTest {
         val OBJECT_COUNT = 1000
         val ID_RANGE = FIRST_ID until FIRST_ID + OBJECT_COUNT
 
-        fun makeObject(id: Int) = objectOf(
+        fun makeObject(id: Int) = Object(
                 id = id,
                 x = id * TILE_WIDTH,
                 y = id * TILE_HEIGHT,
@@ -38,30 +39,30 @@ class ObjectManagerTest {
         )
     }
 
-    val map = mapObjectOf(
+    val objectGroup: ObjectGroup = ObjectGroup(
+            name = OBJECT_GROUP_NAME,
+            objects = (FIRST_ID until FIRST_ID + OBJECT_COUNT / 2).map {
+                makeObject(it)
+            }
+    )
+    val map = MapObject(
             width = 32,
             height = 32,
             tileWidth = TILE_WIDTH,
             tileHeight = TILE_HEIGHT,
-            layers = listOf(objectGroupOf(
-                    name = OBJECT_GROUP_NAME,
-                    objects = (FIRST_ID until FIRST_ID + OBJECT_COUNT / 2).map {
-                        makeObject(it)
-                    }.let { mutableListOf(*it.toTypedArray()) }
-            )),
+            layers = listOf(objectGroup),
             nextObjectId = FIRST_ID + OBJECT_COUNT / 2
     )
-    val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
 
     @Before
     fun setUp() {
         for (id in FIRST_ID + OBJECT_COUNT / 2 until FIRST_ID + OBJECT_COUNT) {
-            objectManager.create(
+            objectGroup.add(map.createObject(
                     x = id * TILE_WIDTH,
                     y = id * TILE_HEIGHT,
                     width = TILE_WIDTH,
                     height = TILE_HEIGHT
-            )
+            ))
         }
     }
 
@@ -69,26 +70,26 @@ class ObjectManagerTest {
     fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
                 ID_RANGE.toSet(),
-                objectManager.objects.map { it.id }.toSet()
+                objectGroup.objectSet.map { it.id }.toSet()
         )
     }
 
     @Test
     fun getNonExistingShouldReturnNull() {
-        assertEquals(null, objectManager[ID_RANGE.endInclusive + 1])
+        assertEquals(null, objectGroup[ID_RANGE.endInclusive + 1])
     }
 
     @Test
     fun getExistingShouldReturnNonNull() {
         for (id in ID_RANGE) {
-            assertEquals(id, objectManager[id]?.id)
+            assertEquals(id, objectGroup[id]?.id)
         }
     }
 
     @Test
     fun getExistingShouldHaveSameProperties() {
         for (id in ID_RANGE) {
-            val obj = objectManager[id]
+            val obj = objectGroup[id]
             assertEquals(obj?.x, id * TILE_WIDTH)
             assertEquals(obj?.y, id * TILE_HEIGHT)
         }
@@ -97,32 +98,32 @@ class ObjectManagerTest {
     @Test
     fun removeExistingShouldReturnTrue() {
         for (id in ID_RANGE) {
-            assertEquals(true, objectManager.remove(id))
+            assertEquals(true, objectGroup.remove(id))
         }
     }
 
     @Test
     fun getAfterRemoveShouldReturnNull() {
         for (id in ID_RANGE) {
-            objectManager.remove(id)
-            assertEquals(null, objectManager[id])
+            objectGroup.remove(id)
+            assertEquals(null, objectGroup[id])
         }
     }
 
     @Test
     fun removeNonExistingShouldReturnFalse() {
-        assertEquals(false, objectManager.remove(ID_RANGE.endInclusive + 1))
+        assertEquals(false, objectGroup.remove(ID_RANGE.endInclusive + 1))
     }
 
     @Test
     fun containsExistingShouldReturnTrue() {
         for (id in ID_RANGE) {
-            assertEquals(true, id in objectManager)
+            assertEquals(true, id in objectGroup)
         }
     }
 
     @Test
     fun containsNonExistingShouldReturnFalse() {
-        assertEquals(false, ID_RANGE.endInclusive + 1 in objectManager)
+        assertEquals(false, ID_RANGE.endInclusive + 1 in objectGroup)
     }
 }

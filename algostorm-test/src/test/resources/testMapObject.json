@@ -43,7 +43,10 @@
       "name": "floor",
       "data": [1, 1, 1, 1],
       "properties": {
-        "collider": false
+        "collider": {
+          "type": "bool",
+          "value": false
+        }
       },
       "isVisible": true,
       "offsetX": 0,
@@ -66,14 +69,23 @@
         "isVisible": true,
         "gid": 1,
         "properties": {
-          "z": 2,
-          "sound": "s.mp3"
+          "z": {
+            "type": "int",
+            "value": 2
+          },
+          "sound": {
+            "type": "file",
+            "value": "s.mp3"
+          }
         }
       }]
     }
   ],
   "nextObjectId": 2,
   "properties": {
-    "time": 0
+    "time": {
+      "type": "int",
+      "value": 0
+    }
   }
 }

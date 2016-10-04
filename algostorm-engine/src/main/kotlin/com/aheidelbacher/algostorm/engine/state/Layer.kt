@@ -147,7 +147,7 @@ sealed class Layer(
             /** Object group factory method. */
             operator fun invoke(
                     name: String,
-                    objects: MutableList<Object>,
+                    objects: List<Object>,
                     drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
                     color: Color? = null,
                     isVisible: Boolean = true,

@@ -5,6 +5,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -36,13 +39,13 @@ class MapObjectTest {
     val fileStream = FileInputStream(
             java.io.File("src/test/resources/testMapObject.json")
     )
-    val mapObject = mapObjectOf(
+    val mapObject = MapObject(
             width = 2,
             height = 2,
             tileWidth = 24,
             tileHeight = 24,
             backgroundColor = Color("#FFFFFF5f"),
-            tileSets = listOf(tileSetOf(
+            tileSets = listOf(TileSet(
                     name = "world",
                     tileWidth = 24,
                     tileHeight = 24,
@@ -51,18 +54,18 @@ class MapObjectTest {
                     tileCount = 6
             )),
             layers = listOf(
-                    imageLayerOf(
+                    ImageLayer(
                             name = "bg",
                             image = Image(File("/bg.png"), 24, 24)
                     ),
-                    tileLayerOf(
+                    TileLayer(
                             name = "floor",
                             data = LongArray(2 * 2) { 1 },
-                            properties = mapOf("collider" to false)
+                            properties = mapOf("collider" to Property(false))
                     ),
-                    objectGroupOf(
+                    ObjectGroup(
                             name = "objects",
-                            objects = arrayListOf(objectOf(
+                            objects = arrayListOf(Object(
                                     id = 1,
                                     name = "",
                                     type = "",
@@ -72,13 +75,13 @@ class MapObjectTest {
                                     height = 24,
                                     gid = 1,
                                     properties = mapOf(
-                                            "z" to 2,
-                                            "sound" to "s.mp3"
+                                            "z" to Property(2),
+                                            "sound" to Property(File("s.mp3"))
                                     )
                             ))
                     )
             ),
-            properties = mapOf("time" to 0),
+            properties = mapOf("time" to Property(0)),
             nextObjectId = 2
     )
 
@@ -100,10 +103,6 @@ class MapObjectTest {
                 }
             }
         }
-        assertEquals(
-                expectedMapObject.getAndIncrementNextObjectId(),
-                actualMapObject.getAndIncrementNextObjectId()
-        )
     }
 
     @Test

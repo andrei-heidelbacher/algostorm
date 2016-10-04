@@ -24,16 +24,14 @@ import com.aheidelbacher.algostorm.engine.state.Color
 import com.aheidelbacher.algostorm.engine.state.File
 import com.aheidelbacher.algostorm.engine.state.Image
 import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.engine.state.mapObjectOf
-import com.aheidelbacher.algostorm.engine.state.objectGroupOf
-import com.aheidelbacher.algostorm.engine.state.objectOf
-import com.aheidelbacher.algostorm.engine.state.tileLayerOf
-import com.aheidelbacher.algostorm.engine.state.tileSetOf
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
@@ -58,7 +56,7 @@ class RenderingSystemTest {
     }
 
     fun makeMap(
-            tileSets: List<TileSet> = listOf(tileSetOf(
+            tileSets: List<TileSet> = listOf(TileSet(
                     name = "test",
                     tileWidth = tileWidth,
                     tileHeight = tileHeight,
@@ -67,7 +65,7 @@ class RenderingSystemTest {
                     image = image
             )),
             layers: List<Layer> = emptyList()
-    ): MapObject = mapObjectOf(
+    ): MapObject = MapObject(
             width = width,
             height = height,
             tileWidth = tileWidth,
@@ -76,12 +74,12 @@ class RenderingSystemTest {
             tileSets = tileSets,
             layers = layers,
             nextObjectId = layers.filterIsInstance<Layer.ObjectGroup>()
-                    .flatMap { it.objects }.maxBy { it.id }?.id ?: 1
+                    .flatMap { it.objectSet }.maxBy { it.id }?.id ?: 1
     )
 
     @Test
     fun testRenderTileLayer() {
-        val tileLayer = tileLayerOf(
+        val tileLayer = TileLayer(
                 name = "floor",
                 data = LongArray(width * height) { 1 }
         )
@@ -114,10 +112,10 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderColoredObjects() {
-        val objectGroup = objectGroupOf(
+        val objectGroup = ObjectGroup(
                 name = "objects",
                 color = Color("#000000ff"),
-                objects = mutableListOf(objectOf(
+                objects = mutableListOf(Object(
                         id = 1,
                         x = 0,
                         y = tileHeight - 1,
@@ -144,9 +142,9 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedHorizontallyObject() {
-        val objectGroup = objectGroupOf(
+        val objectGroup = ObjectGroup(
                 name = "objects",
-                objects = mutableListOf(objectOf(
+                objects = mutableListOf(Object(
                         id = 1,
                         x = 0,
                         y = 0,
@@ -176,9 +174,9 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedVerticallyObject() {
-        val objectGroup = objectGroupOf(
+        val objectGroup = ObjectGroup(
                 name = "objects",
-                objects = mutableListOf(objectOf(
+                objects = mutableListOf(Object(
                         id = 1,
                         x = 0,
                         y = 0,
@@ -208,9 +206,9 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedDiagonallyObject() {
-        val objectGroup = objectGroupOf(
+        val objectGroup = ObjectGroup(
                 name = "objects",
-                objects = mutableListOf(objectOf(
+                objects = mutableListOf(Object(
                         id = 1,
                         x = 0,
                         y = 0,

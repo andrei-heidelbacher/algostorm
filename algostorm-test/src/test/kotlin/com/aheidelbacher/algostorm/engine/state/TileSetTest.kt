@@ -20,6 +20,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -28,7 +30,7 @@ class TileSetTest {
     val fileStream = FileInputStream(
             java.io.File("src/test/resources/testTileSet.json")
     )
-    val tileSet = tileSetOf(
+    val tileSet = TileSet(
             name = "world",
             tileWidth = 24,
             tileHeight = 24,
@@ -36,16 +38,16 @@ class TileSetTest {
             columns = 12,
             tileCount = 120,
             tiles = mapOf(
-                    2 to tileOf(objectGroup = objectGroupOf(
+                    2 to Tile(objectGroup = ObjectGroup(
                             name = "",
-                            properties = mapOf("z" to "someString"),
-                            objects = mutableListOf(objectOf(
+                            properties = mapOf("z" to Property("someString")),
+                            objects = mutableListOf(Object(
                                     height = 24,
                                     width = 24,
                                     id = 1,
                                     name = "",
                                     type = "",
-                                    properties = mapOf("z" to 5),
+                                    properties = mapOf("z" to Property(5)),
                                     x = 0,
                                     y = 0
                             ))
