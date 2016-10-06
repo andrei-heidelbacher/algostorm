@@ -30,19 +30,19 @@ class EngineMock : Engine(25) {
         registeredValues.clear()
     }
 
-    override fun onHandleInput() {
-        require(state == 0) { "Invalid handle input call!" }
+    override fun onRender() {
+        require(state == 0) { "Invalid render call!" }
         state = 1
     }
 
-    override fun onRender() {
-        require(state == 2) { "Invalid render call!" }
-        state = 0
+    override fun onHandleInput() {
+        require(state == 1) { "Invalid handle input call!" }
+        state = 2
     }
 
     override fun onUpdate() {
-        require(state == 1) { "Invalid update call!" }
-        state = 2
+        require(state == 2) { "Invalid update call!" }
+        state = 0
         registeredValues.add(i++)
     }
 

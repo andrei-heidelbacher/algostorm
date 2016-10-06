@@ -74,7 +74,7 @@ class RenderingSystemTest {
             tileSets = tileSets,
             layers = layers,
             nextObjectId = layers.filterIsInstance<Layer.ObjectGroup>()
-                    .flatMap { it.objectSet }.maxBy { it.id }?.id ?: 1
+                    .flatMap { it.objectSet }.maxBy { it.id }?.id?.plus(1) ?: 1
     )
 
     @Test

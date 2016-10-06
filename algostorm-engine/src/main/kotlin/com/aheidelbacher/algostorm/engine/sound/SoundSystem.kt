@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.sound
 
+import com.aheidelbacher.algostorm.engine.state.File
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -28,14 +29,16 @@ import java.io.FileNotFoundException
  * @property soundEngine the sound engine used to play sounds. Methods on this
  * object will be called from the private engine thread and a thread-safe
  * implementation should be provided.
- * @param sounds the locations of the sounds which are loaded at construction
- * time using the [SoundEngine.loadSound] method
+ * @param musicSources the locations of the music files which are loaded at
+ * construction time using the [SoundEngine.loadMusic] method
+ * @param soundSources the locations of the sounds which are loaded at
+ * construction time using the [SoundEngine.loadSound] method
  * @throws FileNotFoundException if any of the given sounds doesn't exist
  */
 class SoundSystem @Throws(FileNotFoundException::class) constructor(
         private val soundEngine: SoundEngine,
-        musicSounds: List<String>,
-        sounds: List<String>
+        musicSources: List<File>,
+        soundSources: List<File>
 ) : Subscriber {
     /**
      * An event that requests a longer sound to be played on a dedicated stream.
@@ -43,7 +46,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @property sound the sound which should be played
      * @property loop whether the sound should be looped or not
      */
-    data class PlayMusic(val sound: String, val loop: Boolean = false) : Event
+    data class PlayMusic(val sound: File, val loop: Boolean = false) : Event
 
     /**
      * An event which signals that the sound played on the dedicated stream for
@@ -60,7 +63,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @property onResult the callback which receives the returned stream id
      */
     data class PlaySound(
-            val sound: String,
+            val sound: File,
             val loop: Boolean = false,
             val onResult: ((Int) -> Unit)? = null
     ) : Event
@@ -74,8 +77,8 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
     data class StopStream(val streamId: Int) : Event
 
     init {
-        musicSounds.forEach { soundEngine.loadMusic(it) }
-        sounds.forEach { soundEngine.loadSound(it) }
+        musicSources.forEach { soundEngine.loadMusic(it.path) }
+        soundSources.forEach { soundEngine.loadSound(it.path) }
     }
 
     /**
@@ -85,7 +88,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun onPlayMusic(event: PlayMusic) {
-        soundEngine.playMusic(event.sound, event.loop)
+        soundEngine.playMusic(event.sound.path, event.loop)
     }
 
     /**
@@ -106,7 +109,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun onPlaySoundEffect(event: PlaySound) {
-        val streamId = soundEngine.playSound(event.sound, event.loop)
+        val streamId = soundEngine.playSound(event.sound.path, event.loop)
         event.onResult?.invoke(streamId)
     }
 

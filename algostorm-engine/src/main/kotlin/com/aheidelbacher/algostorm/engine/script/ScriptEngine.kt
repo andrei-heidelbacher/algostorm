@@ -39,6 +39,7 @@ interface ScriptEngine {
          * available to this engine
          * @throws ClassCastException if the result couldn't be converted to the
          * type [T]
+         * @throws IllegalStateException if this scripting engine was released
          */
         inline fun <reified T : Any> ScriptEngine.invokeFunction(
                 functionName: String,
@@ -51,11 +52,12 @@ interface ScriptEngine {
      * declaration in this script should be available to future [invokeFunction]
      * calls.
      *
-     * @param script the path where the script is found
+     * @param scriptSource the path where the script is found
      * @throws FileNotFoundException if the given script doesn't exist
+     * @throws IllegalStateException if this scripting engine was released
      */
     @Throws(FileNotFoundException::class)
-    fun eval(script: String): Unit
+    fun eval(scriptSource: String): Unit
 
     /**
      * Executes the script function with the given [functionName] with the
@@ -70,10 +72,19 @@ interface ScriptEngine {
      * available to this engine
      * @throws ClassCastException if the result couldn't be converted to the
      * [returnType]
+     * @throws IllegalStateException if this scripting engine was released
      */
     fun <T : Any> invokeFunction(
             functionName: String,
             returnType: KClass<T>,
             vararg args: Any?
     ): T?
+
+    /**
+     * Releases all resources associated with this scripting engine.
+     *
+     * @throws IllegalStateException if this scripting engine was already
+     * released
+     */
+    fun release(): Unit
 }

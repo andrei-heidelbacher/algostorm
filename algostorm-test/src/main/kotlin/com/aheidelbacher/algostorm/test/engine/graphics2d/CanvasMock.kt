@@ -75,8 +75,8 @@ class CanvasMock : Canvas {
             return 230
         }
 
-    override fun loadBitmap(image: String) {
-        bitmaps.add(image)
+    override fun loadBitmap(imageSource: String) {
+        bitmaps.add(imageSource)
     }
 
     override fun unloadBitmaps() {

@@ -30,11 +30,11 @@ interface Canvas {
     /**
      * Loads the image at the given location.
      *
-     * @param image the location of the image
+     * @param imageSource the location of the image
      * @throws FileNotFoundException if the given image doesn't exist
      */
     @Throws(FileNotFoundException::class)
-    fun loadBitmap(image: String): Unit
+    fun loadBitmap(imageSource: String): Unit
 
     /**
      * Releases all loaded bitmap resources, making them unavailable to future

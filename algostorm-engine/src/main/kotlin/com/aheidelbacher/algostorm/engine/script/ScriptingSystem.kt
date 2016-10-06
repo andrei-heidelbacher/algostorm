@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.engine.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
+import com.aheidelbacher.algostorm.engine.state.File
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -35,7 +36,7 @@ import kotlin.reflect.KClass
  */
 class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
         private val scriptEngine: ScriptEngine,
-        scripts: List<String>
+        scripts: List<File>
 ) : Subscriber {
     /**
      * An event which requests the execution of a script.
@@ -85,7 +86,7 @@ class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     init {
-        scripts.forEach { scriptEngine.eval(it) }
+        scripts.forEach { scriptEngine.eval(it.path) }
     }
 
     /**

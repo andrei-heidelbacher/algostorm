@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine.state
 
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlags
@@ -39,8 +40,9 @@ import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.clearFlag
  * @property nextObjectId the next available id for an object
  * @throws IllegalArgumentException if [nextObjectId] is negative or if there
  * are multiple tile sets with the same name or multiple layers with the same
- * name or if [width] or [height] or [tileWidth] or [tileHeight] or [version]
- * are not positive
+ * name or if [width] or [height] or [tileWidth] or [tileHeight] are not
+ * positive or if there are multiple objects with the same id or if
+ * [nextObjectId] is not greater than the maximum object id
  */
 class MapObject private constructor(
         val width: Int,
@@ -114,6 +116,16 @@ class MapObject private constructor(
         }
         require(layers.distinctBy(Layer::name).size == layers.size) {
             "Different layers in $this can't have the same name!"
+        }
+        val ids = layers.filterIsInstance<ObjectGroup>()
+                .flatMap(ObjectGroup::objectSet).map(Object::id)
+        require(ids.distinct().size == ids.size) {
+            "$this contains objects with duplicate ids!"
+        }
+        ids.max()?.let { maxId ->
+            require(nextObjectId > maxId) {
+                "$this next object id is not greater than max object id $maxId!"
+            }
         }
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
         gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)

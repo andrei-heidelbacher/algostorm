@@ -137,7 +137,7 @@ abstract class Engine(val millisPerUpdate: Int) {
      *
      * While this engine is running, at most once every [millisPerUpdate]
      * milliseconds, it will invoke, in order, the following methods:
-     * [onHandleInput], [onUpdate] and [onRender]. These calls are synchronized
+     * [onRender], [onHandleInput] and [onUpdate]. These calls are synchronized
      * with the state lock.
      *
      * Time is measured using [measureNanoTime]. If, at any point, the measured
@@ -161,9 +161,9 @@ abstract class Engine(val millisPerUpdate: Int) {
                     while (status == Status.RUNNING) {
                         val elapsedMillis = measureNanoTime {
                             synchronized(stateLock) {
+                                onRender()
                                 onHandleInput()
                                 onUpdate()
-                                onRender()
                             }
                         } / 1000000
                         check(elapsedMillis >= 0) {

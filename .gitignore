@@ -3,12 +3,4 @@
 build
 
 # IntelliJ IDEA
-.ipr
 .idea
-
-# Eclipse
-.project
-.settings
-.classpath
-.cache
-bin

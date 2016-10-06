@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.engine.script
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
+import org.mozilla.javascript.ScriptableObject
 
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -32,7 +33,7 @@ import kotlin.reflect.KClass
  * @property loader the object used to load scripts into input streams
  */
 class JavascriptEngine(
-        private val loader: (String) -> InputStream
+        private var loader: ((String) -> InputStream)?
 ) : ScriptEngine {
     private companion object {
         inline fun <T> executeWithContext(block: Context.() -> T): T = try {
@@ -44,13 +45,19 @@ class JavascriptEngine(
         }
     }
 
-    private val scope = executeWithContext { initStandardObjects() }
+    private var isReleased = false
+    private var scope: ScriptableObject? = executeWithContext {
+        initStandardObjects()
+    }
 
     @Throws(FileNotFoundException::class)
-    override fun eval(script: String) {
-        InputStreamReader(loader(script)).use { reader ->
+    override fun eval(scriptSource: String) {
+        check(!isReleased) {
+            "Can't evaluate script after scripting engine is released!"
+        }
+        loader?.invoke(scriptSource)?.let(::InputStreamReader)?.use { reader ->
             executeWithContext {
-                evaluateReader(scope, reader, script, 1, null)
+                evaluateReader(scope, reader, scriptSource, 1, null)
             }
         }
     }
@@ -59,11 +66,23 @@ class JavascriptEngine(
             functionName: String,
             returnType: KClass<T>,
             vararg args: Any?
-    ): T? = returnType.java.cast(Context.jsToJava(
-            executeWithContext {
-                val function = scope.get(functionName, scope) as Function
-                function.call(this, scope, scope, args)
-            },
-            returnType.java
-    ))
+    ): T? {
+        check(!isReleased) {
+            "Can't invoke script function after scripting engine is released!"
+        }
+        return returnType.java.cast(Context.jsToJava(
+                executeWithContext {
+                    val function = scope?.get(functionName, scope) as Function?
+                    function?.call(this, scope, scope, args)
+                },
+                returnType.java
+        ))
+    }
+
+    override fun release() {
+        check(!isReleased) { "Can't release scripting engine multiple times!" }
+        isReleased = true
+        loader = null
+        scope = null
+    }
 }
