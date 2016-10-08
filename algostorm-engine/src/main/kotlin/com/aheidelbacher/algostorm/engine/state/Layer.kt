@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 
@@ -39,7 +38,6 @@ import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 )
 @JsonSubTypes(
         JsonSubTypes.Type(value = TileLayer::class, name = "TileLayer"),
-        JsonSubTypes.Type(value = ImageLayer::class, name = "ImageLayer"),
         JsonSubTypes.Type(value = ObjectGroup::class, name = "ObjectGroup")
 )
 sealed class Layer(
@@ -94,32 +92,6 @@ sealed class Layer(
                     offsetX = offsetX,
                     offsetY = offsetY
             ).apply { this.properties.putAll(properties) }
-        }
-    }
-
-    /**
-     * A layer which consists of a single [image].
-     *
-     * @param image the image that should be rendered
-     */
-    class ImageLayer private constructor(
-            name: String,
-            var image: Image,
-            isVisible: Boolean,
-            offsetX: Int,
-            offsetY: Int
-    ) : Layer(name, isVisible, offsetX, offsetY) {
-        companion object {
-            /** Image layer factory method. */
-            operator fun invoke(
-                    name: String,
-                    image: Image,
-                    isVisible: Boolean = true,
-                    offsetX: Int = 0,
-                    offsetY: Int = 0,
-                    properties: Map<String, Property> = emptyMap()
-            ): ImageLayer = ImageLayer(name, image, isVisible, offsetX, offsetY)
-                    .apply { this.properties.putAll(properties) }
         }
     }
 

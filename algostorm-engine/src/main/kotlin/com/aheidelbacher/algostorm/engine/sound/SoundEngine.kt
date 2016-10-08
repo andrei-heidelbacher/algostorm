@@ -18,9 +18,7 @@ package com.aheidelbacher.algostorm.engine.sound
 
 import java.io.FileNotFoundException
 
-/**
- * An object that can play multiple sounds at once.
- */
+/** An object that can play music and multiple short sounds at once. */
 interface SoundEngine {
     /**
      * Loads the sound at the specified location, making it available to future
@@ -68,16 +66,17 @@ interface SoundEngine {
 
     /**
      * Plays the given sound and returns the stream id on which the sound is
-     * played. This should be used for short sounds (at most a few seconds).
+     * played.
+     *
+     * This should be used for short sound effects (at most a few seconds).
      *
      * @param soundSource the location of the sound which should be played
-     * @param loop whether the sound should be looped or not
      * @return the id of the stream on which the sound is played, or `-1` if the
      * sound could not be played
      * @throws IllegalArgumentException if the [soundSource] was not loaded
      * @throws IllegalStateException if this sound engine was released
      */
-    fun playSound(soundSource: String, loop: Boolean = false): Int
+    fun playSound(soundSource: String): Int
 
     /**
      * Stops the stream with the given id.

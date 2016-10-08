@@ -13,7 +13,6 @@
   {
     "2":
     {
-      "animation": null,
       "objectGroup":
       {
         "drawOrder":"index",
@@ -45,9 +44,21 @@
           }
         },
         "offsetX": 0,
-        "offsetY": 0,
-        "color": null
+        "offsetY": 0
       },
+      "properties": {}
+    },
+    "1": {
+      "animation": [
+          {
+            "tileId": 1,
+            "duration": 250
+          },
+          {
+            "tileId": 2,
+            "duration": 250
+          }
+      ],
       "properties": {}
     }
   },

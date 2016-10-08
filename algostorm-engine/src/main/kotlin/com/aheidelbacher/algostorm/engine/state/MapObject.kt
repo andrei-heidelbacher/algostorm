@@ -102,8 +102,8 @@ class MapObject private constructor(
 
     override val properties: MutableMap<String, Property> = hashMapOf()
 
-    @Transient private var gidToTileSet: Array<TileSet?>
-    @Transient private var gidToTileId: IntArray
+    @Transient private val gidToTileSet: Array<TileSet?>
+    @Transient private val gidToTileId: IntArray
 
     init {
         require(width > 0) { "$this width must be positive!" }

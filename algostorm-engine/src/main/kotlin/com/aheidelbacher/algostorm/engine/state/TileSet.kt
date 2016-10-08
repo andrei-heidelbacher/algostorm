@@ -246,9 +246,4 @@ data class TileSet private constructor(
      * it is greater than or equal to [tileCount]
      */
     fun getViewport(tileId: Int): Viewport = viewports[tileId]
-
-    override fun equals(other: Any?): Boolean =
-            other is TileSet && name == other.name
-
-    override fun hashCode(): Int = name.hashCode()
 }

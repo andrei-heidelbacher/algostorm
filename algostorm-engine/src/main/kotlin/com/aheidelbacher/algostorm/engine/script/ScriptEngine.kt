@@ -21,7 +21,7 @@ import java.io.FileNotFoundException
 import kotlin.reflect.KClass
 
 /**
- * An object that can evaluate scripts and named functions from previously
+ * An object that can evaluate scripts and run named functions from previously
  * evaluated scripts.
  */
 interface ScriptEngine {

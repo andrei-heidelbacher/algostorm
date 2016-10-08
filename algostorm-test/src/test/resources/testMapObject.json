@@ -27,18 +27,6 @@
   }],
   "layers": [
     {
-      "type": "ImageLayer",
-      "name": "bg",
-      "image": {
-        "source": "/bg.png",
-        "width": 24,
-        "height": 24
-      },
-      "offsetX": 0,
-      "offsetY": 0,
-      "isVisible": true
-    },
-    {
       "type": "TileLayer",
       "name": "floor",
       "data": [1, 1, 1, 1],
@@ -55,7 +43,6 @@
     {
       "type": "ObjectGroup",
       "name": "objects",
-      "color": null,
       "isVisible": true,
       "drawOrder": "top-down",
       "objects": [{

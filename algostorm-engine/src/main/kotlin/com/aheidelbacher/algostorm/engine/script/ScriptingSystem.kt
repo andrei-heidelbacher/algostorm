@@ -30,13 +30,13 @@ import kotlin.reflect.KClass
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scripts the locations of the scripts which are loaded and executed at
- * construction time using the [ScriptEngine.eval] method
+ * @param scriptSources the locations of the scripts which are loaded and
+ * executed at construction time using the [ScriptEngine.eval] method
  * @throws FileNotFoundException if any of the given scripts doesn't exist
  */
 class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
         private val scriptEngine: ScriptEngine,
-        scripts: List<File>
+        scriptSources: List<File>
 ) : Subscriber {
     /**
      * An event which requests the execution of a script.
@@ -86,7 +86,7 @@ class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     init {
-        scripts.forEach { scriptEngine.eval(it.path) }
+        scriptSources.forEach { scriptEngine.eval(it.path) }
     }
 
     /**

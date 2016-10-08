@@ -22,6 +22,7 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Frame
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -38,6 +39,7 @@ class TileSetTest {
             columns = 12,
             tileCount = 120,
             tiles = mapOf(
+                    1 to Tile(animation = listOf(Frame(1, 250), Frame(2, 250))),
                     2 to Tile(objectGroup = ObjectGroup(
                             name = "",
                             properties = mapOf("z" to Property("someString")),

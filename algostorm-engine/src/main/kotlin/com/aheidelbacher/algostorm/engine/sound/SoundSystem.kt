@@ -59,12 +59,10 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * An event that requests a short sound to be played.
      *
      * @property sound the sound which should be played
-     * @property loop whether the sound should be looped or not
      * @property onResult the callback which receives the returned stream id
      */
     data class PlaySound(
             val sound: File,
-            val loop: Boolean = false,
             val onResult: ((Int) -> Unit)? = null
     ) : Event
 
@@ -109,8 +107,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun onPlaySoundEffect(event: PlaySound) {
-        val streamId = soundEngine.playSound(event.sound.path, event.loop)
-        event.onResult?.invoke(streamId)
+        event.onResult?.invoke(soundEngine.playSound(event.sound.path))
     }
 
     /**

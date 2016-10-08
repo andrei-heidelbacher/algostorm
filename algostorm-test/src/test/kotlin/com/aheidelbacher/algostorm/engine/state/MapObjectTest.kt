@@ -5,7 +5,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.Layer.ImageLayer
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 
@@ -54,10 +53,6 @@ class MapObjectTest {
                     tileCount = 6
             )),
             layers = listOf(
-                    ImageLayer(
-                            name = "bg",
-                            image = Image(File("/bg.png"), 24, 24)
-                    ),
                     TileLayer(
                             name = "floor",
                             data = LongArray(2 * 2) { 1 },
@@ -93,8 +88,6 @@ class MapObjectTest {
         expectedMapObject.layers.zip(actualMapObject.layers).forEach {
             val (expected, actual) = it
             when {
-                expected is Layer.ImageLayer && actual is Layer.ImageLayer ->
-                    assertPropsEquals(expected, actual)
                 expected is Layer.ObjectGroup && actual is Layer.ObjectGroup ->
                     assertPropsEquals(expected, actual)
                 expected is Layer.TileLayer && actual is Layer.TileLayer -> {

@@ -64,7 +64,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         @JvmStatic fun Object.isVisible(camera: Rectangle): Boolean =
                 isVisible && camera.intersects(x, y - height + 1, width, height)
 
-        fun MapObject.getViewport(
+        @JvmStatic fun MapObject.getViewport(
                 gid: Long,
                 currentTimeMillis: Long
         ): Viewport {
@@ -118,13 +118,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
 
     private var currentTimeMillis = 0L
 
-    private fun drawGid(
-            gid: Long,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int
-    ) {
+    private fun drawGid(gid: Long, x: Int, y: Int, width: Int, height: Int) {
         val tileSet = map.getTileSet(gid)
         val viewport = map.getViewport(gid, currentTimeMillis)
         matrix.reset()
@@ -211,24 +205,11 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         }
     }
 
-    private fun Layer.ImageLayer.draw(camera: Rectangle) {
-        matrix.reset()
-        canvas.drawBitmap(
-                image = image.source.path,
-                x = camera.x - offsetX,
-                y = camera.y - offsetY,
-                width = camera.width,
-                height = camera.height,
-                matrix = matrix
-        )
-    }
-
     private fun Layer.draw(camera: Rectangle) {
         if (isVisible) {
             when (this) {
                 is Layer.TileLayer -> draw(camera)
                 is Layer.ObjectGroup -> draw(camera)
-                is Layer.ImageLayer -> draw(camera)
             }
         }
     }
