@@ -1,6 +1,6 @@
 allprojects {
     group 'com.aheidelbacher'
-    version '0.1.58'
+    version '0.1.59'
 }
 
 subprojects {
@@ -39,7 +39,12 @@ subprojects {
         }
     }
 
-    task cleanDocs(type: Delete) {
-        delete 'docs'
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
     }
 }

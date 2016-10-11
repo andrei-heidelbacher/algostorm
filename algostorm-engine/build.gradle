@@ -10,7 +10,15 @@ dependencies {
 }
 
 dokka {
-    outputFormat = 'gfm'
-    outputDirectory = "$projectDir/docs"
-    dependsOn cleanDocs
+    outputFormat = 'javadoc'
+    outputDirectory = javadoc.destinationDir
+}
+
+task javadocJar(type: Jar, dependsOn: dokka) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
 }
