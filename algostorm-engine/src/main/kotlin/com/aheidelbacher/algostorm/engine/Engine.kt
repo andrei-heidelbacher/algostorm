@@ -16,6 +16,12 @@
 
 package com.aheidelbacher.algostorm.engine
 
+import com.aheidelbacher.algostorm.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.engine.graphics.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.input.InputDriver
+import com.aheidelbacher.algostorm.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
+
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
@@ -31,17 +37,21 @@ import kotlin.system.measureNanoTime
  * All changes to the game state outside of this engine's thread may lead to
  * inconsistent state and concurrency issues. Thus, the engine state should
  * remain private to the engine and modified only in the [onUpdate] and
- * [clearState] methods.
+ * [onShutdown] methods.
  *
  * All the engine methods are thread safe as long as the complete construction
  * of the engine and initialization of the state happen-before any other method
  * call.
  *
- * @property millisPerUpdate the number of milliseconds spent in an update cycle
- * and the resolution of an atomic time unit
  * @throws IllegalArgumentException if [millisPerUpdate] is not positive
  */
-abstract class Engine(val millisPerUpdate: Int) {
+abstract class Engine(
+        protected val audioDriver: AudioDriver,
+        protected val graphicsDriver: GraphicsDriver,
+        protected val inputDriver: InputDriver<*>,
+        protected val scriptDriver: ScriptDriver,
+        protected val serializationDriver: SerializationDriver
+) {
     companion object {
         /** Name of the engine thread. */
         const val NAME: String = "ALGOSTORM"
@@ -73,9 +83,6 @@ abstract class Engine(val millisPerUpdate: Int) {
     private val internalShutdownStatus = AtomicBoolean(false)
 
     init {
-        require(millisPerUpdate > 0) {
-            "Millis spent in an update cycle must be positive!"
-        }
     }
 
     /** The current status of this engine. */
@@ -85,6 +92,16 @@ abstract class Engine(val millisPerUpdate: Int) {
     /** The current shutdown status of this engine. */
     val isShutdown: Boolean
         get() = internalShutdownStatus.get()
+
+    /**
+     * The number of milliseconds spent in an update cycle and the resolution of
+     * an atomic time unit.
+     *
+     * Must be positive.
+     */
+    protected abstract val millisPerUpdate: Int
+
+    protected abstract fun onStart(): Unit
 
     /**
      * The entry point into the rendering logic.
@@ -120,14 +137,16 @@ abstract class Engine(val millisPerUpdate: Int) {
      *
      * @param outputStream the stream to which the game state is written
      */
-    protected abstract fun writeStateToStream(outputStream: OutputStream): Unit
+    protected abstract fun onSerializeState(outputStream: OutputStream): Unit
+
+    protected abstract fun onStop(): Unit
 
     /**
      * Clears the current game state for a clean shutdown.
      *
      * The call to this method is synchronized with the state lock.
      */
-    protected abstract fun clearState(): Unit
+    protected abstract fun onShutdown(): Unit
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread.
@@ -156,6 +175,7 @@ abstract class Engine(val millisPerUpdate: Int) {
                     Status.STOPPED,
                     Status.RUNNING
             )) { "Can't start the engine if it isn't stopped!" }
+            onStart()
             process = thread(name = NAME) {
                 try {
                     while (status == Status.RUNNING) {
@@ -169,15 +189,30 @@ abstract class Engine(val millisPerUpdate: Int) {
                         check(elapsedMillis >= 0) {
                             "Elapsed time millis can't be negative!"
                         }
-                        val sleepTimeMillis = millisPerUpdate - elapsedMillis
-                        if (sleepTimeMillis > 0) {
-                            Thread.sleep(sleepTimeMillis)
+                        val updateMillis = millisPerUpdate
+                        check(updateMillis > 0) {
+                            "Millis spent in an update cycle must be positive!"
+                        }
+                        val sleepMillis = updateMillis - elapsedMillis
+                        if (sleepMillis > 0) {
+                            Thread.sleep(sleepMillis)
                         }
                     }
                 } finally {
                     internalStatus.set(Status.STOPPED)
                 }
             }
+        }
+    }
+
+    /**
+     * Acquires the state lock and calls the [onSerializeState] method.
+     *
+     * @param outputStream the stream to which the game state is written
+     */
+    fun serializeState(outputStream: OutputStream) {
+        synchronized(stateLock) {
+            onSerializeState(outputStream)
         }
     }
 
@@ -203,10 +238,13 @@ abstract class Engine(val millisPerUpdate: Int) {
             }
             process = null
         }
+        synchronized(stateLock) {
+            onStop()
+        }
     }
 
     /**
-     * [Stops][stop] and [clears][clearState] this engine and sets the
+     * [Stops][stop] and [clears][onShutdown] this engine and sets the
      * [isShutdown] flag to `true`.
      *
      * @throws IllegalStateException if the engine is already shutdown
@@ -222,18 +260,7 @@ abstract class Engine(val millisPerUpdate: Int) {
             stop()
         }
         synchronized(stateLock) {
-            clearState()
-        }
-    }
-
-    /**
-     * Acquires the state lock and calls the [writeStateToStream] method.
-     *
-     * @param outputStream the stream to which the game state is written
-     */
-    fun serializeState(outputStream: OutputStream) {
-        synchronized(stateLock) {
-            writeStateToStream(outputStream)
+            onShutdown()
         }
     }
 }

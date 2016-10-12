@@ -79,12 +79,4 @@ interface ScriptEngine {
             returnType: KClass<T>,
             vararg args: Any?
     ): T?
-
-    /**
-     * Releases all resources associated with this scripting engine.
-     *
-     * @throws IllegalStateException if this scripting engine was already
-     * released
-     */
-    fun release(): Unit
 }

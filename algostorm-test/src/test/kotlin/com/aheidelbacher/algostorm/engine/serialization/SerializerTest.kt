@@ -24,7 +24,7 @@ import java.io.File
 import java.io.FileInputStream
 
 class SerializerTest {
-    val ext = Serializer.FORMAT
+    val ext = JsonSerializationDriver.FORMAT
     val fileStream = FileInputStream(File("src/test/resources/testData.$ext"))
     val testDataMock = TestDataMock(
             primitiveTestField = 1,
@@ -42,7 +42,7 @@ class SerializerTest {
     fun testDataInlineDeserialization() {
         assertEquals(
                 testDataMock,
-                Serializer.readValue<TestDataMock>(fileStream)
+                JsonSerializationDriver.readValue<TestDataMock>(fileStream)
         )
     }
 
@@ -50,18 +50,18 @@ class SerializerTest {
     fun testDataDeserialization() {
         assertEquals(
                 testDataMock,
-                Serializer.readValue(fileStream, TestDataMock::class)
+                JsonSerializationDriver.readValue(fileStream, TestDataMock::class)
         )
     }
 
     @Test
     fun testDataSerialization() {
         val byteStream = ByteArrayOutputStream()
-        Serializer.writeValue(byteStream, testDataMock)
+        JsonSerializationDriver.writeValue(byteStream, testDataMock)
         val inputStream = byteStream.toByteArray().inputStream()
         assertEquals(
                 testDataMock,
-                Serializer.readValue<TestDataMock>(inputStream)
+                JsonSerializationDriver.readValue<TestDataMock>(inputStream)
         )
     }
 }

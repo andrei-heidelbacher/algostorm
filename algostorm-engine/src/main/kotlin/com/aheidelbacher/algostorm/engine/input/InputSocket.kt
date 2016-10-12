@@ -21,8 +21,9 @@ package com.aheidelbacher.algostorm.engine.input
  *
  * @param T the user lastInput type
  */
-class InputSocket<T : Any> : InputReader<T>, InputWriter<T> {
-    @Transient private val lock = Any()
+class InputSocket<T : Any> : InputDriver<T> {
+    private val lock = Any()
+    private var isReleased = false
 
     /**
      * The last received input, or `null` if no input has been received.
@@ -41,5 +42,9 @@ class InputSocket<T : Any> : InputReader<T>, InputWriter<T> {
         synchronized(lock) {
             lastInput = input
         }
+    }
+
+    override fun release() {
+        isReleased = true
     }
 }

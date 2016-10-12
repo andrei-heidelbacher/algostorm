@@ -27,7 +27,7 @@ import java.io.FileInputStream
 import kotlin.concurrent.thread
 
 class JavascriptEngineTest : ScriptEngineTest(
-        scriptEngine = JavascriptEngine { FileInputStream(File(it)) },
+        scriptEngine = JavascriptDriver { FileInputStream(File(it)) },
         scriptPaths = listOf("src/test/resources/testScript.js"),
         voidFunctionName = "voidFunction",
         resultFunctionName = "getResult"

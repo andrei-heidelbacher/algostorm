@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
 
 import java.io.OutputStream
 
@@ -25,7 +25,7 @@ class EngineMock : Engine(25) {
     private var registeredValues = mutableListOf<Int>()
     private var state = 0
 
-    override fun clearState() {
+    override fun onShutdown() {
         i = 0
         registeredValues.clear()
     }
@@ -46,7 +46,7 @@ class EngineMock : Engine(25) {
         registeredValues.add(i++)
     }
 
-    override fun writeStateToStream(outputStream: OutputStream) {
-        Serializer.writeValue(outputStream, registeredValues)
+    override fun onSerializeState(outputStream: OutputStream) {
+        JsonSerializationDriver.writeValue(outputStream, registeredValues)
     }
 }

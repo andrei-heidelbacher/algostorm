@@ -19,7 +19,8 @@ package com.aheidelbacher.algostorm.engine.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.state.File
+import com.aheidelbacher.algostorm.state.File
+import com.aheidelbacher.algostorm.systems.ScriptingSystem
 import com.aheidelbacher.algostorm.test.engine.script.ScriptResult
 
 import java.io.FileInputStream
@@ -30,7 +31,7 @@ class ScriptingSystemTest {
     }
 
     val system = ScriptingSystem(
-            JavascriptEngine { FileInputStream(java.io.File(it)) },
+            JavascriptDriver { FileInputStream(java.io.File(it)) },
             listOf(File("src/test/resources/testScript.js"))
     )
 

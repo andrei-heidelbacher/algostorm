@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.engine
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
@@ -30,7 +30,7 @@ class EngineMockTest : EngineTest(EngineMock()) {
         val outputStream = ByteArrayOutputStream()
         engine.serializeState(outputStream)
         val inputStream = outputStream.toByteArray().inputStream()
-        return Serializer.readValue<List<Int>>(inputStream)
+        return JsonSerializationDriver.readValue<List<Int>>(inputStream)
     }
 
     override fun getElapsedFrames(): Int = getState().size
@@ -56,22 +56,22 @@ class EngineMockTest : EngineTest(EngineMock()) {
     @Test(expected = IllegalArgumentException::class)
     fun testCreateEngineWithZeroMillisPerUpdateShouldThrow() {
         object : Engine(0) {
-            override fun clearState() {}
+            override fun onShutdown() {}
             override fun onHandleInput() {}
             override fun onRender() {}
             override fun onUpdate() {}
-            override fun writeStateToStream(outputStream: OutputStream) {}
+            override fun onSerializeState(outputStream: OutputStream) {}
         }
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testCreateEngineWithNegativeMillisPerUpdateShouldThrow() {
         object : Engine(-25) {
-            override fun clearState() {}
+            override fun onShutdown() {}
             override fun onHandleInput() {}
             override fun onRender() {}
             override fun onUpdate() {}
-            override fun writeStateToStream(outputStream: OutputStream) {}
+            override fun onSerializeState(outputStream: OutputStream) {}
         }
     }
 }
