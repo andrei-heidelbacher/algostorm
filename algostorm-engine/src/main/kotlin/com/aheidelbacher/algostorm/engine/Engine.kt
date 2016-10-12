@@ -87,6 +87,15 @@ abstract class Engine(val millisPerUpdate: Int) {
         get() = internalShutdownStatus.get()
 
     /**
+     * The entry point into the rendering logic.
+     *
+     * This method is invoked right after [onUpdate] returns from this engine's
+     * thread while this engine is running. The call to this method is
+     * synchronized with the state lock.
+     */
+    protected abstract fun onRender(): Unit
+
+    /**
      * The entry point into the input-handling logic.
      *
      * This method is invoked right before [onUpdate] is called from this
@@ -103,15 +112,6 @@ abstract class Engine(val millisPerUpdate: Int) {
      * synchronized with the state lock.
      */
     protected abstract fun onUpdate(): Unit
-
-    /**
-     * The entry point into the rendering logic.
-     *
-     * This method is invoked right after [onUpdate] returns from this engine's
-     * thread while this engine is running. The call to this method is
-     * synchronized with the state lock.
-     */
-    protected abstract fun onRender(): Unit
 
     /**
      * Retrieves the current game state and serializes it to the given stream.

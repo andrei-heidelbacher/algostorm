@@ -16,10 +16,6 @@
 
 package com.aheidelbacher.algostorm.processor
 
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
-
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
@@ -27,21 +23,27 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ElementKind.CLASS
+import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.ExecutableType
-import javax.lang.model.type.TypeKind
+import javax.lang.model.type.TypeKind.VOID
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.Diagnostic
 
+/**
+ * Checks that all subscribers comply to the `Subscribe` annotation contract
+ * from the package `com.aheidelbacher.algostorm.event`.
+ */
 class SubscribeProcessor : AbstractProcessor() {
-    companion object {
-        val SUBSCRIBE: String = Subscribe::class.java.canonicalName
-        private val UNIT = Unit::class.java.canonicalName
-        private val EVENT = Event::class.java.canonicalName
-        private val SUBSCRIBER = Subscriber::class.java.canonicalName
+    private companion object {
+        val UNIT: String = Unit::class.java.canonicalName
+        val PACKAGE: String = "com.aheidelbacher.algostorm.event"
+        val SUBSCRIBE: String = "$PACKAGE.Subscribe"
+        val EVENT: String = "$PACKAGE.Event"
+        val SUBSCRIBER: String = "$PACKAGE.Subscriber"
     }
 
     private lateinit var typeUtils: Types
@@ -63,10 +65,6 @@ class SubscribeProcessor : AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion =
             SourceVersion.latestSupported()
 
-    private fun error(element: Element?, message: String?) {
-        messager.printMessage(Diagnostic.Kind.ERROR, message, element)
-    }
-
     private inline fun require(
             condition: Boolean,
             element: Element,
@@ -78,7 +76,7 @@ class SubscribeProcessor : AbstractProcessor() {
     }
 
     private fun validateMethod(method: Element) {
-        require(method.kind == ElementKind.METHOD, method) {
+        require(method.kind == METHOD, method) {
             "Only methods can be annotated with $SUBSCRIBE!"
         }
         require(Modifier.PUBLIC in method.modifiers, method) {
@@ -91,7 +89,7 @@ class SubscribeProcessor : AbstractProcessor() {
             "Annotated methods must not be static!"
         }
         val executableType = method.asType() as ExecutableType
-        val returnsVoid = executableType.returnType.kind == TypeKind.VOID
+        val returnsVoid = executableType.returnType.kind == VOID
         val returnsUnit = typeUtils.isSameType(
                 executableType.returnType,
                 elementUtils.getTypeElement(UNIT).asType()
@@ -112,7 +110,7 @@ class SubscribeProcessor : AbstractProcessor() {
     }
 
     private fun validateEnclosingClass(enclosingClass: Element) {
-        require(enclosingClass.kind == ElementKind.CLASS, enclosingClass) {
+        require(enclosingClass.kind == CLASS, enclosingClass) {
             "Enclosing element must be a class!"
         }
         val isSubscriber = typeUtils.isSubtype(
@@ -129,12 +127,17 @@ class SubscribeProcessor : AbstractProcessor() {
             roundEnv: RoundEnvironment
     ): Boolean {
         try {
-            roundEnv.getElementsAnnotatedWith(Subscribe::class.java).forEach {
-                validateMethod(it)
-                validateEnclosingClass(it.enclosingElement)
+            annotations.find { annotation ->
+                annotation.qualifiedName.contentEquals(SUBSCRIBE)
+            }?.let { annotation ->
+                println("\n\n\n\n\n!!!!!!!!!!!!!!!!!\n$annotation")
+                roundEnv.getElementsAnnotatedWith(annotation).forEach { e ->
+                    validateMethod(e)
+                    validateEnclosingClass(e.enclosingElement)
+                }
             }
         } catch (e: ProcessingException) {
-            error(e.element, e.message)
+            messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
         }
         return true
     }
