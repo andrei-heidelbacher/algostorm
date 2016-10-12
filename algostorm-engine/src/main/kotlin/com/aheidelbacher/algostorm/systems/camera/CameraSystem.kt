@@ -35,7 +35,7 @@ class CameraSystem(
 
     data class Scroll(val dx: Int, val dy: Int) : Event
 
-    object Unfollow : Event
+    object UnFollow : Event
 
     object UpdateCamera : Event
 
@@ -64,7 +64,7 @@ class CameraSystem(
         camera.y += event.dy
     }
 
-    @Subscribe fun onUnfollow(event: Unfollow) {
+    @Subscribe fun onUnFollow(event: UnFollow) {
         followedObjectId = null
     }
 

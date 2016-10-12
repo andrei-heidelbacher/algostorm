@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.processor
 import javax.lang.model.element.Element
 
 /**
- * Indicates that an error occured while processing the specified `element`.
+ * Indicates that an error occurred while processing the specified `element`.
  *
  * @constructor builds a new exception with the given `element` and `message`
  * @property element the element which caused the error
