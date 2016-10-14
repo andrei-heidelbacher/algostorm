@@ -19,7 +19,6 @@ package com.aheidelbacher.algostorm.engine.serialization
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -29,12 +28,8 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-import kotlin.reflect.KClass
-
-/**
- * Serialization and deserialization utility methods.
- */
-class JsonSerializationDriver : SerializationDriver {
+/** A JSON serialization driver using the Jackson external library. */
+class JsonDriver : SerializationDriver {
     companion object {
         /** The serialization format. */
         const val FORMAT: String = "json"
@@ -61,6 +56,12 @@ class JsonSerializationDriver : SerializationDriver {
     override fun <T : Any> readValue(src: InputStream, type: Class<T>): T =
             objectMapper?.readValue(src, type) ?: error("$this was released!")
 
+    /**
+     * Releases all resources acquired by this driver.
+     *
+     * Invoking any method after this driver was released will throw an
+     * [IllegalStateException].
+     */
     override fun release() {
         objectMapper = null
     }

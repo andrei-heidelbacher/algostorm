@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.state
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
+import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.TileSet.Tile
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
@@ -59,15 +59,15 @@ class TileSetTest {
 
     @Test
     fun testTileSetDeserialization() {
-        val actualTileSet = JsonSerializationDriver.readValue<TileSet>(fileStream)
+        val actualTileSet = JsonDriver.readValue<TileSet>(fileStream)
         assertEquals(tileSet, actualTileSet)
     }
 
     @Test
     fun testTileSetSerialization() {
         val bos = ByteArrayOutputStream()
-        JsonSerializationDriver.writeValue(bos, tileSet)
-        val actualTileSet = JsonSerializationDriver.readValue<TileSet>(
+        JsonDriver.writeValue(bos, tileSet)
+        val actualTileSet = JsonDriver.readValue<TileSet>(
                 src = bos.toByteArray().inputStream()
         )
         assertEquals(tileSet, actualTileSet)

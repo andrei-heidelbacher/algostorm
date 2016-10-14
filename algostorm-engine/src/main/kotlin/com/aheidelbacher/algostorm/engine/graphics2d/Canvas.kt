@@ -14,51 +14,34 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics
+package com.aheidelbacher.algostorm.engine.graphics2d
 
 import java.io.FileNotFoundException
 
-/**
- * A canvas that allows `draw` calls.
- *
- * Every change to the canvas should be performed after it was locked and the
- * changes should become visible after it was unlocked.
- *
- * After the canvas was locked, it must be unlocked.
- */
+/** A canvas that allows primitive `draw` calls. */
 interface Canvas {
     /**
-     * Loads the image at the given location.
+     * Synchronously loads the image resource located at the given path.
      *
-     * @param imageSource the location of the image
-     * @throws FileNotFoundException if the given image doesn't exist
+     * Paths are relative to a specialized location of image resources.
+     *
+     * @param imageSource the path of the image resource which should be loaded
+     * @throws FileNotFoundException if the given resource doesn't exist
      */
     @Throws(FileNotFoundException::class)
     fun loadBitmap(imageSource: String): Unit
 
-    /**
-     * The width of this canvas in pixels.
-     *
-     * @throws IllegalStateException if the canvas is not locked
-     */
+    /** The width of this canvas in pixels. */
     val width: Int
 
-    /**
-     * The height of this canvas in pixels.
-     *
-     * @throws IllegalStateException if the canvas is not locked
-     */
+    /** The height of this canvas in pixels. */
     val height: Int
 
-    /**
-     * Clears the canvas.
-     *
-     * @throws IllegalStateException if the canvas is not locked
-     */
+    /** Clears this canvas. */
     fun clear(): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap to the canvas using
+     * Draws the viewport projected on the indicated bitmap to this canvas using
      * the specified [matrix].
      *
      * @param image the location of the bitmap
@@ -73,7 +56,6 @@ interface Canvas {
      * @param matrix the matrix that should be applied to the viewport when
      * rendering. Initially, the viewport rectangle is considered to have the
      * top-left corner overlap with the top-left corner of the canvas.
-     * @throws IllegalStateException if the canvas is not locked
      */
     fun drawBitmap(
             image: String,
@@ -85,7 +67,7 @@ interface Canvas {
     ): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap to the canvas using
+     * Draws the viewport projected on the indicated bitmap to this canvas using
      * the specified [matrix].
      *
      * @param color the color with which the rectangle should be filled in
@@ -97,7 +79,6 @@ interface Canvas {
      * @param matrix the matrix that should be applied to the rectangle when
      * rendering. Initially, the rectangle is considered to have the top-left
      * corner overlap with the top-left corner of the canvas.
-     * @throws IllegalStateException if the canvas is not locked
      */
     fun drawRectangle(
             color: Int,
@@ -110,7 +91,6 @@ interface Canvas {
      * Fills the entire canvas with the given color.
      *
      * @param color the color which should fill the canvas in ARGB8888 format
-     * @throws IllegalStateException if the canvas is not locked
      */
     fun drawColor(color: Int) : Unit
 }

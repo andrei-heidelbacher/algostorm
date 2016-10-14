@@ -20,7 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.state.File
-import com.aheidelbacher.algostorm.systems.ScriptingSystem
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem
 import com.aheidelbacher.algostorm.test.engine.script.ScriptResult
 
 import java.io.FileInputStream

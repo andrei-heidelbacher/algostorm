@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics
+package com.aheidelbacher.algostorm.engine.graphics2d
 
 /**
  * Used to apply a sequence of transformations to a bitmap before drawing to the

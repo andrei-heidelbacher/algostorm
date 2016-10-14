@@ -8,14 +8,13 @@ Algostorm is a 2d grid-based game engine for the JVM. It is designed for
 turn-based games, but can be adapted for real-time with a little effort.
 
 ### Features
+* decoupled engine drivers (audio, 2d graphics, input, scripting, serialization)
+* engine that runs on its own private thread
 * a property-based entity-system framework
 * event-based inter-system communication along with an annotation processor to
 type-check the event subscribers
-* engine that runs on its own private thread
 * default physics, in-game timers, graphics and animation utilities
-* asset management (tile sets, sounds, scripts)
-* thread-safe input bridge between raw user input and game-specific commands
-* JSON serialization utilities
+* default Javascript interpreter and JSON serialization drivers
 
 ### Using Algostorm
 To use the engine, you need the following dependencies:

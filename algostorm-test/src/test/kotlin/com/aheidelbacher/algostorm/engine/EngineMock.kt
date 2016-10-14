@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
+import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 
 import java.io.OutputStream
 
@@ -47,6 +47,6 @@ class EngineMock : Engine(25) {
     }
 
     override fun onSerializeState(outputStream: OutputStream) {
-        JsonSerializationDriver.writeValue(outputStream, registeredValues)
+        JsonDriver.writeValue(outputStream, registeredValues)
     }
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems
+package com.aheidelbacher.algostorm.systems.audio
 
+import com.aheidelbacher.algostorm.engine.audio.SoundPlayer
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -36,7 +37,7 @@ import java.io.FileNotFoundException
  * @throws FileNotFoundException if any of the given sounds doesn't exist
  */
 class SoundSystem @Throws(FileNotFoundException::class) constructor(
-        private val soundEngine: SoundEngine,
+        private val soundEngine: SoundPlayer,
         musicSources: List<File>,
         soundSources: List<File>
 ) : Subscriber {

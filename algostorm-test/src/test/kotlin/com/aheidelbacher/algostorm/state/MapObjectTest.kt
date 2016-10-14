@@ -4,7 +4,7 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
+import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 
@@ -100,15 +100,15 @@ class MapObjectTest {
 
     @Test
     fun testMapObjectDeserialization() {
-        val actualMapObject = JsonSerializationDriver.readValue<MapObject>(fileStream)
+        val actualMapObject = JsonDriver.readValue<MapObject>(fileStream)
         assertMapObjectEquals(mapObject, actualMapObject)
     }
 
     @Test
     fun testMapObjectSerialization() {
         val bos = ByteArrayOutputStream()
-        JsonSerializationDriver.writeValue(bos, mapObject)
-        val actualMapObject = JsonSerializationDriver.readValue<MapObject>(
+        JsonDriver.writeValue(bos, mapObject)
+        val actualMapObject = JsonDriver.readValue<MapObject>(
                 src = bos.toByteArray().inputStream()
         )
         assertMapObjectEquals(mapObject, actualMapObject)

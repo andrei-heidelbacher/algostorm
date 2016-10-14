@@ -56,7 +56,7 @@ class MapObject private constructor(
         val backgroundColor: Color?,
         val version: String,
         private var nextObjectId: Int
-) : MutableProperties {
+) : MutableProperties, Object.Factory {
     companion object {
         /** Map object factory method. */
         operator fun invoke(
@@ -102,7 +102,7 @@ class MapObject private constructor(
 
     override val properties: MutableMap<String, Property> = hashMapOf()
 
-    @Transient private val gidToTileSet: Array<TileSet?>
+    @Transient private val gidToTileSet: Array<TileSet>
     @Transient private val gidToTileId: IntArray
 
     init {
@@ -128,16 +128,17 @@ class MapObject private constructor(
             }
         }
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
-        gidToTileSet = arrayOfNulls<TileSet>(totalGidCount)
+        val tileSetsByGid = arrayListOf<TileSet>()
         gidToTileId = IntArray(totalGidCount)
         var firstGid = 1
         for (tileSet in tileSets) {
             for (tileId in 0 until tileSet.tileCount) {
-                gidToTileSet[tileId + firstGid - 1] = tileSet
+                tileSetsByGid.add(tileSet)
                 gidToTileId[tileId + firstGid - 1] = tileId
             }
             firstGid += tileSet.tileCount
         }
+        gidToTileSet = tileSetsByGid.toTypedArray()
     }
 
     /**
@@ -153,34 +154,16 @@ class MapObject private constructor(
         return id
     }
 
-    /**
-     * Creates an object with the specified parameters.
-     *
-     * @param name the name of this object
-     * @param type the type of this object
-     * @param x the horizontal coordinate in pixels of the top-left corner of
-     * this object
-     * @param y the vertical coordinate in pixels of the top-left corner of this
-     * object (positive is down)
-     * @param width the width in pixels of this object
-     * @param height the height in pixels of this object
-     * @param isVisible whether this object should be rendered or not
-     * @param gid the global id of the object tile. A value of `0` indicates the
-     * empty tile (nothing to draw)
-     * @throws IllegalStateException if there are too many objects in this map
-     * @throws IllegalArgumentException if [gid] is negative or if [width] or
-     * [height] are not positive
-     */
-    fun createObject(
-            name: String = "",
-            type: String = "",
+    override fun create(
+            name: String,
+            type: String,
             x: Int,
             y: Int,
             width: Int,
             height: Int,
-            isVisible: Boolean = true,
-            gid: Long = 0L,
-            properties: Map<String, Property> = emptyMap()
+            isVisible: Boolean,
+            gid: Long,
+            properties: Map<String, Property>
     ): Object = Object(
             id = getAndIncrementNextObjectId(),
             name = name,
@@ -203,7 +186,6 @@ class MapObject private constructor(
      * is greater than the total number of tiles contained in the map tile sets
      */
     fun getTileSet(gid: Long): TileSet = gidToTileSet[gid.clearFlags() - 1]
-            ?: error("Tile set can't be null!")
 
     /**
      * Returns the local tile id of the given [gid].

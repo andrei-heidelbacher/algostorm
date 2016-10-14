@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.camera
+package com.aheidelbacher.algostorm.systems.graphics2d.camera
 
 import com.aheidelbacher.algostorm.state.MapObject
 

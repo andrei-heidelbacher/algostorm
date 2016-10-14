@@ -17,9 +17,12 @@
 package com.aheidelbacher.algostorm.engine
 
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.engine.graphics.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.driver.Driver
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.input.InputDriver
+import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 
 import java.io.FileNotFoundException
@@ -43,14 +46,22 @@ import kotlin.system.measureNanoTime
  * of the engine and initialization of the state happen-before any other method
  * call.
  *
- * @throws IllegalArgumentException if [millisPerUpdate] is not positive
+ * @property audioDriver the driver that handles playing music and sound effects
+ * @property graphicsDriver the driver that handles drawing to the screen
+ * @property inputDriver the driver that handles reading input from the user
+ * @property scriptDriver the driver that handles running scripts
+ * @property serializationDriver the driver that handles the serialization and
+ * deserialization the game state
+ * @constructor initializes this engine's drivers
  */
 abstract class Engine(
         protected val audioDriver: AudioDriver,
         protected val graphicsDriver: GraphicsDriver,
         protected val inputDriver: InputDriver<*>,
-        protected val scriptDriver: ScriptDriver,
-        protected val serializationDriver: SerializationDriver
+        protected val scriptDriver: ScriptDriver = JavascriptDriver {
+            getResourceStream(it)
+        },
+        protected val serializationDriver: SerializationDriver = JsonDriver()
 ) {
     companion object {
         /** Name of the engine thread. */
@@ -65,10 +76,9 @@ abstract class Engine(
          * @throws FileNotFoundException if the given resource doesn't exist
          */
         @Throws(FileNotFoundException::class)
-        @JvmStatic fun getResourceStream(name: String): InputStream {
-            return Engine::class.java.getResourceAsStream(name)
-                    ?: throw FileNotFoundException("Resource $name not found!")
-        }
+        @JvmStatic fun getResourceStream(name: String): InputStream =
+                Engine::class.java.getResourceAsStream(name)
+                        ?: throw FileNotFoundException("Resource $name not found!")
     }
 
     /** The status of an engine. */
@@ -101,32 +111,36 @@ abstract class Engine(
      */
     protected abstract val millisPerUpdate: Int
 
+    /**
+     * The entry point into initialization logic for starting the engine thread.
+     *
+     * This method is invoke right after starting the private engine thread. The
+     * call to this method is synchronized with the state lock.
+     */
     protected abstract fun onStart(): Unit
 
     /**
      * The entry point into the rendering logic.
      *
-     * This method is invoked right after [onUpdate] returns from this engine's
-     * thread while this engine is running. The call to this method is
-     * synchronized with the state lock.
+     * This method is invoked right before [onHandleInput]. The call to this
+     * method is synchronized with the state lock.
      */
     protected abstract fun onRender(): Unit
 
     /**
      * The entry point into the input-handling logic.
      *
-     * This method is invoked right before [onUpdate] is called from this
-     * engine's thread while this engine is running. The call to this method is
-     * synchronized with the state lock.
+     * This method is invoked right before [onUpdate]. The call to this method
+     * is synchronized with the state lock.
      */
     protected abstract fun onHandleInput(): Unit
 
     /**
      * The entry point into the game logic.
      *
-     * This method is invoked at most once every [millisPerUpdate] from this
-     * engine's thread while this engine is running. The call to this method is
-     * synchronized with the state lock.
+     * This method is invoked at most once every [millisPerUpdate] while this
+     * engine is running. The call to this method is synchronized with the state
+     * lock.
      */
     protected abstract fun onUpdate(): Unit
 
@@ -139,12 +153,20 @@ abstract class Engine(
      */
     protected abstract fun onSerializeState(outputStream: OutputStream): Unit
 
+    /**
+     * The entry point into the clean-up logic for stopping the private engine
+     * thread.
+     *
+     * This method is invoked right before [stop] returns. The call to this
+     * method is synchronized with the state lock.
+     */
     protected abstract fun onStop(): Unit
 
     /**
-     * Clears the current game state for a clean shutdown.
+     * The entry point into the clean-up logic for shutting down the engine.
      *
-     * The call to this method is synchronized with the state lock.
+     * This method is invoked right before [shutdown] releases this engine's
+     * drivers. The call to this method is synchronized with the state lock.
      */
     protected abstract fun onShutdown(): Unit
 
@@ -160,8 +182,8 @@ abstract class Engine(
      * with the state lock.
      *
      * Time is measured using [measureNanoTime]. If, at any point, the measured
-     * time is negative, the engine thread throws an [IllegalStateException] and
-     * terminates.
+     * time or `millisPerUpdate` is negative, the engine thread throws an
+     * [IllegalStateException] and terminates.
      *
      * @throws IllegalStateException if the `status` is not `Status.STOPPED` or
      * if [isShutdown] is `true`
@@ -175,9 +197,11 @@ abstract class Engine(
                     Status.STOPPED,
                     Status.RUNNING
             )) { "Can't start the engine if it isn't stopped!" }
-            onStart()
             process = thread(name = NAME) {
                 try {
+                    synchronized(stateLock) {
+                        onStart()
+                    }
                     while (status == Status.RUNNING) {
                         val elapsedMillis = measureNanoTime {
                             synchronized(stateLock) {
@@ -206,7 +230,7 @@ abstract class Engine(
     }
 
     /**
-     * Acquires the state lock and calls the [onSerializeState] method.
+     * Serializes the game state to the given stream.
      *
      * @param outputStream the stream to which the game state is written
      */
@@ -223,8 +247,8 @@ abstract class Engine(
      * If the join succeeds, the `status` will be set to [Status.STOPPED].
      *
      * If this engine attempts to stop itself, it will signal to stop processing
-     * ticks, but will not join. As a consequence, subsequent calls to `status`
-     * may return `Status.STOPPING`.
+     * updates, but will not join. As a consequence, subsequent calls to
+     * `status` may return `Status.STOPPING`.
      *
      * @throws InterruptedException if the current thread is interrupted while
      * waiting for this engine to stop
@@ -233,6 +257,9 @@ abstract class Engine(
     fun stop() {
         synchronized(statusLock) {
             internalStatus.compareAndSet(Status.RUNNING, Status.STOPPING)
+            check (process != Thread.currentThread()) {
+                "Engine can't stop itself!"
+            }
             if (process != Thread.currentThread()) {
                 process?.join()
             }
@@ -244,10 +271,13 @@ abstract class Engine(
     }
 
     /**
-     * [Stops][stop] and [clears][onShutdown] this engine and sets the
-     * [isShutdown] flag to `true`.
+     * Sets the [isShutdown] flag to `true`, stops this engine, performs
+     * clean-up logic and releases this engine's drivers, in this order.
      *
-     * @throws IllegalStateException if the engine is already shutdown
+     * The drivers passed in the constructor are released while holding the
+     * state lock.
+     *
+     * @throws IllegalStateException if this engine is already shutdown
      * @throws InterruptedException if the current thread is interrupted while
      * waiting for this engine to stop
      */
@@ -261,6 +291,13 @@ abstract class Engine(
         }
         synchronized(stateLock) {
             onShutdown()
+            listOf(
+                    audioDriver,
+                    graphicsDriver,
+                    inputDriver,
+                    scriptDriver,
+                    serializationDriver
+            ).forEach(Driver::release)
         }
     }
 }

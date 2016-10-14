@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems
+package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.engine.graphics.Canvas
-import com.aheidelbacher.algostorm.engine.graphics.Matrix
-import com.aheidelbacher.algostorm.engine.graphics.Matrix.Companion
+import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
+import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Subscribe
+import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.Layer
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.state.MapObject
-import com.aheidelbacher.algostorm.state.MapObject.RenderOrder
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.state.TileSet.Viewport
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder.INDEX
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder.TOP_DOWN
@@ -43,6 +37,8 @@ import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_UP
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_UP
+import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
 
 import java.io.FileNotFoundException
 import java.util.Comparator
@@ -121,7 +117,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         if (o1.y != o2.y) o1.y - o2.y
         else o1.id - o2.id
     }
-    private val matrix = Matrix.identity()
+    private val matrix = com.aheidelbacher.algostorm.engine.graphics2d.Matrix.identity()
 
     init {
         map.tileSets.forEach { canvas.loadBitmap(it.image.source.path) }
@@ -235,25 +231,23 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     /**
-     * When a [Render] event is received, the following method calls occur:
-     * [Canvas.lock], followed by [Canvas.clear], followed by
-     * [Canvas.drawBitmap] for every tile, image and renderable object in the
-     * game, followed by [Canvas.unlockAndPost].
+     * When a [Render] event is received, the canvas is cleared or filled with
+     * the map background color and every renderable tile and object in the game
+     * is drawn.
      *
      * @param event the rendering request
      */
     @Subscribe fun onRender(event: Render) {
-        canvas.lock()
         val cameraWidth = canvas.width
         val cameraHeight = canvas.height
         if (cameraWidth > 0 && cameraHeight > 0) {
             val cameraX = event.cameraX - cameraWidth / 2
             val cameraY = event.cameraY - cameraHeight / 2
             val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
-            canvas.clear()
-            map.backgroundColor?.color?.let { canvas.drawColor(it) }
+            map.backgroundColor?.color?.let {
+                canvas.drawColor(it)
+            } ?: canvas.clear()
             map.layers.forEach { it.draw(camera) }
         }
-        canvas.unlockAndPost()
     }
 }

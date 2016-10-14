@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics
+package com.aheidelbacher.algostorm.engine.graphics2d
 
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals

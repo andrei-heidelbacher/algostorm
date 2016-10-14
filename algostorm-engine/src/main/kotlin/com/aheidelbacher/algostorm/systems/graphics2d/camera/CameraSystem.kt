@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.camera
+package com.aheidelbacher.algostorm.systems.graphics2d.camera
 
-import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.systems.Update
 
 class CameraSystem(
         private val camera: Camera,

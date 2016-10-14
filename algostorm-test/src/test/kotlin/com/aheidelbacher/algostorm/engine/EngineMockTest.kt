@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.engine
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.serialization.JsonSerializationDriver
+import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
@@ -30,7 +30,7 @@ class EngineMockTest : EngineTest(EngineMock()) {
         val outputStream = ByteArrayOutputStream()
         engine.serializeState(outputStream)
         val inputStream = outputStream.toByteArray().inputStream()
-        return JsonSerializationDriver.readValue<List<Int>>(inputStream)
+        return JsonDriver.readValue<List<Int>>(inputStream)
     }
 
     override fun getElapsedFrames(): Int = getState().size

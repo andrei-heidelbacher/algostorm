@@ -175,7 +175,7 @@ sealed class Layer(
         operator fun contains(objectId: Int): Boolean = objectId in objectMap
 
         /**
-         * Adds the given objects to this object group.
+         * Adds the given object to this object group.
          *
          * @throws IllegalArgumentException if the id of the given object is not
          * unique among the objects in this object group
@@ -186,6 +186,17 @@ sealed class Layer(
             }
             objects.add(obj)
             objectMap[obj.id] = obj
+        }
+
+        /**
+         * Adds the given objects to this object group.
+         *
+         * @throws IllegalArgumentException if the id of any given objects is
+         * not unique among the objects in this object group and the given
+         * objects
+         */
+        fun add(objects: Iterable<Object>) {
+            objects.forEach { add(it) }
         }
 
         /**

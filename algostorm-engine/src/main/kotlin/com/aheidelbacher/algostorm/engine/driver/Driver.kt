@@ -8,8 +8,8 @@ interface Driver {
     /**
      * Releases all resources acquired by this driver.
      *
-     * This method should be idempotent. Calling any service after this driver
-     * was released may have unexpected behavior.
+     * Invoking this method or any other service after this driver was released
+     * may lead to undefined behavior.
      */
     fun release(): Unit
 }

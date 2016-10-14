@@ -45,7 +45,7 @@ class Object private constructor(
         gid: Long
 ) : MutableProperties {
     companion object {
-        /** Object factory method. */
+        /** Utility factory method. */
         operator fun invoke(
                 id: Int,
                 name: String = "",
@@ -59,6 +59,39 @@ class Object private constructor(
                 properties: Map<String, Property> = emptyMap()
         ) = Object(id, name, type, x, y, width, height, isVisible, gid)
                 .apply { this.properties.putAll(properties) }
+    }
+
+    /** Factory that handles associating unique ids to created objects. */
+    interface Factory {
+        /**
+         * Creates an object with the specified parameters.
+         *
+         * @param name the name of the created object
+         * @param type the type of the created object
+         * @param x the horizontal coordinate in pixels of the top-left corner
+         * of the created object
+         * @param y the vertical coordinate in pixels of the top-left corner of
+         * the created object (positive is down)
+         * @param width the width in pixels of the created object
+         * @param height the height in pixels of the created object
+         * @param isVisible whether the created object should be rendered or not
+         * @param gid the global id of the object tile. A value of `0` indicates
+         * the empty tile (nothing to draw)
+         * @throws IllegalStateException if too many objects were created
+         * @throws IllegalArgumentException if [gid] is negative or if [width]
+         * or [height] are not positive
+         */
+        fun create(
+                name: String = "",
+                type: String = "",
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int,
+                isVisible: Boolean = true,
+                gid: Long = 0L,
+                properties: Map<String, Property> = emptyMap()
+        ): Object
     }
 
     override val properties: MutableMap<String, Property> = hashMapOf()

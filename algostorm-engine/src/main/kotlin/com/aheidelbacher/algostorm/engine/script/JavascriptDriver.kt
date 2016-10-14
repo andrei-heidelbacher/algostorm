@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
 /**
  * An interpreter of Javascript files using Mozilla Rhino.
  *
- * @property loader the object used to load scripts into input streams
+ * @property loader the mapper used to load script paths into input streams
  */
 class JavascriptDriver(
         private var loader: ((String) -> InputStream)?
@@ -45,21 +45,17 @@ class JavascriptDriver(
         }
     }
 
-    private var isReleased = false
     private var scope: ScriptableObject? = executeWithContext {
         initStandardObjects()
     }
 
     @Throws(FileNotFoundException::class)
     override fun eval(scriptSource: String) {
-        check(!isReleased) {
-            "Can't evaluate script after scripting engine is released!"
-        }
         loader?.invoke(scriptSource)?.let(::InputStreamReader)?.use { reader ->
             executeWithContext {
                 evaluateReader(scope, reader, scriptSource, 1, null)
             }
-        }
+        } ?: error("Can't evaluate script after releasing the script driver!")
     }
 
     override fun <T : Any> invokeFunction(
@@ -67,20 +63,22 @@ class JavascriptDriver(
             returnType: KClass<T>,
             vararg args: Any?
     ): T? {
-        check(!isReleased) {
-            "Can't invoke script function after scripting engine is released!"
-        }
+        val function = scope?.get(functionName, scope) as Function? ?: error(
+                "Can't invoke function after releasing the script driver!"
+        )
         return returnType.java.cast(Context.jsToJava(
-                executeWithContext {
-                    val function = scope?.get(functionName, scope) as Function?
-                    function?.call(this, scope, scope, args)
-                },
+                executeWithContext { function.call(this, scope, scope, args) },
                 returnType.java
         ))
     }
 
+    /**
+     * Releases all resources acquired by this driver.
+     *
+     * Invoking any method after this driver was released will throw an
+     * [IllegalStateException].
+     */
     override fun release() {
-        isReleased = true
         loader = null
         scope = null
     }

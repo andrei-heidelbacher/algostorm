@@ -18,7 +18,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
-import com.aheidelbacher.algostorm.engine.graphics.Matrix
+import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
 const val TOLERANCE: Float = 1e-7F
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems
+package com.aheidelbacher.algostorm.systems.input
 
 import com.aheidelbacher.algostorm.engine.input.InputReader
 import com.aheidelbacher.algostorm.event.Event

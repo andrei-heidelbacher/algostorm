@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems
+package com.aheidelbacher.algostorm.systems.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
-import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.File
 
 import java.io.FileNotFoundException
 

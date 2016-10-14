@@ -21,26 +21,12 @@ import java.io.FileNotFoundException
 import kotlin.reflect.KClass
 
 /**
- * An object that can evaluate scripts and run named functions from previously
- * evaluated scripts.
+ * An interpreter that can evaluate scripts and invoke named functions contained
+ * in previously evaluated scripts.
  */
 interface ScriptEngine {
     companion object {
-        /**
-         * Executes the script function with the given [functionName] with
-         * the specified arguments and returns its result.
-         *
-         * @param T the expected type of the result
-         * @param functionName the name of the script function that should be
-         * executed
-         * @param args the script function parameters
-         * @return the script result, or `null` if it doesn't return anything.
-         * @throws IllegalArgumentException if the given [functionName] is not
-         * available to this engine
-         * @throws ClassCastException if the result couldn't be converted to the
-         * type [T]
-         * @throws IllegalStateException if this scripting engine was released
-         */
+        /** Inline utility which delegates to [ScriptEngine.invokeFunction]. */
         inline fun <reified T : Any> ScriptEngine.invokeFunction(
                 functionName: String,
                 vararg args: Any?
@@ -48,13 +34,15 @@ interface ScriptEngine {
     }
 
     /**
-     * Executes the script at the given path. Every variable and function
-     * declaration in this script should be available to future [invokeFunction]
-     * calls.
+     * Executes the script at the given path.
+     *
+     * Every variable and function declaration in this script should be
+     * available to future [invokeFunction] calls.
+     *
+     * Paths are relative to a specialized location of script resources.
      *
      * @param scriptSource the path where the script is found
      * @throws FileNotFoundException if the given script doesn't exist
-     * @throws IllegalStateException if this scripting engine was released
      */
     @Throws(FileNotFoundException::class)
     fun eval(scriptSource: String): Unit
@@ -72,7 +60,6 @@ interface ScriptEngine {
      * available to this engine
      * @throws ClassCastException if the result couldn't be converted to the
      * [returnType]
-     * @throws IllegalStateException if this scripting engine was released
      */
     fun <T : Any> invokeFunction(
             functionName: String,

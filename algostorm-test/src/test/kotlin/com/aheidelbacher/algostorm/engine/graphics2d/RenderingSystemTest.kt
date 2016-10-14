@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics
+package com.aheidelbacher.algostorm.engine.graphics2d
 
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.systems.RenderingSystem.Companion.isVisible
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Companion.isVisible
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
@@ -32,7 +32,7 @@ import com.aheidelbacher.algostorm.state.TileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.systems.RenderingSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
 class RenderingSystemTest {
