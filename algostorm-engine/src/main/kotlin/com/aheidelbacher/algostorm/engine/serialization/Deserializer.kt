@@ -7,10 +7,18 @@ import kotlin.reflect.KClass
 
 /** A deserializer of non-generic objects. */
 interface Deserializer {
+    companion object {
+        /** Inline utility method. */
+        @Throws(IOException::class)
+        inline fun <reified T : Any> Deserializer.readValue(
+                inputStream: InputStream
+        ): T = readValue(inputStream, T::class)
+    }
+
     /**
      * Deserializers an object of the given type from the given stream.
      *
-     * @param src the stream from which the object is deserialized
+     * @param inputStream the stream from which the object is deserialized
      * @param type the class of the deserialized object type
      * @param T the type of the deserialized object type
      * @return the deserialized object
@@ -18,10 +26,10 @@ interface Deserializer {
      * errors
      */
     @Throws(IOException::class)
-    fun <T : Any> readValue(src: InputStream, type: Class<T>): T
+    fun <T : Any> readValue(inputStream: InputStream, type: Class<T>): T
 
     /** Utility method override. */
     @Throws(IOException::class)
-    fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
-            readValue(src, type.java)
+    fun <T : Any> readValue(inputStream: InputStream, type: KClass<T>): T =
+            readValue(inputStream, type.java)
 }

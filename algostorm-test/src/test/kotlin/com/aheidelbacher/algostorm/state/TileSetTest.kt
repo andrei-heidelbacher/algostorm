@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.state
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.TileSet.Tile
@@ -28,10 +29,11 @@ import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 
 class TileSetTest {
-    val fileStream = FileInputStream(
+    private val jsonDriver = JsonDriver()
+    private val fileStream = FileInputStream(
             java.io.File("src/test/resources/testTileSet.json")
     )
-    val tileSet = TileSet(
+    private val tileSet = TileSet(
             name = "world",
             tileWidth = 24,
             tileHeight = 24,
@@ -59,16 +61,16 @@ class TileSetTest {
 
     @Test
     fun testTileSetDeserialization() {
-        val actualTileSet = JsonDriver.readValue<TileSet>(fileStream)
+        val actualTileSet = jsonDriver.readValue<TileSet>(fileStream)
         assertEquals(tileSet, actualTileSet)
     }
 
     @Test
     fun testTileSetSerialization() {
         val bos = ByteArrayOutputStream()
-        JsonDriver.writeValue(bos, tileSet)
-        val actualTileSet = JsonDriver.readValue<TileSet>(
-                src = bos.toByteArray().inputStream()
+        jsonDriver.writeValue(bos, tileSet)
+        val actualTileSet = jsonDriver.readValue<TileSet>(
+                inputStream = bos.toByteArray().inputStream()
         )
         assertEquals(tileSet, actualTileSet)
     }

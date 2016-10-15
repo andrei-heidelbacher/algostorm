@@ -19,28 +19,27 @@ package com.aheidelbacher.algostorm.engine
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 
-class EngineMockTest : EngineTest(EngineMock()) {
-    private fun getState(): List<Int> {
-        val outputStream = ByteArrayOutputStream()
-        engine.serializeState(outputStream)
-        val inputStream = outputStream.toByteArray().inputStream()
-        return JsonDriver.readValue<List<Int>>(inputStream)
-    }
+class EngineMockTest : EngineTest() {
+    override fun createEngine(): EngineMock = EngineMock()
 
-    override fun getElapsedFrames(): Int = getState().size
+    private val engine = createEngine()
 
     @Test(timeout = MAX_TIME_LIMIT)
     fun testSerializeState() {
         engine.start()
         repeat(1000) {
-            val state = getState()
-            assertEquals((0 until state.size).toList(), state)
+            val bos = ByteArrayOutputStream()
+            engine.serializeState(bos)
+            val state = JsonDriver().readValue<EngineMock.State>(
+                    inputStream = bos.toByteArray().inputStream()
+            )
+            assertEquals(engine.serializedState, state)
         }
         engine.stop()
     }
@@ -50,28 +49,6 @@ class EngineMockTest : EngineTest(EngineMock()) {
         engine.start()
         Thread.sleep(1000)
         engine.shutdown()
-        assertEquals(0, getState().size)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun testCreateEngineWithZeroMillisPerUpdateShouldThrow() {
-        object : Engine(0) {
-            override fun onShutdown() {}
-            override fun onHandleInput() {}
-            override fun onRender() {}
-            override fun onUpdate() {}
-            override fun onSerializeState(outputStream: OutputStream) {}
-        }
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun testCreateEngineWithNegativeMillisPerUpdateShouldThrow() {
-        object : Engine(-25) {
-            override fun onShutdown() {}
-            override fun onHandleInput() {}
-            override fun onRender() {}
-            override fun onUpdate() {}
-            override fun onSerializeState(outputStream: OutputStream) {}
-        }
+        assertEquals(0, engine.state.values.size)
     }
 }

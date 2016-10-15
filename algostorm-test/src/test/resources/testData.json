@@ -5,7 +5,7 @@
   },
   "testProperties": {
     "inner": {
-      "@class": "com.aheidelbacher.algostorm.engine.serialization.TestDataMock$InnerTestDataMock",
+      "@class": "com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock$InnerTestDataMock",
       "testField": ""
     },
     "number": 5,

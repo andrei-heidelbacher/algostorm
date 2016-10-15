@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.script
+package com.aheidelbacher.algostorm.systems.script
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.state.File
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScriptWithResult
 import com.aheidelbacher.algostorm.test.engine.script.ScriptResult
 
 import java.io.FileInputStream
@@ -39,7 +41,7 @@ class ScriptingSystemTest {
     fun testRunScript() {
         val id = 5
         val value = "five"
-        val event = ScriptingSystem.RunScript(FUNCTION_NAME, id, value)
+        val event = RunScript(FUNCTION_NAME, id, value)
         system.onRunScript(event)
     }
 
@@ -48,7 +50,7 @@ class ScriptingSystemTest {
         val id = 5
         val value = "five"
         var isOk = false
-        val event = ScriptingSystem.RunScriptWithResult(
+        val event = RunScriptWithResult(
                 FUNCTION_NAME,
                 ScriptResult::class,
                 id,

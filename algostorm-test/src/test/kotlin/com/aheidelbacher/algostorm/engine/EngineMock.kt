@@ -16,14 +16,33 @@
 
 package com.aheidelbacher.algostorm.engine
 
+import com.aheidelbacher.algostorm.engine.input.InputSocket
+import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
+import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverMock
+import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
 import java.io.OutputStream
 
-class EngineMock : Engine(25) {
+class EngineMock : Engine(
+        audioDriver = AudioDriverMock(),
+        graphicsDriver = GraphicsDriverMock(),
+        inputDriver = InputSocket<Any>(),
+        scriptDriver = JavascriptDriver { getResourceStream(it) },
+        serializationDriver = JsonDriver()
+) {
+    data class State(val values: List<Int>)
+
     private var i = 0
     private var registeredValues = mutableListOf<Int>()
-    private var state = 0
+    private var stage = 0
+    val state: State = State(registeredValues)
+
+    override var millisPerUpdate: Int = 25
+
+    override fun onStart() {}
+
+    override fun onStop() {}
 
     override fun onShutdown() {
         i = 0
@@ -31,22 +50,26 @@ class EngineMock : Engine(25) {
     }
 
     override fun onRender() {
-        require(state == 0) { "Invalid render call!" }
-        state = 1
+        require(stage == 0) { "Invalid render call!" }
+        stage = 1
     }
 
     override fun onHandleInput() {
-        require(state == 1) { "Invalid handle input call!" }
-        state = 2
+        require(stage == 1) { "Invalid handle input call!" }
+        stage = 2
     }
 
     override fun onUpdate() {
-        require(state == 2) { "Invalid update call!" }
-        state = 0
+        require(stage == 2) { "Invalid update call!" }
+        stage = 0
         registeredValues.add(i++)
     }
 
+    @Volatile lateinit var serializedState: State
+        private set
+
     override fun onSerializeState(outputStream: OutputStream) {
-        JsonDriver.writeValue(outputStream, registeredValues)
+        serializedState = State(registeredValues.toList())
+        serializationDriver.writeValue(outputStream, serializedState)
     }
 }

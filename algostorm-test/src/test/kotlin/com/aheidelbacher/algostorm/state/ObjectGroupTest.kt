@@ -16,12 +16,13 @@
 
 package com.aheidelbacher.algostorm.state
 
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-class ObjectManagerTest {
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+
+class ObjectGroupTest {
     companion object {
         val OBJECT_GROUP_NAME = "objectGroup"
         val TILE_WIDTH = 32
@@ -57,7 +58,7 @@ class ObjectManagerTest {
     @Before
     fun setUp() {
         for (id in FIRST_ID + OBJECT_COUNT / 2 until FIRST_ID + OBJECT_COUNT) {
-            objectGroup.add(map.createObject(
+            objectGroup.add(map.create(
                     x = id * TILE_WIDTH,
                     y = id * TILE_HEIGHT,
                     width = TILE_WIDTH,

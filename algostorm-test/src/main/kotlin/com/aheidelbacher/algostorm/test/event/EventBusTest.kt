@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.test.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -34,7 +35,16 @@ import com.aheidelbacher.algostorm.event.Subscriber
  * @property eventBus the event bus instance that should be tested
  */
 @Ignore
-abstract class EventBusTest(protected val eventBus: EventBus) {
+abstract class EventBusTest {
+    private lateinit var eventBus: EventBus
+
+    protected abstract fun createEventBus(): EventBus
+
+    @Before
+    fun initializeEventBus() {
+        eventBus = createEventBus()
+    }
+
     @Test
     fun publishPostsShouldNotifySubscribers() {
         val postedEvent = EventMock(5)

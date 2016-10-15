@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.test.engine
 
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -30,17 +31,22 @@ import java.io.FileNotFoundException
  *
  * In order to test common functionality to all engines, you may implement this
  * class and provide a concrete engine instance to test.
- *
- * @property engine the engine instance that should be tested
  */
 @Ignore
-abstract class EngineTest(protected val engine: Engine) {
+abstract class EngineTest {
     companion object {
         const val MAX_TIME_LIMIT: Long = 5000
-        const val FPS_TOLERANCE: Double = 0.1
     }
 
-    protected abstract fun getElapsedFrames(): Int
+    private lateinit var engine: Engine
+
+    /** Factory method to create concrete [Engine] instances. */
+    protected abstract fun createEngine(): Engine
+
+    @Before
+    fun initializeEngine() {
+        engine = createEngine()
+    }
 
     @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantStop() {
@@ -84,18 +90,6 @@ abstract class EngineTest(protected val engine: Engine) {
         engine.start()
         Thread.sleep(1000)
         engine.stop()
-    }
-
-    @Test(timeout = MAX_TIME_LIMIT + 10 * 1000)
-    fun testAverageFpsShouldEqualTargetFps() {
-        repeat(10) {
-            engine.start()
-            Thread.sleep(1000)
-            engine.stop()
-        }
-        val targetFps = 1000.0 / engine.millisPerUpdate
-        val fps = 1.0 * getElapsedFrames() / 10.0
-        assertEquals(1.0, fps / targetFps, FPS_TOLERANCE)
     }
 
     @Test(expected = FileNotFoundException::class)

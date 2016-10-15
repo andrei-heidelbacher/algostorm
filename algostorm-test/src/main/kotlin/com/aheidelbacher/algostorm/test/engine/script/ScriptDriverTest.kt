@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.script
 
+import com.aheidelbacher.algostorm.engine.script.ScriptDriver
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Ignore
@@ -27,44 +28,49 @@ import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFu
 import kotlin.reflect.KClass
 
 /**
- * An abstract test class for a [ScriptEngine].
+ * An abstract test class for a [ScriptDriver].
  *
  * In order to test common functionality to all script engines, you may
  * implement this class and provide a concrete script engine instance to test.
- *
- * @property scriptEngine the script engine instance that should be tested
- * @property scriptPaths the paths to the scripts which will be evaluated before
- * any tests are run
- * @property voidFunctionName the name of a function which shouldn't receive any
- * parameters and should return void
- * @property resultFunctionName the name of a function which should receive an
- * integer `id` and a string `value` and return a [ScriptResult] with the same
- * `id` and `value` as the received parameters
  */
 @Ignore
-abstract class ScriptEngineTest(
-        protected val scriptEngine: ScriptEngine,
-        protected val scriptPaths: List<String>,
-        protected val voidFunctionName: String,
-        protected val resultFunctionName: String
-) {
+abstract class ScriptDriverTest {
+    protected lateinit var scriptDriver: ScriptDriver
+
+    protected abstract fun createScriptDriver(): ScriptDriver
+
+    /** The scripts which will be evaluated before any tests are run. */
+    protected abstract val scriptPaths: List<String>
+
     /**
-     * Utility method that delegates the call to the [scriptEngine].
+     * The name of a function which shouldn't receive any parameters and should
+     * return void.
      */
+    protected abstract val voidFunctionName: String
+
+    /**
+     * The name of a function which should receive an integer `id` and a string
+     * `value` and return a [ScriptResult] with the same `id` and `value` as the
+     * received parameters.
+     */
+    protected abstract val resultFunctionName: String
+
+    /** Utility method that delegates the call to the [scriptDriver]. */
     protected fun invokeFunction(
             functionName: String,
             returnType: KClass<*>,
             vararg args: Any?
-    ): Any? = scriptEngine.invokeFunction(functionName, returnType, *args)
+    ): Any? = scriptDriver.invokeFunction(functionName, returnType, *args)
 
     @Before
     fun evalScripts() {
-        scriptPaths.forEach { scriptEngine.eval(it) }
+        scriptDriver = createScriptDriver()
+        scriptPaths.forEach { scriptDriver.eval(it) }
     }
 
     @Test
     fun testVoidScript() {
-        scriptEngine.invokeFunction<Any>(voidFunctionName)
+        scriptDriver.invokeFunction<Any>(voidFunctionName)
     }
 
     @Test

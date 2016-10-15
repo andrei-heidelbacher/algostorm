@@ -246,23 +246,19 @@ abstract class Engine(
      *
      * If the join succeeds, the `status` will be set to [Status.STOPPED].
      *
-     * If this engine attempts to stop itself, it will signal to stop processing
-     * updates, but will not join. As a consequence, subsequent calls to
-     * `status` may return `Status.STOPPING`.
-     *
      * @throws InterruptedException if the current thread is interrupted while
      * waiting for this engine to stop
+     * @throws IllegalStateException if this engine attempts to stop itself,
+     * because the engine thread can't join itself
      */
     @Throws(InterruptedException::class)
     fun stop() {
         synchronized(statusLock) {
             internalStatus.compareAndSet(Status.RUNNING, Status.STOPPING)
-            check (process != Thread.currentThread()) {
+            check(process != Thread.currentThread()) {
                 "Engine can't stop itself!"
             }
-            if (process != Thread.currentThread()) {
-                process?.join()
-            }
+            process?.join()
             process = null
         }
         synchronized(stateLock) {

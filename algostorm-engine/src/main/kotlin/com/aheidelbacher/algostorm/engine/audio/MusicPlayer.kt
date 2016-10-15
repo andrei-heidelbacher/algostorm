@@ -22,7 +22,8 @@ interface MusicPlayer {
     fun loadMusic(musicSource: String): Unit
 
     /**
-     * Asynchronously plays the given music resource.
+     * Stops the previously playing music and asynchronously plays the given
+     * music resource.
      *
      * @param musicSource the location of the sound which should be played
      * @param loop whether the sound should be looped or not

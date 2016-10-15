@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.serialization
+package com.aheidelbacher.algostorm.test.engine.serialization
 
 data class TestDataMock(
         val primitiveTestField: Int,

@@ -18,4 +18,6 @@ package com.aheidelbacher.algostorm.event
 
 import com.aheidelbacher.algostorm.test.event.EventBusTest
 
-class EventQueueTest : EventBusTest(EventQueue())
+class EventQueueTest : EventBusTest() {
+    override fun createEventBus(): EventQueue = EventQueue()
+}

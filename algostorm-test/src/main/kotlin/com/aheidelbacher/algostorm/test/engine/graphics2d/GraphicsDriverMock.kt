@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
-import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
 import java.util.LinkedList
 import java.util.Queue
 
-class CanvasMock : Canvas {
+class GraphicsDriverMock : GraphicsDriver {
     private interface DrawCall {
         data class Bitmap(
                 val image: String,
@@ -79,11 +79,11 @@ class CanvasMock : Canvas {
         bitmaps.add(imageSource)
     }
 
-    override fun unloadBitmaps() {
+    override fun release() {
         bitmaps.clear()
     }
 
-    override fun lock() {
+    override fun lockCanvas() {
         require(!isLocked) { "Canvas is already locked!" }
         isLocked = true
     }
@@ -123,7 +123,7 @@ class CanvasMock : Canvas {
         queue.add(DrawCall.Rectangle(color, width, height, m))
     }
 
-    override fun unlockAndPost() {
+    override fun unlockAndPostCanvas() {
         require(isLocked) { "Canvas is not locked!" }
         isLocked = false
     }
