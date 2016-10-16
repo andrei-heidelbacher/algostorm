@@ -16,39 +16,29 @@
 
 package com.aheidelbacher.algostorm.systems.input
 
-import com.aheidelbacher.algostorm.engine.input.InputReader
+import com.aheidelbacher.algostorm.engine.input.InputDriver
+import com.aheidelbacher.algostorm.engine.input.InputListener
+import com.aheidelbacher.algostorm.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-/**
- * A system which handles user input.
- *
- * @param T the input type
- * @property inputReader the input source from which input is received. Input
- * will be read from the private engine thread and the provided implementation
- * should be thread-safe.
- */
-abstract class AbstractInputSystem<in T : Any>(
-        private val inputReader: InputReader<T>
-) : Subscriber {
+/** A system which handles user input. */
+abstract class AbstractInputSystem(
+        private val inputDriver: InputDriver
+) : Subscriber, InputListener {
     /** An event which signals that user input should be processed. */
     object HandleInput : Event
 
-    /**
-     * Handles the most recent input from the [inputReader].
-     *
-     * @param input the retrieved input
-     */
-    protected abstract fun handleInput(input: T): Unit
+    private val pollingListener = PollingInputListener()
 
     /**
-     * Upon receiving a [HandleInput] event, the [inputReader] is checked for
-     * new input and the [handleInput] method is called.
+     * Upon receiving a [HandleInput] event, the most recent user input is
+     * processed.
      *
      * @param event the [HandleInput] event.
      */
     @Subscribe fun onHandleInput(event: HandleInput) {
-        inputReader.readInput()?.let { handleInput(it) }
+        pollingListener.pollMostRecent(this)
     }
 }

@@ -1,6 +1,7 @@
 package com.aheidelbacher.algostorm.test.engine.serialization
 
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -12,15 +13,21 @@ import java.io.InputStream
 
 @Ignore
 abstract class SerializationDriverTest {
+    private lateinit var serializationDriver: SerializationDriver
+
     protected abstract fun createSerializationDriver(): SerializationDriver
 
     protected abstract val testDataMock: TestDataMock
 
     protected abstract val inputStream: InputStream
 
+    @Before
+    fun initializeSerializationDriver() {
+        serializationDriver = createSerializationDriver()
+    }
+
     @Test
     fun testDataInlineDeserialization() {
-        val serializationDriver = createSerializationDriver()
         assertEquals(
                 testDataMock,
                 serializationDriver.readValue<TestDataMock>(inputStream)
@@ -29,7 +36,6 @@ abstract class SerializationDriverTest {
 
     @Test
     fun testDataDeserialization() {
-        val serializationDriver = createSerializationDriver()
         assertEquals(
                 testDataMock,
                 serializationDriver.readValue(inputStream, TestDataMock::class)
@@ -38,7 +44,6 @@ abstract class SerializationDriverTest {
 
     @Test
     fun testDataSerialization() {
-        val serializationDriver = createSerializationDriver()
         val byteStream = ByteArrayOutputStream()
         serializationDriver.writeValue(byteStream, testDataMock)
         val inputStream = byteStream.toByteArray().inputStream()

@@ -41,7 +41,7 @@ class EventQueue : EventBus {
     private val subscribers = hashMapOf<Subscriber, Array<Pair<Method, Class<*>>>>()
     private val eventQueue = LinkedList<Event>()
 
-    override fun subscribe(subscriber: Subscriber): Subscription {
+    override fun subscribe(subscriber: Subscriber) {
         val handlers = subscriber.javaClass.methods.filter {
             it.isAnnotationPresent(Subscribe::class.java)
         }
@@ -49,24 +49,17 @@ class EventQueue : EventBus {
         subscribers[subscriber] = handlers.map {
             it to it.parameterTypes[0]
         }.toTypedArray()
-        return object : Subscription {
-            private var isCancelled = false
-
-            override fun unsubscribe() {
-                check(!isCancelled) {
-                    "Can't cancel the same subscription multiple times!"
-                }
-                subscribers.remove(subscriber)
-                isCancelled = true
-            }
-        }
     }
 
-    override fun <T : Event> post(event: T) {
+    override fun unsubscribe(subscriber: Subscriber) {
+        subscribers.remove(subscriber)
+    }
+
+    override fun post(event: Event) {
         eventQueue.add(event)
     }
 
-    override fun <T : Event> publish(event: T) {
+    override fun publish(event: Event) {
         for ((subscriber, handlers) in subscribers) {
             for ((handler, parameterType) in handlers) {
                 if (parameterType.isInstance(event)) {

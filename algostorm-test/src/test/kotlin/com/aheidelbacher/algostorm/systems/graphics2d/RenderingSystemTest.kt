@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.engine.graphics2d
+package com.aheidelbacher.algostorm.systems.graphics2d
 
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
@@ -33,12 +34,12 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
 import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Companion.isVisible
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
 class RenderingSystemTest {
-    val graphicsDriver = GraphicsDriverMock()
+    val graphicsDriver = GraphicsDriverMock(320, 230)
     val width = 12
     val height = 12
     val tileWidth = 24
@@ -46,17 +47,12 @@ class RenderingSystemTest {
     val image = Image(File("testImage.png"), tileWidth, tileHeight)
     val cameraX = 44
     val cameraY = 60
-    val camera = run {
-        graphicsDriver.lockCanvas()
-        val rect = Rectangle(
-                x = cameraX - graphicsDriver.width / 2,
-                y = cameraY - graphicsDriver.height / 2,
-                width = graphicsDriver.width,
-                height = graphicsDriver.height
-        )
-        graphicsDriver.unlockAndPostCanvas()
-        rect
-    }
+    val camera = Rectangle(
+            x = cameraX - graphicsDriver.width / 2,
+            y = cameraY - graphicsDriver.height / 2,
+            width = graphicsDriver.width,
+            height = graphicsDriver.height
+    )
 
     fun makeMap(
             tileSets: List<TileSet> = listOf(TileSet(
@@ -76,7 +72,7 @@ class RenderingSystemTest {
             backgroundColor = Color("#ffffffff"),
             tileSets = tileSets,
             layers = layers,
-            nextObjectId = layers.filterIsInstance<Layer.ObjectGroup>()
+            nextObjectId = layers.filterIsInstance<ObjectGroup>()
                     .flatMap { it.objectSet }.maxBy { it.id }?.id?.plus(1) ?: 1
     )
 
@@ -98,14 +94,14 @@ class RenderingSystemTest {
         )
         val map = makeMap(layers = listOf(tileLayer))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
-        graphicsDriver.verifyColor(-1)
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.checkColor(-1)
         for (ty in 0 until height) {
             for (tx in 0 until width) {
                 val y = ty * tileHeight
                 val x = tx * tileWidth
                 if (isVisible(camera, 1L, x, y, tileWidth, tileHeight)) {
-                    graphicsDriver.verifyBitmap(
+                    graphicsDriver.checkBitmap(
                             image = image.source.path,
                             x = 0,
                             y = 0,
@@ -119,7 +115,7 @@ class RenderingSystemTest {
                 }
             }
         }
-        graphicsDriver.verifyEmptyDrawQueue()
+        graphicsDriver.checkEmptyDrawQueue()
     }
 
     @Test
@@ -137,9 +133,9 @@ class RenderingSystemTest {
         )
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
-        graphicsDriver.verifyColor(-1)
-        graphicsDriver.verifyRectangle(
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.checkColor(-1)
+        graphicsDriver.checkRectangle(
                 color = 255,
                 width = tileWidth,
                 height = tileHeight,
@@ -148,7 +144,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat()
                 )
         )
-        graphicsDriver.verifyEmptyDrawQueue()
+        graphicsDriver.checkEmptyDrawQueue()
     }
 
     @Test
@@ -166,9 +162,9 @@ class RenderingSystemTest {
         )
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
-        graphicsDriver.verifyColor(-1)
-        graphicsDriver.verifyBitmap(
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.checkColor(-1)
+        graphicsDriver.checkBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -179,7 +175,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat() - tileHeight + 1
                 )
         )
-        graphicsDriver.verifyEmptyDrawQueue()
+        graphicsDriver.checkEmptyDrawQueue()
     }
 
     @Test
@@ -197,9 +193,9 @@ class RenderingSystemTest {
         )
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
-        graphicsDriver.verifyColor(-1)
-        graphicsDriver.verifyBitmap(
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.checkColor(-1)
+        graphicsDriver.checkBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -210,7 +206,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat() + 1
                 )
         )
-        graphicsDriver.verifyEmptyDrawQueue()
+        graphicsDriver.checkEmptyDrawQueue()
     }
 
     @Test
@@ -228,9 +224,9 @@ class RenderingSystemTest {
         )
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(RenderingSystem.Render(cameraX, cameraY))
-        graphicsDriver.verifyColor(-1)
-        graphicsDriver.verifyBitmap(
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.checkColor(-1)
+        graphicsDriver.checkBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -244,6 +240,6 @@ class RenderingSystemTest {
                                 dy = -camera.y.toFloat() + 1
                         )
         )
-        graphicsDriver.verifyEmptyDrawQueue()
+        graphicsDriver.checkEmptyDrawQueue()
     }
 }

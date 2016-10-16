@@ -40,7 +40,7 @@ abstract class EngineTest {
 
     private lateinit var engine: Engine
 
-    /** Factory method to create concrete [Engine] instances. */
+    /** Factory method to create engine instances. */
     protected abstract fun createEngine(): Engine
 
     @Before

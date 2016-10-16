@@ -2,4 +2,9 @@ package com.aheidelbacher.algostorm.engine.input
 
 import com.aheidelbacher.algostorm.engine.driver.Driver
 
-interface InputDriver<T: Any> : Driver, InputReader<T>, InputWriter<T>
+/** A driver that provides listening for input events. */
+interface InputDriver : Driver {
+    fun addListener(listener: InputListener): Unit
+
+    fun removeListener(listener: InputListener): Unit
+}

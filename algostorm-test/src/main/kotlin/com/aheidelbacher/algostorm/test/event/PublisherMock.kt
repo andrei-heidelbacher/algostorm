@@ -32,11 +32,11 @@ class PublisherMock : Publisher {
     private val postedQueue: Queue<Event> = LinkedList()
     private val publishedQueue: Queue<Event> = LinkedList()
 
-    override fun <T : Event> post(event: T) {
+    override fun post(event: Event) {
         postedQueue.add(event)
     }
 
-    override fun <T : Event> publish(event: T) {
+    override fun publish(event: Event) {
         publishedQueue.add(event)
     }
 
@@ -48,7 +48,7 @@ class PublisherMock : Publisher {
      * @throws IllegalStateException if the given event doesn't correspond to
      * the front of the queue
      */
-    fun verifyPosted(event: Event) {
+    fun checkPosted(event: Event) {
         val actualEvent = postedQueue.poll()
         val expectedEvent = event
         check(actualEvent == expectedEvent) {
@@ -67,7 +67,7 @@ class PublisherMock : Publisher {
      * @throws IllegalStateException if the given event doesn't correspond to
      * the front of the queue
      */
-    fun verifyPublished(event: Event) {
+    fun checkPublished(event: Event) {
         val actualEvent = publishedQueue.poll()
         val expectedEvent = event
         check(actualEvent == expectedEvent) {
@@ -82,7 +82,7 @@ class PublisherMock : Publisher {
      *
      * @throws IllegalStateException if the posted events queue is not empty
      */
-    fun verifyEmptyPostedQueue() {
+    fun checkEmptyPostedQueue() {
         check(postedQueue.isEmpty()) {
             "There were more events posted!\nFound: ${postedQueue.toList()}"
         }
@@ -93,7 +93,7 @@ class PublisherMock : Publisher {
      *
      * @throws IllegalStateException if the published events queue is not empty
      */
-    fun verifyEmptyPublishedQueue() {
+    fun checkEmptyPublishedQueue() {
         check(publishedQueue.isEmpty()) {
             "There were more events posted!\nFound: ${publishedQueue.toList()}"
         }

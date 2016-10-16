@@ -57,7 +57,7 @@ import kotlin.system.measureNanoTime
 abstract class Engine(
         protected val audioDriver: AudioDriver,
         protected val graphicsDriver: GraphicsDriver,
-        protected val inputDriver: InputDriver<*>,
+        protected val inputDriver: InputDriver,
         protected val scriptDriver: ScriptDriver = JavascriptDriver {
             getResourceStream(it)
         },

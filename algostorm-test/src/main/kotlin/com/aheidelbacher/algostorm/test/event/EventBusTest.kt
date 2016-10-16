@@ -76,6 +76,20 @@ abstract class EventBusTest {
         assertEquals(publishedEvent, handledEvent)
     }
 
+    @Test
+    fun publishAfterUnsubscribeShouldNotNotifySubscriber() {
+        val publishedEvent = EventMock(5)
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun handleEventMock(event: EventMock) {
+                fail()
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.unsubscribe(subscriber)
+        eventBus.publish(publishedEvent)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun subscribeMultipleParametersReceivedShouldThrow() {
         val subscriber = object : Subscriber {

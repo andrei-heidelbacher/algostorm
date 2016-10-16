@@ -22,7 +22,10 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import java.util.LinkedList
 import java.util.Queue
 
-class GraphicsDriverMock : GraphicsDriver {
+class GraphicsDriverMock(
+        override val width: Int,
+        override val height: Int
+) : GraphicsDriver {
     private interface DrawCall {
         data class Bitmap(
                 val image: String,
@@ -62,18 +65,6 @@ class GraphicsDriverMock : GraphicsDriver {
     private val bitmaps = mutableSetOf<String>()
     private var isLocked = false
     private val queue: Queue<DrawCall> = LinkedList()
-
-    override val width: Int
-        get() {
-            require(isLocked) { "Canvas is not locked!" }
-            return 320
-        }
-
-    override val height: Int
-        get() {
-            require(isLocked) { "Canvas is not locked!" }
-            return 230
-        }
 
     override fun loadBitmap(imageSource: String) {
         bitmaps.add(imageSource)
@@ -128,7 +119,7 @@ class GraphicsDriverMock : GraphicsDriver {
         isLocked = false
     }
 
-    fun verifyBitmap(
+    fun checkBitmap(
             image: String,
             x: Int,
             y: Int,
@@ -145,7 +136,7 @@ class GraphicsDriverMock : GraphicsDriver {
         }
     }
 
-    fun verifyColor(color: Int) {
+    fun checkColor(color: Int) {
         val actualCall = queue.poll()
         val expectedCall = DrawCall.Color(color)
         check(actualCall == expectedCall) {
@@ -155,7 +146,7 @@ class GraphicsDriverMock : GraphicsDriver {
         }
     }
 
-    fun verifyRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
+    fun checkRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
         val actualCall = queue.poll()
         val expectedCall =
                 DrawCall.Rectangle(color, width, height, matrix)
@@ -166,7 +157,7 @@ class GraphicsDriverMock : GraphicsDriver {
         }
     }
 
-    fun verifyClear() {
+    fun checkClear() {
         val actualCall = queue.poll()
         val expectedCall = DrawCall.Clear
         check(actualCall == expectedCall) {
@@ -176,7 +167,7 @@ class GraphicsDriverMock : GraphicsDriver {
         }
     }
 
-    fun verifyEmptyDrawQueue() {
+    fun checkEmptyDrawQueue() {
         check(queue.isEmpty()) { "There were more draw calls issued!!\n" }
     }
 }

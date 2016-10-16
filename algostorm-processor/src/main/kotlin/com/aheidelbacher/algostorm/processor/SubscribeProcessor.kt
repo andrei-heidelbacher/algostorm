@@ -130,7 +130,6 @@ class SubscribeProcessor : AbstractProcessor() {
             annotations.find { annotation ->
                 annotation.qualifiedName.contentEquals(SUBSCRIBE)
             }?.let { annotation ->
-                println("\n\n\n\n\n!!!!!!!!!!!!!!!!!\n$annotation")
                 roundEnv.getElementsAnnotatedWith(annotation).forEach { e ->
                     validateMethod(e)
                     validateEnclosingClass(e.enclosingElement)
