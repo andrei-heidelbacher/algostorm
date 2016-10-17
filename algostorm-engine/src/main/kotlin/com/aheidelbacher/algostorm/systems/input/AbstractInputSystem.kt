@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.input
 
-import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.engine.input.InputListener
+import com.aheidelbacher.algostorm.engine.input.InputSource
 import com.aheidelbacher.algostorm.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -25,12 +25,14 @@ import com.aheidelbacher.algostorm.event.Subscriber
 
 /** A system which handles user input. */
 abstract class AbstractInputSystem(
-        private val inputDriver: InputDriver
+        private val inputSource: InputSource
 ) : Subscriber, InputListener {
     /** An event which signals that user input should be processed. */
     object HandleInput : Event
 
-    private val pollingListener = PollingInputListener()
+    private val pollingListener = PollingInputListener().apply {
+        inputSource.addListener(this@apply)
+    }
 
     /**
      * Upon receiving a [HandleInput] event, the most recent user input is
