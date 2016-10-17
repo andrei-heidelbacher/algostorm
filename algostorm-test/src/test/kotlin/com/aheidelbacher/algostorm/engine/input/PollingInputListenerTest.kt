@@ -1,11 +1,12 @@
 package com.aheidelbacher.algostorm.engine.input
 
-import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+
+import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
 
 class PollingInputListenerTest {
     private val inputDriver = InputDriverMock()
