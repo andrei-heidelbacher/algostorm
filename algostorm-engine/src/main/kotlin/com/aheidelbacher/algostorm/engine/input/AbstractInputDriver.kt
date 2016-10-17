@@ -1,10 +1,13 @@
 package com.aheidelbacher.algostorm.engine.input
 
-import java.util.concurrent.ConcurrentSkipListSet
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 /** A basic input driver implementation that handles notifying listeners. */
 abstract class AbstractInputDriver : InputDriver {
-    private val listeners = ConcurrentSkipListSet<InputListener>()
+    private val listeners = Collections.newSetFromMap(
+            ConcurrentHashMap<InputListener, Boolean>()
+    )
 
     /**
      * Sends the given notifications to all listeners.
