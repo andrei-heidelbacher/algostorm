@@ -1,32 +1,17 @@
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.engine.input.InputDriver
-import com.aheidelbacher.algostorm.engine.input.InputListener
+import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
 
-class InputDriverMock : InputDriver {
-    private val listeners = mutableListOf<InputListener>()
-
-    override fun addListener(listener: InputListener) {
-        listeners.add(listener)
-    }
-
-    override fun removeListener(listener: InputListener) {
-        listeners.remove(listener)
-    }
-
-    override fun release() {
-        listeners.clear()
-    }
-
+class InputDriverMock : AbstractInputDriver() {
     fun touch(x: Int, y: Int) {
-        listeners.forEach { it.onTouch(x, y) }
+        notify { onTouch(x, y) }
     }
 
     fun key(keyCode: Int) {
-        listeners.forEach { it.onKey(keyCode) }
+        notify { onKey(keyCode) }
     }
 
     fun scroll(dx: Int, dy: Int) {
-        listeners.forEach { it.onScroll(dx, dy) }
+        notify { onScroll(dx, dy) }
     }
 }
