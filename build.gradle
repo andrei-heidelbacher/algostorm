@@ -19,12 +19,34 @@ subprojects {
         dependencies {
             classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
             classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
-            classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
-            classpath "com.android.tools.build:gradle:2.0.0"
         }
     }
 
     repositories {
         mavenCentral()
+    }
+
+    apply plugin: 'java'
+
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    }
+
+    jar {
+        from {
+            ["$rootDir/LICENSE", "$rootDir/NOTICE"]
+        }
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
     }
 }
