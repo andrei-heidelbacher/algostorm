@@ -4,4 +4,4 @@
 
 # IntelliJ IDEA
 .idea
-local.properties
+/local.properties

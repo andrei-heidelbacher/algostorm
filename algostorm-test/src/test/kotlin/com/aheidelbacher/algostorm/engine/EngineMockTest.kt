@@ -33,7 +33,7 @@ class EngineMockTest : EngineTest() {
     @Test(timeout = MAX_TIME_LIMIT)
     fun testSerializeState() {
         engine.start()
-        repeat(1000) {
+        repeat(100) {
             val bos = ByteArrayOutputStream()
             engine.serializeState(bos)
             val state = JsonDriver().readValue<EngineMock.State>(
