@@ -1,3 +1,9 @@
 language: java
 jdk:
  - openjdk7
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-24.0.2
+    - android-24

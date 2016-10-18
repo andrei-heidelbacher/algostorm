@@ -1,14 +1,30 @@
+apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+jar {
+    from {
+        ["$rootDir/LICENSE", "$rootDir/NOTICE"]
+    }
+}
+
 dependencies {
     compile project(':algostorm-engine')
-    compile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "junit:junit:$junit_version"
 }
 
 dokka {
     outputFormat = 'javadoc'
     outputDirectory = javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: dokka) {
@@ -17,5 +33,6 @@ task javadocJar(type: Jar, dependsOn: dokka) {
 }
 
 artifacts {
+    archives sourcesJar
     archives javadocJar
 }
