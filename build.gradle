@@ -1,6 +1,6 @@
 allprojects {
     group 'com.aheidelbacher'
-    version '0.1.62'
+    version '0.1.63'
 }
 
 subprojects {
@@ -21,7 +21,6 @@ subprojects {
             classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
             classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
             classpath "com.android.tools.build:gradle:2.0.0"
-            classpath "com.github.dcendents:android-maven-gradle-plugin:1.3"
         }
     }
 
