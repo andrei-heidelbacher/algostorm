@@ -58,19 +58,6 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         private val canvas: Canvas
 ) : Subscriber {
     companion object {
-        @JvmStatic fun isVisible(
-                camera: Rectangle,
-                gid: Long,
-                x: Int,
-                y: Int,
-                width: Int,
-                height: Int
-        ): Boolean = gid != 0L &&
-                camera.intersects(x, y - height + 1, width, height)
-
-        @JvmStatic fun Object.isVisible(camera: Rectangle): Boolean =
-                isVisible && camera.intersects(x, y - height + 1, width, height)
-
         @JvmStatic fun MapObject.getViewport(
                 gid: Long,
                 currentTimeMillis: Long
@@ -126,6 +113,9 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private var currentTimeMillis = 0L
 
     private fun drawGid(gid: Long, x: Int, y: Int, width: Int, height: Int) {
+        if (gid == 0L) {
+            return
+        }
         val tileSet = map.getTileSet(gid)
         val viewport = map.getViewport(gid, currentTimeMillis)
         matrix.reset()
@@ -157,20 +147,20 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         )
     }
 
-    private fun Object.draw(color: Color?, offsetX: Int, offsetY: Int) {
-        if (gid != 0L) {
-            drawGid(gid, x + offsetX, y + offsetY, width, height)
-        } else if (color != null) {
+    private fun Object.draw(color: Color?, offX: Int, offY: Int) {
+        if (isVisible && gid != 0L) {
+            drawGid(gid, x + offX, y + offY, width, height)
+        } else if (isVisible && color != null) {
             matrix.reset()
             matrix.postTranslate(
-                    dx = offsetX + x.toFloat(),
-                    dy = offsetY + y.toFloat() - height + 1
+                    dx = offX + x.toFloat(),
+                    dy = offY + y.toFloat() - height + 1
             )
             canvas.drawRectangle(color.color, width, height, matrix)
         }
     }
 
-    private fun TileLayer.draw(camera: Rectangle) {
+    private fun TileLayer.draw(offX: Int, offY: Int) {
         for (ty in yRange) {
             for (tx in xRange) {
                 val x = tx * map.tileWidth
@@ -178,45 +168,28 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 val gid = data[ty * map.width + tx]
                 if (gid != 0L) {
                     val tileSet = map.getTileSet(gid)
-                    if (isVisible(
-                            camera = camera,
-                            gid = gid,
-                            x = x + offsetX,
-                            y = y + offsetY,
-                            width = tileSet.tileWidth,
-                            height = tileSet.tileHeight
-                    )) {
-                        drawGid(
-                                gid = gid,
-                                x = x + offsetX - camera.x,
-                                y = y + offsetY - camera.y,
-                                width = tileSet.tileWidth,
-                                height = tileSet.tileHeight
-                        )
-                    }
+                    val tw = tileSet.tileWidth
+                    val th = tileSet.tileHeight
+                    drawGid(gid, x + offX + offsetX, y + offY + offsetY, tw, th)
                 }
             }
         }
     }
 
-    private fun ObjectGroup.draw(camera: Rectangle) {
+    private fun ObjectGroup.draw(offX: Int, offY: Int) {
         when (drawOrder) {
-            TOP_DOWN -> objectSet.filter {
-                it.isVisible(camera)
-            }.sortedWith(comparator)
+            TOP_DOWN -> objectSet.sortedWith(comparator)
             INDEX -> objectSet
         }.forEach {
-            if (it.isVisible(camera)) {
-                it.draw(color, offsetX - camera.x, offsetY - camera.y)
-            }
+            it.draw(color, offX + offsetX, offY + offsetY)
         }
     }
 
-    private fun Layer.draw(camera: Rectangle) {
+    private fun Layer.draw(offX: Int, offY: Int) {
         if (isVisible) {
             when (this) {
-                is TileLayer -> draw(camera)
-                is ObjectGroup -> draw(camera)
+                is TileLayer -> draw(offX + offsetX, offY + offsetY)
+                is ObjectGroup -> draw(offX + offsetX, offY + offsetY)
             }
         }
     }
@@ -240,14 +213,13 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     @Subscribe fun onRender(event: Render) {
         val cameraWidth = canvas.width
         val cameraHeight = canvas.height
+        val cameraX = event.cameraX - canvas.width / 2
+        val cameraY = event.cameraY - canvas.height / 2
         if (cameraWidth > 0 && cameraHeight > 0) {
-            val cameraX = event.cameraX - cameraWidth / 2
-            val cameraY = event.cameraY - cameraHeight / 2
-            val camera = Rectangle(cameraX, cameraY, cameraWidth, cameraHeight)
             map.backgroundColor?.color?.let {
                 canvas.drawColor(it)
             } ?: canvas.clear()
-            map.layers.forEach { it.draw(camera) }
+            map.layers.forEach { it.draw(-cameraX, -cameraY) }
         }
     }
 }

@@ -34,7 +34,6 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
 import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Companion.isVisible
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
@@ -100,19 +99,17 @@ class RenderingSystemTest {
             for (tx in 0 until width) {
                 val y = ty * tileHeight
                 val x = tx * tileWidth
-                if (isVisible(camera, 1L, x, y, tileWidth, tileHeight)) {
-                    graphicsDriver.checkBitmap(
-                            image = image.source.path,
-                            x = 0,
-                            y = 0,
-                            width = tileWidth,
-                            height = tileHeight,
-                            matrix = Matrix.identity().postTranslate(
-                                    dx = x - camera.x.toFloat(),
-                                    dy = y - tileHeight + 1 - camera.y.toFloat()
-                            )
-                    )
-                }
+                graphicsDriver.checkBitmap(
+                        image = image.source.path,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight,
+                        matrix = Matrix.identity().postTranslate(
+                                dx = x - camera.x.toFloat(),
+                                dy = y - tileHeight + 1 - camera.y.toFloat()
+                        )
+                )
             }
         }
         graphicsDriver.checkEmptyDrawQueue()

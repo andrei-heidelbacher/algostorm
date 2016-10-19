@@ -17,9 +17,20 @@
 package com.aheidelbacher.algostorm.event
 
 /**
- * Marker interface for objects that wish to register [Event] handling methods
- * to an [EventBus].
+ * Marker interface for objects that wish to register event handling methods to
+ * an event bus.
  *
  * To mark a method as an event handler, annotate it with [Subscribe].
  */
-interface Subscriber
+interface Subscriber {
+    /**
+     * Post-subscribe initialization.
+     *
+     * @param publisher the publishing view of the event bus to which this
+     * object was subscribed
+     */
+    fun onSubscribe(publisher: Publisher) {}
+
+    /** Post-unsubscribe clean-up. */
+    fun onUnsubscribe() {}
+}

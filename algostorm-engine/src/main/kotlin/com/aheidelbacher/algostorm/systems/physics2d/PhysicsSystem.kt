@@ -33,10 +33,7 @@ import com.aheidelbacher.algostorm.systems.geometry2d.intersects
  * @property publisher the publisher used to post `Transformed` and `Collision`
  * events
  */
-class PhysicsSystem(
-        private val objectGroup: ObjectGroup,
-        private val publisher: Publisher
-) : Subscriber {
+class PhysicsSystem(private val objectGroup: ObjectGroup) : Subscriber {
     companion object {
         /**
          * The name of the rigid property. It is of type [Boolean].
@@ -93,6 +90,12 @@ class PhysicsSystem(
                 otherWidth = width,
                 otherHeight = height
         )
+    }
+
+    private lateinit var publisher: Publisher
+
+    override fun onSubscribe(publisher: Publisher) {
+        this.publisher = publisher
     }
 
     /**

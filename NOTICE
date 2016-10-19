@@ -17,6 +17,7 @@ applies to the following third-party libraries:
 - kotlin-runtime, Copyright JetBrains s.r.o.
 - kotlin-stdlib, Copyright JetBrains s.r.o.
 - kotlin-reflect, Copyright JetBrains s.r.o.
+- kotlin-test, Copyright JetBrains s.r.o.
 - jackson-annotations, Copyright FasterXML
 - jackson-core, Copyright FasterXML
 - jackson-databind, Copyright FasterXML
