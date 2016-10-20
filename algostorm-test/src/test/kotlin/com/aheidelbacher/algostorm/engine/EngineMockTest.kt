@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
@@ -24,6 +23,8 @@ import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
+
+import kotlin.test.assertEquals
 
 class EngineMockTest : EngineTest() {
     override fun createEngine(): EngineMock = EngineMock()

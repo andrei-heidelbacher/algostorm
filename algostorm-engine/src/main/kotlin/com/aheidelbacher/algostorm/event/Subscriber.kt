@@ -32,5 +32,5 @@ interface Subscriber {
     fun onSubscribe(publisher: Publisher) {}
 
     /** Post-unsubscribe clean-up. */
-    fun onUnsubscribe() {}
+    fun onUnsubscribe(publisher: Publisher) {}
 }

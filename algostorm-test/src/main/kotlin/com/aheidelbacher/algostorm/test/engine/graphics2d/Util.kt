@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:JvmName("MatrixUtil")
+@file:JvmName("Util")
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 

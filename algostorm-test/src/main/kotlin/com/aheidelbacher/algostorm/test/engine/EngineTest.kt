@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.engine
 
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -25,6 +24,10 @@ import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Engine.Status
 
 import java.io.FileNotFoundException
+
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * An abstract test class for an [Engine].
@@ -51,20 +54,20 @@ abstract class EngineTest {
     @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantStop() {
         assertEquals(Status.STOPPED, engine.status)
-        assertEquals(false, engine.isShutdown)
+        assertFalse(engine.isShutdown)
         engine.start()
         assertEquals(Status.RUNNING, engine.status)
         engine.stop()
         assertEquals(Status.STOPPED, engine.status)
-        assertEquals(false, engine.isShutdown)
+        assertFalse(engine.isShutdown)
     }
 
     @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantShutdown() {
-        assertEquals(false, engine.isShutdown)
+        assertFalse(engine.isShutdown)
         engine.start()
         engine.shutdown()
-        assertEquals(true, engine.isShutdown)
+        assertTrue(engine.isShutdown)
     }
 
     @Test(expected = IllegalStateException::class, timeout = MAX_TIME_LIMIT)
@@ -86,10 +89,11 @@ abstract class EngineTest {
     }
 
     @Test(timeout = MAX_TIME_LIMIT)
-    fun testRunOneSecondShouldNotThrow() {
+    fun testRunOneSecondThenShutdownShouldNotThrow() {
         engine.start()
         Thread.sleep(1000)
         engine.stop()
+        engine.shutdown()
     }
 
     @Test(expected = FileNotFoundException::class)

@@ -1,6 +1,5 @@
 package com.aheidelbacher.algostorm.test.engine.serialization
 
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -10,6 +9,8 @@ import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+
+import kotlin.test.assertEquals
 
 @Ignore
 abstract class SerializationDriverTest {

@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -25,6 +23,9 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+
+import kotlin.test.assertEquals
+import kotlin.test.fail
 
 /**
  * An abstract test class for an [EventBus].

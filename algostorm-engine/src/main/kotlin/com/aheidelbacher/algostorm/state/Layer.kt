@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 
+import java.util.Comparator
+
 /**
  * An abstract layer in the game world.
  *
@@ -195,7 +197,7 @@ sealed class Layer(
          * not unique among the objects in this object group and the given
          * objects
          */
-        fun add(objects: Iterable<Object>) {
+        fun addAll(objects: Iterable<Object>) {
             objects.forEach { add(it) }
         }
 
@@ -215,6 +217,16 @@ sealed class Layer(
         fun clear() {
             objects.clear()
             objectMap.clear()
+        }
+
+        /**
+         * Sorts the objects in this object group using the given comparator.
+         *
+         * @param comparator the comparator used to order the objects in this
+         * object group
+         */
+        fun sortWith(comparator: Comparator<Object>) {
+            objects.sortWith(comparator)
         }
     }
 }

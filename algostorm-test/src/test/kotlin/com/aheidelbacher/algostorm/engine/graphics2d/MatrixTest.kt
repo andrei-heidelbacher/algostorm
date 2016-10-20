@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.test.engine.graphics2d.TOLERANCE
