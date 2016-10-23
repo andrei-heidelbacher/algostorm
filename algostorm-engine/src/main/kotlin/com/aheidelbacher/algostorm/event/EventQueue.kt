@@ -38,7 +38,8 @@ class EventQueue : EventBus {
         }
     }
 
-    private val subscribers = hashMapOf<Subscriber, Array<Pair<Method, Class<*>>>>()
+    private val subscribers =
+            hashMapOf<Subscriber, Array<Pair<Method, Class<*>>>>()
     private val eventQueue = LinkedList<Event>()
 
     override fun subscribe(subscriber: Subscriber) {

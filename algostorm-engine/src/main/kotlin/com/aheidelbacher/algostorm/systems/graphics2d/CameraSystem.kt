@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.graphics2d.camera
+package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.systems.Update
 
 class CameraSystem(
         private val camera: Camera,
         private val objectGroup: ObjectGroup,
-        private val publisher: Publisher,
         private var followedObjectId: Int? = null
 ) : Subscriber {
+    object UpdateCamera : Event
+
     data class FocusOn(val x: Int, val y: Int) : Event
 
     data class Follow(val objectId: Int) : Event
@@ -36,8 +35,6 @@ class CameraSystem(
     data class Scroll(val dx: Int, val dy: Int) : Event
 
     object UnFollow : Event
-
-    object UpdateCamera : Event
 
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
@@ -66,9 +63,5 @@ class CameraSystem(
 
     @Subscribe fun onUnFollow(event: UnFollow) {
         followedObjectId = null
-    }
-
-    @Subscribe fun onUpdate(event: Update) {
-        publisher.post(UpdateCamera)
     }
 }

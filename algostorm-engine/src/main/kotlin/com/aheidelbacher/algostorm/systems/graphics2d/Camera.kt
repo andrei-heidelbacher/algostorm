@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.graphics2d.camera
-
-import com.aheidelbacher.algostorm.state.MapObject
+package com.aheidelbacher.algostorm.systems.graphics2d
 
 interface Camera {
     companion object {
-        const val CAMERA_X: String = "cameraX"
-        const val CAMERA_Y: String = "cameraY"
-
-        fun MapObject.getCamera(): Camera = object : Camera {
-            override var x: Int
-                get() = getInt(CAMERA_X)
-                        ?: error("MapObject is missing $CAMERA_X property!")
-                set(value) {
-                    set(CAMERA_X, value)
-                }
-
-            override var y: Int
-                get() = getInt(CAMERA_Y)
-                        ?: error("MapObject is missing $CAMERA_Y property!")
-                set(value) {
-                    set(CAMERA_Y, value)
-                }
-        }
+        operator fun invoke(x: Int, y: Int): Camera = CameraImpl(x, y)
     }
+
+    private data class CameraImpl(
+            override var x: Int,
+            override var y: Int
+    ) : Camera
 
     var x: Int
 

@@ -25,4 +25,8 @@ package com.aheidelbacher.algostorm.event
  * Concrete events should not be generic, otherwise they may not be
  * serializable.
  */
-interface Event
+interface Event {
+    /** The topic to which this event belongs. */
+    val topic: String
+        get() = javaClass.simpleName
+}
