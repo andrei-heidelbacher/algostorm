@@ -34,10 +34,10 @@ interface ScriptEngine {
     }
 
     /**
-     * Executes the script at the given path.
+     * Loads and executes the script at the given path.
      *
      * Every variable and function declaration in this script should be
-     * available to future [invokeFunction] calls.
+     * available to future [invokeProcedure] and [invokeFunction] calls.
      *
      * Paths are relative to a specialized location of script resources.
      *
@@ -48,14 +48,26 @@ interface ScriptEngine {
     fun eval(scriptSource: String): Unit
 
     /**
-     * Executes the script function with the given [functionName] with the
-     * specified arguments and returns its result.
+     * Executes the script procedure with the given name and the specified
+     * arguments.
+     *
+     * @param procedureName the name of the script procedure that should be
+     * executed
+     * @param args the script procedure parameters
+     * @throws IllegalArgumentException if the given [procedureName] is not
+     * available to this engine
+     */
+    fun invokeProcedure(procedureName: String, vararg args: Any?): Unit
+
+    /**
+     * Executes the script function with the given name and the specified
+     * arguments and returns its result.
      *
      * @param functionName the name of the script function that should be
      * executed
      * @param returnType the expected type of the result
      * @param args the script function parameters
-     * @return the script result, or `null` if it doesn't return anything.
+     * @return the script function result
      * @throws IllegalArgumentException if the given [functionName] is not
      * available to this engine
      * @throws ClassCastException if the result couldn't be converted to the

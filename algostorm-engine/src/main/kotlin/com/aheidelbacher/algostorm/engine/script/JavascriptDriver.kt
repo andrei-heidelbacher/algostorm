@@ -58,6 +58,10 @@ class JavascriptDriver(
         } ?: error("Can't evaluate script after releasing the script driver!")
     }
 
+    override fun invokeProcedure(procedureName: String, vararg args: Any?) {
+        invokeFunction(procedureName, Any::class, *args)
+    }
+
     override fun <T : Any> invokeFunction(
             functionName: String,
             returnType: KClass<T>,

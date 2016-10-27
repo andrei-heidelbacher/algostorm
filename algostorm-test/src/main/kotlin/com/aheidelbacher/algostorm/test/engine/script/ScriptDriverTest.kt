@@ -21,7 +21,6 @@ import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
@@ -30,36 +29,43 @@ import kotlin.test.assertEquals
  * An abstract test class for a [ScriptDriver].
  *
  * In order to test common functionality to all script engines, you may
- * implement this class and provide a concrete script engine instance to test.
+ * implement this class and provide a concrete script driver instance to test.
  */
 @Ignore
 abstract class ScriptDriverTest {
-    protected lateinit var scriptDriver: ScriptDriver
+    data class ProcedureInvocation(val name: String, val args: List<*>) {
+        constructor(name: String, vararg args: Any?) : this(name, args.asList())
+    }
+
+    data class FunctionInvocation<T : Any>(
+            val name: String,
+            val returnType: KClass<T>,
+            val args: List<*>
+    ) {
+        constructor(
+                name: String,
+                returnType: KClass<T>,
+                vararg args: Any?
+        ) : this(name, returnType, args.asList())
+    }
 
     protected abstract fun createScriptDriver(): ScriptDriver
 
-    /** The scripts which will be evaluated before any tests are run. */
+    /**
+     * The script driver which will be initialized using the
+     * [createScriptDriver] method.
+     */
+    protected lateinit var scriptDriver: ScriptDriver
+        private set
+
+    /** The scripts which will be loaded evaluated before any tests are run. */
     protected abstract val scriptPaths: List<String>
 
-    /**
-     * The name of a function which shouldn't receive any parameters and should
-     * return void.
-     */
-    protected abstract val voidFunctionName: String
+    /** The procedures which will be tested. */
+    protected abstract val procedureInvocations: Set<ProcedureInvocation>
 
-    /**
-     * The name of a function which should receive an integer `id` and a string
-     * `value` and return a [ScriptResult] with the same `id` and `value` as the
-     * received parameters.
-     */
-    protected abstract val resultFunctionName: String
-
-    /** Utility method that delegates the call to the [scriptDriver]. */
-    protected fun invokeFunction(
-            functionName: String,
-            returnType: KClass<*>,
-            vararg args: Any?
-    ): Any? = scriptDriver.invokeFunction(functionName, returnType, *args)
+    /** The functions which will be tested. */
+    protected abstract val functionInvocations: Map<FunctionInvocation<*>, *>
 
     @Before
     fun evalScripts() {
@@ -68,20 +74,28 @@ abstract class ScriptDriverTest {
     }
 
     @Test
-    fun testVoidScript() {
-        scriptDriver.invokeFunction<Any>(voidFunctionName)
+    fun testProcedures() {
+        procedureInvocations.forEach {
+            scriptDriver.invokeProcedure(it.name, *it.args.toTypedArray())
+        }
     }
 
     @Test
-    fun testResultScript() {
-        val id = 9382
-        val value = "result"
-        val result = invokeFunction(
-                resultFunctionName,
-                ScriptResult::class,
-                id,
-                value
-        )
-        assertEquals(ScriptResult(id, value), result)
+    fun testFunctions() {
+        functionInvocations.forEach {
+            assertEquals(
+                    expected = it.value,
+                    actual = scriptDriver.invokeFunction(
+                            it.key.name,
+                            it.key.returnType,
+                            *it.key.args.toTypedArray()
+                    )
+            )
+        }
+    }
+
+    @Test
+    fun testRelease() {
+        scriptDriver.release()
     }
 }

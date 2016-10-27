@@ -22,6 +22,10 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import java.util.LinkedList
 import java.util.Queue
 
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
 class GraphicsDriverMock(
         override val width: Int,
         override val height: Int
@@ -119,7 +123,11 @@ class GraphicsDriverMock(
         isLocked = false
     }
 
-    fun checkBitmap(
+    fun assertLocked() {
+        assertTrue(isLocked)
+    }
+
+    fun assertBitmap(
             image: String,
             x: Int,
             y: Int,
@@ -127,47 +135,32 @@ class GraphicsDriverMock(
             height: Int,
             matrix: Matrix
     ) {
-        val actualCall = queue.poll()
-        val expectedCall = DrawCall.Bitmap(image, x, y, width, height, matrix)
-        check(actualCall == expectedCall) {
-            "The bitmap was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
+        assertEquals(
+                expected = DrawCall.Bitmap(image, x, y, width, height, matrix),
+                actual = queue.poll()
+        )
     }
 
-    fun checkColor(color: Int) {
-        val actualCall = queue.poll()
-        val expectedCall = DrawCall.Color(color)
-        check(actualCall == expectedCall) {
-            "The color was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
+    fun assertColor(color: Int) {
+        assertEquals(DrawCall.Color(color), queue.poll())
     }
 
-    fun checkRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
-        val actualCall = queue.poll()
-        val expectedCall =
-                DrawCall.Rectangle(color, width, height, matrix)
-        check(actualCall == expectedCall) {
-            "The rectangle was not drawn!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
+    fun assertRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
+        assertEquals(
+                expected = DrawCall.Rectangle(color, width, height, matrix),
+                actual = queue.poll()
+        )
     }
 
-    fun checkClear() {
-        val actualCall = queue.poll()
-        val expectedCall = DrawCall.Clear
-        check(actualCall == expectedCall) {
-            "The canvas was not cleared!\n" +
-                    "Expected: $expectedCall\n" +
-                    "Actual: $actualCall"
-        }
+    fun assertClear() {
+        assertEquals(DrawCall.Clear, queue.poll())
     }
 
-    fun checkEmptyDrawQueue() {
-        check(queue.isEmpty()) { "There were more draw calls issued!!\n" }
+    fun assertEmptyDrawQueue() {
+        assertTrue(queue.isEmpty())
+    }
+
+    fun assertNotLocked() {
+        assertFalse(isLocked)
     }
 }

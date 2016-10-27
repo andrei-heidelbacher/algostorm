@@ -4,100 +4,42 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
-
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlin.test.fail
+import com.aheidelbacher.algostorm.test.engine.input.InputListenerMock
 
 class PollingInputListenerTest {
-    private val inputDriver = InputDriverMock()
+    private val inputDriverMock = InputDriverMock()
     private val listener = PollingInputListener()
+    private val listenerMock = InputListenerMock()
 
     @Before
     fun initializeInputDriver() {
-        inputDriver.addListener(listener)
+        inputDriverMock.addListener(listener)
     }
 
     @Test
     fun testPollShouldNotifyAllInputsAndNothingMore() {
-        inputDriver.touch(1, 1)
-        inputDriver.key(2)
-        var touched = false
-        assertTrue(listener.poll(object : InputListener {
-            override fun onTouch(x: Int, y: Int) {
-                touched = true
-            }
-
-            override fun onKey(keyCode: Int) {
-                fail()
-            }
-
-            override fun onScroll(dx: Int, dy: Int) {
-                fail()
-            }
-        }))
-        assertTrue(touched)
-        var keyed = false
-        assertTrue(listener.poll(object : InputListener {
-            override fun onTouch(x: Int, y: Int) {
-                fail()
-            }
-
-            override fun onKey(keyCode: Int) {
-                keyed = true
-            }
-
-            override fun onScroll(dx: Int, dy: Int) {
-                fail()
-            }
-        }))
-        assertTrue(keyed)
-        assertFalse(listener.poll(object : InputListener {
-            override fun onTouch(x: Int, y: Int) {
-                fail()
-            }
-
-            override fun onKey(keyCode: Int) {
-                fail()
-            }
-
-            override fun onScroll(dx: Int, dy: Int) {
-                fail()
-            }
-        }))
+        val x = 1
+        val y = 1
+        val keyCode = 2
+        inputDriverMock.touch(x, y)
+        inputDriverMock.key(keyCode)
+        listener.poll(listenerMock)
+        listenerMock.assertTouch(x, y)
+        listenerMock.assertKey(keyCode)
+        listenerMock.assertEmptyInputQueue()
     }
 
     @Test
     fun testPollMostRecentShouldNotifyLastAndNothingMore() {
-        inputDriver.touch(1, 1)
-        inputDriver.key(2)
-        var keyed = false
-        listener.pollMostRecent(object : InputListener {
-            override fun onTouch(x: Int, y: Int) {
-                fail()
-            }
-
-            override fun onKey(keyCode: Int) {
-                keyed = true
-            }
-
-            override fun onScroll(dx: Int, dy: Int) {
-                fail()
-            }
-        })
-        assertTrue(keyed)
-        assertFalse(listener.poll(object : InputListener {
-            override fun onTouch(x: Int, y: Int) {
-                fail()
-            }
-
-            override fun onKey(keyCode: Int) {
-                fail()
-            }
-
-            override fun onScroll(dx: Int, dy: Int) {
-                fail()
-            }
-        }))
+        val x = 1
+        val y = 1
+        val keyCode = 2
+        inputDriverMock.touch(x, y)
+        inputDriverMock.key(keyCode)
+        listener.pollMostRecent(listenerMock)
+        listenerMock.assertKey(keyCode)
+        listenerMock.assertEmptyInputQueue()
+        listener.poll(listenerMock)
+        listenerMock.assertEmptyInputQueue()
     }
 }

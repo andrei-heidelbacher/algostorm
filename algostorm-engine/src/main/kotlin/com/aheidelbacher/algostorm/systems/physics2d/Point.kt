@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.script
+package com.aheidelbacher.algostorm.systems.physics2d
 
-/**
- * Utility result type for scripts.
- */
-data class ScriptResult(val id: Int, val value: String)
+data class Point(val x: Int, val y: Int) {
+    fun translate(dx: Int, dy: Int): Point = Point(x + dx, y + dy)
+
+    operator fun plus(other: Point): Point = Point(x + other.x, y + other.y)
+
+    operator fun minus(other: Point): Point = Point(x - other.x, y - other.y)
+
+    fun squareDistanceTo(other: Point): Long =
+            squareDistance(x, y, other.x, other.y)
+
+    fun squareDistanceTo(x: Int, y: Int): Long =
+            squareDistance(this.x, this.y, x, y)
+}

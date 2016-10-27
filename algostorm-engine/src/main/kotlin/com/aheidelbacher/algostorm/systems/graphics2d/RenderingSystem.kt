@@ -38,7 +38,7 @@ import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_UP
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_UP
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
+import com.aheidelbacher.algostorm.systems.physics2d.Rectangle
 
 import java.io.FileNotFoundException
 import java.util.Comparator

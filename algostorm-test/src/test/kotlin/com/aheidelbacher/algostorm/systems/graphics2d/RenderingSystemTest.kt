@@ -33,7 +33,7 @@ import com.aheidelbacher.algostorm.state.TileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.systems.geometry2d.Rectangle
+import com.aheidelbacher.algostorm.systems.physics2d.Rectangle
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
@@ -94,12 +94,12 @@ class RenderingSystemTest {
         val map = makeMap(layers = listOf(tileLayer))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.checkColor(-1)
+        graphicsDriver.assertColor(-1)
         for (ty in 0 until height) {
             for (tx in 0 until width) {
                 val y = ty * tileHeight
                 val x = tx * tileWidth
-                graphicsDriver.checkBitmap(
+                graphicsDriver.assertBitmap(
                         image = image.source.path,
                         x = 0,
                         y = 0,
@@ -112,7 +112,7 @@ class RenderingSystemTest {
                 )
             }
         }
-        graphicsDriver.checkEmptyDrawQueue()
+        graphicsDriver.assertEmptyDrawQueue()
     }
 
     @Test
@@ -131,8 +131,8 @@ class RenderingSystemTest {
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.checkColor(-1)
-        graphicsDriver.checkRectangle(
+        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertRectangle(
                 color = 255,
                 width = tileWidth,
                 height = tileHeight,
@@ -141,7 +141,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat()
                 )
         )
-        graphicsDriver.checkEmptyDrawQueue()
+        graphicsDriver.assertEmptyDrawQueue()
     }
 
     @Test
@@ -160,8 +160,8 @@ class RenderingSystemTest {
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.checkColor(-1)
-        graphicsDriver.checkBitmap(
+        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -172,7 +172,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat() - tileHeight + 1
                 )
         )
-        graphicsDriver.checkEmptyDrawQueue()
+        graphicsDriver.assertEmptyDrawQueue()
     }
 
     @Test
@@ -191,8 +191,8 @@ class RenderingSystemTest {
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.checkColor(-1)
-        graphicsDriver.checkBitmap(
+        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -203,7 +203,7 @@ class RenderingSystemTest {
                         dy = -camera.y.toFloat() + 1
                 )
         )
-        graphicsDriver.checkEmptyDrawQueue()
+        graphicsDriver.assertEmptyDrawQueue()
     }
 
     @Test
@@ -222,8 +222,8 @@ class RenderingSystemTest {
         val map = makeMap(layers = listOf(objectGroup))
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.checkColor(-1)
-        graphicsDriver.checkBitmap(
+        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertBitmap(
                 image = image.source.path,
                 x = 0,
                 y = 0,
@@ -237,6 +237,6 @@ class RenderingSystemTest {
                                 dy = -camera.y.toFloat() + 1
                         )
         )
-        graphicsDriver.checkEmptyDrawQueue()
+        graphicsDriver.assertEmptyDrawQueue()
     }
 }

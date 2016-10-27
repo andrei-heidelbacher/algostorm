@@ -27,6 +27,8 @@ import java.io.FileInputStream
 import kotlin.concurrent.thread
 
 class JavascriptDriverTest : ScriptDriverTest() {
+    data class ScriptResultMock(val id: Int, val value: String)
+
     override fun createScriptDriver(): JavascriptDriver = JavascriptDriver {
         FileInputStream(File(it))
     }
@@ -34,16 +36,32 @@ class JavascriptDriverTest : ScriptDriverTest() {
     override val scriptPaths: List<String> =
             listOf("src/test/resources/testScript.js")
 
-    override val resultFunctionName: String = "getResult"
+    override val procedureInvocations: Set<ProcedureInvocation> = setOf(
+            ProcedureInvocation("testProcedure", "Hello!")
+    )
 
-    override val voidFunctionName: String = "voidFunction"
+    override val functionInvocations: Map<FunctionInvocation<*>, *> = mapOf(
+            FunctionInvocation(
+                    "testStringFunction",
+                    String::class,
+                    "Hello!"
+            ) to "Hello!",
+            FunctionInvocation(
+                    "testIntFunction",
+                    Int::class.javaObjectType.kotlin,
+                    42
+            ) to 42,
+            FunctionInvocation(
+                    "testScriptResultMockFunction",
+                    ScriptResultMock::class,
+                    ScriptResultMock(42, "Hello!")
+            ) to ScriptResultMock(42, "Hello!")
+    )
 
     @Test
     fun testMultiThreading() {
         fun invokeScript() {
-            val id = 5
-            val value = "five"
-            scriptDriver.invokeFunction<Any>(resultFunctionName, id, value)
+            scriptDriver.invokeFunction<Any>("testIntFunction", 42)
         }
 
         invokeScript()

@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.systems.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -40,71 +39,53 @@ class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
         scriptSources: List<File>
 ) : Subscriber {
     /**
-     * An event which requests the execution of a script.
+     * An event which requests the execution of the script procedure with the
+     * given name and arguments.
      *
-     * @property functionName the name of script function that should be
-     * executed
-     * @property args the arguments of the script function
+     * @property name the name of script procedure that should be executed
+     * @property args the arguments of the script procedure
      */
-    data class RunScript(
-            val functionName: String,
+    data class InvokeProcedure private constructor(
+            val name: String,
             val args: List<*>
     ) : Event {
-        constructor(functionName: String, vararg args: Any?) : this(
-                functionName = functionName,
-                args = args.asList()
-        )
+        constructor(name: String, vararg args: Any?) : this(name, args.asList())
     }
 
     /**
-     * An event which requests the execution of a script, attaching a callback
-     * to the result.
+     * An event which requests the execution of the script function with the
+     * given name and arguments, attaching a callback to receive the result.
      *
-     * @property functionName the name of script function that should be
-     * executed
+     * @property name the name of script function that should be executed
      * @property returnType the expected type of the result
      * @property args the arguments of the script function
-     * @property onResult the callback which will be called with the script
-     * result
+     * @property onResult the callback which will be called with the result
      */
-    data class RunScriptWithResult(
-            val functionName: String,
+    data class InvokeFunction private constructor(
+            val name: String,
             val returnType: KClass<*>,
             val args: List<*>,
             val onResult: (Any?) -> Unit
-    ) : Event {
+    ) {
         constructor(
-                functionName: String,
+                name: String,
                 returnType: KClass<*>,
                 vararg args: Any?,
                 onResult: (Any?) -> Unit
-        ) : this(
-                functionName = functionName,
-                returnType = returnType,
-                args = args.asList(),
-                onResult = onResult
-        )
+        ) : this(name, returnType, args.asList(), onResult)
     }
 
     init {
         scriptSources.forEach { scriptEngine.eval(it.path) }
     }
 
-    /**
-     * Upon receiving a [RunScript], the [ScriptEngine.invokeFunction] method is
-     * called with the supplied arguments. The returned result (if any) is
-     * discarded.
-     */
-    @Subscribe fun onRunScript(event: RunScript) {
-        scriptEngine.invokeFunction<Any>(
-                event.functionName,
-                *event.args.toTypedArray()
-        )
+    @Subscribe fun onInvokeProcedure(event: InvokeProcedure) {
+        scriptEngine.invokeProcedure(event.name, *event.args.toTypedArray())
     }
 
-    @Subscribe fun onRunScriptWithResult(event: RunScriptWithResult) {
+    @Subscribe fun onInvokeFunction(event: InvokeFunction) {
         event.onResult(scriptEngine.invokeFunction(
-                event.functionName,
+                event.name,
                 event.returnType,
                 *event.args.toTypedArray()
         ))

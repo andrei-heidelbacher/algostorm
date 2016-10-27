@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.geometry2d
+package com.aheidelbacher.algostorm.systems.physics2d
 
 data class Circle(val x: Int, val y: Int, val radius: Int) {
     init {

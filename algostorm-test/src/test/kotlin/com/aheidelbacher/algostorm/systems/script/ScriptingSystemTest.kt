@@ -21,42 +21,33 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.state.File
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScriptWithResult
-import com.aheidelbacher.algostorm.test.engine.script.ScriptResult
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeFunction
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeProcedure
 
 import java.io.FileInputStream
 
 class ScriptingSystemTest {
-    companion object {
-        const val FUNCTION_NAME: String = "getResult"
-    }
-
     val system = ScriptingSystem(
             JavascriptDriver { FileInputStream(java.io.File(it)) },
             listOf(File("src/test/resources/testScript.js"))
     )
 
     @Test
-    fun testRunScript() {
-        val id = 5
-        val value = "five"
-        val event = RunScript(FUNCTION_NAME, id, value)
-        system.onRunScript(event)
+    fun testInvokeProcedure() {
+        val event = InvokeProcedure("testProcedure", "Hello!")
+        system.onInvokeProcedure(event)
     }
 
     @Test
-    fun testRunScriptWithResult() {
-        val id = 5
-        val value = "five"
-        var isOk = false
-        val event = RunScriptWithResult(
-                FUNCTION_NAME,
-                ScriptResult::class,
-                id,
-                value
-        ) { isOk = it == ScriptResult(id, value) }
-        system.onRunScriptWithResult(event)
-        assertEquals(true, isOk)
+    fun testInvokeFunction() {
+        val message = "Hello!"
+        var result: String? = null
+        val event = InvokeFunction(
+                "testStringFunction",
+                String::class,
+                message
+        ) { result = it as String }
+        system.onInvokeFunction(event)
+        assertEquals(message, result)
     }
 }

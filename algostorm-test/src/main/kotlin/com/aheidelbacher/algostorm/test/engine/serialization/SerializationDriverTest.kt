@@ -14,9 +14,10 @@ import kotlin.test.assertEquals
 
 @Ignore
 abstract class SerializationDriverTest {
-    private lateinit var serializationDriver: SerializationDriver
-
     protected abstract fun createSerializationDriver(): SerializationDriver
+
+    protected lateinit var serializationDriver: SerializationDriver
+        private set
 
     protected abstract val testDataMock: TestDataMock
 

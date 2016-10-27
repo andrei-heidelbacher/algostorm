@@ -1,11 +1,23 @@
-function getResult(id, value) {
-    var Result = Packages.com.aheidelbacher.algostorm.test.engine.script.ScriptResult;
-    return new Result(id, value);
-};
+function testProcedure(message) {
+    java.lang.System.out.println(message);
+}
 
-function voidFunction() {
-    var sum = 0;
-    for (var i = 0; i < 1000; i++) {
-        sum += i;
-    }
-};
+function testIntFunction(intValue) {
+    var value = intValue;
+    value += 1;
+    value -= 1;
+    return value;
+}
+
+function testStringFunction(stringValue) {
+    var value = stringValue;
+    value += "";
+    return value;
+}
+
+function testScriptResultMockFunction(scriptResultMockValue) {
+    var ScriptResultMock = Packages.com.aheidelbacher.algostorm.engine.script.JavascriptDriverTest.ScriptResultMock;
+    var id = scriptResultMockValue.id;
+    var value = scriptResultMockValue.value;
+    return new ScriptResultMock(id, value);
+}
