@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverMock
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
@@ -27,9 +25,7 @@ import java.io.OutputStream
 class EngineMock : Engine(
         audioDriver = AudioDriverMock(),
         graphicsDriver = GraphicsDriverMock(320, 230),
-        inputDriver = InputDriverMock(),
-        scriptDriver = JavascriptDriver { getResourceStream(it) },
-        serializationDriver = JsonDriver()
+        inputDriver = InputDriverMock()
 ) {
     data class State(val values: List<Int>)
 

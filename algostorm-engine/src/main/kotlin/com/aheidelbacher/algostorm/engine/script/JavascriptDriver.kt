@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
-import org.mozilla.javascript.Context
+/*import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
-import org.mozilla.javascript.ScriptableObject
+import org.mozilla.javascript.ScriptableObject*/
 
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
  *
  * @property loader the mapper used to load script paths into input streams
  */
-class JavascriptDriver(
+/*class JavascriptDriver(
         private var loader: ((String) -> InputStream)?
 ) : ScriptDriver {
     private companion object {
@@ -86,4 +86,4 @@ class JavascriptDriver(
         loader = null
         scope = null
     }
-}
+}*/

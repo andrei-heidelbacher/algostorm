@@ -37,12 +37,6 @@
           }],
         "type":"ObjectGroup",
         "isVisible":true,
-        "properties":{
-          "z": {
-            "type": "string",
-            "value": "someString"
-          }
-        },
         "offsetX": 0,
         "offsetY": 0
       },

@@ -41,7 +41,7 @@ import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
  * [tileCount] are not positive or if [margin] or [spacing] are negative or if
  * the specified offsets, tile sizes and tile count exceed the image dimensions
  */
-data class TileSet private constructor(
+data class TileSet internal constructor(
         val name: String,
         val tileWidth: Int,
         val tileHeight: Int,
@@ -52,9 +52,8 @@ data class TileSet private constructor(
         val tileCount: Int,
         val tileOffsetX: Int,
         val tileOffsetY: Int,
-        val tiles: Map<Int, Tile>,
-        override val properties: Map<String, Property>
-) : Properties {
+        val tiles: Map<Int, Tile>
+) {
     companion object {
         /** Tile set factory method. */
         operator fun invoke(
@@ -68,8 +67,7 @@ data class TileSet private constructor(
                 tileCount: Int,
                 tileOffsetX: Int = 0,
                 tileOffsetY: Int = 0,
-                tiles: Map<Int, Tile> = emptyMap(),
-                properties: Map<String, Property> = emptyMap()
+                tiles: Map<Int, Tile> = emptyMap()
         ): TileSet = TileSet(
                 name = name,
                 tileWidth = tileWidth,
@@ -81,8 +79,33 @@ data class TileSet private constructor(
                 tileCount = tileCount,
                 tileOffsetX = tileOffsetX,
                 tileOffsetY = tileOffsetY,
-                tiles = tiles,
-                properties = properties
+                tiles = tiles
+        )
+    }
+
+    class Builder {
+        lateinit var name: String
+        var tileWidth: Int = 0
+        var tileHeight: Int = 0
+        lateinit var image: Image
+        var margin: Int = 0
+        var spacing: Int = 0
+        var tileOffsetX: Int = 0
+        var tileOffsetY: Int = 0
+        private val tiles = hashMapOf<Int, Tile>()
+
+        fun build(): TileSet = TileSet(
+                name = name,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                image = image,
+                columns = image.width / tileWidth,
+                tileCount = image.width / tileWidth * image.height / tileWidth,
+                margin = margin,
+                spacing = spacing,
+                tileOffsetX = tileOffsetX,
+                tileOffsetY = tileOffsetY,
+                tiles = tiles
         )
     }
 
@@ -223,6 +246,11 @@ data class TileSet private constructor(
         }
         require(reqHeight <= image.height) {
             "$this image height must be at least $reqHeight!"
+        }
+        require(tiles.all {
+            it.key == it.value.animation?.first()?.tileId ?: it.key
+        }) {
+            "$this first animation frame tile id must equal containing tile id!"
         }
     }
 

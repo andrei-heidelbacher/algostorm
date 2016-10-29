@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.engine.script
 import java.io.FileNotFoundException
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 /**
  * An interpreter that can evaluate scripts and invoke named functions contained
@@ -44,8 +45,25 @@ interface ScriptEngine {
      * @param scriptSource the path where the script is found
      * @throws FileNotFoundException if the given script doesn't exist
      */
-    @Throws(FileNotFoundException::class)
-    fun eval(scriptSource: String): Unit
+    //@Throws(FileNotFoundException::class)
+    //fun eval(scriptSource: String): Unit
+
+    /**
+     * Loads the given procedure with the [KFunction.name] name, making it
+     * available to future [invokeProcedure] calls.
+     *
+     * @param procedure the procedure which should be loaded
+     */
+    fun loadProcedure(procedure: KFunction<Unit>): Unit
+
+    /**
+     * Loads the given function with the [KFunction.name] name, making it
+     * available to future [invokeFunction] calls.
+     *
+     * @param T the return type of the function
+     * @param function the function which should be loaded.
+     */
+    fun <T> loadFunction(function: KFunction<T>): Unit
 
     /**
      * Executes the script procedure with the given name and the specified

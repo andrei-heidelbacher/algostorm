@@ -57,8 +57,7 @@ class MapObjectTest {
             layers = listOf(
                     TileLayer(
                             name = "floor",
-                            data = LongArray(2 * 2) { 1 },
-                            properties = mapOf("collider" to Property(false))
+                            data = LongArray(2 * 2) { 1 }
                     ),
                     ObjectGroup(
                             name = "objects",
@@ -78,7 +77,6 @@ class MapObjectTest {
                             ))
                     )
             ),
-            properties = mapOf("time" to Property(0)),
             nextObjectId = 2
     )
 

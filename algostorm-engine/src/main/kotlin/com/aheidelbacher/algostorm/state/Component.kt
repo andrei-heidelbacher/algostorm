@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.state
 
-/**
- * Base type of an event.
- *
- * All events should be immutable data classes. The type of an event is denoted
- * by its kotlin class object.
- */
-interface Event
+interface Component

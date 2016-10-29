@@ -26,9 +26,10 @@ package com.aheidelbacher.algostorm.event
 interface Publisher {
     /**
      * Posts the given [event] and notifies all subscribers which subscribed at
-     * this publisher for this `event` type and topic. This should be an
-     * asynchronous method and return before the event was handled by its
-     * subscribers.
+     * this publisher for this `event` type.
+     *
+     * This should be an asynchronous method and return before the event was
+     * handled by its subscribers.
      *
      * @param event the event that should be posted
      */

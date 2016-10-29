@@ -6,6 +6,8 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
 import com.aheidelbacher.algostorm.test.engine.input.InputListenerMock
 
+import kotlin.test.assertTrue
+
 class PollingInputListenerTest {
     private val inputDriverMock = InputDriverMock()
     private val listener = PollingInputListener()
@@ -23,8 +25,9 @@ class PollingInputListenerTest {
         val keyCode = 2
         inputDriverMock.touch(x, y)
         inputDriverMock.key(keyCode)
-        listener.poll(listenerMock)
+        assertTrue(listener.poll(listenerMock))
         listenerMock.assertTouch(x, y)
+        assertTrue(listener.poll(listenerMock))
         listenerMock.assertKey(keyCode)
         listenerMock.assertEmptyInputQueue()
     }

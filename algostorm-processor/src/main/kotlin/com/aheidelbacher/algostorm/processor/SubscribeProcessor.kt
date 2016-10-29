@@ -77,16 +77,16 @@ class SubscribeProcessor : AbstractProcessor() {
 
     private fun validateMethod(method: Element) {
         require(method.kind == METHOD, method) {
-            "Only methods can be annotated with $SUBSCRIBE!"
+            "$method: only methods can be annotated with $SUBSCRIBE!"
         }
         require(Modifier.PUBLIC in method.modifiers, method) {
-            "Annotated methods must be public!"
+            "$method: annotated methods must be public!"
         }
         require(Modifier.FINAL in method.modifiers, method) {
-            "Annotated methods must be final!"
+            "$method: annotated methods must be final!"
         }
         require(Modifier.STATIC !in method.modifiers, method) {
-            "Annotated methods must not be static!"
+            "$method: annotated methods must not be static!"
         }
         val executableType = method.asType() as ExecutableType
         val returnsVoid = executableType.returnType.kind == VOID
@@ -95,30 +95,30 @@ class SubscribeProcessor : AbstractProcessor() {
                 elementUtils.getTypeElement(UNIT).asType()
         )
         require(returnsVoid || returnsUnit, method) {
-            "Annotated methods must return void or $UNIT!"
+            "$method: annotated methods must return void or $UNIT!"
         }
         require(executableType.parameterTypes.size == 1, method) {
-            "Annotated methods must receive exactly one parameter!"
+            "$method: annotated methods must receive exactly one parameter!"
         }
         val parameterIsEvent = typeUtils.isSubtype(
                 executableType.parameterTypes[0],
                 elementUtils.getTypeElement(EVENT).asType()
         )
         require(parameterIsEvent, method) {
-            "Annotated methods must receive as parameter a subtype of $EVENT!"
+            "$method: annotated methods must receive a subtype of $EVENT!"
         }
     }
 
     private fun validateEnclosingClass(enclosingClass: Element) {
         require(enclosingClass.kind == CLASS, enclosingClass) {
-            "Enclosing element must be a class!"
+            "$enclosingClass: enclosing element must be a class!"
         }
         val isSubscriber = typeUtils.isSubtype(
                 enclosingClass.asType(),
                 elementUtils.getTypeElement(SUBSCRIBER).asType()
         )
         require(isSubscriber, enclosingClass) {
-            "Enclosing class must be a subtype of $SUBSCRIBER!"
+            "$enclosingClass: enclosing class must be a subtype of $SUBSCRIBER!"
         }
     }
 

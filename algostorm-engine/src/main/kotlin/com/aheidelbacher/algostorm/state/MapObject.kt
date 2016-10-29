@@ -56,7 +56,7 @@ class MapObject private constructor(
         val backgroundColor: Color?,
         val version: String,
         private var nextObjectId: Int
-) : MutableProperties, Object.Factory {
+) : Object.Factory {
     companion object {
         /** Map object factory method. */
         operator fun invoke(
@@ -70,8 +70,7 @@ class MapObject private constructor(
                 layers: List<Layer> = emptyList(),
                 backgroundColor: Color? = null,
                 version: String = "1.0",
-                nextObjectId: Int = 1,
-                properties: Map<String, Property> = emptyMap()
+                nextObjectId: Int = 1
         ): MapObject = MapObject(
                 width = width,
                 height = height,
@@ -84,7 +83,7 @@ class MapObject private constructor(
                 backgroundColor = backgroundColor,
                 version = version,
                 nextObjectId = nextObjectId
-        ).apply { this.properties.putAll(properties) }
+        )
     }
 
     /** The orientation of the map. */
@@ -99,8 +98,6 @@ class MapObject private constructor(
         @JsonProperty("left-down") LEFT_DOWN,
         @JsonProperty("left-up") LEFT_UP
     }
-
-    override val properties: MutableMap<String, Property> = hashMapOf()
 
     @Transient private val gidToTileSet: Array<TileSet>
     @Transient private val gidToTileId: IntArray

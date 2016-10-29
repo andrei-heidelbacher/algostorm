@@ -30,12 +30,6 @@
       "type": "TileLayer",
       "name": "floor",
       "data": [1, 1, 1, 1],
-      "properties": {
-        "collider": {
-          "type": "bool",
-          "value": false
-        }
-      },
       "isVisible": true,
       "offsetX": 0,
       "offsetY": 0
@@ -68,11 +62,5 @@
       }]
     }
   ],
-  "nextObjectId": 2,
-  "properties": {
-    "time": {
-      "type": "int",
-      "value": 0
-    }
-  }
+  "nextObjectId": 2
 }

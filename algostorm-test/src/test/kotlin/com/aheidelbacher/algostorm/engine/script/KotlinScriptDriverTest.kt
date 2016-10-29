@@ -16,29 +16,25 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
-import org.junit.Test
-
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverTest
+import kotlin.reflect.KFunction
 
-import java.io.File
-import java.io.FileInputStream
-
-import kotlin.concurrent.thread
-
-/*class JavascriptDriverTest : ScriptDriverTest() {
+class KotlinScriptDriverTest : ScriptDriverTest() {
     data class ScriptResultMock(val id: Int, val value: String)
 
-    override fun createScriptDriver(): JavascriptDriver = JavascriptDriver {
-        FileInputStream(File(it))
-    }
+    override fun createScriptDriver(): KotlinScriptDriver = KotlinScriptDriver()
 
-    override val scriptPaths: List<String> =
-            listOf("src/test/resources/testScript.js")
+    override val scriptProcedures: List<KFunction<Unit>> =
+            listOf(::testProcedure)
 
-    override val procedureInvocations: Set<ProcedureInvocation> = setOf(
-            ProcedureInvocation("testProcedure", "Hello!")
+    override val scriptFunctions: List<KFunction<*>> = listOf(
+            ::testIntFunction,
+            ::testStringFunction,
+            ::testScriptResultMockFunction
     )
+
+    override val procedureInvocations: Set<ProcedureInvocation> =
+            setOf(ProcedureInvocation("testProcedure", "Hello!"))
 
     override val functionInvocations: Map<FunctionInvocation<*>, *> = mapOf(
             FunctionInvocation(
@@ -57,17 +53,4 @@ import kotlin.concurrent.thread
                     ScriptResultMock(42, "Hello!")
             ) to ScriptResultMock(42, "Hello!")
     )
-
-    @Test
-    fun testMultiThreading() {
-        fun invokeScript() {
-            scriptDriver.invokeFunction<Any>("testIntFunction", 42)
-        }
-
-        invokeScript()
-        kotlin.repeat(5) {
-            thread { invokeScript() }.join()
-        }
-        invokeScript()
-    }
-}*/
+}

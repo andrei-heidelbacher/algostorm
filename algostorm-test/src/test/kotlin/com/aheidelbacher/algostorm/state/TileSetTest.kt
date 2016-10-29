@@ -44,7 +44,6 @@ class TileSetTest {
                     1 to Tile(animation = listOf(Frame(1, 250), Frame(2, 250))),
                     2 to Tile(objectGroup = ObjectGroup(
                             name = "",
-                            properties = mapOf("z" to Property("someString")),
                             objects = mutableListOf(Object(
                                     height = 24,
                                     width = 24,

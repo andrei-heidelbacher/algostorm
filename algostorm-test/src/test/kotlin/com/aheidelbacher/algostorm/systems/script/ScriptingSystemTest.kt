@@ -19,17 +19,17 @@ package com.aheidelbacher.algostorm.systems.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
-import com.aheidelbacher.algostorm.state.File
+import com.aheidelbacher.algostorm.engine.script.KotlinScriptDriver
+import com.aheidelbacher.algostorm.engine.script.testProcedure
+import com.aheidelbacher.algostorm.engine.script.testStringFunction
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeFunction
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeProcedure
 
-import java.io.FileInputStream
-
 class ScriptingSystemTest {
     val system = ScriptingSystem(
-            JavascriptDriver { FileInputStream(java.io.File(it)) },
-            listOf(File("src/test/resources/testScript.js"))
+            KotlinScriptDriver(),
+            listOf(::testProcedure),
+            listOf(::testStringFunction)
     )
 
     @Test

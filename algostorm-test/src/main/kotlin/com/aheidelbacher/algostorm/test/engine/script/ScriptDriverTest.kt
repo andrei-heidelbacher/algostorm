@@ -23,6 +23,7 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.test.assertEquals
 
 /**
@@ -58,8 +59,17 @@ abstract class ScriptDriverTest {
     protected lateinit var scriptDriver: ScriptDriver
         private set
 
-    /** The scripts which will be loaded evaluated before any tests are run. */
-    protected abstract val scriptPaths: List<String>
+    /**
+     * The script procedures which will be loaded evaluated before any tests
+     * are run.
+     */
+    protected abstract val scriptProcedures: List<KFunction<Unit>>
+
+    /**
+     * The script functions which will be loaded evaluated before any tests are
+     * run.
+     */
+    protected abstract val scriptFunctions: List<KFunction<*>>
 
     /** The procedures which will be tested. */
     protected abstract val procedureInvocations: Set<ProcedureInvocation>
@@ -70,7 +80,8 @@ abstract class ScriptDriverTest {
     @Before
     fun evalScripts() {
         scriptDriver = createScriptDriver()
-        scriptPaths.forEach { scriptDriver.eval(it) }
+        scriptProcedures.forEach { scriptDriver.loadProcedure(it) }
+        scriptFunctions.forEach { scriptDriver.loadFunction(it) }
     }
 
     @Test

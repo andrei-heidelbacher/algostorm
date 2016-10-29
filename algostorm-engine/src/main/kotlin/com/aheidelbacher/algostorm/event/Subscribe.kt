@@ -20,15 +20,12 @@ package com.aheidelbacher.algostorm.event
  * Annotation to mark a method of a [Subscriber] as an event handler.
  *
  * An event handler is a method that is annotated with the [Subscribe]
- * annotation, is public, final, non-static, returns [Unit] / void and receives
- * a single parameter which is a subtype of [Event].
+ * annotation, is public, final, non-static, returns [Unit] / `void` and
+ * receives a single parameter which is a subtype of [Event].
  *
  * Event-handling methods declared in supertypes are also registered for events
  * upon subscription.
- *
- * @property topics the topics to which this handler subscribes. Events which
- * belong to a different topic will be filtered out.
  */
 @Target(AnnotationTarget.FUNCTION)
 @MustBeDocumented
-annotation class Subscribe(vararg val topics: String)
+annotation class Subscribe

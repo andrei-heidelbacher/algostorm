@@ -20,23 +20,23 @@ import com.aheidelbacher.algostorm.engine.script.ScriptEngine
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.File
-
-import java.io.FileNotFoundException
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scriptSources the locations of the scripts which are loaded and
- * executed at construction time using the [ScriptEngine.eval] method
- * @throws FileNotFoundException if any of the given scripts doesn't exist
+ * @param scriptProcedures the procedures which will be loaded in the script
+ * engine
+ * @param scriptFunctions the functions which will be loaded in the script
+ * engine
  */
-class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
+class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
-        scriptSources: List<File>
+        scriptProcedures: List<KFunction<Unit>>,
+        scriptFunctions: List<KFunction<*>>
 ) : Subscriber {
     /**
      * An event which requests the execution of the script procedure with the
@@ -66,7 +66,7 @@ class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
             val returnType: KClass<*>,
             val args: List<*>,
             val onResult: (Any?) -> Unit
-    ) {
+    ) : Event {
         constructor(
                 name: String,
                 returnType: KClass<*>,
@@ -76,7 +76,8 @@ class ScriptingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     init {
-        scriptSources.forEach { scriptEngine.eval(it.path) }
+        scriptProcedures.forEach { scriptEngine.loadProcedure(it) }
+        scriptFunctions.forEach { scriptEngine.loadFunction(it) }
     }
 
     @Subscribe fun onInvokeProcedure(event: InvokeProcedure) {

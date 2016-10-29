@@ -20,7 +20,7 @@ import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.driver.Driver
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.input.InputDriver
-import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
+import com.aheidelbacher.algostorm.engine.script.KotlinScriptDriver
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
@@ -58,9 +58,7 @@ abstract class Engine(
         protected val audioDriver: AudioDriver,
         protected val graphicsDriver: GraphicsDriver,
         protected val inputDriver: InputDriver,
-        protected val scriptDriver: ScriptDriver = JavascriptDriver {
-            getResourceStream(it)
-        },
+        protected val scriptDriver: ScriptDriver = KotlinScriptDriver(),
         protected val serializationDriver: SerializationDriver = JsonDriver()
 ) {
     companion object {

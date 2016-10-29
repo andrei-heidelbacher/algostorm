@@ -47,9 +47,7 @@ sealed class Layer(
         var isVisible: Boolean,
         val offsetX: Int,
         val offsetY: Int
-) : MutableProperties {
-    final override val properties: MutableMap<String, Property> = hashMapOf()
-
+) {
     /**
      * Two layers are equal if and only if they have the same name.
      *
@@ -85,15 +83,14 @@ sealed class Layer(
                     data: LongArray,
                     isVisible: Boolean = true,
                     offsetX: Int = 0,
-                    offsetY: Int = 0,
-                    properties: Map<String, Property> = emptyMap()
+                    offsetY: Int = 0
             ): TileLayer = TileLayer(
                     name = name,
                     data = data.copyOf(),
                     isVisible = isVisible,
                     offsetX = offsetX,
                     offsetY = offsetY
-            ).apply { this.properties.putAll(properties) }
+            )
         }
     }
 
@@ -126,17 +123,16 @@ sealed class Layer(
                     color: Color? = null,
                     isVisible: Boolean = true,
                     offsetX: Int = 0,
-                    offsetY: Int = 0,
-                    properties: Map<String, Property> = emptyMap()
+                    offsetY: Int = 0
             ): ObjectGroup = ObjectGroup(
-                    name,
-                    objects.toMutableList(),
-                    drawOrder,
-                    color,
-                    isVisible,
-                    offsetX,
-                    offsetY
-            ).apply { this.properties.putAll(properties) }
+                    name = name,
+                    objects = objects.toMutableList(),
+                    drawOrder = drawOrder,
+                    color = color,
+                    isVisible = isVisible,
+                    offsetX = offsetX,
+                    offsetY = offsetY
+            )
         }
 
         /** The order in which objects are rendered. */

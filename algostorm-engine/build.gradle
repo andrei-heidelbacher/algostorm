@@ -5,7 +5,7 @@ dependencies {
     kapt project(':algostorm-processor')
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
-    compile "org.mozilla:rhino:$rhino_version"
+    //compile "org.mozilla:rhino:$rhino_version"
 }
 
 dokka {
