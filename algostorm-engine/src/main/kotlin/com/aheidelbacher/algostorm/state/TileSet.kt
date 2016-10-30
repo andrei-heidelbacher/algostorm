@@ -54,61 +54,6 @@ data class TileSet internal constructor(
         val tileOffsetY: Int,
         val tiles: Map<Int, Tile>
 ) {
-    companion object {
-        /** Tile set factory method. */
-        operator fun invoke(
-                name: String,
-                tileWidth: Int,
-                tileHeight: Int,
-                image: Image,
-                margin: Int = 0,
-                spacing: Int = 0,
-                columns: Int,
-                tileCount: Int,
-                tileOffsetX: Int = 0,
-                tileOffsetY: Int = 0,
-                tiles: Map<Int, Tile> = emptyMap()
-        ): TileSet = TileSet(
-                name = name,
-                tileWidth = tileWidth,
-                tileHeight = tileHeight,
-                image = image,
-                margin = margin,
-                spacing = spacing,
-                columns = columns,
-                tileCount = tileCount,
-                tileOffsetX = tileOffsetX,
-                tileOffsetY = tileOffsetY,
-                tiles = tiles
-        )
-    }
-
-    class Builder {
-        lateinit var name: String
-        var tileWidth: Int = 0
-        var tileHeight: Int = 0
-        lateinit var image: Image
-        var margin: Int = 0
-        var spacing: Int = 0
-        var tileOffsetX: Int = 0
-        var tileOffsetY: Int = 0
-        private val tiles = hashMapOf<Int, Tile>()
-
-        fun build(): TileSet = TileSet(
-                name = name,
-                tileWidth = tileWidth,
-                tileHeight = tileHeight,
-                image = image,
-                columns = image.width / tileWidth,
-                tileCount = image.width / tileWidth * image.height / tileWidth,
-                margin = margin,
-                spacing = spacing,
-                tileOffsetX = tileOffsetX,
-                tileOffsetY = tileOffsetY,
-                tiles = tiles
-        )
-    }
-
     /**
      * Meta-data associated to a tile.
      *
@@ -120,19 +65,12 @@ data class TileSet internal constructor(
      * contains less than two frames or if [objectGroup] is not `null` and
      * contains an object with a non-zero `gid`
      */
-    data class Tile private constructor(
+    data class Tile internal constructor(
             val animation: List<Frame>?,
             val objectGroup: ObjectGroup?,
             override val properties: Map<String, Property>
     ) : Properties {
         companion object {
-            /** Tile factory method. */
-            operator fun invoke(
-                    animation: List<Frame>? = null,
-                    objectGroup: ObjectGroup? = null,
-                    properties: Map<String, Property> = emptyMap()
-            ): Tile = Tile(animation, objectGroup, properties)
-
             /** Whether this global tile id is flipped horizontally. */
             val Long.isFlippedHorizontally: Boolean
                 get() = and(0x80000000) != 0L

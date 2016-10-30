@@ -44,7 +44,7 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
  * positive or if there are multiple objects with the same id or if
  * [nextObjectId] is not greater than the maximum object id
  */
-class MapObject private constructor(
+class MapObject internal constructor(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
@@ -57,35 +57,6 @@ class MapObject private constructor(
         val version: String,
         private var nextObjectId: Int
 ) : Object.Factory {
-    companion object {
-        /** Map object factory method. */
-        operator fun invoke(
-                width: Int,
-                height: Int,
-                tileWidth: Int,
-                tileHeight: Int,
-                orientation: Orientation = Orientation.ORTHOGONAL,
-                renderOrder: RenderOrder = RenderOrder.RIGHT_DOWN,
-                tileSets: List<TileSet> = emptyList(),
-                layers: List<Layer> = emptyList(),
-                backgroundColor: Color? = null,
-                version: String = "1.0",
-                nextObjectId: Int = 1
-        ): MapObject = MapObject(
-                width = width,
-                height = height,
-                tileWidth = tileWidth,
-                tileHeight = tileHeight,
-                orientation = orientation,
-                renderOrder = renderOrder,
-                tileSets = tileSets,
-                layers = layers,
-                backgroundColor = backgroundColor,
-                version = version,
-                nextObjectId = nextObjectId
-        )
-    }
-
     /** The orientation of the map. */
     enum class Orientation {
         @JsonProperty("orthogonal") ORTHOGONAL

@@ -21,6 +21,11 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.state.Builders.entity
+import com.aheidelbacher.algostorm.state.Builders.entityGroup
+import com.aheidelbacher.algostorm.state.Builders.mapObject
+import com.aheidelbacher.algostorm.state.Builders.tileLayer
+import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
@@ -54,26 +59,22 @@ class RenderingSystemTest {
     )
 
     fun makeMap(
-            tileSets: List<TileSet> = listOf(TileSet(
-                    name = "test",
-                    tileWidth = tileWidth,
-                    tileHeight = tileHeight,
-                    columns = 1,
-                    tileCount = 1,
-                    image = image
-            )),
+            tileSets: List<TileSet> = listOf(tileSet {
+                name = "test"
+                tileWidth = tileWidth
+                tileHeight = tileHeight
+                image = this@RenderingSystemTest.image
+            }),
             layers: List<Layer> = emptyList()
-    ): MapObject = MapObject(
-            width = width,
-            height = height,
-            tileWidth = tileWidth,
-            tileHeight = tileHeight,
-            backgroundColor = Color("#ffffffff"),
-            tileSets = tileSets,
-            layers = layers,
-            nextObjectId = layers.filterIsInstance<ObjectGroup>()
-                    .flatMap { it.objectSet }.maxBy { it.id }?.id?.plus(1) ?: 1
-    )
+    ): MapObject = mapObject {
+        width = width
+        height = height
+        tileWidth = tileWidth
+        tileHeight = tileHeight
+        backgroundColor = Color("#ffffffff")
+        tileSets.forEach { +it }
+        layers.forEach { +it }
+    }
 
     @Before
     fun lockCanvas() {

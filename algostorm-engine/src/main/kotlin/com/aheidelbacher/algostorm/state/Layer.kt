@@ -69,28 +69,49 @@ sealed class Layer(
      * `i` of this array represents the tile with `x = i % width` and
      * `y = i / width`.
      */
-    class TileLayer private constructor(
+    class TileLayer internal constructor(
             name: String,
-            val data: LongArray,
             isVisible: Boolean,
             offsetX: Int,
-            offsetY: Int
+            offsetY: Int,
+            val data: LongArray
+    ) : Layer(name, isVisible, offsetX, offsetY)
+
+    class EntityGroup internal constructor(
+            name: String,
+            isVisible: Boolean,
+            offsetX: Int,
+            offsetY: Int,
+            entities: List<Entity>
     ) : Layer(name, isVisible, offsetX, offsetY) {
-        companion object {
-            /** Tile layer factory method. */
-            operator fun invoke(
-                    name: String,
-                    data: LongArray,
-                    isVisible: Boolean = true,
-                    offsetX: Int = 0,
-                    offsetY: Int = 0
-            ): TileLayer = TileLayer(
-                    name = name,
-                    data = data.copyOf(),
-                    isVisible = isVisible,
-                    offsetX = offsetX,
-                    offsetY = offsetY
-            )
+        @Transient private val entityMap =
+                entities.associateByTo(hashMapOf(), Entity::id)
+
+        val entities: Iterable<Entity> = entityMap.values
+
+        operator fun contains(id: Int): Boolean = id in entityMap
+
+        operator fun get(id: Int): Entity? = entityMap[id]
+
+        fun add(entity: Entity) {
+            require(entity.id !in entityMap)
+            entityMap[entity.id] = entity
+        }
+
+        fun addAll(entities: Iterable<Entity>) {
+            require(entities.none { it.id in entityMap })
+            entities.associateByTo(entityMap, Entity::id)
+        }
+
+        fun addAll(vararg entities: Entity) {
+            require(entities.none { it.id in entityMap })
+            entities.associateByTo(entityMap, Entity::id)
+        }
+
+        fun remove(id: Int): Entity? = entityMap.remove(id)
+
+        fun clear() {
+            entityMap.clear()
         }
     }
 

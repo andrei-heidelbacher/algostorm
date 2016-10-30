@@ -16,9 +16,23 @@
 
 package com.aheidelbacher.algostorm.state
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
 import kotlin.reflect.KClass
 
+/**
+ * An abstract object within the game.
+ *
+ * Its behaviour is entirely determined by the components it contains.
+ *
+ * @property id the unique identifier of this entity
+ */
 data class Entity(val id: Int) {
+    interface Factory {
+        fun create(components: Iterable<Component>): Entity
+    }
+
+    @JsonCreator
     constructor(id: Int, components: Iterable<Component>) : this(id) {
         components.associateByTo(componentMap) { it.javaClass.kotlin }
     }
@@ -30,6 +44,7 @@ data class Entity(val id: Int) {
     @Transient private val componentMap =
             hashMapOf<KClass<out Component>, Component>()
 
+    /** An immutable view of this entity's components. */
     val components: Iterable<Component> = componentMap.values
 
     operator fun <T : Component> contains(type: KClass<T>): Boolean =
