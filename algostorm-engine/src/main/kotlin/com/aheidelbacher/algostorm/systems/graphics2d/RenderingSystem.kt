@@ -17,28 +17,28 @@
 package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
+import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Color
+import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Layer
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.MapObject
-import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.state.TileSet.Viewport
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder.INDEX
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder.TOP_DOWN
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_UP
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_UP
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.physics2d.Rectangle
+import com.aheidelbacher.algostorm.systems.graphics2d.Sprite.Companion.sprite
+import com.aheidelbacher.algostorm.systems.physics2d.Body
+import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.body
 
 import java.io.FileNotFoundException
 import java.util.Comparator
@@ -96,15 +96,25 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         RIGHT_DOWN, RIGHT_UP -> 0 until map.width
         LEFT_DOWN, LEFT_UP -> map.width - 1 downTo 0
     }
+
     private val yRange = when (map.renderOrder) {
         RIGHT_DOWN, LEFT_DOWN -> 0 until map.height
         RIGHT_UP, LEFT_UP -> map.height - 1 downTo 0
     }
-    private val comparator = Comparator<Object> { o1, o2 ->
-        if (o1.y != o2.y) o1.y - o2.y
-        else o1.id - o2.id
+
+    private val comparator = Comparator<Entity> { e1, e2 ->
+        val b1 = e1.body ?: error("")
+        val b2 = e2.body ?: error("")
+        if (b1.y < b2.y) {
+            b1.y - b2.y
+        } else {
+            val s1 = e1.sprite ?: error("")
+            val s2 = e2.sprite ?: error("")
+            if (s1.z != s2.z) s1.z - s2.z else b1.x - b2.x
+        }
     }
-    private val matrix = com.aheidelbacher.algostorm.engine.graphics2d.Matrix.identity()
+
+    private val matrix = Matrix.identity()
 
     init {
         map.tileSets.forEach { canvas.loadBitmap(it.image.source.path) }
@@ -120,22 +130,22 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         val viewport = map.getViewport(gid, currentTimeMillis)
         matrix.reset()
         matrix.postScale(
-                sx = width.toFloat() / viewport.width.toFloat(),
-                sy = height.toFloat() / viewport.height.toFloat()
+                sx = 1F * width / viewport.width,
+                sy = 1F * height / viewport.height
         ).let {
             if (!gid.isFlippedDiagonally) it
             else it.postRotate(90F)
                     .postScale(1F, -1F)
-                    .postTranslate(width.toFloat(), height.toFloat())
+                    .postTranslate(1F * width, 1F * height)
         }.let {
             if (!gid.isFlippedHorizontally) it
-            else it.postScale(-1F, 1F).postTranslate(width.toFloat(), 0F)
+            else it.postScale(-1F, 1F).postTranslate(1F * width, 0F)
         }.let {
             if (!gid.isFlippedVertically) it
-            else it.postScale(1F, -1F).postTranslate(0F, height.toFloat())
+            else it.postScale(1F, -1F).postTranslate(0F, 1F * height)
         }.postTranslate(
-                dx = tileSet.tileOffsetX.toFloat() + x,
-                dy = tileSet.tileOffsetY.toFloat() + y - height + 1
+                dx = 1F * tileSet.tileOffsetX + x,
+                dy = 1F * tileSet.tileOffsetY + y
         )
         canvas.drawBitmap(
                 image = viewport.image.source.path,
@@ -145,19 +155,6 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 height = viewport.height,
                 matrix = matrix
         )
-    }
-
-    private fun Object.draw(color: Color?, offX: Int, offY: Int) {
-        if (isVisible && gid != 0L) {
-            drawGid(gid, x + offX, y + offY, width, height)
-        } else if (isVisible && color != null) {
-            matrix.reset()
-            matrix.postTranslate(
-                    dx = offX + x.toFloat(),
-                    dy = offY + y.toFloat() - height + 1
-            )
-            canvas.drawRectangle(color.color, width, height, matrix)
-        }
     }
 
     private fun TileLayer.draw(offX: Int, offY: Int) {
@@ -176,20 +173,44 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         }
     }
 
-    private fun ObjectGroup.draw(offX: Int, offY: Int) {
-        when (drawOrder) {
-            TOP_DOWN -> objectSet.sortedWith(comparator)
-            INDEX -> objectSet
+    private fun Sprite.draw(offX: Int, offY: Int) {
+        if (isVisible && gid != 0L) {
+            drawGid(gid, offX + offsetX, offY + offsetY, width, height)
+        } else if (isVisible && color != null) {
+            matrix.reset()
+            matrix.postTranslate(offX + offsetX * 1F, offY + offsetY * 1F)
+            canvas.drawRectangle(color.color, width, height, matrix)
+        }
+    }
+
+    private fun Entity.draw(offX: Int, offY: Int) {
+        val body = get(Body::class) ?: return
+        val x = body.x * map.tileWidth
+        val y = body.y * map.tileHeight
+        sprite?.draw(offX + x, offY + y)
+    }
+
+    private fun EntityGroup.draw(offX: Int, offY: Int) {
+        val size = entities.count { it.body != null && it.sprite != null }
+        val entityArray = arrayOfNulls<Entity>(size)
+        var i = 0
+        for (entity in entities) {
+            if (entity.body != null && entity.sprite != null) {
+                entityArray[i++] = entity
+            }
+        }
+        entityArray.requireNoNulls().apply {
+            sortWith(comparator)
         }.forEach {
-            it.draw(color, offX + offsetX, offY + offsetY)
+            it.draw(offX + offsetX, offY + offsetY)
         }
     }
 
     private fun Layer.draw(offX: Int, offY: Int) {
         if (isVisible) {
             when (this) {
+                is EntityGroup -> draw(offX + offsetX, offY + offsetY)
                 is TileLayer -> draw(offX + offsetX, offY + offsetY)
-                is ObjectGroup -> draw(offX + offsetX, offY + offsetY)
             }
         }
     }

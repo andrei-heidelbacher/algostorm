@@ -16,47 +16,38 @@
 
 package com.aheidelbacher.algostorm.state
 
-import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.state.TileSet.Tile
+import com.aheidelbacher.algostorm.state.Builders.tile
+import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+
+import kotlin.test.assertEquals
 
 class TileSetTest {
     private val jsonDriver = JsonDriver()
     private val fileStream = FileInputStream(
             java.io.File("src/test/resources/testTileSet.json")
     )
-    private val tileSet = TileSet(
-            name = "world",
-            tileWidth = 24,
-            tileHeight = 24,
-            image = Image(File("/tileset/algoventure/world.png"), 288, 240),
-            columns = 12,
-            tileCount = 120,
-            tiles = mapOf(
-                    1 to Tile(animation = listOf(Frame(1, 250), Frame(2, 250))),
-                    2 to Tile(objectGroup = ObjectGroup(
-                            name = "",
-                            objects = mutableListOf(Object(
-                                    height = 24,
-                                    width = 24,
-                                    id = 1,
-                                    name = "",
-                                    type = "",
-                                    properties = mapOf("z" to Property(5)),
-                                    x = 0,
-                                    y = 0
-                            ))
-                    ))
-            )
-    )
+    private val tileSet = tileSet {
+        name = "world"
+        tileWidth = 24
+        tileHeight = 24
+        image("/tileset/algoventure/world.png", 288, 240)
+        +tile {
+            id = 1
+            +Frame(1, 250)
+            +Frame(2, 250)
+        }
+        +tile {
+            id = 2
+        }
+    }
 
     @Test
     fun testTileSetDeserialization() {

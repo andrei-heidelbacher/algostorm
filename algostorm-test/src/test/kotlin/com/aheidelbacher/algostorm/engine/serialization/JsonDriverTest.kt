@@ -34,11 +34,6 @@ class JsonDriverTest : SerializationDriverTest() {
     override val testDataMock = TestDataMock(
             primitiveTestField = 1,
             innerTestData = InnerTestDataMock("non-empty"),
-            testProperties = mapOf(
-                    "inner" to InnerTestDataMock(""),
-                    "number" to 5,
-                    "string" to "five"
-            ),
             testList = listOf(1, 2, 3, 4, 5),
             defaultPrimitiveTestField = 1.5F
     )

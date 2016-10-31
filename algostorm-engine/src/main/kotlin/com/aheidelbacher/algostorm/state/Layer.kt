@@ -16,14 +16,11 @@
 
 package com.aheidelbacher.algostorm.state
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
-
-import java.util.Comparator
 
 /**
  * An abstract layer in the game world.
@@ -39,8 +36,8 @@ import java.util.Comparator
         property = "type"
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = TileLayer::class, name = "TileLayer"),
-        JsonSubTypes.Type(value = ObjectGroup::class, name = "ObjectGroup")
+        JsonSubTypes.Type(value = EntityGroup::class, name = "EntityGroup"),
+        JsonSubTypes.Type(value = TileLayer::class, name = "TileLayer")
 )
 sealed class Layer(
         val name: String,
@@ -77,173 +74,92 @@ sealed class Layer(
             val data: LongArray
     ) : Layer(name, isVisible, offsetX, offsetY)
 
+    /**
+     * A layer which contains a set of entities.
+     *
+     * @param entities the set of entities contained by this layer
+     */
     class EntityGroup internal constructor(
             name: String,
             isVisible: Boolean,
             offsetX: Int,
             offsetY: Int,
-            entities: List<Entity>
+            entities: Set<Entity>
     ) : Layer(name, isVisible, offsetX, offsetY) {
         @Transient private val entityMap =
                 entities.associateByTo(hashMapOf(), Entity::id)
 
+        /** A read-only view of the entities in this group. */
         val entities: Iterable<Entity> = entityMap.values
 
+        /**
+         * Checks whether this entity group contains an entity with the given
+         * id.
+         *
+         * @param id the id of the requested entity
+         * @return `true` if the entity with the given id exists in this entity
+         * group, `false` otherwise
+         */
         operator fun contains(id: Int): Boolean = id in entityMap
 
+        /**
+         * Returns the entity with the given id.
+         *
+         * @param id the id of the requested entity
+         * @return the requested entity, or `null` if it doesn't exist
+         */
         operator fun get(id: Int): Entity? = entityMap[id]
 
+        /**
+         * Adds the given entity to this entity group.
+         *
+         * If adding the entity to this group fails, the entity group remains
+         * unchanged.
+         *
+         * @throws IllegalArgumentException if the id of the given entity is not
+         * unique among the entities in this entity group
+         */
         fun add(entity: Entity) {
-            require(entity.id !in entityMap)
+            require(entity.id !in entityMap) {
+                "$entity id is not unique within $this!"
+            }
             entityMap[entity.id] = entity
         }
 
-        fun addAll(entities: Iterable<Entity>) {
-            require(entities.none { it.id in entityMap })
+        /**
+         * Adds the given entities to this entity group.
+         *
+         * If adding the entities to this group fails, the entity group remains
+         * unchanged.
+         *
+         * @throws IllegalArgumentException if the id of any given entity is not
+         * unique among the entities in this entity group
+         */
+        fun addAll(entities: Set<Entity>) {
+            require(entities.none { it.id in entityMap }) {
+                "$entities ids are not unique within $this!"
+            }
             entities.associateByTo(entityMap, Entity::id)
         }
 
+        /** Utility override. */
         fun addAll(vararg entities: Entity) {
-            require(entities.none { it.id in entityMap })
-            entities.associateByTo(entityMap, Entity::id)
+            addAll(entities.toSet())
         }
 
+        /**
+         * Removes the entity with the given id from this entity group and
+         * returns it.
+         *
+         * @param id the id of the entity that should be removed
+         * @return `null` if the entity with the given id doesn't exist in this
+         * entity group, or the entity itself otherwise
+         */
         fun remove(id: Int): Entity? = entityMap.remove(id)
 
+        /** Removes all entities from this entity group. */
         fun clear() {
             entityMap.clear()
-        }
-    }
-
-    /**
-     * A layer which contains a set of [objects].
-     *
-     * @property objects the set of objects contained by this layer
-     * @property drawOrder indicates the order in which the objects should be
-     * rendered
-     * @property color the color with which objects that have their `gid` set to
-     * `0` will be filled
-     * @throws IllegalArgumentException if [objects] contains multiple objects
-     * with the same id
-     */
-    class ObjectGroup private constructor(
-            name: String,
-            private val objects: MutableList<Object>,
-            val drawOrder: DrawOrder,
-            val color: Color?,
-            isVisible: Boolean,
-            offsetX: Int,
-            offsetY: Int
-    ) : Layer(name, isVisible, offsetX, offsetY) {
-        companion object {
-            /** Object group factory method. */
-            operator fun invoke(
-                    name: String,
-                    objects: List<Object>,
-                    drawOrder: DrawOrder = DrawOrder.TOP_DOWN,
-                    color: Color? = null,
-                    isVisible: Boolean = true,
-                    offsetX: Int = 0,
-                    offsetY: Int = 0
-            ): ObjectGroup = ObjectGroup(
-                    name = name,
-                    objects = objects.toMutableList(),
-                    drawOrder = drawOrder,
-                    color = color,
-                    isVisible = isVisible,
-                    offsetX = offsetX,
-                    offsetY = offsetY
-            )
-        }
-
-        /** The order in which objects are rendered. */
-        enum class DrawOrder {
-            @JsonProperty("top-down") TOP_DOWN,
-            @JsonProperty("index") INDEX
-        }
-
-        @Transient private val objectMap =
-                objects.associateByTo(hashMapOf(), Object::id)
-
-        init {
-            require(objects.size == objectMap.size) {
-                "$this contains multiple objects with the same id!"
-            }
-        }
-
-        /** A read-only view of the objects in this group. */
-        val objectSet: List<Object>
-            get() = objects
-
-        /**
-         * Returns the object with the given id.
-         *
-         * @param objectId the id of the requested object
-         * @return the requested object, or `null` if it doesn't exist
-         */
-        operator fun get(objectId: Int): Object? = objectMap[objectId]
-
-        /**
-         * Checks whether this object group contains an object with the given
-         * id.
-         *
-         * @param objectId the id of the requested object
-         * @return `true` if the object with the given id exists in this object
-         * group, `false` otherwise
-         */
-        operator fun contains(objectId: Int): Boolean = objectId in objectMap
-
-        /**
-         * Adds the given object to this object group.
-         *
-         * @throws IllegalArgumentException if the id of the given object is not
-         * unique among the objects in this object group
-         */
-        fun add(obj: Object) {
-            require(obj.id !in objectMap) {
-                "$obj id is not unique within $this!"
-            }
-            objects.add(obj)
-            objectMap[obj.id] = obj
-        }
-
-        /**
-         * Adds the given objects to this object group.
-         *
-         * @throws IllegalArgumentException if the id of any given objects is
-         * not unique among the objects in this object group and the given
-         * objects
-         */
-        fun addAll(objects: Iterable<Object>) {
-            objects.forEach { add(it) }
-        }
-
-        /**
-         * Removes the object with the given id from this object group.
-         *
-         * @param objectId the id of the object that should be removed
-         * @return `true` if the specified object was successfully removed,
-         * `false` if it didn't exist in this object group
-         */
-        fun remove(objectId: Int): Boolean = objectMap[objectId]?.let { obj ->
-            objectMap.remove(objectId)
-            objects.remove(obj)
-        } ?: false
-
-        /** Removes all objects from this object group. */
-        fun clear() {
-            objects.clear()
-            objectMap.clear()
-        }
-
-        /**
-         * Sorts the objects in this object group using the given comparator.
-         *
-         * @param comparator the comparator used to order the objects in this
-         * object group
-         */
-        fun sortWith(comparator: Comparator<Object>) {
-            objects.sortWith(comparator)
         }
     }
 }

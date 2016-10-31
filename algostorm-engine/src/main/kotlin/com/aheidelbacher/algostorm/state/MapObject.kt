@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.state
 
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
@@ -32,17 +32,17 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
  * @property tileWidth the width of a tile in pixels
  * @property tileHeight the height of a tile in pixels
  * @property orientation the orientation of the map
- * @property renderOrder the order in which objects and tiles are rendered
+ * @property renderOrder the order in which tiles are rendered
  * @property tileSets the tile sets used for rendering
  * @property layers the layers of the game
  * @property backgroundColor the color of the map background
  * @property version the version of this map
- * @property nextObjectId the next available id for an object
- * @throws IllegalArgumentException if [nextObjectId] is negative or if there
- * are multiple tile sets with the same name or multiple layers with the same
- * name or if [width] or [height] or [tileWidth] or [tileHeight] are not
- * positive or if there are multiple objects with the same id or if
- * [nextObjectId] is not greater than the maximum object id
+ * @property nextEntityId the next available id for an entity
+ * @throws IllegalArgumentException if [nextEntityId] is not positive or if
+ * there are multiple tile sets with the same name or multiple layers with the
+ * same name or if [width] or [height] or [tileWidth] or [tileHeight] are not
+ * positive or if there are multiple entities with the same id or if
+ * [nextEntityId] is not greater than the maximum entity id
  */
 class MapObject internal constructor(
         val width: Int,
@@ -55,8 +55,8 @@ class MapObject internal constructor(
         val layers: List<Layer>,
         val backgroundColor: Color?,
         val version: String,
-        private var nextObjectId: Int
-) : Object.Factory {
+        private var nextEntityId: Int
+) : Entity.Factory {
     /** The orientation of the map. */
     enum class Orientation {
         @JsonProperty("orthogonal") ORTHOGONAL
@@ -78,21 +78,21 @@ class MapObject internal constructor(
         require(height > 0) { "$this height must be positive!" }
         require(tileWidth > 0) { "$this tile width must be positive!" }
         require(tileHeight > 0) { "$this tile height must be positive!" }
-        require(nextObjectId >= 0) { "$this next object id can't be negative!" }
+        require(nextEntityId > 0) { "$this next entity id must be positive!" }
         require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
             "Different tile sets in $this can't have the same name!"
         }
         require(layers.distinctBy(Layer::name).size == layers.size) {
             "Different layers in $this can't have the same name!"
         }
-        val ids = layers.filterIsInstance<ObjectGroup>()
-                .flatMap(ObjectGroup::objectSet).map(Object::id)
+        val ids = layers.filterIsInstance<EntityGroup>()
+                .flatMap(EntityGroup::entities).map(Entity::id)
         require(ids.distinct().size == ids.size) {
-            "$this contains objects with duplicate ids!"
+            "$this contains entities with duplicate ids!"
         }
         ids.max()?.let { maxId ->
-            require(nextObjectId > maxId) {
-                "$this next object id is not greater than max object id $maxId!"
+            require(nextEntityId > maxId) {
+                "$this next entity id is not greater than max entity id $maxId!"
             }
         }
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
@@ -109,41 +109,10 @@ class MapObject internal constructor(
         gidToTileSet = tileSetsByGid.toTypedArray()
     }
 
-    /**
-     * Returns the next available object id and increments [nextObjectId].
-     *
-     * @return the next available object id
-     * @throws IllegalStateException if there are too many objects
-     */
-    private fun getAndIncrementNextObjectId(): Int {
-        check(nextObjectId < Int.MAX_VALUE) { "Too many objects in $this!" }
-        val id = nextObjectId
-        nextObjectId++
-        return id
+    override fun create(components: Collection<Component>): Entity {
+        check(nextEntityId < Int.MAX_VALUE) { "Too many entities in $this!" }
+        return Entity(nextEntityId++, components)
     }
-
-    override fun create(
-            name: String,
-            type: String,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            isVisible: Boolean,
-            gid: Long,
-            properties: Map<String, Property>
-    ): Object = Object(
-            id = getAndIncrementNextObjectId(),
-            name = name,
-            type = type,
-            x = x,
-            y = y,
-            width = width,
-            height = height,
-            isVisible = isVisible,
-            gid = gid,
-            properties = properties
-    )
 
     /**
      * Returns the tile set which contains the given [gid].

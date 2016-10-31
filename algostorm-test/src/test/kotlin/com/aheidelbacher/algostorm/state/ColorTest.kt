@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.state
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
+
+import kotlin.test.assertEquals
 
 class ColorTest {
     @Test
@@ -85,7 +85,7 @@ class ColorTest {
     fun testEquals() {
         val argbRed = Color("#FFFF0000")
         val rgbRed = Color("#FF0000")
-        assertTrue(argbRed == rgbRed)
+        assertEquals(argbRed, rgbRed)
     }
 
     @Test

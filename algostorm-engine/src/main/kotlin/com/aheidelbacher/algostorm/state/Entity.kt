@@ -28,12 +28,13 @@ import kotlin.reflect.KClass
  * @property id the unique identifier of this entity
  */
 data class Entity(val id: Int) {
+    /** Factory that handles associating unique ids to created entities. */
     interface Factory {
-        fun create(components: Iterable<Component>): Entity
+        fun create(components: Collection<Component>): Entity
     }
 
     @JsonCreator
-    constructor(id: Int, components: Iterable<Component>) : this(id) {
+    constructor(id: Int, components: Collection<Component>) : this(id) {
         components.associateByTo(componentMap) { it.javaClass.kotlin }
     }
 
@@ -45,14 +46,43 @@ data class Entity(val id: Int) {
             hashMapOf<KClass<out Component>, Component>()
 
     /** An immutable view of this entity's components. */
-    val components: Iterable<Component> = componentMap.values
+    val components: Collection<Component> = componentMap.values
 
+    /**
+     * Checks whether this entity contains a component of the specified type.
+     *
+     * The specified type must be final.
+     *
+     * @param T the type of the component
+     * @param type the class object of the component
+     * @return `true` if this entity contains the specified component type,
+     * `false` otherwise
+     */
     operator fun <T : Component> contains(type: KClass<T>): Boolean =
             type in componentMap
 
+    /**
+     * Retrieves the component with the specified type.
+     *
+     * The specified type must be final.
+     *
+     * @param T the type of the component
+     * @param type the class object of the component
+     * @return the requested component, or `null` if this entity doesn't contain
+     * the specified component type
+     */
     operator fun <T : Component> get(type: KClass<T>): T? =
             type.java.cast(componentMap[type])
 
+    /**
+     * Sets the value of the specified component type.
+     *
+     * The specified type must be final.
+     *
+     * @param T the type of the component
+     * @param type the class object of the component
+     * @param value the new value
+     */
     operator fun <T : Component> set(type: KClass<T>, value: T) {
         componentMap[type] = value
     }

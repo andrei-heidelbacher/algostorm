@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.state
 
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 
 /**
  * A tile set used for rendering.
@@ -40,6 +40,8 @@ import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [columns] or
  * [tileCount] are not positive or if [margin] or [spacing] are negative or if
  * the specified offsets, tile sizes and tile count exceed the image dimensions
+ * or if [tiles] has duplicate tile ids or if [tiles] contains tile ids or
+ * animation frames with tile ids not in the range `0..tileCount - 1`
  */
 data class TileSet internal constructor(
         val name: String,
@@ -52,24 +54,21 @@ data class TileSet internal constructor(
         val tileCount: Int,
         val tileOffsetX: Int,
         val tileOffsetY: Int,
-        val tiles: Map<Int, Tile>
+        val tiles: Set<Tile>
 ) {
     /**
      * Meta-data associated to a tile.
      *
+     * @property id the local id of this tile
      * @property animation a list of frames representing an animation. Must be
-     * `null` (indicating no animation) or must contain at least two frames.
-     * @property objectGroup an object group containing tile collision
-     * information
-     * @throws IllegalArgumentException if [animation] is not `null` and
-     * contains less than two frames or if [objectGroup] is not `null` and
-     * contains an object with a non-zero `gid`
+     * either `null` (indicating no animation) or non-empty
+     * @throws IllegalArgumentException if [animation] is not `null` and empty
+     * or the tile id of the first animation frame differs from [id]
      */
     data class Tile internal constructor(
-            val animation: List<Frame>?,
-            val objectGroup: ObjectGroup?,
-            override val properties: Map<String, Property>
-    ) : Properties {
+            val id: Int,
+            val animation: List<Frame>?
+    ) {
         companion object {
             /** Whether this global tile id is flipped horizontally. */
             val Long.isFlippedHorizontally: Boolean
@@ -112,11 +111,14 @@ data class TileSet internal constructor(
         }
 
         init {
-            require(animation?.isNotEmpty() ?: true) {
-                "$this animation can't have empty frame sequence!"
-            }
-            require(objectGroup?.objectSet?.all { it.gid == 0L } ?: true) {
-                "$this object group can't contain tile objects!"
+            require(id >= 0) { "$this id can't be negative!" }
+            if (animation != null) {
+                require(animation.isNotEmpty()) {
+                    "$this animation can't have empty frame sequence!"
+                }
+                require(animation.first().tileId == id) {
+                    "$this first animation frame must be equal to tile id!"
+                }
             }
         }
     }
@@ -153,9 +155,7 @@ data class TileSet internal constructor(
         }
     }
 
-    @Transient private val tilesArray = Array(tileCount) {
-        tiles[it] ?: Tile(null, null, emptyMap())
-    }
+    @Transient private val tilesArray = Array(tileCount) { Tile(it, null) }
     @Transient private val viewports = Array(tileCount) {
         Viewport(
                 image = image,
@@ -185,11 +185,19 @@ data class TileSet internal constructor(
         require(reqHeight <= image.height) {
             "$this image height must be at least $reqHeight!"
         }
-        require(tiles.all {
-            it.key == it.value.animation?.first()?.tileId ?: it.key
-        }) {
-            "$this first animation frame tile id must equal containing tile id!"
+        require(tiles.distinctBy { it.id }.size == tiles.size) {
+            "$this local tile ids must be unique!"
         }
+        require(tiles.all { it.id in 0 until tileCount }) {
+            "$this local tile ids must be between 0 and ${tileCount - 1}!"
+        }
+        val tileIds = tiles.map(Tile::id) + tiles.flatMap {
+            it.animation?.map(Frame::tileId) ?: emptyList()
+        }
+        require(tileIds.all { it in 0 until tileCount }) {
+            "$this all tile ids must be between 0 and ${tileCount - 1}"
+        }
+        tiles.forEach { tilesArray[it.id] = it }
     }
 
     /**

@@ -3,14 +3,6 @@
   "innerTestData": {
     "testField": "non-empty"
   },
-  "testProperties": {
-    "inner": {
-      "@class": "com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock$InnerTestDataMock",
-      "testField": ""
-    },
-    "number": 5,
-    "string": "five"
-  },
   "defaultPrimitiveTestField": 1.5,
   "testList": [
     1,

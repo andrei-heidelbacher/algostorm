@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.state
+package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.aheidelbacher.algostorm.systems.physics2d.squareDistance
 
-/**
- * An abstract component which holds data about a certain aspect of the game.
- *
- * All components should be immutable and final data classes.
- */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "@class"
-)
-interface Component
+data class Circle(val x: Int, val y: Int, val radius: Int) {
+    init {
+        require(radius >= 0) { "$this radius can't be negative!" }
+    }
+
+    fun contains(x: Int, y: Int): Boolean =
+            squareDistance(this.x, this.y, x, y) <= 1L * radius * radius
+
+    operator fun contains(point: Point): Boolean = contains(point.x, point.y)
+
+    fun translate(dx: Int, dy: Int): Circle = copy(x = x + dx, y = y + dy)
+}

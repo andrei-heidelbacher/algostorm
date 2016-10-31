@@ -24,8 +24,6 @@ import com.aheidelbacher.algostorm.state.MapObject.RenderOrder
 import com.aheidelbacher.algostorm.state.TileSet.Tile
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 
-import java.util.HashMap
-
 import kotlin.properties.Delegates
 
 object Builders {
@@ -42,7 +40,7 @@ object Builders {
         var version: String = "1.0"
         private var nextObjectId: Int = 1
 
-        override fun create(components: Iterable<Component>): Entity {
+        override fun create(components: Collection<Component>): Entity {
             check(nextObjectId < Int.MAX_VALUE) {
                 "Too many entities in $this!"
             }
@@ -68,7 +66,7 @@ object Builders {
                 layers = layers.toList(),
                 backgroundColor = backgroundColor,
                 version = version,
-                nextObjectId = nextObjectId
+                nextEntityId = nextObjectId
         )
     }
 
@@ -81,7 +79,7 @@ object Builders {
         var spacing: Int = 0
         var tileOffsetX: Int = 0
         var tileOffsetY: Int = 0
-        val tiles = hashMapOf<Int, Tile>()
+        val tiles: MutableSet<Tile> = hashSetOf()
 
         fun image(source: String, width: Int, height: Int) {
             image = Image(File(source), width, height)
@@ -91,8 +89,8 @@ object Builders {
             image = Image(source, width, height)
         }
 
-        operator fun Pair<Int, Tile>.unaryPlus() {
-            tiles[first] = second
+        operator fun Tile.unaryPlus() {
+            tiles.add(this)
         }
 
         fun build(): TileSet = TileSet(
@@ -106,28 +104,30 @@ object Builders {
                 spacing = spacing,
                 tileOffsetX = tileOffsetX,
                 tileOffsetY = tileOffsetY,
-                tiles = HashMap(tiles)
+                tiles = tiles.toSet()
         )
     }
 
     class TileBuilder {
-        var tileId: Int by Delegates.notNull()
+        var id: Int by Delegates.notNull()
         val animation: MutableList<Frame> = arrayListOf()
 
         operator fun Frame.unaryPlus() {
             animation.add(this)
         }
 
-        fun build(): Pair<Int, Tile> =
-                tileId to Tile(animation, null, emptyMap())
+        fun build(): Tile = Tile(
+                id = id,
+                animation = if (animation.isEmpty()) null else animation
+        )
     }
 
     class TileLayerBuilder {
         lateinit var name: String
         lateinit var data: LongArray
-        var isVisible: Boolean by Delegates.notNull()
-        var offsetX: Int by Delegates.notNull()
-        var offsetY: Int by Delegates.notNull()
+        var isVisible: Boolean = true
+        var offsetX: Int = 0
+        var offsetY: Int = 0
 
         fun build(): TileLayer =
                 TileLayer(name, isVisible, offsetX, offsetY, data.copyOf())
@@ -135,10 +135,10 @@ object Builders {
 
     class EntityGroupBuilder {
         lateinit var name: String
-        var isVisible: Boolean by Delegates.notNull()
-        var offsetX: Int by Delegates.notNull()
-        var offsetY: Int by Delegates.notNull()
-        val entities: MutableList<Entity> = arrayListOf()
+        var isVisible: Boolean = true
+        var offsetX: Int = 0
+        var offsetY: Int = 0
+        val entities: MutableSet<Entity> = hashSetOf()
 
         operator fun Entity.unaryPlus() {
             entities.add(this)
@@ -149,12 +149,12 @@ object Builders {
                 isVisible = isVisible,
                 offsetX = offsetX,
                 offsetY = offsetY,
-                entities = entities
+                entities = entities.toSet()
         )
     }
 
     class EntityBuilder {
-        val components: MutableList<Component> = arrayListOf()
+        val components: MutableCollection<Component> = arrayListOf()
 
         operator fun Component.unaryPlus() {
             components.add(this)
@@ -169,7 +169,7 @@ object Builders {
     inline fun tileSet(init: TileSetBuilder.() -> Unit): TileSet =
             TileSetBuilder().apply(init).build()
 
-    inline fun tile(init: TileBuilder.() -> Unit): Pair<Int, Tile> =
+    inline fun tile(init: TileBuilder.() -> Unit): Tile =
             TileBuilder().apply(init).build()
 
     inline fun tileLayer(init: TileLayerBuilder.() -> Unit): TileLayer =
@@ -183,35 +183,4 @@ object Builders {
 
     inline fun entity(id: Int, init: EntityBuilder.() -> Unit): Entity =
             EntityBuilder().apply(init).build(id)
-
-    fun test() {
-        mapObject {
-            +entityGroup {
-                name = "hello"
-                isVisible = false
-                offsetX = -1
-                +entity {
-                    +object : Component {}
-                }
-                +entity(5) {
-                    +object : Component {}
-                }
-            }
-            +tileSet {
-                name = "tile"
-                tileWidth = 20
-                tileHeight = 19
-                image("img.png", 200, 200)
-                +tile {
-                    tileId = 5
-                    +Frame(5, 10)
-                    +Frame(9, 10)
-                }
-            }
-            +tileLayer {
-                name = "tileLayer"
-                data = LongArray(width * height) { 0L }
-            }
-        }
-    }
 }

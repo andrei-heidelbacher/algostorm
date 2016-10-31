@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
+
+import com.aheidelbacher.algostorm.systems.physics2d.squareDistance
 
 data class Point(val x: Int, val y: Int) {
     fun translate(dx: Int, dy: Int): Point = Point(x + dx, y + dy)

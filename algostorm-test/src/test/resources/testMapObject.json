@@ -20,8 +20,7 @@
     "tileCount": 6,
     "margin": 0,
     "spacing": 0,
-    "properties": {},
-    "tiles": {},
+    "tiles": [],
     "tileOffsetX": 0,
     "tileOffsetY": 0
   }],
@@ -35,32 +34,19 @@
       "offsetY": 0
     },
     {
-      "type": "ObjectGroup",
-      "name": "objects",
+      "type": "EntityGroup",
+      "name": "entities",
       "isVisible": true,
-      "drawOrder": "top-down",
-      "objects": [{
+      "entities": [{
         "id": 1,
-        "name": "",
-        "type": "",
-        "x": 0,
-        "y": 0,
-        "width": 24,
-        "height": 24,
-        "isVisible": true,
-        "gid": 1,
-        "properties": {
-          "z": {
-            "type": "int",
-            "value": 2
-          },
-          "sound": {
-            "type": "file",
-            "value": "s.mp3"
+        "components": [
+          {
+            "@class": "com.aheidelbacher.algostorm.state.ComponentMock",
+            "id": 1
           }
-        }
+        ]
       }]
     }
   ],
-  "nextObjectId": 2
+  "nextEntityId": 2
 }

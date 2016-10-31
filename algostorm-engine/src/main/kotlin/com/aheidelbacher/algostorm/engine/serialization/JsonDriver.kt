@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.engine.serialization
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -41,10 +40,6 @@ class JsonDriver : SerializationDriver {
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-        enableDefaultTyping(
-                ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT,
-                JsonTypeInfo.As.PROPERTY
-        )
     }
 
     @Throws(IOException::class)

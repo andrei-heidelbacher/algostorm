@@ -21,25 +21,21 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.state.Builders
 import com.aheidelbacher.algostorm.state.Builders.entity
 import com.aheidelbacher.algostorm.state.Builders.entityGroup
-import com.aheidelbacher.algostorm.state.Builders.mapObject
 import com.aheidelbacher.algostorm.state.Builders.tileLayer
 import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
-import com.aheidelbacher.algostorm.state.Layer
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.state.Layer.TileLayer
-import com.aheidelbacher.algostorm.state.MapObject
-import com.aheidelbacher.algostorm.state.Object
-import com.aheidelbacher.algostorm.state.TileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.systems.physics2d.Rectangle
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
+import com.aheidelbacher.algostorm.systems.physics2d.Body
+import com.aheidelbacher.algostorm.systems.physics2d.Body.Type.HOLLOW
+import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
 class RenderingSystemTest {
@@ -58,22 +54,18 @@ class RenderingSystemTest {
             height = graphicsDriver.height
     )
 
-    fun makeMap(
-            tileSets: List<TileSet> = listOf(tileSet {
-                name = "test"
-                tileWidth = tileWidth
-                tileHeight = tileHeight
-                image = this@RenderingSystemTest.image
-            }),
-            layers: List<Layer> = emptyList()
-    ): MapObject = mapObject {
-        width = width
-        height = height
-        tileWidth = tileWidth
-        tileHeight = tileHeight
+    val mapBuilder = Builders.MapObjectBuilder().apply {
+        width = 12
+        height = 12
+        tileWidth = 24
+        tileHeight = 24
         backgroundColor = Color("#ffffffff")
-        tileSets.forEach { +it }
-        layers.forEach { +it }
+        +tileSet {
+            name = "test"
+            tileWidth = 24
+            tileHeight = 24
+            image("testImage.png", tileWidth, tileHeight)
+        }
     }
 
     @Before
@@ -88,11 +80,12 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderTileLayer() {
-        val tileLayer = TileLayer(
-                name = "floor",
+        val map = mapBuilder.apply {
+            +tileLayer {
+                name = "floor"
                 data = LongArray(width * height) { 1 }
-        )
-        val map = makeMap(layers = listOf(tileLayer))
+            }
+        }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
@@ -107,8 +100,8 @@ class RenderingSystemTest {
                         width = tileWidth,
                         height = tileHeight,
                         matrix = Matrix.identity().postTranslate(
-                                dx = x - camera.x.toFloat(),
-                                dy = y - tileHeight + 1 - camera.y.toFloat()
+                                dx = 1F * x - camera.x,
+                                dy = 1F * y - camera.y
                         )
                 )
             }
@@ -118,18 +111,20 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderColoredObjects() {
-        val objectGroup = ObjectGroup(
-                name = "objects",
-                color = Color("#000000ff"),
-                objects = mutableListOf(Object(
-                        id = 1,
-                        x = 0,
-                        y = tileHeight - 1,
-                        width = tileWidth,
-                        height = tileHeight
-                ))
-        )
-        val map = makeMap(layers = listOf(objectGroup))
+        val map = mapBuilder.apply {
+            +entityGroup {
+                name = "entities"
+                +entity {
+                    +Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            color = Color("#000000ff")
+                    )
+                    +Body(x = 0, y = 0, type = HOLLOW)
+                }
+            }
+        }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
@@ -138,8 +133,8 @@ class RenderingSystemTest {
                 width = tileWidth,
                 height = tileHeight,
                 matrix = Matrix.identity().postTranslate(
-                        dx = -camera.x.toFloat(),
-                        dy = -camera.y.toFloat()
+                        dx = -1F * camera.x,
+                        dy = -1F * camera.y
                 )
         )
         graphicsDriver.assertEmptyDrawQueue()
@@ -147,18 +142,20 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedHorizontallyObject() {
-        val objectGroup = ObjectGroup(
-                name = "objects",
-                objects = mutableListOf(Object(
-                        id = 1,
-                        x = 0,
-                        y = 0,
-                        width = tileWidth,
-                        height = tileHeight,
-                        gid = 1L.flipHorizontally()
-                ))
-        )
-        val map = makeMap(layers = listOf(objectGroup))
+        val map = mapBuilder.apply {
+            +entityGroup {
+                name = "entities"
+                +entity {
+                    +Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            gid = 1L.flipHorizontally()
+                    )
+                    +Body(x = 0, y = 0, type = HOLLOW)
+                }
+            }
+        }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
@@ -169,8 +166,8 @@ class RenderingSystemTest {
                 width = tileWidth,
                 height = tileHeight,
                 matrix = Matrix.identity().postScale(-1F, 1F).postTranslate(
-                        dx = tileWidth - camera.x.toFloat(),
-                        dy = -camera.y.toFloat() - tileHeight + 1
+                        dx = 1F * tileWidth - camera.x,
+                        dy = -1F * camera.y
                 )
         )
         graphicsDriver.assertEmptyDrawQueue()
@@ -178,18 +175,20 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedVerticallyObject() {
-        val objectGroup = ObjectGroup(
-                name = "objects",
-                objects = mutableListOf(Object(
-                        id = 1,
-                        x = 0,
-                        y = 0,
-                        width = tileWidth,
-                        height = tileHeight,
-                        gid = 1L.flipVertically()
-                ))
-        )
-        val map = makeMap(layers = listOf(objectGroup))
+        val map = mapBuilder.apply {
+            +entityGroup {
+                name = "entities"
+                +entity {
+                    +Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            gid = 1L.flipVertically()
+                    )
+                    +Body(x = 0, y = 0, type = HOLLOW)
+                }
+            }
+        }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
@@ -200,8 +199,8 @@ class RenderingSystemTest {
                 width = tileWidth,
                 height = tileHeight,
                 matrix = Matrix.identity().postScale(1F, -1F).postTranslate(
-                        dx = -camera.x.toFloat(),
-                        dy = -camera.y.toFloat() + 1
+                        dx = -1F * camera.x,
+                        dy = -1F * camera.y + tileHeight
                 )
         )
         graphicsDriver.assertEmptyDrawQueue()
@@ -209,18 +208,20 @@ class RenderingSystemTest {
 
     @Test
     fun testRenderFlippedDiagonallyObject() {
-        val objectGroup = ObjectGroup(
-                name = "objects",
-                objects = mutableListOf(Object(
-                        id = 1,
-                        x = 0,
-                        y = 0,
-                        width = tileWidth,
-                        height = tileHeight,
-                        gid = 1L.flipDiagonally()
-                ))
-        )
-        val map = makeMap(layers = listOf(objectGroup))
+        val map = mapBuilder.apply {
+            +entityGroup {
+                name = "entities"
+                +entity {
+                    +Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            gid = 1L.flipDiagonally()
+                    )
+                    +Body(x = 0, y = 0, type = HOLLOW)
+                }
+            }
+        }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
@@ -234,8 +235,8 @@ class RenderingSystemTest {
                         .postRotate(90F)
                         .postScale(1F, -1F)
                         .postTranslate(
-                                dx = tileWidth - camera.x.toFloat(),
-                                dy = -camera.y.toFloat() + 1
+                                dx = 1F * tileWidth - camera.x,
+                                dy = 1F * tileHeight - camera.y
                         )
         )
         graphicsDriver.assertEmptyDrawQueue()

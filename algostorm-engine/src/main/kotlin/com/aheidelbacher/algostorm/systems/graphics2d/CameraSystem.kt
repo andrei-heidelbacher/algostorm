@@ -19,11 +19,12 @@ package com.aheidelbacher.algostorm.systems.graphics2d
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
+import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.body
 
 class CameraSystem(
         private val camera: Camera,
-        private val objectGroup: ObjectGroup,
+        private val entityGroup: EntityGroup,
         private var followedObjectId: Int? = null
 ) : Subscriber {
     object UpdateCamera : Event
@@ -38,9 +39,9 @@ class CameraSystem(
 
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
-            objectGroup[id]?.let { obj ->
-                camera.x = obj.x //+ obj.width / 2
-                camera.y = obj.y //+ obj.height / 2
+            entityGroup[id]?.body?.let { entity ->
+                camera.x = entity.x //+ obj.width / 2
+                camera.y = entity.y //+ obj.height / 2
             }
         }
     }
