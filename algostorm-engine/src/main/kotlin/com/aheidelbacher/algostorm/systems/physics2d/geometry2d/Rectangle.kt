@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
 
-import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Point
-
 /**
  * A rectangle which covers the area `[x, x + width - 1] x [y, y + height - 1]`.
  *
@@ -40,7 +38,7 @@ data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
      * @param other the rectangle with which the intersection is checked
      * @return `true` if the two rectangles intersect, `false` otherwise
      */
-    fun intersects(other: Rectangle): Boolean = com.aheidelbacher.algostorm.systems.physics2d.intersects(
+    fun intersects(other: Rectangle): Boolean = intersects(
             x = x,
             y = y,
             width = width,
@@ -65,7 +63,7 @@ data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int) {
      * @throws IllegalArgumentException if [width] or [height] are not positive
      */
     fun intersects(x: Int, y: Int, width: Int, height: Int): Boolean =
-            com.aheidelbacher.algostorm.systems.physics2d.intersects(
+            intersects(
                     x = this.x,
                     y = this.y,
                     width = this.width,

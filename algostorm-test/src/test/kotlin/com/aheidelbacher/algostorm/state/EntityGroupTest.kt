@@ -18,10 +18,9 @@ package com.aheidelbacher.algostorm.state
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.state.Builders.entity
-import com.aheidelbacher.algostorm.state.Builders.entityGroup
-import com.aheidelbacher.algostorm.state.Builders.mapObject
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
+import com.aheidelbacher.algostorm.state.builders.entity
+import com.aheidelbacher.algostorm.state.builders.mapObject
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -41,7 +40,7 @@ class EntityGroupTest {
         height = 32
         tileWidth = 24
         tileHeight = 24
-        +entityGroup {
+        +com.aheidelbacher.algostorm.state.builders.entityGroup {
             name = "entityGroup"
             for (i in 1..ENTITY_COUNT) {
                 +entity {

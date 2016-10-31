@@ -19,7 +19,6 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.state.Component
-import com.aheidelbacher.algostorm.state.Entity
 
 /**
  * A component which contains data about the physical location of the entity.
@@ -29,18 +28,6 @@ import com.aheidelbacher.algostorm.state.Entity
  * @property type the type of this body
  */
 data class Body(val x: Int, val y: Int, val type: Type) : Component {
-    companion object {
-        /** The `Body` component of this entity. */
-        val Entity.body: Body?
-            get() = get(Body::class)
-
-        fun Body.transform(dx: Int, dy: Int): Body =
-                copy(x = x + dx, y = y + dy)
-
-        fun Body.overlaps(other: Body): Boolean =
-                x == other.x && y == other.y
-    }
-
     /** A property that indicates how a body interacts with other bodies. */
     enum class Type {
         /**

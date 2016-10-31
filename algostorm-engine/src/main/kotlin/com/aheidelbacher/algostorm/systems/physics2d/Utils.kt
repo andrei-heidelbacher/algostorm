@@ -16,19 +16,22 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.state.Entity
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 
-/**
- * An event which signals that the given entity has been transformed.
- *
- * Only the [PhysicsSystem] should post this event.
- *
- * @property objectId the id of the transformed entity
- * @property dx the horizontal translation amount in tiles
- * @property dy the vertical translation amount in tiles (positive is down)
- */
-data class Transformed(
-        val objectId: Int,
-        val dx: Int,
-        val dy: Int
-) : Event
+/** The `Body` component of this entity. */
+val Entity.body: Body?
+    get() = get(Body::class)
+
+fun Body.transform(dx: Int, dy: Int): Body =
+        copy(x = x + dx, y = y + dy)
+
+fun Body.overlaps(other: Body): Boolean =
+        x == other.x && y == other.y
+
+fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<Entity> =
+        entities.filter { entity ->
+            entity.body?.let { body ->
+                body.x == x && body.y == y
+            } ?: false
+        }

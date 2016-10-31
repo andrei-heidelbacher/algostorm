@@ -20,9 +20,8 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.state.Builders.tile
-import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.state.builders.tile
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -34,7 +33,7 @@ class TileSetTest {
     private val fileStream = FileInputStream(
             java.io.File("src/test/resources/testTileSet.json")
     )
-    private val tileSet = tileSet {
+    private val tileSet = com.aheidelbacher.algostorm.state.builders.tileSet {
         name = "world"
         tileWidth = 24
         tileHeight = 24

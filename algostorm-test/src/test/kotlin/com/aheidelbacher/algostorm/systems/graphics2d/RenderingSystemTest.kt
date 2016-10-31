@@ -21,17 +21,17 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.state.Builders
-import com.aheidelbacher.algostorm.state.Builders.entity
-import com.aheidelbacher.algostorm.state.Builders.entityGroup
-import com.aheidelbacher.algostorm.state.Builders.tileLayer
-import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.state.builders.MapObjectBuilder
+import com.aheidelbacher.algostorm.state.builders.entity
+import com.aheidelbacher.algostorm.state.builders.entityGroup
+import com.aheidelbacher.algostorm.state.builders.tileLayer
+import com.aheidelbacher.algostorm.state.builders.tileSet
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.physics2d.Body
 import com.aheidelbacher.algostorm.systems.physics2d.Body.Type.HOLLOW
@@ -54,7 +54,7 @@ class RenderingSystemTest {
             height = graphicsDriver.height
     )
 
-    val mapBuilder = Builders.MapObjectBuilder().apply {
+    val mapBuilder = MapObjectBuilder().apply {
         width = 12
         height = 12
         tileWidth = 24

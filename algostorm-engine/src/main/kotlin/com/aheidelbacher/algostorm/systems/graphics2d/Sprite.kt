@@ -18,10 +18,6 @@ package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.Component
-import com.aheidelbacher.algostorm.state.Entity
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 
 /**
  * A component which contains data required for rendering.
@@ -48,27 +44,9 @@ data class Sprite(
         val offsetY: Int = 0,
         val color: Color? = null
 ) : Component {
-    companion object {
-        /** The `Sprite` component of this entity. */
-        val Entity.sprite: Sprite?
-            get() = get(Sprite::class)
-    }
-
     init {
         require(gid >= 0L) { "$this gid must not be negative!" }
         require(width > 0) { "$this width must be positive!" }
         require(height > 0) { "$this height must be positive!" }
     }
-
-    /** Utility flag. */
-    val isFlippedDiagonally: Boolean
-        get() = gid.isFlippedDiagonally
-
-    /** Utility flag. */
-    val isFlippedHorizontally: Boolean
-        get() = gid.isFlippedHorizontally
-
-    /** Utility flag. */
-    val isFlippedVertically: Boolean
-        get() = gid.isFlippedVertically
 }

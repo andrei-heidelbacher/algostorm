@@ -21,9 +21,6 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.body
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.overlaps
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.transform
 import com.aheidelbacher.algostorm.systems.physics2d.Body.Type
 
 /**
@@ -32,8 +29,6 @@ import com.aheidelbacher.algostorm.systems.physics2d.Body.Type
  *
  * @property entityGroup the entity group used to retrieve and update the
  * entities
- * @property publisher the publisher used to post `Transformed` and `Collision`
- * events
  */
 class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
     private lateinit var publisher: Publisher
@@ -61,8 +56,7 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
      * the indicated amount. If the moved entity is rigid and there are any
      * other rigid entities with their boxes overlapping the destination
      * location, the entity is not transformed and a [Collision] event is
-     * triggered with every overlapping entity, having this entity as the source
-     * and each other entity as the target.
+     * triggered with every overlapping entity.
      *
      * @param event the [TransformIntent] event
      */

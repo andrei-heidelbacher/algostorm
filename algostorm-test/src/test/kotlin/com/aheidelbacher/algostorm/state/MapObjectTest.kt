@@ -4,13 +4,13 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.state.Builders.entity
-import com.aheidelbacher.algostorm.state.Builders.entityGroup
-import com.aheidelbacher.algostorm.state.Builders.mapObject
-import com.aheidelbacher.algostorm.state.Builders.tileLayer
-import com.aheidelbacher.algostorm.state.Builders.tileSet
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.state.builders.entity
+import com.aheidelbacher.algostorm.state.builders.entityGroup
+import com.aheidelbacher.algostorm.state.builders.mapObject
+import com.aheidelbacher.algostorm.state.builders.tileLayer
+import com.aheidelbacher.algostorm.state.builders.tileSet
 
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream

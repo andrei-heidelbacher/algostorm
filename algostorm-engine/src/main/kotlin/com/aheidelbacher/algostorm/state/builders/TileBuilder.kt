@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.state.builders
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.state.TileSet.Tile
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
 
-/**
- * An event which signals that the given entity has been transformed.
- *
- * Only the [PhysicsSystem] should post this event.
- *
- * @property objectId the id of the transformed entity
- * @property dx the horizontal translation amount in tiles
- * @property dy the vertical translation amount in tiles (positive is down)
- */
-data class Transformed(
-        val objectId: Int,
-        val dx: Int,
-        val dy: Int
-) : Event
+import kotlin.properties.Delegates
+
+class TileBuilder {
+    var id: Int by Delegates.notNull()
+    val animation: MutableList<Frame> = arrayListOf()
+
+    operator fun Frame.unaryPlus() {
+        animation.add(this)
+    }
+
+    fun build(): Tile = Tile(
+            id = id,
+            animation = if (animation.isEmpty()) null else animation
+    )
+}

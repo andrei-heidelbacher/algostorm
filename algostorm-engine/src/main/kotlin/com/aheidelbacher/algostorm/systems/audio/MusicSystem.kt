@@ -52,6 +52,7 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      *
      * @param event the event which requests the music to be stopped
      */
+    @Suppress("unused_parameter")
     @Subscribe fun onStopMusic(event: StopMusic) {
         musicPlayer.stopMusic()
     }

@@ -19,11 +19,11 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.aheidelbacher.algostorm.event.Event
 
 /**
- * An event which signals that [sourceId] collided with [targetId].
+ * An event which signals that [selfId] collided with [otherId].
  *
  * Only the [PhysicsSystem] should post this event.
  *
- * @property sourceId the id of the object that triggered the collision
- * @property targetId the id of the object that was collided
+ * @property selfId the id of this entity, which triggered the collision
+ * @property otherId the id of the other entity, which was collided
  */
-data class Collision(val sourceId: Int, val targetId: Int) : Event
+data class Collision(val selfId: Int, val otherId: Int) : Event

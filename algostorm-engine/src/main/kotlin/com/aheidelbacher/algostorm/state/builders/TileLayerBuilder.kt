@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.state.builders
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.state.Layer.TileLayer
 
-/**
- * An event which signals that the given entity has been transformed.
- *
- * Only the [PhysicsSystem] should post this event.
- *
- * @property objectId the id of the transformed entity
- * @property dx the horizontal translation amount in tiles
- * @property dy the vertical translation amount in tiles (positive is down)
- */
-data class Transformed(
-        val objectId: Int,
-        val dx: Int,
-        val dy: Int
-) : Event
+class TileLayerBuilder {
+    lateinit var name: String
+    lateinit var data: LongArray
+    var isVisible: Boolean = true
+    var offsetX: Int = 0
+    var offsetY: Int = 0
+
+    fun build(): TileLayer =
+            TileLayer(name, isVisible, offsetX, offsetY, data.copyOf())
+}

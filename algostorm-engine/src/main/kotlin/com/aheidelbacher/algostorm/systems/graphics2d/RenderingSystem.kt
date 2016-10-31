@@ -24,21 +24,18 @@ import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.state.MapObject
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
-import com.aheidelbacher.algostorm.state.TileSet.Viewport
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.state.MapObject
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.LEFT_UP
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.state.MapObject.RenderOrder.RIGHT_UP
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.graphics2d.Sprite.Companion.sprite
 import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.body
+import com.aheidelbacher.algostorm.systems.physics2d.body
 
 import java.io.FileNotFoundException
 import java.util.Comparator
@@ -57,30 +54,6 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         private val map: MapObject,
         private val canvas: Canvas
 ) : Subscriber {
-    companion object {
-        @JvmStatic fun MapObject.getViewport(
-                gid: Long,
-                currentTimeMillis: Long
-        ): Viewport {
-            val tileSet = getTileSet(gid)
-            val localTileId = getTileId(gid)
-            val animation = tileSet.getTile(localTileId).animation
-            val tileId = if (animation == null) {
-                localTileId
-            } else {
-                var elapsedTimeMillis =
-                        currentTimeMillis % animation.sumBy(Frame::duration)
-                var i = 0
-                do {
-                    elapsedTimeMillis -= animation[i].duration
-                    ++i
-                } while (elapsedTimeMillis >= 0)
-                animation[i - 1].tileId
-            }
-            return tileSet.getViewport(tileId)
-        }
-    }
-
     /**
      * An event which requests the rendering of the entire game state to the
      * screen.

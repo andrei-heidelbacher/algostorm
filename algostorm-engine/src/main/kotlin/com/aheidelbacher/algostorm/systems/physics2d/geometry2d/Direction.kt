@@ -16,9 +16,21 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
 
-/** The primary eight ordinal directions. */
-enum class Direction {
-    N, NE, E, SE, S, SW, W, NW;
+/**
+ * The primary eight ordinal directions.
+ *
+ * @property dx the equivalent horizontal translation amount
+ * @property dy the equivalent vertical translation amount (positive is down)
+ */
+enum class Direction(val dx: Int, val dy: Int) {
+    N(dx = 0, dy = -1),
+    NE(dx = 1, dy = -1),
+    E(dx = 1, dy = 0),
+    SE(dx = 1, dy = 1),
+    S(dx = 0, dy = 1),
+    SW(dx = -1, dy = 1),
+    W(dx = -1, dy = 0),
+    NW(dx = -1, dy = -1);
 
     companion object {
         /** The cardinal directions: north, east, south, west. */

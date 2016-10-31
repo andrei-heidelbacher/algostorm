@@ -20,7 +20,7 @@ import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Companion.body
+import com.aheidelbacher.algostorm.systems.physics2d.body
 
 class CameraSystem(
         private val camera: Camera,

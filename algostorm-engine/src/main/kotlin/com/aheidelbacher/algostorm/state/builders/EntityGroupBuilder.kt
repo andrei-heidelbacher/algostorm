@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
+package com.aheidelbacher.algostorm.state.builders
 
-data class Circle(val x: Int, val y: Int, val radius: Int) {
-    init {
-        require(radius >= 0) { "$this radius can't be negative!" }
+import com.aheidelbacher.algostorm.state.Entity
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
+
+class EntityGroupBuilder {
+    lateinit var name: String
+    var isVisible: Boolean = true
+    var offsetX: Int = 0
+    var offsetY: Int = 0
+    val entities: MutableSet<Entity> = hashSetOf()
+
+    operator fun Entity.unaryPlus() {
+        entities.add(this)
     }
 
-    fun contains(x: Int, y: Int): Boolean =
-            squareDistance(this.x, this.y, x, y) <= 1L * radius * radius
-
-    operator fun contains(point: Point): Boolean = contains(point.x, point.y)
-
-    fun translate(dx: Int, dy: Int): Circle = copy(x = x + dx, y = y + dy)
+    fun build(): EntityGroup = EntityGroup(
+            name = name,
+            isVisible = isVisible,
+            offsetX = offsetX,
+            offsetY = offsetY,
+            entities = entities.toSet()
+    )
 }

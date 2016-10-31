@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-@file:JvmName("Util")
-
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.systems.physics2d.geometry2d
 
 fun squareDistance(x0: Int, y0: Int, x1: Int, y1: Int): Long =
         1L * (x1 - x0) * (x1 - x0) + 1L * (y1 - y0) * (y1 - y0)

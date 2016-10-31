@@ -76,7 +76,7 @@ abstract class Engine(
         @Throws(FileNotFoundException::class)
         @JvmStatic fun getResourceStream(name: String): InputStream =
                 Engine::class.java.getResourceAsStream(name)
-                        ?: throw FileNotFoundException("Resource $name not found!")
+                        ?: throw FileNotFoundException("$name not found!")
     }
 
     /** The status of an engine. */
