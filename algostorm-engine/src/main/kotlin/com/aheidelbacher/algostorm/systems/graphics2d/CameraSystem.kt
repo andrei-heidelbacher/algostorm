@@ -37,6 +37,7 @@ class CameraSystem(
 
     object UnFollow : Event
 
+    @Suppress("unused_parameter")
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedObjectId?.let { id ->
             entityGroup[id]?.body?.let { entity ->
@@ -62,6 +63,7 @@ class CameraSystem(
         camera.y += event.dy
     }
 
+    @Suppress("unused_parameter")
     @Subscribe fun onUnFollow(event: UnFollow) {
         followedObjectId = null
     }

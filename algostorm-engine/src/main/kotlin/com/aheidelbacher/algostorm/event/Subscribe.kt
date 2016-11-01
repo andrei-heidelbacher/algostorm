@@ -23,8 +23,8 @@ package com.aheidelbacher.algostorm.event
  * annotation, is public, final, non-static, returns [Unit] / `void` and
  * receives a single parameter which is a subtype of [Event].
  *
- * Event-handling methods declared in supertypes are also registered for events
- * upon subscription.
+ * Event-handling methods declared in supertypes should also be registered for
+ * events upon subscription.
  */
 @Target(AnnotationTarget.FUNCTION)
 @MustBeDocumented

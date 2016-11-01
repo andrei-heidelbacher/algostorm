@@ -25,7 +25,8 @@ import com.aheidelbacher.algostorm.state.Component
  *
  * @property x the horizontal position in tiles of the entity
  * @property y the vertical position in tiles of the entity (positive is down)
- * @property type the type of this body
+ * @property type the type which describes how this entity interacts with other
+ * bodies
  */
 data class Body(val x: Int, val y: Int, val type: Type) : Component {
     /** A property that indicates how a body interacts with other bodies. */

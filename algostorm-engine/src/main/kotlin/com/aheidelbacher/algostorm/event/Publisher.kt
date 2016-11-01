@@ -44,19 +44,16 @@ interface Publisher {
         events.forEach { post(it) }
     }
 
-    /**
-     * Posts for each given event.
-     *
-     * @param events the events that should be posted
-     */
     fun post(vararg events: Event) {
         events.forEach { post(it) }
     }
 
     /**
      * Immediately publishes the given event and blocks until it was handled by
-     * all subscribers. This is a synchronous method and may not respect the
-     * order of other posted events.
+     * all subscribers.
+     *
+     * This is a synchronous method and may not respect the order of other
+     * posted events.
      *
      * @param event the event that should be published
      */
@@ -71,11 +68,6 @@ interface Publisher {
         events.forEach { publish(it) }
     }
 
-    /**
-     * Publishes each given event.
-     *
-     * @param events the events that should be published
-     */
     fun publish(vararg events: Event) {
         events.forEach { publish(it) }
     }

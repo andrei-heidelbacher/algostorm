@@ -9,7 +9,7 @@ package com.aheidelbacher.algostorm.engine.input
  * It is recommended to not access or modify game state, but simply to map raw
  * user input to user actions and let other systems perform these actions.
  *
- * The default implementation of the methods does nothing. Override the relevant
+ * The default implementations of the methods do nothing. Override the relevant
  * methods.
  */
 interface InputListener {

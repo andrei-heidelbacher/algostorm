@@ -3,7 +3,8 @@ package com.aheidelbacher.algostorm.engine.audio
 import java.io.FileNotFoundException
 
 /**
- * A sound player which should be used for short sound effects (at most 1 MB).
+ * A sound player which should be used for short sound effects (at most `1 MB`
+ * for all loaded sound effects).
  */
 interface SoundPlayer {
     /**

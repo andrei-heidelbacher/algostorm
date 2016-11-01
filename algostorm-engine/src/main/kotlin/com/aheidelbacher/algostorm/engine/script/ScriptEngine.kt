@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
-import java.io.FileNotFoundException
-
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -27,26 +25,11 @@ import kotlin.reflect.KFunction
  */
 interface ScriptEngine {
     companion object {
-        /** Inline utility which delegates to [ScriptEngine.invokeFunction]. */
         inline fun <reified T : Any> ScriptEngine.invokeFunction(
                 functionName: String,
                 vararg args: Any?
         ): T? = invokeFunction(functionName, T::class, *args)
     }
-
-    /**
-     * Loads and executes the script at the given path.
-     *
-     * Every variable and function declaration in this script should be
-     * available to future [invokeProcedure] and [invokeFunction] calls.
-     *
-     * Paths are relative to a specialized location of script resources.
-     *
-     * @param scriptSource the path where the script is found
-     * @throws FileNotFoundException if the given script doesn't exist
-     */
-    //@Throws(FileNotFoundException::class)
-    //fun eval(scriptSource: String): Unit
 
     /**
      * Loads the given procedure with the [KFunction.name] name, making it

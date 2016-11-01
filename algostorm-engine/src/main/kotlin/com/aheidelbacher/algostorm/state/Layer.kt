@@ -142,7 +142,6 @@ sealed class Layer(
             entities.associateByTo(entityMap, Entity::id)
         }
 
-        /** Utility override. */
         fun addAll(vararg entities: Entity) {
             addAll(entities.toSet())
         }
@@ -152,8 +151,8 @@ sealed class Layer(
          * returns it.
          *
          * @param id the id of the entity that should be removed
-         * @return `null` if the entity with the given id doesn't exist in this
-         * entity group, or the entity itself otherwise
+         * @return the removed entity if it exists in this entity group when
+         * this method is called, `null` otherwise
          */
         fun remove(id: Int): Entity? = entityMap.remove(id)
 

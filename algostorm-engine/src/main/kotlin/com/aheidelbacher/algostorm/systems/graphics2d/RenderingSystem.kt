@@ -41,10 +41,8 @@ import java.io.FileNotFoundException
 import java.util.Comparator
 
 /**
- * A system which handles the rendering of all objects in the game to the screen
- * canvas.
- *
- * Every method call to the [canvas] is made from the private engine thread.
+ * A system which handles the rendering of all tiles and entities in the game to
+ * the screen canvas.
  *
  * @property map the map object which should be rendered
  * @property canvas the canvas to which the system draws
@@ -58,10 +56,10 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
      * An event which requests the rendering of the entire game state to the
      * screen.
      *
-     * @property cameraX the x-axis coordinate of the center of the camera in
-     * pixels
-     * @property cameraY the y-axis coordinate of the center of the camera in
-     * pixels
+     * @property cameraX the horizontal coordinate of the center of the camera
+     * in pixels
+     * @property cameraY the vertical coordinate of the center of the camera in
+     * pixels (positive is down)
      */
     data class Render(val cameraX: Int, val cameraY: Int) : Event
 
@@ -133,10 +131,10 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private fun TileLayer.draw(offX: Int, offY: Int) {
         for (ty in yRange) {
             for (tx in xRange) {
-                val x = tx * map.tileWidth
-                val y = ty * map.tileHeight
                 val gid = data[ty * map.width + tx]
                 if (gid != 0L) {
+                    val x = tx * map.tileWidth
+                    val y = ty * map.tileHeight
                     val tileSet = map.getTileSet(gid)
                     val tw = tileSet.tileWidth
                     val th = tileSet.tileHeight
@@ -151,7 +149,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
             drawGid(gid, offX + offsetX, offY + offsetY, width, height)
         } else if (isVisible && color != null) {
             matrix.reset()
-            matrix.postTranslate(offX + offsetX * 1F, offY + offsetY * 1F)
+            matrix.postTranslate(1F * offX + offsetX, 1F * offY + offsetY)
             canvas.drawRectangle(color.color, width, height, matrix)
         }
     }
@@ -199,7 +197,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
 
     /**
      * When a [Render] event is received, the canvas is cleared or filled with
-     * the map background color and every renderable tile and object in the game
+     * the map background color and every renderable tile and entity in the game
      * is drawn.
      *
      * @param event the rendering request

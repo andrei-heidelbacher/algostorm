@@ -23,9 +23,11 @@ import kotlin.reflect.KClass
 /**
  * An abstract object within the game.
  *
- * Its behaviour is entirely determined by the components it contains.
+ * Its behaviour is entirely determined by the components it contains. An entity
+ * can contain at most one component of a specific type.
  *
- * @property id the unique identifier of this entity
+ * @property id the unique positive identifier of this entity
+ * @throws IllegalArgumentException if [id] is not positive
  */
 data class Entity(val id: Int) {
     /** Factory that handles associating unique ids to created entities. */
@@ -40,6 +42,10 @@ data class Entity(val id: Int) {
 
     constructor(id: Int, vararg components: Component) : this(id) {
         components.associateByTo(componentMap) { it.javaClass.kotlin }
+    }
+
+    init {
+        require(id > 0) { "$this id must be positive!" }
     }
 
     @Transient private val componentMap =
@@ -81,7 +87,7 @@ data class Entity(val id: Int) {
      *
      * @param T the type of the component
      * @param type the class object of the component
-     * @param value the new value
+     * @param value the new value of the component
      */
     operator fun <T : Component> set(type: KClass<T>, value: T) {
         componentMap[type] = value

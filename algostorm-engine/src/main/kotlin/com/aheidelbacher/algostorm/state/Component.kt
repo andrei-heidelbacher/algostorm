@@ -21,7 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 /**
  * An abstract component which holds data about a certain aspect of the game.
  *
- * All components should be immutable and final data classes.
+ * All components should be immutable and final data classes. The type of a
+ * component is denoted by its kotlin class object.
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.CLASS,

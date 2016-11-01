@@ -42,8 +42,8 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
      * given entity.
      *
      * @property entityId the id of the entity which should be transformed
-     * @property dx the horizontal translation amount
-     * @property dy the vertical translation amount (positive is down)
+     * @property dx the horizontal translation amount in tiles
+     * @property dy the vertical translation amount in tiles (positive is down)
      */
     data class TransformIntent(
             val entityId: Int,

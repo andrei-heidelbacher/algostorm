@@ -48,8 +48,11 @@ class JsonDriver : SerializationDriver {
     }
 
     @Throws(IOException::class)
-    override fun <T : Any> readValue(inputStream: InputStream, type: Class<T>): T =
-            objectMapper?.readValue(inputStream, type) ?: error("$this was released!")
+    override fun <T : Any> readValue(
+            inputStream: InputStream,
+            type: Class<T>
+    ): T = objectMapper?.readValue(inputStream, type)
+            ?: error("$this was released!")
 
     /**
      * Releases all resources acquired by this driver.

@@ -8,7 +8,6 @@ import kotlin.reflect.KClass
 /** A deserializer of non-generic objects. */
 interface Deserializer {
     companion object {
-        /** Inline utility method. */
         @Throws(IOException::class)
         inline fun <reified T : Any> Deserializer.readValue(
                 inputStream: InputStream
@@ -28,7 +27,6 @@ interface Deserializer {
     @Throws(IOException::class)
     fun <T : Any> readValue(inputStream: InputStream, type: Class<T>): T
 
-    /** Utility method override. */
     @Throws(IOException::class)
     fun <T : Any> readValue(inputStream: InputStream, type: KClass<T>): T =
             readValue(inputStream, type.java)

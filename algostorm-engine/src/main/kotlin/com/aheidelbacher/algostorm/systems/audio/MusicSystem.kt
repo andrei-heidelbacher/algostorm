@@ -24,10 +24,10 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      * An event that requests a longer sound to be played, stopping the
      * previously playing music.
      *
-     * @property sound the sound which should be played
+     * @property source the sound which should be played
      * @property loop whether the sound should be looped or not
      */
-    data class PlayMusic(val sound: File, val loop: Boolean = false) : Event
+    data class PlayMusic(val source: File, val loop: Boolean = false) : Event
 
     /** An event which signals the currently played music to be stopped. */
     object StopMusic : Event
@@ -43,7 +43,7 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests music to be played
      */
     @Subscribe fun onPlayMusic(event: PlayMusic) {
-        musicPlayer.playMusic(event.sound.path, event.loop)
+        musicPlayer.playMusic(event.source.path, event.loop)
     }
 
     /**

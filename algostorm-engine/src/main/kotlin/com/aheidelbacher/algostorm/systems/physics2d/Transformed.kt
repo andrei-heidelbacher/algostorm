@@ -23,12 +23,12 @@ import com.aheidelbacher.algostorm.event.Event
  *
  * Only the [PhysicsSystem] should post this event.
  *
- * @property objectId the id of the transformed entity
+ * @property entityId the id of the transformed entity
  * @property dx the horizontal translation amount in tiles
  * @property dy the vertical translation amount in tiles (positive is down)
  */
 data class Transformed(
-        val objectId: Int,
+        val entityId: Int,
         val dx: Int,
         val dy: Int
 ) : Event

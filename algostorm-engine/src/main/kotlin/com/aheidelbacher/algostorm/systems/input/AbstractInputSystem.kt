@@ -40,6 +40,7 @@ abstract class AbstractInputSystem(
      *
      * @param event the [HandleInput] event.
      */
+    @Suppress("unused_parameter")
     @Subscribe fun onHandleInput(event: HandleInput) {
         pollingListener.pollMostRecent(this)
     }

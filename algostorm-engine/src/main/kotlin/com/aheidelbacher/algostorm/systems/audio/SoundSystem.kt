@@ -39,9 +39,9 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
     /**
      * An event that requests a short sound to be played.
      *
-     * @property sound the path of the sound which should be played
+     * @property source the path of the sound which should be played
      */
-    data class PlaySoundEffect(val sound: File) : Event
+    data class PlaySoundEffect(val source: File) : Event
 
     init {
         soundSources.forEach { soundPlayer.loadSound(it.path) }
@@ -53,6 +53,6 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param event the event which requests a sound to be played
      */
     @Subscribe fun onPlaySoundEffect(event: PlaySoundEffect) {
-        soundPlayer.playSound(event.sound.path)
+        soundPlayer.playSound(event.source.path)
     }
 }

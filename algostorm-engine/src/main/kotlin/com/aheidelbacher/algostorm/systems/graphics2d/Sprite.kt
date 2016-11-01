@@ -25,7 +25,7 @@ import com.aheidelbacher.algostorm.state.Component
  * @property gid the global id of this tile
  * @property width the width in pixels
  * @property height the height in pixels
- * @property z the rendering priority (sprites with lower `z` will be rendered
+ * @property z the rendering priority (sprites with lower `z` should be rendered
  * before sprites with higher `z`)
  * @property isVisible
  * @property offsetX the horizontal rendering offset in pixels

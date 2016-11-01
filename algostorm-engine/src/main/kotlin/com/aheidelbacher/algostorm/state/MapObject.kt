@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.state
 
-import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.fasterxml.jackson.annotation.JsonProperty
 
+import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
 
 /**

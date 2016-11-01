@@ -29,9 +29,9 @@ import kotlin.reflect.KFunction
  *
  * @property scriptEngine the engine used to execute scripts
  * @param scriptProcedures the procedures which will be loaded in the script
- * engine
+ * engine at construction time
  * @param scriptFunctions the functions which will be loaded in the script
- * engine
+ * engine at construction time
  */
 class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
@@ -56,7 +56,7 @@ class ScriptingSystem(
      * An event which requests the execution of the script function with the
      * given name and arguments, attaching a callback to receive the result.
      *
-     * @property name the name of script function that should be executed
+     * @property name the name of the script function that should be executed
      * @property returnType the expected type of the result
      * @property args the arguments of the script function
      * @property onResult the callback which will be called with the result

@@ -32,10 +32,10 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Frame
  * @property spacing the spacing between adjacent tiles in pixels
  * @property columns the number of tiles per row
  * @property tileCount the number of tiles present in this tile set
- * @property tileOffsetX the x-axis rendering offset in pixels which should be
- * applied when rendering tiles from this tile set
- * @property tileOffsetY the y-axis rendering offset in pixels which should be
- * applied when rendering tiles from this tile set
+ * @property tileOffsetX the horizontal rendering offset in pixels which should
+ * be applied when rendering tiles from this tile set
+ * @property tileOffsetY the vertical rendering offset in pixels which should be
+ * applied when rendering tiles from this tile set (positive is down)
  * @property tiles meta-data associated to particular tiles of this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [columns] or
  * [tileCount] are not positive or if [margin] or [spacing] are negative or if
@@ -61,7 +61,7 @@ data class TileSet internal constructor(
      *
      * @property id the local id of this tile
      * @property animation a list of frames representing an animation. Must be
-     * either `null` (indicating no animation) or non-empty
+     * either `null` (indicating no animation) or non-empty.
      * @throws IllegalArgumentException if [animation] is not `null` and empty
      * or the tile id of the first animation frame differs from [id]
      */
@@ -98,7 +98,7 @@ data class TileSet internal constructor(
         /**
          * A frame within an animation.
          *
-         * @property tileId the id of the tile used for this frame
+         * @property tileId the local id of the tile used for this frame
          * @property duration the duration of this frame in milliseconds
          * @throws IllegalArgumentException if [tileId] is negative or if
          * [duration] is not positive
@@ -188,9 +188,6 @@ data class TileSet internal constructor(
         require(tiles.distinctBy { it.id }.size == tiles.size) {
             "$this local tile ids must be unique!"
         }
-        require(tiles.all { it.id in 0 until tileCount }) {
-            "$this local tile ids must be between 0 and ${tileCount - 1}!"
-        }
         val tileIds = tiles.map(Tile::id) + tiles.flatMap {
             it.animation?.map(Frame::tileId) ?: emptyList()
         }
@@ -203,7 +200,7 @@ data class TileSet internal constructor(
     /**
      * Returns the [Tile] with the given tile id.
      *
-     * @param tileId the id of the requested tile
+     * @param tileId the local id of the requested tile
      * @return the requested tile data
      * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
      * it is greater than or equal to [tileCount]
@@ -214,7 +211,7 @@ data class TileSet internal constructor(
      * Returns a viewport corresponding to the given tile id, by applying the
      * appropriate margin and spacing offsets.
      *
-     * @param tileId the id of the requested tile
+     * @param tileId the local id of the requested tile
      * @return the viewport associated to the requested tile
      * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
      * it is greater than or equal to [tileCount]
