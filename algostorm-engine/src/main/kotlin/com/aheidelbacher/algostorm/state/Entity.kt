@@ -32,6 +32,15 @@ import kotlin.reflect.KClass
 data class Entity(val id: Int) {
     /** Factory that handles associating unique ids to created entities. */
     interface Factory {
+        /**
+         * Creates an entity with a unique id among all entities created by this
+         * factory.
+         *
+         * @param components the components with which the entity is initialized
+         * @return the created entity
+         * @throws IllegalStateException if this factory created too many
+         * entities
+         */
         fun create(components: Collection<Component>): Entity
     }
 
