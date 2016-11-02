@@ -37,12 +37,17 @@ data class Entity(val id: Int) {
 
     @JsonCreator
     constructor(id: Int, components: Collection<Component>) : this(id) {
+        val uniqueComponents = components.distinctBy { it.javaClass }
+        require(components.size == uniqueComponents.size) {
+            "$this can't contain multiple components of the same type!"
+        }
         components.associateByTo(componentMap) { it.javaClass.kotlin }
     }
 
-    constructor(id: Int, vararg components: Component) : this(id) {
-        components.associateByTo(componentMap) { it.javaClass.kotlin }
-    }
+    constructor(id: Int, vararg components: Component) : this(
+            id = id,
+            components = components.asList()
+    )
 
     init {
         require(id > 0) { "$this id must be positive!" }
@@ -86,10 +91,20 @@ data class Entity(val id: Int) {
      * The specified type must be final.
      *
      * @param T the type of the component
-     * @param type the class object of the component
      * @param value the new value of the component
      */
-    operator fun <T : Component> set(type: KClass<T>, value: T) {
-        componentMap[type] = value
+    fun <T : Component> set(value: T) {
+        componentMap[value.javaClass.kotlin] = value
     }
+
+    /**
+     * Removes the component with the specified type and returns it.
+     *
+     * @param T the type of the component
+     * @param type the class object of the component
+     * @return the removed component if it exists in this entity when this
+     * method is called, `null` otherwise
+     */
+    fun <T : Component> remove(type: KClass<T>): T? =
+            type.java.cast(componentMap.remove(type))
 }

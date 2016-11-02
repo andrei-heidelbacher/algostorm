@@ -67,7 +67,7 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
             entity != it && it.body?.overlaps(nextBody) ?: false
         }
         if (nextBody.type == Type.HOLLOW || overlappingEntities.isEmpty()) {
-            entity[Body::class] = nextBody
+            entity.set(nextBody)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
         } else {
             overlappingEntities.forEach {
