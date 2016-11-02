@@ -35,7 +35,7 @@ class EntityGroupTest {
 
     data class ComponentMock(val id: Int) : Component
 
-    val entityGroup = mapObject {
+    val mapObject = mapObject {
         width = 32
         height = 32
         tileWidth = 24
@@ -48,7 +48,8 @@ class EntityGroupTest {
                 }
             }
         }
-    }.layers.filterIsInstance<EntityGroup>().single()
+    }
+    val entityGroup = mapObject.layers.filterIsInstance<EntityGroup>().single()
 
     val entityIds = entityGroup.entities.map(Entity::id)
 
@@ -113,7 +114,7 @@ class EntityGroupTest {
     @Test
     fun getAfterAddShouldReturnNonNull() {
         val id = entityIds.max()!! + 1
-        val entity = entity(id) { +ComponentMock(id) }
+        val entity = mapObject.entity { +ComponentMock(id) }
         entityGroup.add(entity)
         assertEquals(entity, entityGroup[id])
     }
@@ -122,7 +123,9 @@ class EntityGroupTest {
     fun getAfterAddAllShouldReturnNonNull() {
         val firstId = entityIds.max()!! + 1
         val ids = firstId until firstId + ENTITY_COUNT
-        val entities = ids.map { entity(it) { +ComponentMock(it) } }.toSet()
+        val entities = ids.map { id ->
+            mapObject.entity { +ComponentMock(id) }
+        }.toSet()
         entityGroup.addAll(entities)
         for (id in ids) {
             assertEquals(id, entityGroup[id]?.id)

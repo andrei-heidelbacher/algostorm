@@ -41,6 +41,3 @@ inline fun entityGroup(init: EntityGroupBuilder.() -> Unit): EntityGroup =
 
 inline fun Factory.entity(init: EntityBuilder.() -> Unit): Entity =
         create(EntityBuilder().apply(init).components)
-
-inline fun entity(id: Int, init: EntityBuilder.() -> Unit): Entity =
-        EntityBuilder().apply(init).build(id)

@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.state.builders
 
 import com.aheidelbacher.algostorm.state.Component
 import com.aheidelbacher.algostorm.state.Entity
+import com.aheidelbacher.algostorm.state.Entity.Factory
 
 class EntityBuilder {
     val components: MutableCollection<Component> = arrayListOf()
@@ -26,5 +27,5 @@ class EntityBuilder {
         components.add(this)
     }
 
-    fun build(id: Int): Entity = Entity(id, components)
+    fun Factory.build(): Entity = create(components)
 }
