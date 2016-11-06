@@ -78,6 +78,8 @@ class GraphicsDriverMock(
         bitmaps.clear()
     }
 
+    override fun isCanvasReady(): Boolean = true
+
     override fun lockCanvas() {
         require(!isLocked) { "Canvas is already locked!" }
         isLocked = true
