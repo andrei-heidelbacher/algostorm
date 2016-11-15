@@ -37,12 +37,10 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
  * @property layers the layers of the game
  * @property backgroundColor the color of the map background
  * @property version the version of this map
- * @property nextEntityId the next available id for an entity
- * @throws IllegalArgumentException if [nextEntityId] is not positive or if
- * there are multiple tile sets with the same name or multiple layers with the
- * same name or if [width] or [height] or [tileWidth] or [tileHeight] are not
- * positive or if there are multiple entities with the same id or if
- * [nextEntityId] is not greater than the maximum entity id
+ * @throws IllegalArgumentException if there are multiple tile sets with the
+ * same name or multiple layers with the same name or if [width] or [height] or
+ * [tileWidth] or [tileHeight] are not positive or if there are multiple
+ * entities with the same id
  */
 class MapObject internal constructor(
         val width: Int,
@@ -54,8 +52,7 @@ class MapObject internal constructor(
         val tileSets: List<TileSet>,
         val layers: List<Layer>,
         val backgroundColor: Color?,
-        val version: String,
-        private var nextEntityId: Int
+        val version: String
 ) : Entity.Factory {
     /** The orientation of the map. */
     enum class Orientation {
@@ -72,29 +69,26 @@ class MapObject internal constructor(
 
     @Transient private val gidToTileSet: Array<TileSet>
     @Transient private val gidToTileId: IntArray
+    @Transient private var nextEntityId: Int
 
     init {
         require(width > 0) { "$this width must be positive!" }
         require(height > 0) { "$this height must be positive!" }
         require(tileWidth > 0) { "$this tile width must be positive!" }
         require(tileHeight > 0) { "$this tile height must be positive!" }
-        require(nextEntityId > 0) { "$this next entity id must be positive!" }
         require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
             "Different tile sets in $this can't have the same name!"
         }
         require(layers.distinctBy(Layer::name).size == layers.size) {
             "Different layers in $this can't have the same name!"
         }
+        val tileLayers = null
         val ids = layers.filterIsInstance<EntityGroup>()
                 .flatMap(EntityGroup::entities).map(Entity::id)
         require(ids.distinct().size == ids.size) {
             "$this contains entities with duplicate ids!"
         }
-        ids.max()?.let { maxId ->
-            require(nextEntityId > maxId) {
-                "$this next entity id is not greater than max entity id $maxId!"
-            }
-        }
+        nextEntityId = (ids.max() ?: 0) + 1
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
         val tileSetsByGid = arrayListOf<TileSet>()
         gidToTileId = IntArray(totalGidCount)

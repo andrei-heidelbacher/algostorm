@@ -17,8 +17,6 @@
 package com.aheidelbacher.algostorm.state.builders
 
 import com.aheidelbacher.algostorm.state.Color
-import com.aheidelbacher.algostorm.state.Component
-import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Entity.Factory
 import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.MapObject
@@ -28,7 +26,7 @@ import com.aheidelbacher.algostorm.state.TileSet
 
 import kotlin.properties.Delegates
 
-class MapObjectBuilder : Factory {
+class MapObjectBuilder : Factory by Factory() {
     var width: Int by Delegates.notNull()
     var height: Int by Delegates.notNull()
     var tileWidth: Int by Delegates.notNull()
@@ -39,14 +37,6 @@ class MapObjectBuilder : Factory {
     val layers: MutableList<Layer> = arrayListOf()
     var backgroundColor: Color? = null
     var version: String = "1.0"
-    private var nextObjectId: Int = 1
-
-    override fun create(components: Collection<Component>): Entity {
-        check(nextObjectId < Int.MAX_VALUE) {
-            "Too many entities in $this!"
-        }
-        return Entity(nextObjectId++, components)
-    }
 
     operator fun TileSet.unaryPlus() {
         tileSets.add(this)
@@ -66,7 +56,6 @@ class MapObjectBuilder : Factory {
             tileSets = tileSets.toList(),
             layers = layers.toList(),
             backgroundColor = backgroundColor,
-            version = version,
-            nextEntityId = nextObjectId
+            version = version
     )
 }

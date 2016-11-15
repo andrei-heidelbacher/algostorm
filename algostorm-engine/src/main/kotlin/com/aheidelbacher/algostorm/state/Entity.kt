@@ -32,6 +32,25 @@ import kotlin.reflect.KClass
 data class Entity(val id: Int) {
     /** Factory that handles associating unique ids to created entities. */
     interface Factory {
+        companion object {
+            /**
+             * Returns a default implementation of a factory.
+             *
+             * @return a factory which assigns ids in ascending order starting
+             * from `1`
+             */
+            operator fun invoke(): Factory = object : Factory {
+                private var nextEntityId = 1
+
+                override fun create(components: Collection<Component>): Entity {
+                    check(nextEntityId < Int.MAX_VALUE) {
+                        "$this created too many entities!"
+                    }
+                    return Entity(nextEntityId++, components)
+                }
+            }
+        }
+
         /**
          * Creates an entity with a unique id among all entities created by this
          * factory.
@@ -42,23 +61,6 @@ data class Entity(val id: Int) {
          * entities
          */
         fun create(components: Collection<Component>): Entity
-
-        /**
-         * Returns a default implementation of a factory.
-         *
-         * @return a factory which assigns ids in ascending order starting from
-         * `1`
-         */
-        fun invoke(): Factory = object : Factory {
-            private var nextEntityId = 1
-
-            override fun create(components: Collection<Component>): Entity {
-                check(nextEntityId < Int.MAX_VALUE) {
-                    "$this created too many entities!"
-                }
-                return Entity(nextEntityId++, components)
-            }
-        }
     }
 
     @JsonCreator
