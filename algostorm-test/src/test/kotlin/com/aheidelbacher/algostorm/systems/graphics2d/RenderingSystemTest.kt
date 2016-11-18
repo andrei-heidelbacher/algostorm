@@ -83,7 +83,7 @@ class RenderingSystemTest {
         val map = mapBuilder.apply {
             +tileLayer {
                 name = "floor"
-                data = LongArray(width * height) { 1 }
+                data = IntArray(width * height) { 1 }
             }
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
@@ -150,7 +150,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
-                            gid = 1L.flipHorizontally()
+                            gid = 1.flipHorizontally()
                     )
                     +Body(x = 0, y = 0, type = HOLLOW)
                 }
@@ -183,7 +183,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
-                            gid = 1L.flipVertically()
+                            gid = 1.flipVertically()
                     )
                     +Body(x = 0, y = 0, type = HOLLOW)
                 }
@@ -216,7 +216,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
-                            gid = 1L.flipDiagonally()
+                            gid = 1.flipDiagonally()
                     )
                     +Body(x = 0, y = 0, type = HOLLOW)
                 }

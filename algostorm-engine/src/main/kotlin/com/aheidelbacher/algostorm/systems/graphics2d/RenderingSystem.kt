@@ -93,8 +93,8 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
 
     private var currentTimeMillis = 0L
 
-    private fun drawGid(gid: Long, x: Int, y: Int, width: Int, height: Int) {
-        if (gid == 0L) {
+    private fun drawGid(gid: Int, x: Int, y: Int, width: Int, height: Int) {
+        if (gid == 0) {
             return
         }
         val tileSet = map.getTileSet(gid)
@@ -131,8 +131,8 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private fun TileLayer.draw(offX: Int, offY: Int) {
         for (ty in yRange) {
             for (tx in xRange) {
-                val gid = data[ty * map.width + tx]
-                if (gid != 0L) {
+                val gid = get(ty * map.width + tx)
+                if (gid != 0) {
                     val x = tx * map.tileWidth
                     val y = ty * map.tileHeight
                     val tileSet = map.getTileSet(gid)
@@ -145,7 +145,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun Sprite.draw(offX: Int, offY: Int) {
-        if (isVisible && gid != 0L) {
+        if (isVisible && gid != 0) {
             drawGid(gid, offX + offsetX, offY + offsetY, width, height)
         } else if (isVisible && color != null) {
             matrix.reset()
@@ -165,9 +165,9 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         val size = entities.count { it.body != null && it.sprite != null }
         val entityArray = arrayOfNulls<Entity>(size)
         var i = 0
-        for (entity in entities) {
-            if (entity.body != null && entity.sprite != null) {
-                entityArray[i++] = entity
+        entities.forEach {
+            if (it.body != null && it.sprite != null) {
+                entityArray[i++] = it
             }
         }
         entityArray.requireNoNulls().apply {

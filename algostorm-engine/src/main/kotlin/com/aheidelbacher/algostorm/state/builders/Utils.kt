@@ -33,8 +33,9 @@ inline fun tileSet(init: TileSetBuilder.() -> Unit): TileSet =
 inline fun tile(init: TileBuilder.() -> Unit): Tile =
         TileBuilder().apply(init).build()
 
-inline fun tileLayer(init: TileLayerBuilder.() -> Unit): TileLayer =
-        TileLayerBuilder().apply(init).build()
+inline fun MapObjectBuilder.tileLayer(
+        init: TileLayerBuilder.() -> Unit
+): TileLayer = TileLayerBuilder(width, height).apply(init).build()
 
 inline fun entityGroup(init: EntityGroupBuilder.() -> Unit): EntityGroup =
         EntityGroupBuilder().apply(init).build()

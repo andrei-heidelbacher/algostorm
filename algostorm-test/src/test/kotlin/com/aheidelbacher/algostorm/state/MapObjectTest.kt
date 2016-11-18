@@ -37,7 +37,7 @@ class MapObjectTest {
         }
         +tileLayer {
             name = "floor"
-            data = LongArray(width * height) { 1 }
+            data = IntArray(width * height) { 1 }
         }
         +entityGroup {
             name = "entities"
@@ -69,7 +69,7 @@ class MapObjectTest {
                             actual = actual.entities.toSet()
                     )
                 expected is TileLayer && actual is TileLayer ->
-                    assertEquals(expected.data.toList(), actual.data.toList())
+                    assertEquals(expected.tiles, actual.tiles)
                 else -> fail()
             }
         }

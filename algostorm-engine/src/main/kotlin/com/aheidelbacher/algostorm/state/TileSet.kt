@@ -71,28 +71,28 @@ data class TileSet internal constructor(
     ) {
         companion object {
             /** Whether this global tile id is flipped horizontally. */
-            val Long.isFlippedHorizontally: Boolean
-                get() = and(0x80000000) != 0L
+            val Int.isFlippedHorizontally: Boolean
+                get() = and(0x40000000) != 0
 
             /** Whether this global tile id is flipped vertically. */
-            val Long.isFlippedVertically: Boolean
-                get() = and(0x40000000) != 0L
+            val Int.isFlippedVertically: Boolean
+                get() = and(0x20000000) != 0
 
             /** Whether this global tile id is flipped diagonally. */
-            val Long.isFlippedDiagonally: Boolean
-                get() = and(0x20000000) != 0L
+            val Int.isFlippedDiagonally: Boolean
+                get() = and(0x10000000) != 0
 
             /** Flips this global tile id horizontally. */
-            fun Long.flipHorizontally(): Long = xor(0x80000000)
+            fun Int.flipHorizontally(): Int = xor(0x40000000)
 
             /** Flips this global tile id vertically. */
-            fun Long.flipVertically(): Long = xor(0x40000000)
+            fun Int.flipVertically(): Int = xor(0x20000000)
 
             /** Flips this global tile id diagonally. */
-            fun Long.flipDiagonally(): Long = xor(0x20000000)
+            fun Int.flipDiagonally(): Int = xor(0x10000000)
 
             /** Clears all flag bits. */
-            fun Long.clearFlags(): Int = and(0x1FFFFFFF).toInt()
+            fun Int.clearFlags(): Int = and(0x0FFFFFFF)
         }
 
         /**

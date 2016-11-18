@@ -59,20 +59,46 @@ sealed class Layer(
     final override fun toString(): String = "${javaClass.simpleName}($name)"
 
     /**
-     * A layer which consists of `width x height` tiles, where `width` and
+     * A layer which consists of `width * height` tiles, where `width` and
      * `height` are the dimensions of the containing [MapObject].
-     *
-     * @property data the global ids of the tiles on the containing map. Index
-     * `i` of this array represents the tile with `x = i % width` and
-     * `y = i / width`.
      */
     class TileLayer internal constructor(
             name: String,
             isVisible: Boolean,
             offsetX: Int,
             offsetY: Int,
-            val data: LongArray
-    ) : Layer(name, isVisible, offsetX, offsetY)
+            private val data: IntArray
+    ) : Layer(name, isVisible, offsetX, offsetY) {
+        /** The number of tiles in this layer. */
+        val size: Int
+            get() = data.size
+
+        /** The global ids of the tiles in this layer. */
+        val tiles: List<Int>
+            get() = data.asList()
+
+        /**
+         * Returns the gid of the tile at the given index.
+         *
+         * @param index the index of the tile
+         * @return the gid of the requested tile
+         * @throws IndexOutOfBoundsException if [index] is negative or greater
+         * than or equal to [size]
+         */
+        operator fun get(index: Int): Int = data[index]
+
+        /**
+         * Sets the gid of the tile at the given index to the given value.
+         *
+         * @param index the index of the tile
+         * @param value the new gid of the tile
+         * @throws IndexOutOfBoundsException if [index] is negative or greater
+         * than or equal to [size]
+         */
+        operator fun set(index: Int, value: Int) {
+            data[index] = value
+        }
+    }
 
     /**
      * A layer which contains a set of entities.

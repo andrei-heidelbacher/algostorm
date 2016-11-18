@@ -17,50 +17,49 @@
 package com.aheidelbacher.algostorm.engine.graphics2d
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.test.engine.graphics2d.TOLERANCE
-import com.aheidelbacher.algostorm.test.engine.graphics2d.matrixOf
+import com.aheidelbacher.algostorm.test.engine.graphics2d.assertEquals
 
 class MatrixTest {
+    companion object {
+        const val TOLERANCE: Float = 1e-7F
+    }
+
     @Test
     fun testPostScale() {
         val sx = 5938F
         val sy = -9385F
-        val expected = floatArrayOf(
+        val expected = Matrix(
                 sx, 0F, 0F,
-                0F, sy, 0F,
-                0F, 0F, 1F
+                0F, sy, 0F
         )
-        val actual = Matrix.identity().postScale(sx, sy).getRawValues()
-        assertArrayEquals(expected, actual, TOLERANCE)
+        val actual = Matrix.identity().postScale(sx, sy)
+        assertEquals(expected, actual, TOLERANCE)
     }
 
     @Test
     fun testPreScale() {
         val sx = 5938F
         val sy = -9385F
-        val expected = floatArrayOf(
+        val expected = Matrix(
                 sx, 0F, 0F,
-                0F, sy, 0F,
-                0F, 0F, 1F
+                0F, sy, 0F
         )
-        val actual = Matrix.identity().preScale(sx, sy).getRawValues()
-        assertArrayEquals(expected, actual, TOLERANCE)
+        val actual = Matrix.identity().preScale(sx, sy)
+        assertEquals(expected, actual, TOLERANCE)
     }
 
     @Test
     fun testPostTranslate() {
         val dx = 9458F
         val dy = -3948F
-        val expected = floatArrayOf(
+        val expected = Matrix(
                 1F, 0F, dx,
-                0F, 1F, dy,
-                0F, 0F, 1F
+                0F, 1F, dy
         )
-        val actual = Matrix.identity().postTranslate(dx, dy).getRawValues()
-        assertArrayEquals(expected, actual, TOLERANCE)
+        val actual = Matrix.identity().postTranslate(dx, dy)
+        assertEquals(expected, actual, TOLERANCE)
     }
 
     @Test
@@ -69,30 +68,28 @@ class MatrixTest {
         val radians = degrees * Math.PI / 180.0
         val cos = Math.cos(radians).toFloat()
         val sin = Math.sin(radians).toFloat()
-        val expected = floatArrayOf(
+        val expected = Matrix(
                 cos, sin, 0F,
-                -sin, cos, 0F,
-                0F, 0F, 1F
+                -sin, cos, 0F
         )
-        val actual = Matrix.identity().postRotate(degrees).getRawValues()
-        assertArrayEquals(expected, actual, TOLERANCE)
+        val actual = Matrix.identity().postRotate(degrees)
+        assertEquals(expected, actual, TOLERANCE)
     }
 
     @Test
     fun testGetIndices() {
-        val matrix = matrixOf(floatArrayOf(
+        val matrix = Matrix(
                 0F, 1F, 2F,
-                3F, 4F, 5F,
-                6F, 7F, 8F
-        ))
-        assertEquals(0F, matrix[Matrix.SCALE_X], TOLERANCE)
-        assertEquals(1F, matrix[Matrix.SKEW_X], TOLERANCE)
-        assertEquals(2F, matrix[Matrix.TRANSLATE_X], TOLERANCE)
-        assertEquals(3F, matrix[Matrix.SKEW_Y], TOLERANCE)
-        assertEquals(4F, matrix[Matrix.SCALE_Y], TOLERANCE)
-        assertEquals(5F, matrix[Matrix.TRANSLATE_Y], TOLERANCE)
-        assertEquals(6F, matrix[Matrix.PERSPECTIVE_0], TOLERANCE)
-        assertEquals(7F, matrix[Matrix.PERSPECTIVE_1], TOLERANCE)
-        assertEquals(8F, matrix[Matrix.PERSPECTIVE_2], TOLERANCE)
+                3F, 4F, 5F
+        )
+        assertEquals(0F, matrix[0], TOLERANCE)
+        assertEquals(1F, matrix[1], TOLERANCE)
+        assertEquals(2F, matrix[2], TOLERANCE)
+        assertEquals(3F, matrix[3], TOLERANCE)
+        assertEquals(4F, matrix[4], TOLERANCE)
+        assertEquals(5F, matrix[5], TOLERANCE)
+        assertEquals(0F, matrix[6], TOLERANCE)
+        assertEquals(0F, matrix[7], TOLERANCE)
+        assertEquals(1F, matrix[8], TOLERANCE)
     }
 }

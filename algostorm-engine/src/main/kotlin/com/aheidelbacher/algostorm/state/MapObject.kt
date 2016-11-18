@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.state
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
+import com.aheidelbacher.algostorm.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
 
 /**
@@ -38,7 +39,8 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
  * @property backgroundColor the color of the map background
  * @property version the version of this map
  * @throws IllegalArgumentException if there are multiple tile sets with the
- * same name or multiple layers with the same name or if [width] or [height] or
+ * same name or multiple layers with the same name or if there are tile layers
+ * with a different size than `width * height` or if [width] or [height] or
  * [tileWidth] or [tileHeight] are not positive or if there are multiple
  * entities with the same id
  */
@@ -82,7 +84,10 @@ class MapObject internal constructor(
         require(layers.distinctBy(Layer::name).size == layers.size) {
             "Different layers in $this can't have the same name!"
         }
-        val tileLayers = null
+        val tileLayers = layers.filterIsInstance<TileLayer>()
+        require(tileLayers.all { it.size == width * height }) {
+            "Tile layers in $this must have sizes equal to ${width * height}!"
+        }
         val ids = layers.filterIsInstance<EntityGroup>()
                 .flatMap(EntityGroup::entities).map(Entity::id)
         require(ids.distinct().size == ids.size) {
@@ -116,7 +121,7 @@ class MapObject internal constructor(
      * @throws IndexOutOfBoundsException if the given [gid] is not positive or
      * is greater than the total number of tiles contained in the map tile sets
      */
-    fun getTileSet(gid: Long): TileSet = gidToTileSet[gid.clearFlags() - 1]
+    fun getTileSet(gid: Int): TileSet = gidToTileSet[gid.clearFlags() - 1]
 
     /**
      * Returns the local tile id of the given [gid].
@@ -126,5 +131,5 @@ class MapObject internal constructor(
      * @throws IndexOutOfBoundsException if the given [gid] is not positive or
      * is greater than the total number of tiles contained in the map tile sets
      */
-    fun getTileId(gid: Long): Int = gidToTileId[gid.clearFlags() - 1]
+    fun getTileId(gid: Int): Int = gidToTileId[gid.clearFlags() - 1]
 }

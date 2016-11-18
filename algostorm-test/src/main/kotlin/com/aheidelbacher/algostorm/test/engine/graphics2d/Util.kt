@@ -20,23 +20,21 @@ package com.aheidelbacher.algostorm.test.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
+import org.junit.Assert.assertArrayEquals
+
 const val TOLERANCE: Float = 1e-7F
 
-fun Float.eq(other: Float): Boolean =
-        Math.abs(this - other) < TOLERANCE
-
-fun FloatArray.eq(other: FloatArray): Boolean =
-        size == other.size && indices.all { get(it).eq(other[it]) }
+fun Float.eq(other: Float): Boolean = Math.abs(this - other) < TOLERANCE
 
 fun Matrix.eq(other: Matrix): Boolean =
-        getRawValues().eq(other.getRawValues())
+        sx.eq(other.sx) && kx.eq(other.kx) && dx.eq(other.dx) &&
+                ky.eq(other.ky) && sy.eq(other.sy) && dy.eq(other.dy)
 
-fun matrixOf(values: FloatArray): Matrix {
-    require(values.size == 9)
-    val matrix = Matrix.identity()
-    val rawValues = matrix.getRawValues()
-    for (i in 0..8) {
-        rawValues[i] = values[i]
-    }
-    return matrix
+fun assertEquals(expected: Matrix, actual: Matrix, tolerance: Float) {
+    assertArrayEquals(
+            with(expected) { floatArrayOf(sx, kx, dx, ky, sy, dy) },
+            with(actual) { floatArrayOf(sx, kx, dx, ky, sy, dy) },
+            tolerance
+    )
 }
+

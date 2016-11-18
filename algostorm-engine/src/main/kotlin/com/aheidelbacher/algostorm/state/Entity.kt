@@ -90,22 +90,18 @@ data class Entity(val id: Int) {
     /**
      * Checks whether this entity contains a component of the specified type.
      *
-     * The specified type must be final.
-     *
-     * @param T the type of the component
-     * @param type the class object of the component
+     * @param type the class object of the component; must represent a final
+     * type
      * @return `true` if this entity contains the specified component type,
      * `false` otherwise
      */
-    operator fun <T : Component> contains(type: KClass<T>): Boolean =
+    operator fun contains(type: KClass<out Component>): Boolean =
             type in componentMap
 
     /**
      * Retrieves the component with the specified type.
      *
-     * The specified type must be final.
-     *
-     * @param T the type of the component
+     * @param T the type of the component; must be final
      * @param type the class object of the component
      * @return the requested component, or `null` if this entity doesn't contain
      * the specified component type
@@ -116,19 +112,16 @@ data class Entity(val id: Int) {
     /**
      * Sets the value of the specified component type.
      *
-     * The specified type must be final.
-     *
-     * @param T the type of the component
      * @param value the new value of the component
      */
-    fun <T : Component> set(value: T) {
+    fun set(value: Component) {
         componentMap[value.javaClass.kotlin] = value
     }
 
     /**
      * Removes the component with the specified type and returns it.
      *
-     * @param T the type of the component
+     * @param T the type of the component; must be final
      * @param type the class object of the component
      * @return the removed component if it exists in this entity when this
      * method is called, `null` otherwise

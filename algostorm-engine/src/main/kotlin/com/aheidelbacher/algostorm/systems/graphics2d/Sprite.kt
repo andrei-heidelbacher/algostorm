@@ -38,14 +38,14 @@ data class Sprite(
         val width: Int,
         val height: Int,
         val z: Int,
-        val gid: Long = 0,
+        val gid: Int = 0,
         val isVisible: Boolean = true,
         val offsetX: Int = 0,
         val offsetY: Int = 0,
         val color: Color? = null
 ) : Component {
     init {
-        require(gid >= 0L) { "$this gid must not be negative!" }
+        require(gid >= 0) { "$this gid must not be negative!" }
         require(width > 0) { "$this width must be positive!" }
         require(height > 0) { "$this height must be positive!" }
     }

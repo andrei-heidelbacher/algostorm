@@ -40,7 +40,7 @@ val Sprite.isFlippedHorizontally: Boolean
 val Sprite.isFlippedVertically: Boolean
     get() = gid.isFlippedVertically
 
-fun MapObject.getViewport(gid: Long, currentTimeMillis: Long): Viewport {
+fun MapObject.getViewport(gid: Int, currentTimeMillis: Long): Viewport {
     val tileSet = getTileSet(gid)
     val localTileId = getTileId(gid)
     val animation = tileSet.getTile(localTileId).animation
