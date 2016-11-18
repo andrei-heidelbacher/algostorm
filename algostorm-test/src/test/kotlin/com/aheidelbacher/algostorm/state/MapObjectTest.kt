@@ -68,8 +68,10 @@ class MapObjectTest {
                             expected = expected.entities.toSet(),
                             actual = actual.entities.toSet()
                     )
-                expected is TileLayer && actual is TileLayer ->
-                    assertEquals(expected.tiles, actual.tiles)
+                expected is TileLayer && actual is TileLayer -> assertEquals(
+                        expected = (0 until expected.size).map { expected[it] },
+                        actual = (0 until actual.size).map { actual[it] }
+                )
                 else -> fail()
             }
         }

@@ -61,6 +61,8 @@ sealed class Layer(
     /**
      * A layer which consists of `width * height` tiles, where `width` and
      * `height` are the dimensions of the containing [MapObject].
+     *
+     * @property data the global ids of the tiles in this layer
      */
     class TileLayer internal constructor(
             name: String,
@@ -72,10 +74,6 @@ sealed class Layer(
         /** The number of tiles in this layer. */
         val size: Int
             get() = data.size
-
-        /** The global ids of the tiles in this layer. */
-        val tiles: List<Int>
-            get() = data.asList()
 
         /**
          * Returns the gid of the tile at the given index.
