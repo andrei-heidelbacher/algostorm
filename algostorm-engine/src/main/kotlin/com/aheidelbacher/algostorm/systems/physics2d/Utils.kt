@@ -23,15 +23,24 @@ import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 val Entity.body: Body?
     get() = get(Body::class)
 
-fun Body.transform(dx: Int, dy: Int): Body =
+val Entity.isRigid: Boolean
+    get() = body?.type == Body.Type.RIGID
+
+val Entity.isTrigger: Boolean
+    get() = body?.type == Body.Type.TRIGGER
+
+val Entity.position: Position?
+    get() = get(Position::class)
+
+fun Position.transform(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)
 
-fun Body.overlaps(other: Body): Boolean =
+fun Position.collidesWith(other: Position): Boolean =
         x == other.x && y == other.y
 
 fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<Entity> =
         entities.filter { entity ->
-            entity.body?.let { body ->
-                body.x == x && body.y == y
+            entity.position?.let { position ->
+                position.x == x && position.y == y
             } ?: false
         }

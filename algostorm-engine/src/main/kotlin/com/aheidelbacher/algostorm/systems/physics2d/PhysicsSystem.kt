@@ -21,7 +21,6 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Type
 
 /**
  * A system that handles [TransformIntent] events and publishes [Transformed]
@@ -62,15 +61,18 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
         val entity = entityGroup[event.entityId] ?: return
-        val nextBody = entity.body?.transform(event.dx, event.dy) ?: return
-        val overlappingEntities = entityGroup.entities.filter {
-            entity != it && it.body?.overlaps(nextBody) ?: false
+        val nextPosition = entity.position?.transform(event.dx, event.dy)
+                ?: return
+        val collidingEntities = entityGroup.entities.filter {
+            entity != it && it.position?.collidesWith(nextPosition) ?: false
         }
-        if (nextBody.type == Type.HOLLOW || overlappingEntities.isEmpty()) {
-            entity.set(nextBody)
+        if (!entity.isRigid || collidingEntities.count { it.isRigid } == 0) {
+            entity.set(nextPosition)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
+            collidingEntities.filter { it.isTrigger }.forEach {
+            }
         } else {
-            overlappingEntities.forEach {
+            collidingEntities.forEach {
                 publisher.post(Collision(entity.id, it.id))
             }
         }
