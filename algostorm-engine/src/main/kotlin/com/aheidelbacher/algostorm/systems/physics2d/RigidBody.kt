@@ -16,29 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 import com.aheidelbacher.algostorm.state.Component
 
 /**
- * A component which contains data about the physical behavior of the entity.
- *
- * @property type the type which describes how this entity interacts with other
- * bodies
+ * A component which indicates that this entity can collide with other rigid
+ * entities.
  */
-data class Body(val type: Type) : Component {
-    /** A property that indicates how a body interacts with other bodies. */
-    enum class Type {
-        /**
-         * Activates collisions with other rigid bodies and triggers with other
-         * trigger bodies.
-         */
-        @JsonProperty("rigid") RIGID,
-
-        /**
-         * Activates triggers with other rigid bodies, but does not activate
-         * other triggers.
-         */
-        @JsonProperty("trigger") TRIGGER,
-    }
-}
+object RigidBody : Component

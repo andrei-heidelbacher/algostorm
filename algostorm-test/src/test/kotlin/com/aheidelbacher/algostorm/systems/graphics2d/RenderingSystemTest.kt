@@ -33,8 +33,7 @@ import com.aheidelbacher.algostorm.state.builders.entityGroup
 import com.aheidelbacher.algostorm.state.builders.tileLayer
 import com.aheidelbacher.algostorm.state.builders.tileSet
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
-import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.Body.Type.HOLLOW
+import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
@@ -121,7 +120,7 @@ class RenderingSystemTest {
                             z = 0,
                             color = Color("#000000ff")
                     )
-                    +Body(x = 0, y = 0, type = HOLLOW)
+                    +Position(x = 0, y = 0)
                 }
             }
         }.build()
@@ -152,7 +151,7 @@ class RenderingSystemTest {
                             z = 0,
                             gid = 1.flipHorizontally()
                     )
-                    +Body(x = 0, y = 0, type = HOLLOW)
+                    +Position(x = 0, y = 0)
                 }
             }
         }.build()
@@ -185,7 +184,7 @@ class RenderingSystemTest {
                             z = 0,
                             gid = 1.flipVertically()
                     )
-                    +Body(x = 0, y = 0, type = HOLLOW)
+                    +Position(x = 0, y = 0)
                 }
             }
         }.build()
@@ -218,7 +217,7 @@ class RenderingSystemTest {
                             z = 0,
                             gid = 1.flipDiagonally()
                     )
-                    +Body(x = 0, y = 0, type = HOLLOW)
+                    +Position(x = 0, y = 0)
                 }
             }
         }.build()

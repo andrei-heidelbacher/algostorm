@@ -26,4 +26,7 @@ import com.aheidelbacher.algostorm.event.Event
  * @property selfId the id of this entity, which triggered the collision
  * @property otherId the id of the other entity, which was collided
  */
-data class Collision(val selfId: Int, val otherId: Int) : Event
+data class Collision internal constructor(
+        val selfId: Int,
+        val otherId: Int
+) : Event

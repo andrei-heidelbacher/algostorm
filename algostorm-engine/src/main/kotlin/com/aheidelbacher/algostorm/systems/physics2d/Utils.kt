@@ -19,24 +19,18 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 
-/** The `Body` component of this entity. */
-val Entity.body: Body?
-    get() = get(Body::class)
-
-val Entity.isRigid: Boolean
-    get() = body?.type == Body.Type.RIGID
-
-val Entity.isTrigger: Boolean
-    get() = body?.type == Body.Type.TRIGGER
-
 val Entity.position: Position?
     get() = get(Position::class)
 
-fun Position.transform(dx: Int, dy: Int): Position =
+fun Position.transformed(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)
 
-fun Position.collidesWith(other: Position): Boolean =
-        x == other.x && y == other.y
+val Entity.isRigid: Boolean
+    get() = RigidBody::class in this
+
+fun Entity.overlaps(other: Entity): Boolean = position.let { p ->
+    p != null && p == other.position
+}
 
 fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<Entity> =
         entities.filter { entity ->

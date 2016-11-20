@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.aheidelbacher.algostorm.state.Component
 
 /**
- * A component which contains data about the physical location of the entity.
+ * A component which contains the physical location of the entity.
  *
  * @property x the horizontal position in tiles of the entity
  * @property y the vertical position in tiles of the entity (positive is down)

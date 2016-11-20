@@ -58,19 +58,19 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
      * triggered with every overlapping entity.
      *
      * @param event the [TransformIntent] event
+     * @throws IllegalStateException if the transformed entity doesn't have a
+     * [Position] component
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
         val entity = entityGroup[event.entityId] ?: return
-        val nextPosition = entity.position?.transform(event.dx, event.dy)
-                ?: return
+        val nextPosition = entity.position?.transformed(event.dx, event.dy)
+                ?: error("Can't transform $entity without a position!")
         val collidingEntities = entityGroup.entities.filter {
-            entity != it && it.position?.collidesWith(nextPosition) ?: false
+            it != entity && it.isRigid && it.position == nextPosition
         }
-        if (!entity.isRigid || collidingEntities.count { it.isRigid } == 0) {
+        if (!entity.isRigid || collidingEntities.isEmpty()) {
             entity.set(nextPosition)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
-            collidingEntities.filter { it.isTrigger }.forEach {
-            }
         } else {
             collidingEntities.forEach {
                 publisher.post(Collision(entity.id, it.id))

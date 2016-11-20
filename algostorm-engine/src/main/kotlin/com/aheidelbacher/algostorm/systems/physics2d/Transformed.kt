@@ -27,7 +27,7 @@ import com.aheidelbacher.algostorm.event.Event
  * @property dx the horizontal translation amount in tiles
  * @property dy the vertical translation amount in tiles (positive is down)
  */
-data class Transformed(
+data class Transformed internal constructor(
         val entityId: Int,
         val dx: Int,
         val dy: Int
