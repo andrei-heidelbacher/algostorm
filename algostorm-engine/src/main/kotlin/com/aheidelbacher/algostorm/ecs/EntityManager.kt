@@ -22,11 +22,12 @@ interface EntityManager {
     val entities: Iterable<Entity>
 
     /**
-     * Checks whether this entity manager contains an entity with the given id.
+     * Checks whether this manager contains an entity with the given id.
      *
      * @param id the id of the requested entity
-     * @return `true` if the entity with the given id exists in this entity
-     * group, `false` otherwise
+     * @return `true` if the entity with the given id exists in this manager,
+     * `false` otherwise
+     * @throws IllegalArgumentException if [id] is not a valid id
      */
     operator fun contains(id: Int): Boolean
 
@@ -34,7 +35,9 @@ interface EntityManager {
      * Returns the entity with the given id.
      *
      * @param id the id of the requested entity
-     * @return the requested entity, or `null` if it doesn't exist
+     * @return the requested entity, or `null` if it doesn't exist in this
+     * manager
+     * @throws IllegalArgumentException if [id] is not a valid id
      */
     operator fun get(id: Int): Entity?
 }

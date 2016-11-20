@@ -23,26 +23,29 @@ interface MutableEntityManager : EntityManager {
     override operator fun get(id: Int): MutableEntity?
 
     /**
-     * Adds the given entity to this entity manager.
+     * Creates an entity with the given components, adds it to this manager and
+     * returns it.
      *
-     * If adding the entity to this manager fails, the entity manager remains
-     * unchanged.
+     * If creating and adding the entity to this manager fails, the entity
+     * manager remains unchanged.
      *
-     * @throws IllegalArgumentException if the id of the given entity is not
-     * unique among the entities in this entity manager
+     * @param components the initial components of the entity
+     * @return the created entity
+     * @throws IllegalStateException if there are too many entities in this
+     * manager
      */
-    fun add(entity: MutableEntity)
+    fun create(components: Collection<Component>): MutableEntity
 
     /**
-     * Removes the entity with the given id from this entity manager and returns
-     * it.
+     * Removes the entity with the given id from this manager and returns it.
      *
      * @param id the id of the entity that should be removed
-     * @return the removed entity if it exists in this entity manager when this
-     * method is called, `null` otherwise
+     * @return the removed entity if it exists in this manager when this method
+     * is called, `null` otherwise
+     * @throws IllegalArgumentException if [id] is not a valid id
      */
     fun remove(id: Int): MutableEntity?
 
-    /** Removes all entities from this entity manager. */
+    /** Removes all entities from this manager. */
     fun clear(): Unit
 }

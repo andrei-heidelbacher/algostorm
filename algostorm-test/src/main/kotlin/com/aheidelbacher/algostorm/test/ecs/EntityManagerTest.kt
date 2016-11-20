@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.ecs
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -30,18 +29,18 @@ import kotlin.test.assertTrue
 
 @Ignore
 abstract class EntityManagerTest {
-    private lateinit var entities: Set<Entity>
-    private lateinit var entityManager: EntityManager
-
-    abstract fun createInitialEntities(): Set<Entity>
-
-    abstract fun createEntityManager(entities: Set<Entity>): EntityManager
-
-    @Before
-    fun initializeEntityManager() {
-        entities = createInitialEntities()
-        entityManager = createEntityManager(entities)
+    companion object {
+        fun assertEquals(expected: Entity?, actual: Entity?) {
+            assertEquals(expected?.id, actual?.id)
+            assertEquals(
+                    expected = expected?.components?.toSet(),
+                    actual = actual?.components?.toSet()
+            )
+        }
     }
+
+    protected abstract val entities: Set<Entity>
+    protected abstract val entityManager: EntityManager
 
     @Test
     fun entitiesShouldReturnAllExistingEntities() {
@@ -55,19 +54,9 @@ abstract class EntityManagerTest {
     }
 
     @Test
-    fun getExistingShouldReturnNonNull() {
+    fun getExistingShouldReturnEqualEntity() {
         for (entity in entities) {
             assertEquals(entity, entityManager[entity.id])
-        }
-    }
-
-    @Test
-    fun getExistingShouldHaveSameComponents() {
-        for (entity in entities) {
-            assertEquals(
-                    expected = entity.components.toSet(),
-                    actual = entityManager[entity.id]?.components?.toSet()
-            )
         }
     }
 

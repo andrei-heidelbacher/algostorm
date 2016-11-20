@@ -16,42 +16,18 @@
 
 package com.aheidelbacher.algostorm.test.ecs
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.ecs.Entity
-import com.aheidelbacher.algostorm.ecs.EntityManager
 import com.aheidelbacher.algostorm.ecs.MutableEntity
 import com.aheidelbacher.algostorm.ecs.MutableEntityManager
 
-import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @Ignore
 abstract class MutableEntityManagerTest : EntityManagerTest() {
-    private lateinit var entities: Set<MutableEntity>
-    private lateinit var entityManager: MutableEntityManager
-
-    abstract override fun createInitialEntities(): Set<MutableEntity>
-
-    abstract fun createEmptyMutableEntityManager(): MutableEntityManager
-
-    override fun createEntityManager(entities: Set<Entity>): EntityManager =
-            createEmptyMutableEntityManager().apply {
-                entities.forEach { e ->
-                    val entity = EntityMock(e.id)
-                    e.components.forEach { c -> entity.set(c) }
-                    add(entity)
-                }
-            }
-
-    @Before
-    fun initializeMutableEntityManager() {
-        entities = createInitialEntities()
-        entityManager = createEmptyMutableEntityManager()
-        entities.forEach { entityManager.add(it) }
-    }
+    override abstract val entities: Set<MutableEntity>
+    override abstract val entityManager: MutableEntityManager
 
     @Test
     fun removeExistingShouldReturnEqualEntity() {
@@ -70,15 +46,14 @@ abstract class MutableEntityManagerTest : EntityManagerTest() {
 
     @Test
     fun removeNonExistingShouldReturnNull() {
-        val maxId = entities.maxBy(Entity::id)?.id ?: 0
+        val maxId = entities.maxBy(MutableEntity::id)?.id ?: 0
         assertNull(entityManager.remove(maxId + 1))
     }
 
     @Test
-    fun getAfterAddShouldReturnEqualEntity() {
-        val maxId = entities.maxBy(Entity::id)?.id ?: 0
-        val entity = EntityMock(maxId + 1)
-        entityManager.add(entity)
+    fun getAfterCreateShouldReturnEqualEntity() {
+        val maxId = entities.maxBy(MutableEntity::id)?.id ?: 0
+        val entity = entityManager.create(listOf(ComponentMock(maxId + 1)))
         assertEquals(entity, entityManager[entity.id])
     }
 

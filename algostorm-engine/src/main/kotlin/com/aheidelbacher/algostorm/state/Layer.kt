@@ -16,9 +16,11 @@
 
 package com.aheidelbacher.algostorm.state
 
+import com.aheidelbacher.algostorm.ecs.Component
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+import com.aheidelbacher.algostorm.ecs.Entity.Companion.validateId
 import com.aheidelbacher.algostorm.ecs.MutableEntity
 import com.aheidelbacher.algostorm.ecs.MutableEntityManager
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
@@ -115,13 +117,25 @@ sealed class Layer(
         @Transient private val entityMap: MutableMap<Int, MutableEntity> =
                 entities.associateByTo(hashMapOf(), MutableEntity::id)
 
+        @Transient private var nextId =
+                1 + (entities.maxBy(Entity::id)?.id ?: 0)
+
         override val entities: Iterable<MutableEntity> = entityMap.values
 
-        override operator fun contains(id: Int): Boolean = id in entityMap
+        override operator fun contains(id: Int): Boolean =
+                validateId(id) in entityMap
 
-        override operator fun get(id: Int): MutableEntity? = entityMap[id]
+        override operator fun get(id: Int): MutableEntity? =
+                entityMap[validateId(id)]
 
-        override fun add(entity: MutableEntity) {
+        override fun create(components: Collection<Component>): MutableEntity {
+            check(nextId < Int.MAX_VALUE) { "Too many entities in $this!" }
+            val entity = Entity(nextId++, components)
+            add(entity)
+            return entity
+        }
+
+        fun add(entity: MutableEntity) {
             require(entity.id !in entityMap) {
                 "$entity id is not unique within $this!"
             }
@@ -139,7 +153,8 @@ sealed class Layer(
             addAll(entities.toSet())
         }
 
-        override fun remove(id: Int): MutableEntity? = entityMap.remove(id)
+        override fun remove(id: Int): MutableEntity? =
+                entityMap.remove(validateId(id))
 
         override fun clear() {
             entityMap.clear()

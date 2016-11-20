@@ -18,7 +18,6 @@ package com.aheidelbacher.algostorm.state
 
 import com.aheidelbacher.algostorm.ecs.MutableEntity
 import com.aheidelbacher.algostorm.ecs.MutableEntityManager
-import com.aheidelbacher.algostorm.state.Entity.Factory
 import com.aheidelbacher.algostorm.state.builders.EntityGroupBuilder
 import com.aheidelbacher.algostorm.test.ecs.MutableEntityManagerTest
 
@@ -27,12 +26,13 @@ class EntityGroupTest : MutableEntityManagerTest() {
         const val ENTITY_COUNT: Int = 1000
     }
 
-    override fun createInitialEntities(): Set<MutableEntity> = with(Factory()) {
-        (1..ENTITY_COUNT).map { id ->
-            create(listOf(ComponentMock(id)))
-        }.toSet()
-    }
-
-    override fun createEmptyMutableEntityManager(): MutableEntityManager =
-            EntityGroupBuilder().apply { name = "entityGroup" }.build()
+    override val entityManager: MutableEntityManager = EntityGroupBuilder()
+            .apply { name = "entityGroup" }
+            .build()
+            .apply {
+                for (id in 1..ENTITY_COUNT) {
+                    create(listOf(ComponentMock(id)))
+                }
+            }
+    override val entities: Set<MutableEntity> = entityManager.entities.toSet()
 }

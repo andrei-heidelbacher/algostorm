@@ -25,11 +25,25 @@ import kotlin.reflect.KClass
  * can contain at most one component of a specific type.
  *
  * @property id the unique positive identifier of this entity
- * @throws IllegalArgumentException if [id] is not positive
+ * @throws IllegalArgumentException if [id] is not valid
  */
 abstract class Entity(val id: Int) {
+    companion object {
+        /**
+         * Validates the given id and returns it.
+         *
+         * @param id the id which should be validated
+         * @return the given id
+         * @throws IllegalArgumentException if [id] is not positive
+         */
+        fun validateId(id: Int): Int {
+            require(id > 0) { "Id $id must be positive!" }
+            return id
+        }
+    }
+
     init {
-        require(id > 0) { "Entity id $id must be positive!" }
+        validateId(id)
     }
 
     /** An immutable view of this entity's components. */
