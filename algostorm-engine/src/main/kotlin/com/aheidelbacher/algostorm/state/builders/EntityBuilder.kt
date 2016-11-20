@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.state.builders
 
-import com.aheidelbacher.algostorm.state.Component
+import com.aheidelbacher.algostorm.ecs.Component
 import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Entity.Factory
 

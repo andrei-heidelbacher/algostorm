@@ -16,22 +16,22 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.systems.physics2d.body
+import com.aheidelbacher.algostorm.systems.physics2d.position
 
 class CameraSystem(
         private val camera: Camera,
-        private val entityGroup: EntityGroup,
-        private var followedObjectId: Int? = null
+        private val entityManager: EntityManager,
+        private var followedEntityId: Int? = null
 ) : Subscriber {
     object UpdateCamera : Event
 
     data class FocusOn(val x: Int, val y: Int) : Event
 
-    data class Follow(val objectId: Int) : Event
+    data class Follow(val entityId: Int) : Event
 
     data class Scroll(val dx: Int, val dy: Int) : Event
 
@@ -39,8 +39,8 @@ class CameraSystem(
 
     @Suppress("unused_parameter")
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
-        followedObjectId?.let { id ->
-            entityGroup[id]?.body?.let { entity ->
+        followedEntityId?.let { id ->
+            entityManager[id]?.position?.let { entity ->
                 camera.x = entity.x //+ obj.width / 2
                 camera.y = entity.y //+ obj.height / 2
             }
@@ -48,23 +48,23 @@ class CameraSystem(
     }
 
     @Subscribe fun onFocusOn(event: FocusOn) {
-        followedObjectId = null
+        followedEntityId = null
         camera.x = event.x
         camera.y = event.y
     }
 
     @Subscribe fun onFollow(event: Follow) {
-        followedObjectId = event.objectId
+        followedEntityId = event.entityId
     }
 
     @Subscribe fun onScroll(event: Scroll) {
-        followedObjectId = null
+        followedEntityId = null
         camera.x += event.dx
         camera.y += event.dy
     }
 
     @Suppress("unused_parameter")
     @Subscribe fun onUnFollow(event: UnFollow) {
-        followedObjectId = null
+        followedEntityId = null
     }
 }

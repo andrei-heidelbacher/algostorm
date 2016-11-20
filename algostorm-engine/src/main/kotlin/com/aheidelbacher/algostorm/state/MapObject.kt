@@ -18,6 +18,8 @@ package com.aheidelbacher.algostorm.state
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.ecs.MutableEntity
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.clearFlags
@@ -89,7 +91,7 @@ class MapObject internal constructor(
             "Tile layers in $this must have sizes equal to ${width * height}!"
         }
         val ids = layers.filterIsInstance<EntityGroup>()
-                .flatMap(EntityGroup::entities).map(Entity::id)
+                .flatMap(EntityGroup::entities).map(MutableEntity::id)
         require(ids.distinct().size == ids.size) {
             "$this contains entities with duplicate ids!"
         }

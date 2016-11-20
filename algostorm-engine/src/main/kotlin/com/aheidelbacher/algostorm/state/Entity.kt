@@ -18,6 +18,8 @@ package com.aheidelbacher.algostorm.state
 
 import com.fasterxml.jackson.annotation.JsonCreator
 
+import com.aheidelbacher.algostorm.ecs.Component
+
 import kotlin.reflect.KClass
 
 /**
@@ -29,7 +31,7 @@ import kotlin.reflect.KClass
  * @property id the unique positive identifier of this entity
  * @throws IllegalArgumentException if [id] is not positive
  */
-data class Entity(val id: Int) {
+class Entity(id: Int) : com.aheidelbacher.algostorm.ecs.MutableEntity(id) {
     /** Factory that handles associating unique ids to created entities. */
     interface Factory {
         companion object {
@@ -77,55 +79,21 @@ data class Entity(val id: Int) {
             components = components.asList()
     )
 
-    init {
-        require(id > 0) { "$this id must be positive!" }
-    }
-
     @Transient private val componentMap =
             hashMapOf<KClass<out Component>, Component>()
 
-    /** An immutable view of this entity's components. */
-    val components: Collection<Component> = componentMap.values
+    override val components: Collection<Component> = componentMap.values
 
-    /**
-     * Checks whether this entity contains a component of the specified type.
-     *
-     * @param type the class object of the component; must represent a final
-     * type
-     * @return `true` if this entity contains the specified component type,
-     * `false` otherwise
-     */
-    operator fun contains(type: KClass<out Component>): Boolean =
+    override operator fun contains(type: KClass<out Component>): Boolean =
             type in componentMap
 
-    /**
-     * Retrieves the component with the specified type.
-     *
-     * @param T the type of the component; must be final
-     * @param type the class object of the component
-     * @return the requested component, or `null` if this entity doesn't contain
-     * the specified component type
-     */
-    operator fun <T : Component> get(type: KClass<T>): T? =
+    override operator fun <T : Component> get(type: KClass<T>): T? =
             type.java.cast(componentMap[type])
 
-    /**
-     * Sets the value of the specified component type.
-     *
-     * @param value the new value of the component
-     */
-    fun set(value: Component) {
+    override fun set(value: Component) {
         componentMap[value.javaClass.kotlin] = value
     }
 
-    /**
-     * Removes the component with the specified type and returns it.
-     *
-     * @param T the type of the component; must be final
-     * @param type the class object of the component
-     * @return the removed component if it exists in this entity when this
-     * method is called, `null` otherwise
-     */
-    fun <T : Component> remove(type: KClass<T>): T? =
+    override fun <T : Component> remove(type: KClass<T>): T? =
             type.java.cast(componentMap.remove(type))
 }

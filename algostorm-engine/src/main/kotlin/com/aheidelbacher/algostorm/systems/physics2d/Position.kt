@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.state.Component
+import com.aheidelbacher.algostorm.ecs.Component
 
 /**
  * A component which contains the physical location of the entity.

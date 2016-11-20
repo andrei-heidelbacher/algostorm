@@ -16,12 +16,12 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.ecs.Entity
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Entity
 import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
@@ -34,8 +34,7 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagona
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.body
+import com.aheidelbacher.algostorm.systems.physics2d.position
 
 import java.io.FileNotFoundException
 import java.util.Comparator
@@ -74,8 +73,8 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private val comparator = Comparator<Entity> { e1, e2 ->
-        val b1 = e1.body ?: error("")
-        val b2 = e2.body ?: error("")
+        val b1 = e1.position ?: error("")
+        val b2 = e2.position ?: error("")
         if (b1.y < b2.y) {
             b1.y - b2.y
         } else {
@@ -155,18 +154,18 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private fun Entity.draw(offX: Int, offY: Int) {
-        val body = get(Body::class) ?: return
-        val x = body.x * map.tileWidth
-        val y = body.y * map.tileHeight
+        val p = position ?: return
+        val x = p.x * map.tileWidth
+        val y = p.y * map.tileHeight
         sprite?.draw(offX + x, offY + y)
     }
 
     private fun EntityGroup.draw(offX: Int, offY: Int) {
-        val size = entities.count { it.body != null && it.sprite != null }
+        val size = entities.count { it.position != null && it.sprite != null }
         val entityArray = arrayOfNulls<Entity>(size)
         var i = 0
         entities.forEach {
-            if (it.body != null && it.sprite != null) {
+            if (it.position != null && it.sprite != null) {
                 entityArray[i++] = it
             }
         }

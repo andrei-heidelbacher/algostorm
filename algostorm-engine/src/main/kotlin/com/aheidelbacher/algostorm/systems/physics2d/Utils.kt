@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.state.Entity
-import com.aheidelbacher.algostorm.state.Layer.EntityGroup
+import com.aheidelbacher.algostorm.ecs.Entity
+import com.aheidelbacher.algostorm.ecs.EntityManager
 
 val Entity.position: Position?
     get() = get(Position::class)
@@ -32,7 +32,7 @@ fun Entity.overlaps(other: Entity): Boolean = position.let { p ->
     p != null && p == other.position
 }
 
-fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<Entity> =
+fun EntityManager.getEntitiesAt(x: Int, y: Int): List<Entity> =
         entities.filter { entity ->
             entity.position?.let { position ->
                 position.x == x && position.y == y

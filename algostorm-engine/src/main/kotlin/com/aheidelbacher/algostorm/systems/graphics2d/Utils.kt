@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.state.Entity
+import com.aheidelbacher.algostorm.ecs.Entity
 import com.aheidelbacher.algostorm.state.MapObject
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedHorizontally

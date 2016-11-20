@@ -19,6 +19,8 @@ package com.aheidelbacher.algostorm.state
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+import com.aheidelbacher.algostorm.ecs.MutableEntity
+import com.aheidelbacher.algostorm.ecs.MutableEntityManager
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 
@@ -109,79 +111,37 @@ sealed class Layer(
             offsetX: Int,
             offsetY: Int,
             entities: Set<Entity>
-    ) : Layer(name, isVisible, offsetX, offsetY) {
-        @Transient private val entityMap =
-                entities.associateByTo(hashMapOf(), Entity::id)
+    ) : Layer(name, isVisible, offsetX, offsetY), MutableEntityManager {
+        @Transient private val entityMap: MutableMap<Int, MutableEntity> =
+                entities.associateByTo(hashMapOf(), MutableEntity::id)
 
-        /** A read-only view of the entities in this group. */
-        val entities: Iterable<Entity> = entityMap.values
+        override val entities: Iterable<MutableEntity> = entityMap.values
 
-        /**
-         * Checks whether this entity group contains an entity with the given
-         * id.
-         *
-         * @param id the id of the requested entity
-         * @return `true` if the entity with the given id exists in this entity
-         * group, `false` otherwise
-         */
-        operator fun contains(id: Int): Boolean = id in entityMap
+        override operator fun contains(id: Int): Boolean = id in entityMap
 
-        /**
-         * Returns the entity with the given id.
-         *
-         * @param id the id of the requested entity
-         * @return the requested entity, or `null` if it doesn't exist
-         */
-        operator fun get(id: Int): Entity? = entityMap[id]
+        override operator fun get(id: Int): MutableEntity? = entityMap[id]
 
-        /**
-         * Adds the given entity to this entity group.
-         *
-         * If adding the entity to this group fails, the entity group remains
-         * unchanged.
-         *
-         * @throws IllegalArgumentException if the id of the given entity is not
-         * unique among the entities in this entity group
-         */
-        fun add(entity: Entity) {
+        override fun add(entity: MutableEntity) {
             require(entity.id !in entityMap) {
                 "$entity id is not unique within $this!"
             }
             entityMap[entity.id] = entity
         }
 
-        /**
-         * Adds the given entities to this entity group.
-         *
-         * If adding the entities to this group fails, the entity group remains
-         * unchanged.
-         *
-         * @throws IllegalArgumentException if the id of any given entity is not
-         * unique among the entities in this entity group
-         */
-        fun addAll(entities: Set<Entity>) {
+        fun addAll(entities: Set<MutableEntity>) {
             require(entities.none { it.id in entityMap }) {
                 "$entities ids are not unique within $this!"
             }
-            entities.associateByTo(entityMap, Entity::id)
+            entities.associateByTo(entityMap, MutableEntity::id)
         }
 
-        fun addAll(vararg entities: Entity) {
+        fun addAll(vararg entities: MutableEntity) {
             addAll(entities.toSet())
         }
 
-        /**
-         * Removes the entity with the given id from this entity group and
-         * returns it.
-         *
-         * @param id the id of the entity that should be removed
-         * @return the removed entity if it exists in this entity group when
-         * this method is called, `null` otherwise
-         */
-        fun remove(id: Int): Entity? = entityMap.remove(id)
+        override fun remove(id: Int): MutableEntity? = entityMap.remove(id)
 
-        /** Removes all entities from this entity group. */
-        fun clear() {
+        override fun clear() {
             entityMap.clear()
         }
     }

@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.ecs.Component
 import com.aheidelbacher.algostorm.state.Color
-import com.aheidelbacher.algostorm.state.Component
 
 /**
  * A component which contains data required for rendering.

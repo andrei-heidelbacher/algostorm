@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.state
+package com.aheidelbacher.algostorm.test.ecs
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.aheidelbacher.algostorm.ecs.Component
 
-/**
- * An abstract component which holds data about a certain aspect of the game.
- *
- * All components should be immutable and final data classes. The type of a
- * component is denoted by its kotlin class object.
- */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "@class"
-)
-interface Component
+data class ComponentMock(val id: Int) : Component

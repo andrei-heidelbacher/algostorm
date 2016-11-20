@@ -16,20 +16,22 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.MutableEntityManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 
 /**
  * A system that handles [TransformIntent] events and publishes [Transformed]
  * and [Collision] events.
  *
- * @property entityGroup the entity group used to retrieve and update the
+ * @property entityManager the entity manager used to retrieve and update the
  * entities
  */
-class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
+class PhysicsSystem(
+        private val entityManager: MutableEntityManager
+) : Subscriber {
     private lateinit var publisher: Publisher
 
     override fun onSubscribe(publisher: Publisher) {
@@ -62,10 +64,10 @@ class PhysicsSystem(private val entityGroup: EntityGroup) : Subscriber {
      * [Position] component
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
-        val entity = entityGroup[event.entityId] ?: return
+        val entity = entityManager[event.entityId] ?: return
         val nextPosition = entity.position?.transformed(event.dx, event.dy)
                 ?: error("Can't transform $entity without a position!")
-        val collidingEntities = entityGroup.entities.filter {
+        val collidingEntities = entityManager.entities.filter {
             it != entity && it.isRigid && it.position == nextPosition
         }
         if (!entity.isRigid || collidingEntities.isEmpty()) {
