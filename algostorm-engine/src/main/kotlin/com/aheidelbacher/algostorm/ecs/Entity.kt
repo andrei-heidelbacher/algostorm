@@ -47,7 +47,7 @@ abstract class Entity(val id: Int) {
     }
 
     /** An immutable view of this entity's components. */
-    abstract val components: Collection<Component>
+    abstract val components: Iterable<Component>
 
     /**
      * Checks whether this entity contains a component of the specified type.

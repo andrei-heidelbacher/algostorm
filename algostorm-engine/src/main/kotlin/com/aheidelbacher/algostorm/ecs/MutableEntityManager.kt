@@ -18,6 +18,14 @@ package com.aheidelbacher.algostorm.ecs
 
 /** A mutable view of a collection of unique mutable entities. */
 interface MutableEntityManager : EntityManager {
+    companion object {
+        /**
+         * Returns a default implementation of a mutable entity manager.
+         */
+        fun invoke(entities: Set<MutableEntity>): MutableEntityManager =
+                MutableEntityManagerImpl(entities)
+    }
+
     override val entities: Iterable<MutableEntity>
 
     override operator fun get(id: Int): MutableEntity?
@@ -31,6 +39,8 @@ interface MutableEntityManager : EntityManager {
      *
      * @param components the initial components of the entity
      * @return the created entity
+     * @throws IllegalArgumentException if there are given two components of the
+     * same type
      * @throws IllegalStateException if there are too many entities in this
      * manager
      */
