@@ -10,14 +10,14 @@ interface Deserializer {
     companion object {
         @Throws(IOException::class)
         inline fun <reified T : Any> Deserializer.readValue(
-                inputStream: InputStream
-        ): T = readValue(inputStream, T::class)
+                src: InputStream
+        ): T = readValue(src, T::class)
     }
 
     /**
-     * Deserializers an object of the given type from the given stream.
+     * Deserializes an object of the given type from the given stream.
      *
-     * @param inputStream the stream from which the object is deserialized
+     * @param src the stream from which the object is deserialized
      * @param type the class of the deserialized object type
      * @param T the type of the deserialized object type
      * @return the deserialized object
@@ -25,9 +25,5 @@ interface Deserializer {
      * errors
      */
     @Throws(IOException::class)
-    fun <T : Any> readValue(inputStream: InputStream, type: Class<T>): T
-
-    @Throws(IOException::class)
-    fun <T : Any> readValue(inputStream: InputStream, type: KClass<T>): T =
-            readValue(inputStream, type.java)
+    fun <T : Any> readValue(src: InputStream, type: KClass<T>): T
 }

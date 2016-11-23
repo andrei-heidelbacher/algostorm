@@ -28,20 +28,6 @@ import kotlin.reflect.KClass
  * @throws IllegalArgumentException if [id] is not valid
  */
 abstract class Entity(val id: Int) {
-    companion object {
-        /**
-         * Validates the given id and returns it.
-         *
-         * @param id the id which should be validated
-         * @return the given id
-         * @throws IllegalArgumentException if [id] is not positive
-         */
-        fun validateId(id: Int): Int {
-            require(id > 0) { "Id $id must be positive!" }
-            return id
-        }
-    }
-
     init {
         validateId(id)
     }

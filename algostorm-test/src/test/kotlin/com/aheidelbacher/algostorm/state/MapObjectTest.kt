@@ -88,7 +88,7 @@ class MapObjectTest {
         val bos = ByteArrayOutputStream()
         jsonDriver.writeValue(bos, mapObject)
         val actualMapObject = jsonDriver.readValue<MapObject>(
-                inputStream = bos.toByteArray().inputStream()
+                src = bos.toByteArray().inputStream()
         )
         assertMapObjectEquals(mapObject, actualMapObject)
     }

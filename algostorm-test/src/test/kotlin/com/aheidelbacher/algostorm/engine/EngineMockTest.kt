@@ -38,7 +38,7 @@ class EngineMockTest : EngineTest() {
             val bos = ByteArrayOutputStream()
             engine.serializeState(bos)
             val state = JsonDriver().readValue<EngineMock.State>(
-                    inputStream = bos.toByteArray().inputStream()
+                    src = bos.toByteArray().inputStream()
             )
             assertEquals(engine.serializedState, state)
         }

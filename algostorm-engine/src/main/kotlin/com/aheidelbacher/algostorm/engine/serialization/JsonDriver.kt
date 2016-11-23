@@ -26,6 +26,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 /** A JSON serialization driver using the Jackson external library. */
 class JsonDriver : SerializationDriver {
@@ -48,11 +49,9 @@ class JsonDriver : SerializationDriver {
     }
 
     @Throws(IOException::class)
-    override fun <T : Any> readValue(
-            inputStream: InputStream,
-            type: Class<T>
-    ): T = objectMapper?.readValue(inputStream, type)
-            ?: error("$this was released!")
+    override fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
+            objectMapper?.readValue(src, type.java)
+                    ?: error("$this was released!")
 
     /**
      * Releases all resources acquired by this driver.

@@ -59,7 +59,7 @@ class TileSetTest {
         val bos = ByteArrayOutputStream()
         jsonDriver.writeValue(bos, tileSet)
         val actualTileSet = jsonDriver.readValue<TileSet>(
-                inputStream = bos.toByteArray().inputStream()
+                src = bos.toByteArray().inputStream()
         )
         assertEquals(tileSet, actualTileSet)
     }

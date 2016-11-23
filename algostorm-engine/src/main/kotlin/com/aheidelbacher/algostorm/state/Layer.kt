@@ -20,9 +20,9 @@ import com.aheidelbacher.algostorm.ecs.Component
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-import com.aheidelbacher.algostorm.ecs.Entity.Companion.validateId
 import com.aheidelbacher.algostorm.ecs.MutableEntity
 import com.aheidelbacher.algostorm.ecs.MutableEntityManager
+import com.aheidelbacher.algostorm.ecs.validateId
 import com.aheidelbacher.algostorm.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.state.Layer.TileLayer
 
