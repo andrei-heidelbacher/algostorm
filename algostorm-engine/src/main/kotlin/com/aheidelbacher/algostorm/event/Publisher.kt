@@ -49,6 +49,20 @@ interface Publisher {
     }
 
     /**
+     * Publishes the given request and returns its result.
+     *
+     * @param T the result type
+     * @param request the request which should be completed
+     * @return the result with which the request was completed
+     * @throws IllegalStateException if the request was not completed or if it
+     * was completed more than once
+     */
+    fun <T : Any> request(request: Request<T>): T {
+        publish(request)
+        return request.get()
+    }
+
+    /**
      * Immediately publishes the given event and blocks until it was handled by
      * all subscribers.
      *

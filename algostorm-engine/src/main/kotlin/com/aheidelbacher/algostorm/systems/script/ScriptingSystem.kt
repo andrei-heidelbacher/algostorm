@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.systems.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -45,34 +45,31 @@ class ScriptingSystem(
      * @property name the name of script procedure that should be executed
      * @property args the arguments of the script procedure
      */
-    data class InvokeProcedure private constructor(
+    class InvokeProcedure private constructor(
             val name: String,
             val args: List<*>
-    ) : Event {
+    ) : Request<Unit>() {
         constructor(name: String, vararg args: Any?) : this(name, args.asList())
     }
 
     /**
      * An event which requests the execution of the script function with the
-     * given name and arguments, attaching a callback to receive the result.
+     * given name and arguments, returning the result.
      *
      * @property name the name of the script function that should be executed
      * @property returnType the expected type of the result
      * @property args the arguments of the script function
-     * @property onResult the callback which will be called with the result
      */
-    data class InvokeFunction private constructor(
+    class InvokeFunction private constructor(
             val name: String,
             val returnType: KClass<*>,
-            val args: List<*>,
-            val onResult: (Any?) -> Unit
-    ) : Event {
+            val args: List<*>
+    ) : Request<Any?>() {
         constructor(
                 name: String,
                 returnType: KClass<*>,
-                vararg args: Any?,
-                onResult: (Any?) -> Unit
-        ) : this(name, returnType, args.asList(), onResult)
+                vararg args: Any?
+        ) : this(name, returnType, args.asList())
     }
 
     init {
@@ -82,10 +79,11 @@ class ScriptingSystem(
 
     @Subscribe fun onInvokeProcedure(event: InvokeProcedure) {
         scriptEngine.invokeProcedure(event.name, *event.args.toTypedArray())
+        event.complete(Unit)
     }
 
     @Subscribe fun onInvokeFunction(event: InvokeFunction) {
-        event.onResult(scriptEngine.invokeFunction(
+        event.complete(scriptEngine.invokeFunction(
                 event.name,
                 event.returnType,
                 *event.args.toTypedArray()

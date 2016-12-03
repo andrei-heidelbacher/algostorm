@@ -21,7 +21,7 @@ package com.aheidelbacher.algostorm.event
  *
  * An event handler is a method that is annotated with the [Subscribe]
  * annotation, is public, final, non-static, returns [Unit] / `void` and
- * receives a single parameter which is a subtype of [Event].
+ * receives a single parameter which is a non-generic subtype of [Event].
  *
  * Event-handling methods declared in supertypes should also be registered for
  * events upon subscription.

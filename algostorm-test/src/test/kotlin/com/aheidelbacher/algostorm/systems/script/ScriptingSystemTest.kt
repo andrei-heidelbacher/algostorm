@@ -36,18 +36,18 @@ class ScriptingSystemTest {
     fun testInvokeProcedure() {
         val event = InvokeProcedure("testProcedure", "Hello!")
         system.onInvokeProcedure(event)
+        assertEquals(Unit, event.get())
     }
 
     @Test
     fun testInvokeFunction() {
         val message = "Hello!"
-        var result: String? = null
         val event = InvokeFunction(
                 "testStringFunction",
                 String::class,
                 message
-        ) { result = it as String }
+        )
         system.onInvokeFunction(event)
-        assertEquals(message, result)
+        assertEquals(message, event.get() as String)
     }
 }
