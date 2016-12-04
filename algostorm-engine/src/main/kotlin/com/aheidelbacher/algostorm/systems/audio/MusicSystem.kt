@@ -21,15 +21,17 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
         musicSources: List<File>
 ) : Subscriber {
     /**
-     * An event that requests a longer sound to be played, stopping the
-     * previously playing music.
+     * A request to play a longer sound, stopping the previously playing music.
      *
      * @property source the sound which should be played
      * @property loop whether the sound should be looped or not
      */
-    class PlayMusic(val source: File, val loop: Boolean = false) : Request<Unit>()
+    class PlayMusic(
+            val source: File,
+            val loop: Boolean = false
+    ) : Request<Unit>()
 
-    /** An event which signals the currently played music to be stopped. */
+    /** A request to stop the currently played music. */
     class StopMusic : Request<Unit>()
 
     init {
@@ -37,24 +39,24 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     /**
-     * After receiving a [PlayMusic] event, the previously playing music is
+     * After receiving a [PlayMusic] request, the previously playing music is
      * stopped and the given music is played.
      *
-     * @param event the event which requests music to be played
+     * @param request the request
      */
-    @Subscribe fun onPlayMusic(event: PlayMusic) {
-        musicPlayer.playMusic(event.source.path, event.loop)
-        event.complete(Unit)
+    @Subscribe fun onPlayMusic(request: PlayMusic) {
+        musicPlayer.playMusic(request.source.path, request.loop)
+        request.complete(Unit)
     }
 
     /**
-     * After receiving a [StopMusic] event, the currently playing music is
+     * After receiving a [StopMusic] request, the currently playing music is
      * stopped.
      *
-     * @param event the event which requests the music to be stopped
+     * @param request the request
      */
-    @Subscribe fun onStopMusic(event: StopMusic) {
+    @Subscribe fun onStopMusic(request: StopMusic) {
         musicPlayer.stopMusic()
-        event.complete(Unit)
+        request.complete(Unit)
     }
 }

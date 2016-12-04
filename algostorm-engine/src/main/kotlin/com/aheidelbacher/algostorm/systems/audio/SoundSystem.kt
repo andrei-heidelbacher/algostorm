@@ -37,7 +37,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
         soundSources: List<File>
 ) : Subscriber {
     /**
-     * An event that requests a short sound to be played.
+     * A request to play a short sound.
      *
      * @property source the path of the sound which should be played
      */
@@ -48,12 +48,12 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     /**
-     * After receiving a [PlaySoundEffect] event, the given sound is played.
+     * After receiving a [PlaySoundEffect] request, the given sound is played.
      *
-     * @param event the event which requests a sound to be played
+     * @param request the request
      */
-    @Subscribe fun onPlaySoundEffect(event: PlaySoundEffect) {
-        soundPlayer.playSound(event.source.path)
-        event.complete(Unit)
+    @Subscribe fun onPlaySoundEffect(request: PlaySoundEffect) {
+        soundPlayer.playSound(request.source.path)
+        request.complete(Unit)
     }
 }

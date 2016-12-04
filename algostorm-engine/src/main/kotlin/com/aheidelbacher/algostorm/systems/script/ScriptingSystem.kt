@@ -39,8 +39,8 @@ class ScriptingSystem(
         scriptFunctions: List<KFunction<*>>
 ) : Subscriber {
     /**
-     * An event which requests the execution of the script procedure with the
-     * given name and arguments.
+     * A request to execute the script procedure with the given name and
+     * arguments.
      *
      * @property name the name of script procedure that should be executed
      * @property args the arguments of the script procedure
@@ -53,8 +53,8 @@ class ScriptingSystem(
     }
 
     /**
-     * An event which requests the execution of the script function with the
-     * given name and arguments, returning the result.
+     * A request to execute the script function with the given name and
+     * arguments, returning the result.
      *
      * @property name the name of the script function that should be executed
      * @property returnType the expected type of the result
@@ -77,16 +77,16 @@ class ScriptingSystem(
         scriptFunctions.forEach { scriptEngine.loadFunction(it) }
     }
 
-    @Subscribe fun onInvokeProcedure(event: InvokeProcedure) {
-        scriptEngine.invokeProcedure(event.name, *event.args.toTypedArray())
-        event.complete(Unit)
+    @Subscribe fun onInvokeProcedure(request: InvokeProcedure) {
+        scriptEngine.invokeProcedure(request.name, *request.args.toTypedArray())
+        request.complete(Unit)
     }
 
-    @Subscribe fun onInvokeFunction(event: InvokeFunction) {
-        event.complete(scriptEngine.invokeFunction(
-                event.name,
-                event.returnType,
-                *event.args.toTypedArray()
+    @Subscribe fun onInvokeFunction(request: InvokeFunction) {
+        request.complete(scriptEngine.invokeFunction(
+                request.name,
+                request.returnType,
+                *request.args.toTypedArray()
         ))
     }
 }
