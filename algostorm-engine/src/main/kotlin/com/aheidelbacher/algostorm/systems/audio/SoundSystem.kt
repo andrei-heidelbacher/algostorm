@@ -18,7 +18,7 @@ package com.aheidelbacher.algostorm.systems.audio
 
 import com.aheidelbacher.algostorm.engine.audio.SoundPlayer
 import com.aheidelbacher.algostorm.state.File
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -41,7 +41,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      *
      * @property source the path of the sound which should be played
      */
-    data class PlaySoundEffect(val source: File) : Event
+    class PlaySoundEffect(val source: File) : Request<Unit>()
 
     init {
         soundSources.forEach { soundPlayer.loadSound(it.path) }
@@ -54,5 +54,6 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      */
     @Subscribe fun onPlaySoundEffect(event: PlaySoundEffect) {
         soundPlayer.playSound(event.source.path)
+        event.complete(Unit)
     }
 }

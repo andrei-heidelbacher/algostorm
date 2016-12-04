@@ -17,7 +17,8 @@
 package com.aheidelbacher.algostorm.event
 
 /**
- * Provides functionality to post and publish events and notify subscribers.
+ * Provides functionality to post and publish events and requests and notify
+ * subscribers.
  *
  * It should preserve the order of posted events (if an event A is posted before
  * an event B, then subscribers will be notified for A before they are notified
@@ -81,8 +82,5 @@ interface Publisher {
      * @throws IllegalStateException if the request was not completed or if it
      * was completed more than once
      */
-    fun <T : Any> request(request: Request<T>): T {
-        publish(request)
-        return request.get()
-    }
+    fun <T : Any> request(request: Request<T>): T
 }

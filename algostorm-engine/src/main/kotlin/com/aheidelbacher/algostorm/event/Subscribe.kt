@@ -17,14 +17,14 @@
 package com.aheidelbacher.algostorm.event
 
 /**
- * Annotation to mark a method of a [Subscriber] as an event handler.
+ * Annotation to mark a method of a [Subscriber] as an event or request handler.
  *
- * An event handler is a method that is annotated with the [Subscribe]
- * annotation, is public, final, non-static, returns [Unit] / `void` and
- * receives a single parameter which is a non-generic subtype of [Event].
+ * A handler is a method that is annotated with the [Subscribe] annotation, is
+ * public, final, non-static, returns [Unit] / `void` and receives a single
+ * parameter which is a non-generic subtype of [Event] or [Request].
  *
- * Event-handling methods declared in supertypes should also be registered for
- * events upon subscription.
+ * Handler methods declared in supertypes should also be registered for events
+ * or requests upon subscription.
  */
 @Target(AnnotationTarget.FUNCTION)
 @MustBeDocumented

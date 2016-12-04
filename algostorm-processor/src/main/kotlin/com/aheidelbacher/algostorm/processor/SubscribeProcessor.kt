@@ -43,6 +43,7 @@ class SubscribeProcessor : AbstractProcessor() {
         val PACKAGE: String = "com.aheidelbacher.algostorm.event"
         val SUBSCRIBE: String = "$PACKAGE.Subscribe"
         val EVENT: String = "$PACKAGE.Event"
+        val REQUEST: String = "$PACKAGE.Request"
         val SUBSCRIBER: String = "$PACKAGE.Subscriber"
     }
 
@@ -80,13 +81,13 @@ class SubscribeProcessor : AbstractProcessor() {
             "$method: only methods can be annotated with $SUBSCRIBE!"
         }
         require(Modifier.PUBLIC in method.modifiers, method) {
-            "$method: annotated methods must be public!"
+            "$method: handlers must be public!"
         }
         require(Modifier.FINAL in method.modifiers, method) {
-            "$method: annotated methods must be final!"
+            "$method: handlers must be final!"
         }
         require(Modifier.STATIC !in method.modifiers, method) {
-            "$method: annotated methods must not be static!"
+            "$method: handlers must not be static!"
         }
         val executableType = method.asType() as ExecutableType
         val returnsVoid = executableType.returnType.kind == VOID
@@ -95,17 +96,26 @@ class SubscribeProcessor : AbstractProcessor() {
                 elementUtils.getTypeElement(UNIT).asType()
         )
         require(returnsVoid || returnsUnit, method) {
-            "$method: annotated methods must return void or $UNIT!"
+            "$method: handlers must return void or $UNIT!"
         }
         require(executableType.parameterTypes.size == 1, method) {
-            "$method: annotated methods must receive exactly one parameter!"
+            "$method: handlers must receive exactly one parameter!"
         }
         val parameterIsEvent = typeUtils.isSubtype(
                 executableType.parameterTypes[0],
                 elementUtils.getTypeElement(EVENT).asType()
         )
-        require(parameterIsEvent, method) {
-            "$method: annotated methods must receive a subtype of $EVENT!"
+        val parameterIsRequest = typeUtils.isSubtype(
+                executableType.parameterTypes[0],
+                typeUtils.erasure(elementUtils.getTypeElement(REQUEST).asType())
+        )
+        require(parameterIsEvent || parameterIsRequest, method) {
+            "$method: handlers must receive a subtype of $EVENT or $REQUEST!"
+        }
+        val parameterIsNotGeneric = executableType.parameterTypes[0] ==
+                typeUtils.erasure(executableType.parameterTypes[0])
+        require(parameterIsNotGeneric) {
+            "$method: handlers must receive a non-generic parameter!"
         }
     }
 

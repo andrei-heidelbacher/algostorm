@@ -1,7 +1,7 @@
 package com.aheidelbacher.algostorm.systems.audio
 
 import com.aheidelbacher.algostorm.engine.audio.MusicPlayer
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.File
@@ -27,10 +27,10 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      * @property source the sound which should be played
      * @property loop whether the sound should be looped or not
      */
-    data class PlayMusic(val source: File, val loop: Boolean = false) : Event
+    class PlayMusic(val source: File, val loop: Boolean = false) : Request<Unit>()
 
     /** An event which signals the currently played music to be stopped. */
-    object StopMusic : Event
+    class StopMusic : Request<Unit>()
 
     init {
         musicSources.forEach { musicPlayer.loadMusic(it.path) }
@@ -44,6 +44,7 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      */
     @Subscribe fun onPlayMusic(event: PlayMusic) {
         musicPlayer.playMusic(event.source.path, event.loop)
+        event.complete(Unit)
     }
 
     /**
@@ -52,8 +53,8 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      *
      * @param event the event which requests the music to be stopped
      */
-    @Suppress("unused_parameter")
     @Subscribe fun onStopMusic(event: StopMusic) {
         musicPlayer.stopMusic()
+        event.complete(Unit)
     }
 }

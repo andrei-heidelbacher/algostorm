@@ -16,10 +16,8 @@
 
 package com.aheidelbacher.algostorm.event
 
-/**
- * Base type of an event.
- *
- * Events should be immutable data classes. The type of an event is denoted by
- * its kotlin class object. Events should be serializable.
- */
-interface Event
+import com.aheidelbacher.algostorm.test.event.EventBusTest
+
+class EventBusImplTest : EventBusTest() {
+    override fun createEventBus(): EventBus = EventBus()
+}

@@ -16,19 +16,9 @@
 
 package com.aheidelbacher.algostorm.ecs
 
-import kotlin.reflect.KClass
+import com.aheidelbacher.algostorm.ecs.Entity.Companion.validateId
 
-/**
- * Validates the given entity id and returns it.
- *
- * @param id the entity id which should be validated
- * @return the given entity id
- * @throws IllegalArgumentException if [id] is not positive
- */
-fun validateId(id: Int): Int {
-    require(id > 0) { "Id $id must be positive!" }
-    return id
-}
+import kotlin.reflect.KClass
 
 /**
  * Returns a default implementation of an entity manager.

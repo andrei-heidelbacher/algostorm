@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.test.event
 
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
+import com.aheidelbacher.algostorm.event.Request
 
 import java.util.LinkedList
 import java.util.Queue
@@ -31,6 +32,7 @@ import java.util.Queue
 class PublisherMock : Publisher {
     private val postedQueue: Queue<Event> = LinkedList()
     private val publishedQueue: Queue<Event> = LinkedList()
+    private val requestedQueue: Queue<Request<*>> = LinkedList()
 
     override fun post(event: Event) {
         postedQueue.add(event)
@@ -98,4 +100,6 @@ class PublisherMock : Publisher {
             "There were more events posted!\nFound: ${publishedQueue.toList()}"
         }
     }
+
+    override fun <T : Any> request(request: Request<T>): T = TODO()
 }

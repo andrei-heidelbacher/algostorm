@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.test.event.EventBusTest
+import com.aheidelbacher.algostorm.event.Request
 
-class EventQueueTest : EventBusTest() {
-    override fun createEventBus(): EventQueue = EventQueue()
-}
+class RequestMock : Request<Int>()

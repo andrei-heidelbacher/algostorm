@@ -16,21 +16,101 @@
 
 package com.aheidelbacher.algostorm.event
 
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+import java.util.LinkedList
+
 /**
  * An event bus which allows a [Subscriber] to subscribe and unsubscribe from
  * certain topics and allows to post or publish an event to the bus and notify
  * its subscribers.
  */
 interface EventBus : Publisher {
+    companion object {
+        private class EventBusImpl : EventBus {
+            private fun Method.validateEventHandler() {
+                require(Modifier.isFinal(modifiers)) { "$name is not final!" }
+                require(returnType.name == "void") {
+                    "$name doesn't return Unit/void!"
+                }
+                require(parameterTypes.size == 1) {
+                    "$name doesn't have single parameter!"
+                }
+                val parameterType = parameterTypes[0]
+                require(Event::class.java.isAssignableFrom(parameterType) ||
+                        Request::class.java.isAssignableFrom(parameterType)) {
+                    "$name doesn't receive an Event or Request as parameter!"
+                }
+                require(parameterType.typeParameters.isEmpty()) {
+                    "$name receives a generic parameter!"
+                }
+            }
+
+            private val subscribers =
+                    hashMapOf<Subscriber, Array<Pair<Method, Class<*>>>>()
+            private val eventQueue = LinkedList<Event>()
+
+            override fun subscribe(subscriber: Subscriber) {
+                val handlers = subscriber.javaClass.methods.filter {
+                    it.isAnnotationPresent(Subscribe::class.java)
+                }
+                handlers.forEach { it.validateEventHandler() }
+                subscribers[subscriber] = handlers.map {
+                    it to it.parameterTypes[0]
+                }.toTypedArray()
+            }
+
+            override fun unsubscribe(subscriber: Subscriber) {
+                subscribers.remove(subscriber)
+            }
+
+            override fun post(event: Event) {
+                eventQueue.add(event)
+            }
+
+            private fun <T : Any> publish(value: T) {
+                for ((subscriber, handlers) in subscribers) {
+                    for ((handler, parameterType) in handlers) {
+                        if (parameterType.isInstance(value)) {
+                            handler.invoke(subscriber, value)
+                        }
+                    }
+                }
+            }
+
+            override fun publish(event: Event) {
+                publish<Event>(event)
+            }
+
+            override fun publishPosts() {
+                while (eventQueue.isNotEmpty()) {
+                    publish(eventQueue.remove())
+                }
+            }
+
+            override fun <T : Any> request(request: Request<T>): T {
+                publish(request)
+                return request.get()
+            }
+        }
+
+        /**
+         * Returns a default implementation of an event bus.
+         *
+         * @return the event bus
+         */
+        operator fun invoke(): EventBus = EventBusImpl()
+    }
+
     /**
      * Registers the given [subscriber] to this event bus.
      *
      * @param subscriber the object that subscribes for events posted to this
      * event bus
      * @throws IllegalArgumentException if the subscriber contains an annotated
-     * event handler that does not conform to the [Subscribe] contract. However,
-     * if any non-public or static method is annotated, it will be ignored
-     * instead of throwing an exception.
+     * handler that does not conform to the [Subscribe] contract. However, if
+     * any non-public or static method is annotated, it will be ignored instead
+     * of throwing an exception.
      */
     fun subscribe(subscriber: Subscriber): Unit
 

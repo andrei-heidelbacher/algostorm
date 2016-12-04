@@ -20,12 +20,13 @@ package com.aheidelbacher.algostorm.event
  * An abstract request which should be completed by a service that subscribed
  * for a certain type of requests.
  *
- * All concrete implementations must be non-generic. Excepting the result,
- * requests should be immutable data classes.
+ * Concrete implementations must be non-generic. The type of a request is
+ * denoted by its kotlin class object. Excepting the result, requests should be
+ * immutable classes. Requests can't be serialized.
  *
  * @param T the result type of this request
  */
-abstract class Request<T> : Event {
+abstract class Request<T> {
     private var value: T? = null
 
     /**
@@ -48,6 +49,7 @@ abstract class Request<T> : Event {
     fun complete(value: T) {
         check(!isCompleted) { "$this was already completed!" }
         this.value = value
+        isCompleted = true
     }
 
     /** The status of this request. */
