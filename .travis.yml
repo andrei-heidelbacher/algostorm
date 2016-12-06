@@ -1,4 +1,10 @@
-language: java
+language: android
+jdk: oraclejdk8
 sudo: false
-jdk:
- - openjdk7
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-24.0.2
+    - android-24
+script: ./gradlew check
