@@ -33,7 +33,8 @@ interface Publisher {
      * handled by its subscribers.
      *
      * If the given event goes unhandled at the moment it is published, then a
-     * [DeadEvent] will be immediately published at that moment.
+     * [DeadEvent] will be immediately published at that moment. A `DeadEvent`
+     * is never republished.
      *
      * @param event the event that should be posted
      */
@@ -60,7 +61,7 @@ interface Publisher {
      * posted events.
      *
      * If the given event goes unhandled, a [DeadEvent] will be immediately
-     * published.
+     * published. A `DeadEvent` is never republished.
      *
      * @param event the event that should be published
      */

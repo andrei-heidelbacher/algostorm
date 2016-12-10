@@ -20,6 +20,8 @@ package com.aheidelbacher.algostorm.event
  * An event which signals that the given event was published or posted and was
  * not handled by any subscribers.
  *
+ * Only an event bus should post dead events.
+ *
  * @property event the unhandled event
  */
 data class DeadEvent(val event: Event) : Event

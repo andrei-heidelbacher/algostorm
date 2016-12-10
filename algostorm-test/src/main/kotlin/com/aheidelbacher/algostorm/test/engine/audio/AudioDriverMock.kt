@@ -1,12 +1,13 @@
 package com.aheidelbacher.algostorm.test.engine.audio
 
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.engine.driver.Resource
 
 class AudioDriverMock : AudioDriver {
-    override fun loadMusic(musicSource: String) {
+    override fun loadMusic(musicSource: Resource) {
     }
 
-    override fun playMusic(musicSource: String, loop: Boolean) {
+    override fun playMusic(musicSource: Resource, loop: Boolean) {
     }
 
     override fun pauseMusic() {
@@ -18,10 +19,10 @@ class AudioDriverMock : AudioDriver {
     override fun stopMusic() {
     }
 
-    override fun loadSound(soundSource: String) {
+    override fun loadSound(soundSource: Resource) {
     }
 
-    override fun playSound(soundSource: String): Int {
+    override fun playSound(soundSource: Resource): Int {
         return -1
     }
 

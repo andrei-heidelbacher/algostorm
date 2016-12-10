@@ -67,7 +67,7 @@ interface EventBus : Publisher {
                 eventQueue.add(event)
             }
 
-            private fun <T : Any> publish(value: T): Boolean {
+            private fun <T : Any> publish(value: T) {
                 var isHandled = false
                 for ((subscriber, handlers) in subscribers) {
                     for ((handler, parameterType) in handlers) {
@@ -77,13 +77,13 @@ interface EventBus : Publisher {
                         }
                     }
                 }
-                return isHandled
+                if (!isHandled && value is Event && value !is DeadEvent) {
+                    publish<Event>(DeadEvent(value))
+                }
             }
 
             override fun publish(event: Event) {
-                if (!publish<Event>(event)) {
-                    publish<Event>(DeadEvent(event))
-                }
+                publish<Event>(event)
             }
 
             override fun publishPosts() {
