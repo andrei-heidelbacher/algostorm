@@ -23,9 +23,14 @@ import com.aheidelbacher.algostorm.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.state.MapObject
 import com.aheidelbacher.algostorm.state.TileSet
 import com.aheidelbacher.algostorm.state.TileSet.Tile
+import com.aheidelbacher.algostorm.state.TileSetCollection
 
 inline fun mapObject(init: MapObjectBuilder.() -> Unit): MapObject =
         MapObjectBuilder().apply(init).build()
+
+inline fun tileSetCollection(
+        init: TileSetCollectionBuilder.() -> Unit
+): TileSetCollection = TileSetCollectionBuilder().apply(init).build()
 
 inline fun tileSet(init: TileSetBuilder.() -> Unit): TileSet =
         TileSetBuilder().apply(init).build()
