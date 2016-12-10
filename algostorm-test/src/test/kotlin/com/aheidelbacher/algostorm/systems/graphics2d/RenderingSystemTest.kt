@@ -118,6 +118,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
+                            priority = 0,
                             color = Color("#000000ff")
                     )
                     +Position(x = 0, y = 0)
@@ -149,6 +150,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
+                            priority = 0,
                             gid = 1.flipHorizontally()
                     )
                     +Position(x = 0, y = 0)
@@ -182,6 +184,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
+                            priority = 0,
                             gid = 1.flipVertically()
                     )
                     +Position(x = 0, y = 0)
@@ -215,6 +218,7 @@ class RenderingSystemTest {
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
+                            priority = 0,
                             gid = 1.flipDiagonally()
                     )
                     +Position(x = 0, y = 0)

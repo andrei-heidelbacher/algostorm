@@ -28,7 +28,7 @@ import java.util.LinkedList
 interface EventBus : Publisher {
     companion object {
         private class EventBusImpl : EventBus {
-            private fun Method.validateEventHandler() {
+            private fun Method.validateHandler() {
                 require(Modifier.isFinal(modifiers)) { "$name is not final!" }
                 require(returnType.name == "void") {
                     "$name doesn't return Unit/void!"
@@ -47,17 +47,16 @@ interface EventBus : Publisher {
             }
 
             private val subscribers =
-                    hashMapOf<Subscriber, Array<Pair<Method, Class<*>>>>()
+                    hashMapOf<Subscriber, List<Pair<Method, Class<*>>>>()
             private val eventQueue = LinkedList<Event>()
 
             override fun subscribe(subscriber: Subscriber) {
                 val handlers = subscriber.javaClass.methods.filter {
                     it.isAnnotationPresent(Subscribe::class.java)
-                }
-                handlers.forEach { it.validateEventHandler() }
+                }.apply { forEach { it.validateHandler() } }
                 subscribers[subscriber] = handlers.map {
                     it to it.parameterTypes[0]
-                }.toTypedArray()
+                }
             }
 
             override fun unsubscribe(subscriber: Subscriber) {
@@ -68,18 +67,23 @@ interface EventBus : Publisher {
                 eventQueue.add(event)
             }
 
-            private fun <T : Any> publish(value: T) {
+            private fun <T : Any> publish(value: T): Boolean {
+                var isHandled = false
                 for ((subscriber, handlers) in subscribers) {
                     for ((handler, parameterType) in handlers) {
                         if (parameterType.isInstance(value)) {
                             handler.invoke(subscriber, value)
+                            isHandled = true
                         }
                     }
                 }
+                return isHandled
             }
 
             override fun publish(event: Event) {
-                publish<Event>(event)
+                if (!publish<Event>(event)) {
+                    publish<Event>(DeadEvent(event))
+                }
             }
 
             override fun publishPosts() {

@@ -1,5 +1,7 @@
 package com.aheidelbacher.algostorm.engine.audio
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
+
 import java.io.FileNotFoundException
 
 /**
@@ -8,27 +10,25 @@ import java.io.FileNotFoundException
  */
 interface SoundPlayer {
     /**
-     * Synchronously loads the sound resource located at the specified path,
-     * making it available to future calls of [playSound].
+     * Synchronously loads the given sound resource, making it available to
+     * future calls of [playSound].
      *
-     * Paths are relative to a specialized location of sound resources.
-     *
-     * @param soundSource the path of the sound resource which should be loaded
+     * @param soundSource the sound resource which should be loaded
      * @throws FileNotFoundException if the given resource doesn't exist
      */
     @Throws(FileNotFoundException::class)
-    fun loadSound(soundSource: String): Unit
+    fun loadSound(soundSource: Resource): Unit
 
     /**
      * Asynchronously plays the given sound resource and returns the stream id
      * on which the sound is played.
      *
-     * @param soundSource the path of the sound resource which should be played
+     * @param soundSource the sound resource which should be played
      * @return the id of the stream on which the sound is played, or `-1` if the
      * sound could not be played
      * @throws IllegalArgumentException if the [soundSource] was not loaded
      */
-    fun playSound(soundSource: String): Int
+    fun playSound(soundSource: Resource): Int
 
     /**
      * Pauses the stream with the given id.

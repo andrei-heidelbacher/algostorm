@@ -43,6 +43,9 @@ import java.util.Comparator
  * A system which handles the rendering of all tiles and entities in the game to
  * the screen canvas.
  *
+ * Entities are rendered ascending by `z`, then ascending by `y`, then ascending
+ * by `priority`, then ascending by `x`.
+ *
  * @property map the map object which should be rendered
  * @property canvas the canvas to which the system draws
  * @throws FileNotFoundException if any of the map tile set images doesn't exist
@@ -73,15 +76,14 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     }
 
     private val comparator = Comparator<Entity> { e1, e2 ->
-        val b1 = e1.position ?: error("")
-        val b2 = e2.position ?: error("")
-        if (b1.y < b2.y) {
-            b1.y - b2.y
-        } else {
-            val s1 = e1.sprite ?: error("")
-            val s2 = e2.sprite ?: error("")
-            if (s1.z != s2.z) s1.z - s2.z else b1.x - b2.x
-        }
+        val p1 = e1.position ?: error("")
+        val p2 = e2.position ?: error("")
+        val s1 = e1.sprite ?: error("")
+        val s2 = e2.sprite ?: error("")
+        if (s1.z != s2.z) s1.z - s2.z
+        else if (p1.y != p2.y) p1.y - p2.y
+        else if (s1.priority != s2.priority) s1.priority - s2.priority
+        else p1.x - p2.x
     }
 
     private val matrix = Matrix.identity()

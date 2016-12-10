@@ -1,10 +1,10 @@
 package com.aheidelbacher.algostorm.systems.audio
 
 import com.aheidelbacher.algostorm.engine.audio.MusicPlayer
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.File
 
 import java.io.FileNotFoundException
 
@@ -12,22 +12,21 @@ import java.io.FileNotFoundException
  * A system which handles playing longer sounds.
  *
  * @property musicPlayer the music player used to play longer sounds
- * @param musicSources the paths of the music resources which are loaded at
- * construction time
+ * @param musicSources the music resources which are loaded at construction time
  * @throws FileNotFoundException if any of the given resources doesn't exist
  */
 class MusicSystem @Throws(FileNotFoundException::class) constructor(
         private val musicPlayer: MusicPlayer,
-        musicSources: List<File>
+        musicSources: List<Resource>
 ) : Subscriber {
     /**
      * A request to play a longer sound, stopping the previously playing music.
      *
-     * @property source the sound which should be played
+     * @property source the music resource which should be played
      * @property loop whether the sound should be looped or not
      */
     class PlayMusic(
-            val source: File,
+            val source: Resource,
             val loop: Boolean = false
     ) : Request<Unit>()
 
@@ -35,7 +34,7 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
     class StopMusic : Request<Unit>()
 
     init {
-        musicSources.forEach { musicPlayer.loadMusic(it.path) }
+        musicSources.forEach { musicPlayer.loadMusic(it) }
     }
 
     /**
@@ -45,7 +44,7 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      * @param request the request
      */
     @Subscribe fun onPlayMusic(request: PlayMusic) {
-        musicPlayer.playMusic(request.source.path, request.loop)
+        musicPlayer.playMusic(request.source, request.loop)
         request.complete(Unit)
     }
 

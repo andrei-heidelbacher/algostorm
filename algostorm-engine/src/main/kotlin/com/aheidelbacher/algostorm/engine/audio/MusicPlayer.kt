@@ -1,5 +1,7 @@
 package com.aheidelbacher.algostorm.engine.audio
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
+
 import java.io.FileNotFoundException
 
 /**
@@ -10,26 +12,24 @@ import java.io.FileNotFoundException
  */
 interface MusicPlayer {
     /**
-     * Synchronously loads the music resource located at the specified path,
-     * making it available to future calls of [playMusic].
+     * Synchronously loads the given music resource, making it available to
+     * future calls of [playMusic].
      *
-     * Paths are relative to a specialized location of music resources.
-     *
-     * @param musicSource the path of the music resource which should be loaded
+     * @param musicSource the music which should be loaded
      * @throws FileNotFoundException if the given resource doesn't exist
      */
     @Throws(FileNotFoundException::class)
-    fun loadMusic(musicSource: String): Unit
+    fun loadMusic(musicSource: Resource): Unit
 
     /**
      * Stops the previously playing music and asynchronously plays the given
      * music resource.
      *
-     * @param musicSource the location of the sound which should be played
+     * @param musicSource the sound which should be played
      * @param loop whether the sound should be looped or not
      * @throws IllegalArgumentException if the [musicSource] was not loaded
      */
-    fun playMusic(musicSource: String, loop: Boolean = false): Unit
+    fun playMusic(musicSource: Resource, loop: Boolean = false): Unit
 
     /**
      * Pauses the currently playing music.

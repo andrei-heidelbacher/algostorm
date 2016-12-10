@@ -33,8 +33,6 @@ fun Entity.overlaps(other: Entity): Boolean = position.let { p ->
 }
 
 fun EntityManager.getEntitiesAt(x: Int, y: Int): List<Entity> =
-        entities.filter { entity ->
-            entity.position?.let { position ->
-                position.x == x && position.y == y
-            } ?: false
+        Position(x, y).let { position ->
+            entities.filter { entity -> entity.position == position }
         }

@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.systems.audio
 
 import com.aheidelbacher.algostorm.engine.audio.SoundPlayer
-import com.aheidelbacher.algostorm.state.File
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -28,23 +28,22 @@ import java.io.FileNotFoundException
  * A system which handles playing short sound effects.
  *
  * @property soundPlayer the sound player used to play short sound effects
- * @param soundSources the paths of the sound resources which are loaded at
- * construction time
+ * @param soundSources the sound resources which are loaded at construction time
  * @throws FileNotFoundException if any of the given resources doesn't exist
  */
 class SoundSystem @Throws(FileNotFoundException::class) constructor(
         private val soundPlayer: SoundPlayer,
-        soundSources: List<File>
+        soundSources: List<Resource>
 ) : Subscriber {
     /**
      * A request to play a short sound.
      *
-     * @property source the path of the sound which should be played
+     * @property source the sound resource which should be played
      */
-    class PlaySoundEffect(val source: File) : Request<Unit>()
+    class PlaySoundEffect(val source: Resource) : Request<Unit>()
 
     init {
-        soundSources.forEach { soundPlayer.loadSound(it.path) }
+        soundSources.forEach { soundPlayer.loadSound(it) }
     }
 
     /**
@@ -53,7 +52,7 @@ class SoundSystem @Throws(FileNotFoundException::class) constructor(
      * @param request the request
      */
     @Subscribe fun onPlaySoundEffect(request: PlaySoundEffect) {
-        soundPlayer.playSound(request.source.path)
+        soundPlayer.playSound(request.source)
         request.complete(Unit)
     }
 }

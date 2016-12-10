@@ -25,8 +25,9 @@ import com.aheidelbacher.algostorm.state.Color
  * @property gid the global id of this tile
  * @property width the width in pixels
  * @property height the height in pixels
- * @property z the rendering priority (sprites with lower `z` should be rendered
- * before sprites with higher `z`)
+ * @property z the rendering layer (sprites should be rendered ascending by `z`)
+ * @property priority the rendering priority (sprites with equal `z` and equal
+ * `y` should be rendered ascending by `priority`)
  * @property isVisible
  * @property offsetX the horizontal rendering offset in pixels
  * @property offsetY the vertical rendering offset in pixels (positive is down)
@@ -38,6 +39,7 @@ data class Sprite(
         val width: Int,
         val height: Int,
         val z: Int,
+        val priority: Int,
         val gid: Int = 0,
         val isVisible: Boolean = true,
         val offsetX: Int = 0,
