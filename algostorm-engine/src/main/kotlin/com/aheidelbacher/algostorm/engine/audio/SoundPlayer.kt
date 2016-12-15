@@ -2,8 +2,6 @@ package com.aheidelbacher.algostorm.engine.audio
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
 
-import java.io.FileNotFoundException
-
 /**
  * A sound player which should be used for short sound effects (at most `1 MB`
  * for all loaded sound effects).
@@ -14,9 +12,7 @@ interface SoundPlayer {
      * future calls of [playSound].
      *
      * @param soundSource the sound resource which should be loaded
-     * @throws FileNotFoundException if the given resource doesn't exist
      */
-    @Throws(FileNotFoundException::class)
     fun loadSound(soundSource: Resource): Unit
 
     /**

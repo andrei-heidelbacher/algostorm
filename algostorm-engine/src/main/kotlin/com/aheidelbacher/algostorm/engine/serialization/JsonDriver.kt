@@ -16,11 +16,19 @@
 
 package com.aheidelbacher.algostorm.engine.serialization
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import java.io.IOException
@@ -35,8 +43,38 @@ class JsonDriver : SerializationDriver {
         const val FORMAT: String = "json"
     }
 
+    private val resourceSerializer = object : StdSerializer<Resource>(
+            Resource::class.java
+    ) {
+        override fun serialize(
+                value: Resource?,
+                gen: JsonGenerator?,
+                provider: SerializerProvider?
+        ) {
+            gen?.writeString(value?.path)
+        }
+    }
+
+    private val resourceDeserializer = object : StdDeserializer<Resource>(
+            Resource::class.java
+    ) {
+        override fun deserialize(
+                p: JsonParser?,
+                ctxt: DeserializationContext?
+        ): Resource? {
+            val path = p?.codec?.readValue<String>(p, String::class.java)
+            return if (path != null) Resource(path) else null
+        }
+    }
+
+    //TODO: Make Color a class in engine.graphics2d and add custom serializer!
+
     /** The object that handles serialization and deserialization. */
     private var objectMapper: ObjectMapper? = jacksonObjectMapper().apply {
+        registerModule(SimpleModule().apply {
+            addSerializer(Resource::class.java, resourceSerializer)
+            addDeserializer(Resource::class.java, resourceDeserializer)
+        })
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)

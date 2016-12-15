@@ -17,7 +17,11 @@
 package com.aheidelbacher.algostorm.engine.driver
 
 import org.junit.Test
+
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
+
+import kotlin.test.assertEquals
 
 class ResourceTest {
     @Test(expected = IllegalArgumentException::class)
@@ -30,22 +34,23 @@ class ResourceTest {
         Resource("res://path")
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = FileNotFoundException::class)
     fun testInvalidPathShouldThrow() {
         Resource("res:///path/")
     }
 
     @Test(expected = FileNotFoundException::class)
     fun testNonExistentInputStreamShouldThrow() {
-        val res = Resource("res:///non_existent.txt")
-        res.inputStream()
+        Resource("res:///non_existent.txt")
     }
 
     @Test
-    fun testInputStreamShouldNotThrow() {
-        val res = Resource(
-                "res:///com/aheidelbacher/algostorm/engine/driver/Resource.class"
-        )
-        res.inputStream()
+    fun testInputStreamShouldParseResource() {
+        Resource("res:///testResource.txt").inputStream().use { src ->
+            ByteArrayOutputStream().use { dst ->
+                src.copyTo(dst)
+                assertEquals("resource.txt\n", dst.toString())
+            }
+        }
     }
 }

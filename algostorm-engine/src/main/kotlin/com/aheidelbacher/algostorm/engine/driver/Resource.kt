@@ -24,6 +24,7 @@ import java.io.InputStream
  *
  * @property path the absolute path of the resource
  * @throws IllegalArgumentException if [path] doesn't begin with `res:///`
+ * @throws FileNotFoundException if this resource doesn't exist
  */
 data class Resource(val path: String) {
     companion object {
@@ -33,20 +34,19 @@ data class Resource(val path: String) {
 
     init {
         require(path.startsWith(SCHEMA)) { "$this invalid resource schema!" }
-        require(path.drop(SCHEMA.length).startsWith("/")) {
-            "$this path is not absolute!"
-        }
-        require(!path.endsWith("/")) { "$this invalid path!" }
+        require(absolutePath.startsWith("/")) { "$this path is not absolute!" }
+        Resource::class.java.getResource(absolutePath)
+                ?: throw FileNotFoundException("$this doesn't exist!")
     }
+
+    private val absolutePath: String
+        get() = path.drop(SCHEMA.length)
 
     /**
      * Returns this resource as an input stream.
      *
      * @return the input stream
-     * @throws FileNotFoundException if this resource doesn't exist
      */
-    @Throws(FileNotFoundException::class)
     fun inputStream(): InputStream =
-            javaClass.getResourceAsStream(path.drop(SCHEMA.length))
-                    ?: throw FileNotFoundException("$this doesn't exist!")
+            Resource::class.java.getResourceAsStream(path.drop(SCHEMA.length))
 }

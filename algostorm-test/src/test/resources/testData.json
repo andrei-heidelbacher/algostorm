@@ -10,5 +10,6 @@
     3,
     4,
     5
-  ]
+  ],
+  "testResource": "res:///testResource.txt"
 }

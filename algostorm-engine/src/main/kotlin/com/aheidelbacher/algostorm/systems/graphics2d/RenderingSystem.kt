@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.ecs.Entity
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
@@ -89,7 +90,10 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
     private val matrix = Matrix.identity()
 
     init {
-        map.tileSets.forEach { canvas.loadBitmap(it.image.source.path) }
+        map.tileSets.forEach {
+            //canvas.loadBitmap(it.image.source.path)
+            canvas.loadBitmap(Resource("res:///" + it.image.source.path))
+        }
     }
 
     private var currentTimeMillis = 0L
@@ -120,7 +124,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
                 dy = 1F * tileSet.tileOffsetY + y
         )
         canvas.drawBitmap(
-                image = viewport.image.source.path,
+                imageSource = Resource("res:///" + viewport.image.source.path),
                 x = viewport.x,
                 y = viewport.y,
                 width = viewport.width,

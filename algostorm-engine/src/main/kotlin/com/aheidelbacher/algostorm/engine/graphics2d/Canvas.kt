@@ -16,20 +16,16 @@
 
 package com.aheidelbacher.algostorm.engine.graphics2d
 
-import java.io.FileNotFoundException
+import com.aheidelbacher.algostorm.engine.driver.Resource
 
 /** A canvas that allows primitive `draw` calls. */
 interface Canvas {
     /**
-     * Synchronously loads the image resource located at the given path.
+     * Synchronously loads the given image resource.
      *
-     * Paths are relative to a specialized location of image resources.
-     *
-     * @param imageSource the path of the image resource which should be loaded
-     * @throws FileNotFoundException if the given resource doesn't exist
+     * @param imageSource the image resource which should be loaded
      */
-    @Throws(FileNotFoundException::class)
-    fun loadBitmap(imageSource: String): Unit
+    fun loadBitmap(imageSource: Resource): Unit
 
     /** The width of this canvas in pixels. */
     val width: Int
@@ -44,7 +40,7 @@ interface Canvas {
      * Draws the viewport projected on the indicated bitmap to this canvas using
      * the specified [matrix].
      *
-     * @param image the location of the bitmap
+     * @param imageSource the image resource
      * @param x the x-axis coordinate in pixels of the top-left corner of the
      * bitmap viewport which should be rendered
      * @param y the y-axis coordinate in pixels of the top-left corner of the
@@ -56,9 +52,10 @@ interface Canvas {
      * @param matrix the matrix that should be applied to the viewport when
      * rendering. Initially, the viewport rectangle is considered to have the
      * top-left corner overlap with the top-left corner of the canvas.
+     * @throws IllegalArgumentException if [imageSource] was not loaded
      */
     fun drawBitmap(
-            image: String,
+            imageSource: Resource,
             x: Int,
             y: Int,
             width: Int,

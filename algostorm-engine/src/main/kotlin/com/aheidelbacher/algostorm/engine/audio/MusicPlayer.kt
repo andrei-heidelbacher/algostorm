@@ -2,8 +2,6 @@ package com.aheidelbacher.algostorm.engine.audio
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
 
-import java.io.FileNotFoundException
-
 /**
  * A music player which should be used for playing longer sounds.
  *
@@ -16,9 +14,7 @@ interface MusicPlayer {
      * future calls of [playMusic].
      *
      * @param musicSource the music which should be loaded
-     * @throws FileNotFoundException if the given resource doesn't exist
      */
-    @Throws(FileNotFoundException::class)
     fun loadMusic(musicSource: Resource): Unit
 
     /**

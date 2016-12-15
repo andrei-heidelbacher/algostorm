@@ -11,12 +11,8 @@ import com.aheidelbacher.algostorm.engine.driver.Driver
  * After the canvas was locked, it must be unlocked.
  */
 interface GraphicsDriver : Driver, Canvas {
-    /**
-     * Returns whether the canvas is ready to be drawn onto.
-     *
-     * @return `true` if it is safe to draw onto the canvas, `false` otherwise
-     */
-    fun isCanvasReady(): Boolean
+    /** Whether the canvas is ready to be drawn onto. */
+    val isCanvasReady: Boolean
 
     /**
      * Locks this driver's canvas and allows editing the canvas content.

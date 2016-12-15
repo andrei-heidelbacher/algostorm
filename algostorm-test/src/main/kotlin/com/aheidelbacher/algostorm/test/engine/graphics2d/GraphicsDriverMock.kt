@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
@@ -32,7 +33,7 @@ class GraphicsDriverMock(
 ) : GraphicsDriver {
     private interface DrawCall {
         data class Bitmap(
-                val image: String,
+                val image: Resource,
                 val x: Int,
                 val y: Int,
                 val width: Int,
@@ -66,11 +67,11 @@ class GraphicsDriverMock(
         object Clear : DrawCall
     }
 
-    private val bitmaps = mutableSetOf<String>()
+    private val bitmaps = mutableSetOf<Resource>()
     private var isLocked = false
     private val queue: Queue<DrawCall> = LinkedList()
 
-    override fun loadBitmap(imageSource: String) {
+    override fun loadBitmap(imageSource: Resource) {
         bitmaps.add(imageSource)
     }
 
@@ -78,7 +79,8 @@ class GraphicsDriverMock(
         bitmaps.clear()
     }
 
-    override fun isCanvasReady(): Boolean = true
+    override val isCanvasReady: Boolean
+        get() = true
 
     override fun lockCanvas() {
         require(!isLocked) { "Canvas is already locked!" }
@@ -91,7 +93,7 @@ class GraphicsDriverMock(
     }
 
     override fun drawBitmap(
-            image: String,
+            imageSource: Resource,
             x: Int,
             y: Int,
             width: Int,
@@ -99,9 +101,9 @@ class GraphicsDriverMock(
             matrix: Matrix
     ) {
         require(isLocked) { "Canvas is not locked!" }
-        require(image in bitmaps) { "Invalid bitmap $image!" }
+        require(imageSource in bitmaps) { "Invalid bitmap $imageSource!" }
         val m = matrix.copy()
-        queue.add(DrawCall.Bitmap(image, x, y, width, height, m))
+        queue.add(DrawCall.Bitmap(imageSource, x, y, width, height, m))
     }
 
     override fun drawColor(color: Int) {
@@ -130,7 +132,7 @@ class GraphicsDriverMock(
     }
 
     fun assertBitmap(
-            image: String,
+            image: Resource,
             x: Int,
             y: Int,
             width: Int,

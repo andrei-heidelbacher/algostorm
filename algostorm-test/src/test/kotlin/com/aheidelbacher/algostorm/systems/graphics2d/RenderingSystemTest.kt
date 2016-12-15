@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -44,6 +45,7 @@ class RenderingSystemTest {
     val tileWidth = 24
     val tileHeight = 24
     val image = Image(File("testImage.png"), tileWidth, tileHeight)
+    val imageRes = Resource("res:///" + image.source.path)
     val cameraX = 44
     val cameraY = 60
     val camera = Rectangle(
@@ -93,7 +95,7 @@ class RenderingSystemTest {
                 val y = ty * tileHeight
                 val x = tx * tileWidth
                 graphicsDriver.assertBitmap(
-                        image = image.source.path,
+                        image = imageRes,
                         x = 0,
                         y = 0,
                         width = tileWidth,
@@ -161,7 +163,7 @@ class RenderingSystemTest {
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
         graphicsDriver.assertBitmap(
-                image = image.source.path,
+                image = imageRes,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -195,7 +197,7 @@ class RenderingSystemTest {
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
         graphicsDriver.assertBitmap(
-                image = image.source.path,
+                image = imageRes,
                 x = 0,
                 y = 0,
                 width = tileWidth,
@@ -229,7 +231,7 @@ class RenderingSystemTest {
         renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(-1)
         graphicsDriver.assertBitmap(
-                image = image.source.path,
+                image = imageRes,
                 x = 0,
                 y = 0,
                 width = tileWidth,

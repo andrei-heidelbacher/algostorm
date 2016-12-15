@@ -16,11 +16,14 @@
 
 package com.aheidelbacher.algostorm.test.engine.serialization
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
+
 data class TestDataMock(
         val primitiveTestField: Int,
         val defaultPrimitiveTestField: Float,
         val innerTestData: InnerTestDataMock,
-        val testList: List<Int>
+        val testList: List<Int>,
+        val testResource: Resource
 ) {
     data class InnerTestDataMock(val testField: String)
 }

@@ -16,25 +16,23 @@
 
 package com.aheidelbacher.algostorm.engine.serialization
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 import com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock.InnerTestDataMock
 
-import java.io.File
-import java.io.FileInputStream
-
 class JsonDriverTest : SerializationDriverTest() {
-    val ext = JsonDriver.FORMAT
-
     override fun createSerializationDriver(): SerializationDriver = JsonDriver()
 
     override val inputStream =
-            FileInputStream(File("src/test/resources/testData.$ext"))
+            Resource("$SCHEMA/testData.${JsonDriver.FORMAT}").inputStream()
 
     override val testDataMock = TestDataMock(
             primitiveTestField = 1,
             innerTestData = InnerTestDataMock("non-empty"),
             testList = listOf(1, 2, 3, 4, 5),
-            defaultPrimitiveTestField = 1.5F
+            defaultPrimitiveTestField = 1.5F,
+            testResource = Resource("$SCHEMA/testResource.txt")
     )
 }
