@@ -125,12 +125,13 @@ private class EntityRefImpl(
     ) { it.javaClass.kotlin }
 
     override var isValid: Boolean = true
-        set(value) {
-            if (!value) {
-                componentTable.clear()
-            }
-            field = value
-        }
+        private set
+
+    /** Invalidates this entity reference. */
+    fun invalidate() {
+        componentTable.clear()
+        isValid = false
+    }
 
     override val components: Iterable<Component>
         get() = componentTable.values
@@ -141,7 +142,7 @@ private class EntityRefImpl(
     override fun <T : Component> remove(type: KClass<T>): T? = checkIsValid {
         val component = type.java.cast(componentTable.remove(type))
         entityPool.onChanged(this)
-        return component
+        component
     }
 
     override fun set(component: Component) {
@@ -222,7 +223,7 @@ private class EntityPoolImpl(
         }
     }
 
-    override fun create(components: Collection<Component>): MutableEntityRef {
+    override fun create(components: Collection<Component>): EntityRefImpl {
         validateComponents(components)
         check(nextId > 0) { "Too many entities created in $this!" }
         val entity = EntityRefImpl(this, nextId++, components)
@@ -232,7 +233,7 @@ private class EntityPoolImpl(
 
     override fun delete(id: Int): Boolean = group[id]?.apply {
         group.onRemoved(this)
-        isValid = false
+        invalidate()
     } != null
 
     override fun clear() {

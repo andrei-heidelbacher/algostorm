@@ -17,6 +17,18 @@ class MusicSystem(
         musicSources: List<Resource>
 ) : Subscriber {
     /**
+     * A request to set the music volume to the given value.
+     *
+     * @property volume the new value of the volume
+     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     */
+    class SetMusicVolume(val volume: Float) : Request<Unit>() {
+        init {
+            require(volume in 0F..1F) { "Invalid music volume $volume!" }
+        }
+    }
+
+    /**
      * A request to play a longer sound, stopping the previously playing music.
      *
      * @property source the music resource which should be played
@@ -32,6 +44,17 @@ class MusicSystem(
 
     init {
         musicSources.forEach { musicPlayer.loadMusic(it) }
+    }
+
+    /**
+     * After receiving a [SetMusicVolume] request, the volume of the music is
+     * modified accordingly.
+     *
+     * @param request the request
+     */
+    @Subscribe fun onSetVolume(request: SetMusicVolume) {
+        musicPlayer.setMusicVolume(request.volume)
+        request.complete(Unit)
     }
 
     /**

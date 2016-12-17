@@ -25,6 +25,7 @@ import android.graphics.Rect
 import android.view.SurfaceHolder
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
@@ -101,13 +102,13 @@ class AndroidGraphicsDriver(
         }
     }
 
-    override fun drawColor(color: Int) {
+    override fun drawColor(color: Color) {
         checkIsLocked()
-        canvas?.drawColor(color)
+        canvas?.drawColor(color.color)
     }
 
     override fun drawRectangle(
-            color: Int,
+            color: Color,
             width: Int,
             height: Int,
             matrix: Matrix
@@ -118,7 +119,7 @@ class AndroidGraphicsDriver(
         }
         canvasMatrix.setValues(matrixValues)
         canvasMatrix.postScale(density, density)
-        paint.color = color
+        paint.color = color.color
         canvas?.apply {
             save()
             concat(canvasMatrix)

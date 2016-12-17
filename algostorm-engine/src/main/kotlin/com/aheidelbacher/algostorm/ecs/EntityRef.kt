@@ -115,12 +115,10 @@ abstract class EntityRef protected constructor(
 
     /**
      * Two entity references are equal if and only if they were both created by
-     * the same entity pool, their ids are equal and they are either both valid
-     * or both invalid.
+     * the same entity pool and their ids are equal.
      */
     final override fun equals(other: Any?): Boolean = other is EntityRef
             && id == other.id && entityPool === other.entityPool
-            && isValid == other.isValid
 
     final override fun toString(): String =
             "EntityRef(${entityPool.hashCode()}, $id, $components)"

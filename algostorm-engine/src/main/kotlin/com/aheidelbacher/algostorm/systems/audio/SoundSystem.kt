@@ -33,6 +33,18 @@ class SoundSystem(
         soundSources: List<Resource>
 ) : Subscriber {
     /**
+     * A request to set the sound effects volume to the given value.
+     *
+     * @property volume the new value of the volume
+     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     */
+    class SetSoundVolume(val volume: Float) : Request<Unit>() {
+        init {
+            require(volume in 0F..1F) { "Invalid sound volume $volume!" }
+        }
+    }
+
+    /**
      * A request to play a short sound.
      *
      * @property source the sound resource which should be played
@@ -41,6 +53,17 @@ class SoundSystem(
 
     init {
         soundSources.forEach { soundPlayer.loadSound(it) }
+    }
+
+    /**
+     * After receiving a [SetSoundVolume] request, the volume of the music is
+     * modified accordingly.
+     *
+     * @param request the request
+     */
+    @Subscribe fun onSetVolume(request: SetSoundVolume) {
+        soundPlayer.setSoundVolume(request.volume)
+        request.complete(Unit)
     }
 
     /**

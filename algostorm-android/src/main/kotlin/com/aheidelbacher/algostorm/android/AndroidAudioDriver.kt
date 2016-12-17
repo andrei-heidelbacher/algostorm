@@ -29,8 +29,10 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
     private data class Resources(
             val context: Context,
             var mediaPlayer: MediaPlayer? = null,
+            var musicVolume: Float = 1F,
             val soundPool: SoundPool = SoundPool(3, AudioManager.STREAM_MUSIC, 0),
-            val soundIds: MutableMap<String, Int> = hashMapOf()
+            val soundIds: MutableMap<String, Int> = hashMapOf(),
+            var soundVolume: Float = 1F
     )
 
     private var resources: Resources? = Resources(context = context)
@@ -64,9 +66,18 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
     }
 
     override fun setMusicVolume(volume: Float) {
+        require(volume in 0F..1F) { "Invalid music volume $volume!" }
+        resources?.apply {
+            musicVolume = volume
+            mediaPlayer?.setVolume(volume, volume)
+        }
     }
 
     override fun setSoundVolume(volume: Float) {
+        require(volume in 0F..1F) { "Invalid sound volume $volume!" }
+        resources?.apply {
+            soundVolume = volume
+        }
     }
 
     override fun pauseMusic() {
@@ -84,7 +95,7 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
                 setDataSource(musicSource.fdPath)
                 prepare()
                 isLooping = loop
-                setVolume(1F, 1F)
+                setVolume(musicVolume, musicVolume)
                 start()
             }
         }
@@ -93,7 +104,7 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
     override fun playSound(soundSource: Resource) {
         resources?.apply {
             val id = requireNotNull(soundIds[soundSource.fdPath])
-            soundPool.play(id, 1F, 1F, 1, 0, 1F) - 1
+            soundPool.play(id, soundVolume, soundVolume, 1, 0, 1F) - 1
         }
     }
 

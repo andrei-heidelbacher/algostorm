@@ -46,6 +46,6 @@ interface EntityPool {
      */
     fun delete(id: Int): Boolean
 
-    /** Removes all the entities from this pool. */
+    /** Removes and invalidates all the entities from this pool. */
     fun clear(): Unit
 }
