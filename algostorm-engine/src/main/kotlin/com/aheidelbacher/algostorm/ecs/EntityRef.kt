@@ -80,12 +80,10 @@ abstract class EntityRef protected constructor(
      *
      * @param block the block which should be executed if this entity reference
      * is valid
-     * @throws InvalidEntityRefException if this entity is not valid
+     * @throws IllegalStateException if this entity is not valid
      */
     protected inline fun <T> checkIsValid(block: () -> T): T {
-        if (!isValid) {
-            throw InvalidEntityRefException("$this invalid entity reference!")
-        }
+        check(!isValid) { "$this invalid entity reference!" }
         return block()
     }
 

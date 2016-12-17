@@ -31,7 +31,7 @@ abstract class MutableEntityRef protected constructor(
      * Sets the value of the specified component type.
      *
      * @param component the new value of the component type
-     * @throws InvalidEntityRefException if this entity reference is invalid
+     * @throws IllegalStateException if this entity reference is invalid
      */
     abstract fun set(component: Component): Unit
 
@@ -42,7 +42,7 @@ abstract class MutableEntityRef protected constructor(
      * @param type the class object of the component
      * @return the removed component if it exists in this entity when this
      * method is called, `null` otherwise
-     * @throws InvalidEntityRefException if this entity reference is invalid
+     * @throws IllegalStateException if this entity reference is invalid
      */
     abstract fun <T : Component> remove(type: KClass<T>): T?
 }

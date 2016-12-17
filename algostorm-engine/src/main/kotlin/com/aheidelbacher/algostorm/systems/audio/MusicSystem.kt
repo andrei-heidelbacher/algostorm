@@ -41,8 +41,7 @@ class MusicSystem(
      * @param request the request
      */
     @Subscribe fun onPlayMusic(request: PlayMusic) {
-        musicPlayer.prepareMusic(request.source, request.loop)
-        musicPlayer.resumeMusic()
+        musicPlayer.playMusic(request.source, request.loop)
         request.complete(Unit)
     }
 

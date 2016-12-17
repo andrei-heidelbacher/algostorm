@@ -7,7 +7,7 @@ class AudioDriverMock : AudioDriver {
     override fun loadMusic(musicSource: Resource) {
     }
 
-    override fun prepareMusic(musicSource: Resource, loop: Boolean) {
+    override fun playMusic(musicSource: Resource, loop: Boolean) {
     }
 
     override fun pauseMusic() {

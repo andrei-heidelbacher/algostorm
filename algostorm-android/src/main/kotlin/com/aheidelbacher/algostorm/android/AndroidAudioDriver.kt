@@ -67,8 +67,8 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         resources?.mediaPlayer?.pause()
     }
 
-    override fun pauseStream(streamId: Int) {
-        resources?.soundPool?.pause(streamId)
+    override fun pauseSounds() {
+        resources?.soundPool?.autoPause()
     }
 
     override fun playMusic(musicSource: Resource, loop: Boolean) {
@@ -84,20 +84,19 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         }
     }
 
-    override fun playSound(soundSource: Resource): Int {
+    override fun playSound(soundSource: Resource) {
         resources?.apply {
             val id = requireNotNull(soundIds[soundSource.fdPath])
-            return soundPool.play(id, 1F, 1F, 1, 0, 1F) - 1
+            soundPool.play(id, 1F, 1F, 1, 0, 1F) - 1
         }
-        return -1
     }
 
     override fun resumeMusic() {
         resources?.mediaPlayer?.start()
     }
 
-    override fun resumeStream(streamId: Int) {
-        resources?.soundPool?.resume(streamId)
+    override fun resumeSounds() {
+        resources?.soundPool?.autoResume()
     }
 
     override fun stopMusic() {
@@ -107,8 +106,8 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         }
     }
 
-    override fun stopStream(streamId: Int) {
-        resources?.soundPool?.stop(streamId)
+    override fun stopSounds() {
+        //resources?.soundPool?.stop(0)
     }
 
     override fun release() {

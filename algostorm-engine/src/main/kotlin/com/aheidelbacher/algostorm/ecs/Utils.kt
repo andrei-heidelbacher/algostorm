@@ -125,12 +125,18 @@ private class EntityRefImpl(
     ) { it.javaClass.kotlin }
 
     override var isValid: Boolean = true
+        set(value) {
+            if (!value) {
+                componentTable.clear()
+            }
+            field = value
+        }
 
     override val components: Iterable<Component>
-        get() = checkIsValid { componentTable.values }
+        get() = componentTable.values
 
     override fun <T : Component> get(type: KClass<T>): T? =
-            checkIsValid { type.java.cast(componentTable[type]) }
+            type.java.cast(componentTable[type])
 
     override fun <T : Component> remove(type: KClass<T>): T? = checkIsValid {
         val component = type.java.cast(componentTable.remove(type))
@@ -142,12 +148,6 @@ private class EntityRefImpl(
         checkIsValid {
             componentTable[component.javaClass.kotlin] = component
             entityPool.onChanged(this)
-        }
-    }
-
-    fun clear() {
-        checkIsValid {
-            componentTable.clear()
         }
     }
 }
@@ -232,7 +232,6 @@ private class EntityPoolImpl(
 
     override fun delete(id: Int): Boolean = group[id]?.apply {
         group.onRemoved(this)
-        clear()
         isValid = false
     } != null
 
