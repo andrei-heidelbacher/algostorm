@@ -18,6 +18,14 @@ interface MusicPlayer {
     fun loadMusic(musicSource: Resource): Unit
 
     /**
+     * Sets the volume at which music is played.
+     *
+     * @param volume a value between `0` (mute) and `1` (maximum volume)
+     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     */
+    fun setMusicVolume(volume: Float): Unit
+
+    /**
      * Stops the previously playing music and asynchronously plays the given
      * music resource.
      *

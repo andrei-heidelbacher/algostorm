@@ -16,6 +16,14 @@ interface SoundPlayer {
     fun loadSound(soundSource: Resource): Unit
 
     /**
+     * Sets the volume at which sounds are played.
+     *
+     * @param volume a value between `0` (mute) and `1` (maximum volume)
+     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     */
+    fun setSoundVolume(volume: Float): Unit
+
+    /**
      * Asynchronously plays the given sound resource.
      *
      * @param soundSource the sound resource which should be played

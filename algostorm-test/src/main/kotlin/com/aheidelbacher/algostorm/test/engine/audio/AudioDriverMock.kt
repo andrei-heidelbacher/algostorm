@@ -7,6 +7,9 @@ class AudioDriverMock : AudioDriver {
     override fun loadMusic(musicSource: Resource) {
     }
 
+    override fun setMusicVolume(volume: Float) {
+    }
+
     override fun playMusic(musicSource: Resource, loop: Boolean) {
     }
 
@@ -20,6 +23,9 @@ class AudioDriverMock : AudioDriver {
     }
 
     override fun loadSound(soundSource: Resource) {
+    }
+
+    override fun setSoundVolume(volume: Float) {
     }
 
     override fun playSound(soundSource: Resource) {

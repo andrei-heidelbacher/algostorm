@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
@@ -48,10 +49,10 @@ class GraphicsDriverMock(
             override fun hashCode(): Int = super.hashCode()
         }
 
-        data class Color(val color: Int) : DrawCall
+        data class ColorCanvas(val color: Color) : DrawCall
 
         data class Rectangle(
-                val color: Int,
+                val color: Color,
                 val width: Int,
                 val height: Int,
                 val matrix: Matrix
@@ -106,13 +107,13 @@ class GraphicsDriverMock(
         queue.add(DrawCall.Bitmap(imageSource, x, y, width, height, m))
     }
 
-    override fun drawColor(color: Int) {
+    override fun drawColor(color: Color) {
         require(isLocked) { "Canvas is not locked!" }
-        queue.add(DrawCall.Color(color))
+        queue.add(DrawCall.ColorCanvas(color))
     }
 
     override fun drawRectangle(
-            color: Int,
+            color: Color,
             width: Int,
             height: Int,
             matrix: Matrix
@@ -145,11 +146,11 @@ class GraphicsDriverMock(
         )
     }
 
-    fun assertColor(color: Int) {
-        assertEquals(DrawCall.Color(color), queue.poll())
+    fun assertColor(color: Color) {
+        assertEquals(DrawCall.ColorCanvas(color), queue.poll())
     }
 
-    fun assertRectangle(color: Int, width: Int, height: Int, matrix: Matrix) {
+    fun assertRectangle(color: Color, width: Int, height: Int, matrix: Matrix) {
         assertEquals(
                 expected = DrawCall.Rectangle(color, width, height, matrix),
                 actual = queue.poll()

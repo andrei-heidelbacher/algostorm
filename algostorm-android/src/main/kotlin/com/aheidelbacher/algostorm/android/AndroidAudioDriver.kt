@@ -63,6 +63,12 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         }
     }
 
+    override fun setMusicVolume(volume: Float) {
+    }
+
+    override fun setSoundVolume(volume: Float) {
+    }
+
     override fun pauseMusic() {
         resources?.mediaPlayer?.pause()
     }
