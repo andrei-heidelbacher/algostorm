@@ -6,16 +6,13 @@ import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.FileNotFoundException
-
 /**
  * A system which handles playing longer sounds.
  *
  * @property musicPlayer the music player used to play longer sounds
  * @param musicSources the music resources which are loaded at construction time
- * @throws FileNotFoundException if any of the given resources doesn't exist
  */
-class MusicSystem @Throws(FileNotFoundException::class) constructor(
+class MusicSystem(
         private val musicPlayer: MusicPlayer,
         musicSources: List<Resource>
 ) : Subscriber {
@@ -44,7 +41,8 @@ class MusicSystem @Throws(FileNotFoundException::class) constructor(
      * @param request the request
      */
     @Subscribe fun onPlayMusic(request: PlayMusic) {
-        musicPlayer.playMusic(request.source, request.loop)
+        musicPlayer.prepareMusic(request.source, request.loop)
+        musicPlayer.resumeMusic()
         request.complete(Unit)
     }
 

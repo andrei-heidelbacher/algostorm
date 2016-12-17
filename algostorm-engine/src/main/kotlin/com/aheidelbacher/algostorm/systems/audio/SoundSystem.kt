@@ -22,16 +22,13 @@ import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import java.io.FileNotFoundException
-
 /**
  * A system which handles playing short sound effects.
  *
  * @property soundPlayer the sound player used to play short sound effects
  * @param soundSources the sound resources which are loaded at construction time
- * @throws FileNotFoundException if any of the given resources doesn't exist
  */
-class SoundSystem @Throws(FileNotFoundException::class) constructor(
+class SoundSystem(
         private val soundPlayer: SoundPlayer,
         soundSources: List<Resource>
 ) : Subscriber {

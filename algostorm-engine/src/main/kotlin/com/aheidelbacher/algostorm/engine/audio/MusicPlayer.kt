@@ -11,21 +11,23 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
 interface MusicPlayer {
     /**
      * Synchronously loads the given music resource, making it available to
-     * future calls of [playMusic].
+     * future calls of [prepareMusic].
      *
      * @param musicSource the music which should be loaded
      */
     fun loadMusic(musicSource: Resource): Unit
 
     /**
-     * Stops the previously playing music and asynchronously plays the given
-     * music resource.
+     * Stops the previously playing music and prepares the given music resource
+     * to be played by setting it in the paused state.
      *
-     * @param musicSource the sound which should be played
+     * To start playing, invoke [resumeMusic] after this method call.
+     *
+     * @param musicSource the sound which should be prepared
      * @param loop whether the sound should be looped or not
      * @throws IllegalArgumentException if the [musicSource] was not loaded
      */
-    fun playMusic(musicSource: Resource, loop: Boolean = false): Unit
+    fun prepareMusic(musicSource: Resource, loop: Boolean = false): Unit
 
     /**
      * Pauses the currently playing music.
@@ -37,8 +39,8 @@ interface MusicPlayer {
     /**
      * Asynchronously resumes the currently paused music.
      *
-     * If no music resource was previously paused or if it was stopped, this
-     * method has no effect.
+     * If no music resource was previously paused, prepared or if it was
+     * stopped, this method has no effect.
      */
     fun resumeMusic(): Unit
 

@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.systems.graphics2d
 import com.aheidelbacher.algostorm.ecs.Entity
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -37,7 +38,6 @@ import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.isFlippedVertica
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
-import java.io.FileNotFoundException
 import java.util.Comparator
 
 /**
@@ -49,9 +49,8 @@ import java.util.Comparator
  *
  * @property map the map object which should be rendered
  * @property canvas the canvas to which the system draws
- * @throws FileNotFoundException if any of the map tile set images doesn't exist
  */
-class RenderingSystem @Throws(FileNotFoundException::class) constructor(
+class RenderingSystem(
         private val map: MapObject,
         private val canvas: Canvas
 ) : Subscriber {
@@ -155,7 +154,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         } else if (isVisible && color != null) {
             matrix.reset()
             matrix.postTranslate(1F * offX + offsetX, 1F * offY + offsetY)
-            canvas.drawRectangle(color.color, width, height, matrix)
+            canvas.drawRectangle(Color(color.color), width, height, matrix)
         }
     }
 
@@ -214,7 +213,7 @@ class RenderingSystem @Throws(FileNotFoundException::class) constructor(
         val cameraY = event.cameraY - canvas.height / 2
         if (cameraWidth > 0 && cameraHeight > 0) {
             map.backgroundColor?.color?.let {
-                canvas.drawColor(it)
+                canvas.drawColor(Color(it))
             } ?: canvas.clear()
             map.layers.forEach { it.draw(-cameraX, -cameraY) }
         }

@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.engine.serialization
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+
 import kotlin.reflect.KClass
 
 /** A JSON serialization driver using the Jackson external library. */
@@ -67,13 +69,37 @@ class JsonDriver : SerializationDriver {
         }
     }
 
-    //TODO: Make Color a class in engine.graphics2d and add custom serializer!
+    private val colorSerializer = object : StdSerializer<Color>(
+            Color::class.java
+    ) {
+        override fun serialize(
+                value: Color?,
+                gen: JsonGenerator?,
+                provider: SerializerProvider?
+        ) {
+            gen?.writeString("$value")
+        }
+    }
+
+    private val colorDeserializer = object : StdDeserializer<Color>(
+            Color::class.java
+    ) {
+        override fun deserialize(
+                p: JsonParser?,
+                ctxt: DeserializationContext?
+        ): Color? {
+            val colorCode = p?.codec?.readValue<String>(p, String::class.java)
+            return if (colorCode != null) Color(colorCode) else null
+        }
+    }
 
     /** The object that handles serialization and deserialization. */
     private var objectMapper: ObjectMapper? = jacksonObjectMapper().apply {
         registerModule(SimpleModule().apply {
             addSerializer(Resource::class.java, resourceSerializer)
             addDeserializer(Resource::class.java, resourceDeserializer)
+            addSerializer(Color::class.java, colorSerializer)
+            addDeserializer(Color::class.java, colorDeserializer)
         })
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.ecs
 
 import com.aheidelbacher.algostorm.ecs.Entity.Companion.validateId
+import com.aheidelbacher.algostorm.ecs.EntityRef.Companion.validateComponents
 
 import kotlin.reflect.KClass
 
@@ -98,5 +99,148 @@ private class MutableEntityManagerImpl(
 
     override fun clear() {
         entityMap.clear()
+    }
+}
+
+// -----------------------------------------------------------------
+
+/**
+ * Returns a default implementation of an entity pool.
+ *
+ * @param entities the initial entities which should be contained by the pool
+ * @return the entity pool
+ * @throws IllegalArgumentException if any given entity id is not valid or if
+ * any given entity contains multiple components of the same type
+ */
+fun entityPoolOf(entities: Map<Int, Collection<Component>>): EntityPool =
+        EntityPoolImpl(entities)
+
+private class EntityRefImpl(
+        private val entityPool: EntityPoolImpl,
+        id: Int,
+        components: Collection<Component> = emptyList()
+) : MutableEntityRef(entityPool, id) {
+    private val componentTable = components.associateByTo(
+            hashMapOf<KClass<out Component>, Component>()
+    ) { it.javaClass.kotlin }
+
+    override var isValid: Boolean = true
+
+    override val components: Iterable<Component>
+        get() = checkIsValid { componentTable.values }
+
+    override fun <T : Component> get(type: KClass<T>): T? =
+            checkIsValid { type.java.cast(componentTable[type]) }
+
+    override fun <T : Component> remove(type: KClass<T>): T? = checkIsValid {
+        val component = type.java.cast(componentTable.remove(type))
+        entityPool.onChanged(this)
+        return component
+    }
+
+    override fun set(component: Component) {
+        checkIsValid {
+            componentTable[component.javaClass.kotlin] = component
+            entityPool.onChanged(this)
+        }
+    }
+
+    fun clear() {
+        checkIsValid {
+            componentTable.clear()
+        }
+    }
+}
+
+private class EntityGroupImpl(
+        filter: (EntityRef) -> Boolean
+) : MutableEntityGroup {
+    private var filter: ((EntityRef) -> Boolean)? = filter
+    private val entityTable = hashMapOf<Int, EntityRefImpl>()
+    private val groups = hashMapOf<String, EntityGroupImpl>()
+
+    override val isValid: Boolean
+        get() = filter != null
+
+    override val entities: Iterable<EntityRefImpl>
+        get() = entityTable.values
+
+    override fun get(id: Int): EntityRefImpl? = entityTable[id]
+
+    override fun contains(id: Int): Boolean = id in entityTable
+
+    override fun addGroup(
+            name: String,
+            filter: (EntityRef) -> Boolean
+    ): EntityGroupImpl? =
+            if (!isValid) null else EntityGroupImpl(filter).apply {
+                groups[name] = this
+                entityTable.forEach { this.onChanged(it.value) }
+            }
+
+    override fun removeGroup(name: String): Boolean {
+        groups[name]?.onCleared()
+        return groups.remove(name) != null
+    }
+
+    fun onChanged(entity: EntityRefImpl) {
+        if (filter?.invoke(entity) ?: error("")) {
+            entityTable[entity.id] = entity
+            groups.forEach { it.value.onChanged(entity) }
+        } else {
+            onRemoved(entity)
+        }
+    }
+
+    fun onRemoved(entity: EntityRefImpl) {
+        entityTable.remove(entity.id)
+        groups.forEach { it.value.onRemoved(entity) }
+    }
+
+    fun onCleared() {
+        groups.forEach { it.value.onCleared() }
+        groups.clear()
+        entityTable.clear()
+        filter = null
+    }
+}
+
+private class EntityPoolImpl(
+        entities: Map<Int, Collection<Component>>
+) : EntityPool {
+    private var nextId = 1 + (entities.keys.max() ?: 0)
+
+    override val group = EntityGroupImpl { true }
+
+    init {
+        entities.forEach {
+            validateId(it.key)
+            validateComponents(it.value)
+        }
+        entities.forEach {
+            group.onChanged(EntityRefImpl(this, it.key, it.value))
+        }
+    }
+
+    override fun create(components: Collection<Component>): MutableEntityRef {
+        validateComponents(components)
+        check(nextId > 0) { "Too many entities created in $this!" }
+        val entity = EntityRefImpl(this, nextId++, components)
+        group.onChanged(entity)
+        return entity
+    }
+
+    override fun delete(id: Int): Boolean = group[id]?.apply {
+        group.onRemoved(this)
+        clear()
+        isValid = false
+    } != null
+
+    override fun clear() {
+        group.entities.toList().forEach { group.onRemoved(it) }
+    }
+
+    fun onChanged(entity: EntityRefImpl) {
+        group.onChanged(entity)
     }
 }

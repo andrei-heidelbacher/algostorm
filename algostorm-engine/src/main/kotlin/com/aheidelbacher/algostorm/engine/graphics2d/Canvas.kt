@@ -64,21 +64,18 @@ interface Canvas {
     ): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap to this canvas using
-     * the specified [matrix].
+     * Draws the given colored rectangle to this canvas using the specified
+     * [matrix].
      *
-     * @param color the color with which the rectangle should be filled in
-     * ARGB8888 format
-     * @param width the width in pixels of the rectangle which should be
-     * rendered
-     * @param height the height in pixels of the rectangle which should be
-     * rendered
+     * @param color the color with which the rectangle should be filled
+     * @param width the width in pixels of the rectangle
+     * @param height the height in pixels of the rectangle
      * @param matrix the matrix that should be applied to the rectangle when
      * rendering. Initially, the rectangle is considered to have the top-left
      * corner overlap with the top-left corner of the canvas.
      */
     fun drawRectangle(
-            color: Int,
+            color: Color,
             width: Int,
             height: Int,
             matrix: Matrix
@@ -87,7 +84,7 @@ interface Canvas {
     /**
      * Fills the entire canvas with the given color.
      *
-     * @param color the color which should fill the canvas in ARGB8888 format
+     * @param color the color which should fill the canvas
      */
-    fun drawColor(color: Int) : Unit
+    fun drawColor(color: Color) : Unit
 }
