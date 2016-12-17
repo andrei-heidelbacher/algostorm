@@ -21,8 +21,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.state.Color
+//import com.aheidelbacher.algostorm.state.Color
 import com.aheidelbacher.algostorm.state.File
 import com.aheidelbacher.algostorm.state.Image
 import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
@@ -60,7 +61,7 @@ class RenderingSystemTest {
         height = 12
         tileWidth = 24
         tileHeight = 24
-        backgroundColor = Color("#ffffffff")
+        backgroundColor = com.aheidelbacher.algostorm.state.Color("#ffffffff")
         +tileSet {
             name = "test"
             tileWidth = 24
@@ -89,7 +90,7 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertColor(Color(-1))
         for (ty in 0 until height) {
             for (tx in 0 until width) {
                 val y = ty * tileHeight
@@ -121,7 +122,7 @@ class RenderingSystemTest {
                             height = tileHeight,
                             z = 0,
                             priority = 0,
-                            color = Color("#000000ff")
+                            color = com.aheidelbacher.algostorm.state.Color("#000000ff")
                     )
                     +Position(x = 0, y = 0)
                 }
@@ -129,9 +130,9 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertRectangle(
-                color = 255,
+                color = Color(255),
                 width = tileWidth,
                 height = tileHeight,
                 matrix = Matrix.identity().postTranslate(
@@ -161,7 +162,7 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,
                 x = 0,
@@ -195,7 +196,7 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,
                 x = 0,
@@ -229,7 +230,7 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         renderingSystem.onRender(Render(cameraX, cameraY))
-        graphicsDriver.assertColor(-1)
+        graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,
                 x = 0,
