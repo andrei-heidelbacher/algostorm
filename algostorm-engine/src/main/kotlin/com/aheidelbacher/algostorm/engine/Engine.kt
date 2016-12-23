@@ -51,7 +51,7 @@ import kotlin.system.measureNanoTime
  * @property inputDriver the driver that handles reading input from the user
  * @property scriptDriver the driver that handles running scripts
  * @property serializationDriver the driver that handles the serialization and
- * deserialization the game state
+ * deserialization of the game state
  * @constructor initializes this engine's drivers
  */
 abstract class Engine(
@@ -64,19 +64,6 @@ abstract class Engine(
     companion object {
         /** Name of the engine thread. */
         const val NAME: String = "ALGOSTORM"
-
-        /**
-         * Returns the resource file with the given name using the [Engine]
-         * class [Class.getResource] method.
-         *
-         * @param name the name of the requested resource
-         * @return the requested resource as a stream
-         * @throws FileNotFoundException if the given resource doesn't exist
-         */
-        @Throws(FileNotFoundException::class)
-        @JvmStatic fun getResourceStream(name: String): InputStream =
-                Engine::class.java.getResourceAsStream(name)
-                        ?: throw FileNotFoundException("$name not found!")
     }
 
     /** The status of an engine. */
@@ -110,10 +97,11 @@ abstract class Engine(
     protected abstract val millisPerUpdate: Int
 
     /**
-     * The entry point into initialization logic for starting the engine thread.
+     * The entry point into the initialization logic for starting the engine
+     * thread.
      *
-     * This method is invoke right after starting the private engine thread. The
-     * call to this method is synchronized with the state lock.
+     * This method is invoked right after starting the private engine thread.
+     * The call to this method is synchronized with the state lock.
      */
     protected abstract fun onStart(): Unit
 
@@ -242,7 +230,7 @@ abstract class Engine(
      * Sets the engine [status] to [Status.STOPPING] and then joins the engine
      * thread to the current thread.
      *
-     * If the join succeeds, the `status` will be set to [Status.STOPPED].
+     * If the join succeeds, the `status` will be set to `Status.STOPPED`.
      *
      * @throws InterruptedException if the current thread is interrupted while
      * waiting for this engine to stop

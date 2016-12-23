@@ -24,13 +24,18 @@ package com.aheidelbacher.algostorm.event
  */
 interface Subscriber {
     /**
-     * Post-subscribe initialization.
+     * Initializes resources after this subscriber subscribed to the given
+     * `publisher`.
      *
-     * @param publisher the publishing view of the event bus to which this
-     * object was subscribed
+     * @param publisher the publisher to which this object was subscribed
      */
     fun onSubscribe(publisher: Publisher) {}
 
-    /** Post-unsubscribe clean-up. */
+    /**
+     * Releases resources after this subscriber unsubscribed from the given
+     * `publisher`.
+     *
+     * @param publisher the publisher from which this object was unsubscribed
+     */
     fun onUnsubscribe(publisher: Publisher) {}
 }

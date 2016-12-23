@@ -39,31 +39,31 @@ class ScriptingSystem(
         scriptFunctions: List<KFunction<*>>
 ) : Subscriber {
     /**
-     * A request to execute the script procedure with the given name and
-     * arguments.
+     * A request to execute the script procedure with the given `name` and
+     * `arguments`.
      *
      * @property name the name of script procedure that should be executed
-     * @property args the arguments of the script procedure
+     * @property arguments the parameters of the script procedure
      */
     class InvokeProcedure private constructor(
             val name: String,
-            val args: List<*>
+            val arguments: List<*>
     ) : Request<Unit>() {
         constructor(name: String, vararg args: Any?) : this(name, args.asList())
     }
 
     /**
-     * A request to execute the script function with the given name and
-     * arguments, returning the result.
+     * A request to execute the script function with the given `name` and
+     * `arguments`, returning the result.
      *
      * @property name the name of the script function that should be executed
      * @property returnType the expected type of the result
-     * @property args the arguments of the script function
+     * @property arguments the parameters of the script function
      */
     class InvokeFunction private constructor(
             val name: String,
             val returnType: KClass<*>,
-            val args: List<*>
+            val arguments: List<*>
     ) : Request<Any?>() {
         constructor(
                 name: String,
@@ -78,7 +78,10 @@ class ScriptingSystem(
     }
 
     @Subscribe fun onInvokeProcedure(request: InvokeProcedure) {
-        scriptEngine.invokeProcedure(request.name, *request.args.toTypedArray())
+        scriptEngine.invokeProcedure(
+                request.name,
+                *request.arguments.toTypedArray()
+        )
         request.complete(Unit)
     }
 
@@ -86,7 +89,7 @@ class ScriptingSystem(
         request.complete(scriptEngine.invokeFunction(
                 request.name,
                 request.returnType,
-                *request.args.toTypedArray()
+                *request.arguments.toTypedArray()
         ))
     }
 }

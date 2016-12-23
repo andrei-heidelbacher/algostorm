@@ -25,5 +25,5 @@ interface MutableEntityGroup : EntityGroup {
     override fun addGroup(
             name: String,
             filter: (EntityRef) -> Boolean
-    ): MutableEntityGroup?
+    ): MutableEntityGroup
 }

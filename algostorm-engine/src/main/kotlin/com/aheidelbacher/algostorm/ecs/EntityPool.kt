@@ -22,7 +22,7 @@ interface EntityPool {
     val group: MutableEntityGroup
 
     /**
-     * Creates an entity with the given components, adds it to this pool and
+     * Creates an entity with the given `components`, adds it to this pool and
      * returns it.
      *
      * If creating and adding the entity to this pool fails, the entity pool
@@ -37,12 +37,12 @@ interface EntityPool {
     fun create(components: Collection<Component>): MutableEntityRef
 
     /**
-     * Deletes the entity with the given id from this pool.
+     * Deletes and invalidates the entity with the given `id` from this pool.
      *
      * @param id the id of the entity that should be deleted
      * @return `true` if the entity was deleted, `false` if it didn't exist in
      * this pool
-     * @throws IllegalArgumentException if [id] is not a valid id
+     * @throws IllegalArgumentException if `id` is not a valid id
      */
     fun delete(id: Int): Boolean
 

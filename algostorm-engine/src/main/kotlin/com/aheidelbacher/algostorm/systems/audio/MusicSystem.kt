@@ -36,7 +36,7 @@ class MusicSystem(
      * A request to set the music volume to the given value.
      *
      * @property volume the new value of the volume
-     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
     class SetMusicVolume(val volume: Float) : Request<Unit>() {
         init {
@@ -47,11 +47,11 @@ class MusicSystem(
     /**
      * A request to play a longer sound, stopping the previously playing music.
      *
-     * @property source the music resource which should be played
+     * @property resource the music resource which should be played
      * @property loop whether the sound should be looped or not
      */
     class PlayMusic(
-            val source: Resource,
+            val resource: Resource,
             val loop: Boolean = false
     ) : Request<Unit>()
 
@@ -80,7 +80,7 @@ class MusicSystem(
      * @param request the request
      */
     @Subscribe fun onPlayMusic(request: PlayMusic) {
-        musicPlayer.playMusic(request.source, request.loop)
+        musicPlayer.playMusic(request.resource, request.loop)
         request.complete(Unit)
     }
 

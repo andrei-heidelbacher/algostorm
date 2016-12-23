@@ -26,30 +26,30 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
  */
 interface MusicPlayer {
     /**
-     * Synchronously loads the given music resource, making it available to
+     * Synchronously loads the given music `resource`, making it available to
      * future calls of [playMusic].
      *
-     * @param musicSource the music which should be loaded
+     * @param resource the music resource which should be loaded
      */
-    fun loadMusic(musicSource: Resource): Unit
+    fun loadMusic(resource: Resource): Unit
 
     /**
      * Sets the volume at which music is played.
      *
      * @param volume a value between `0` (mute) and `1` (maximum volume)
-     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
     fun setMusicVolume(volume: Float): Unit
 
     /**
      * Stops the previously playing music and asynchronously plays the given
-     * music resource.
+     * music `resource`.
      *
-     * @param musicSource the sound which should be prepared
-     * @param loop whether the sound should be looped or not
-     * @throws IllegalArgumentException if the [musicSource] was not loaded
+     * @param resource the music resource which should be played
+     * @param loop whether the music should be looped or not
+     * @throws IllegalArgumentException if the given `resource` was not loaded
      */
-    fun playMusic(musicSource: Resource, loop: Boolean = false): Unit
+    fun playMusic(resource: Resource, loop: Boolean = false): Unit
 
     /**
      * Pauses the currently playing music.

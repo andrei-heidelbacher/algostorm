@@ -18,6 +18,17 @@ package com.aheidelbacher.algostorm.ecs
 
 /** A read-only view group of filtered read-only entities. */
 interface EntityGroup {
+    companion object {
+        /**
+         * Asserts that this entity group is valid.
+         *
+         * @throws IllegalStateException if this entity group is not valid
+         */
+        fun EntityGroup.checkIsValid() {
+            check(!isValid) { "$this invalid entity group!" }
+        }
+    }
+
     /** A read-only view of the entities in this group. */
     val entities: Iterable<EntityRef>
 
@@ -30,21 +41,21 @@ interface EntityGroup {
     val isValid: Boolean
 
     /**
-     * Checks whether this group contains an entity with the given id.
+     * Checks whether this group contains an entity with the given `id`.
      *
      * @param id the id of the requested entity
-     * @return `true` if the entity with the given id exists in this group,
-     * `false` otherwise
-     * @throws IllegalArgumentException if [id] is not a valid id
+     * @return `true` if the requested entity exists in this group, `false`
+     * otherwise
+     * @throws IllegalArgumentException if `id` is not a valid id
      */
     operator fun contains(id: Int): Boolean = get(id) != null
 
     /**
-     * Returns the entity with the given id.
+     * Returns the entity with the given `id`.
      *
      * @param id the id of the requested entity
      * @return the requested entity, or `null` if it doesn't exist in this group
-     * @throws IllegalArgumentException if [id] is not a valid id
+     * @throws IllegalArgumentException if `id` is not a valid id
      */
     operator fun get(id: Int): EntityRef?
 
@@ -55,11 +66,12 @@ interface EntityGroup {
      * @param name the name of this subgroup
      * @param filter the filter which must return `true` for an entity to be
      * included in the new group
-     * @return the new subgroup, or `null` if this group is invalid
-     * @throws IllegalArgumentException if a subgroup with the same [name]
+     * @return the new subgroup
+     * @throws IllegalArgumentException if a subgroup with the same `name`
      * already exists
+     * @throws IllegalStateException if this group is invalid
      */
-    fun addGroup(name: String, filter: (EntityRef) -> Boolean): EntityGroup?
+    fun addGroup(name: String, filter: (EntityRef) -> Boolean): EntityGroup
 
     /**
      * Removes the subgroup with the given `name`.

@@ -31,16 +31,16 @@ class KotlinScriptDriver : ScriptDriver {
         functions[function.name] = function
     }
 
-    override fun invokeProcedure(procedureName: String, vararg args: Any?) {
-        requireNotNull(procedures[procedureName]).call(*args)
+    override fun invokeProcedure(name: String, vararg arguments: Any?) {
+        requireNotNull(procedures[name]).call(*arguments)
     }
 
     override fun <T : Any> invokeFunction(
-            functionName: String,
+            name: String,
             returnType: KClass<T>,
-            vararg args: Any?
+            vararg arguments: Any?
     ): T? = returnType.java.cast(
-            requireNotNull(functions[functionName]).call(*args)
+            requireNotNull(functions[name]).call(*arguments)
     )
 
     override fun release() {

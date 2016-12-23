@@ -51,17 +51,17 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         }
     }
 
-    override fun loadMusic(musicSource: Resource) {
+    override fun loadMusic(resource: Resource) {
         resources?.apply {
-            installResource(musicSource)
+            installResource(resource)
         }
     }
 
-    override fun loadSound(soundSource: Resource) {
+    override fun loadSound(resource: Resource) {
         resources?.apply {
-            installResource(soundSource)
-            val path = soundSource.fdPath
-            soundIds[path] = soundPool.load(soundSource.fdPath, 1)
+            installResource(resource)
+            val path = resource.fdPath
+            soundIds[path] = soundPool.load(resource.fdPath, 1)
         }
     }
 
@@ -88,11 +88,11 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         resources?.soundPool?.autoPause()
     }
 
-    override fun playMusic(musicSource: Resource, loop: Boolean) {
+    override fun playMusic(resource: Resource, loop: Boolean) {
         resources?.apply {
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer().apply {
-                setDataSource(musicSource.fdPath)
+                setDataSource(resource.fdPath)
                 prepare()
                 isLooping = loop
                 setVolume(musicVolume, musicVolume)
@@ -101,9 +101,9 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         }
     }
 
-    override fun playSound(soundSource: Resource) {
+    override fun playSound(resource: Resource) {
         resources?.apply {
-            val id = requireNotNull(soundIds[soundSource.fdPath])
+            val id = requireNotNull(soundIds[resource.fdPath])
             soundPool.play(id, soundVolume, soundVolume, 1, 0, 1F) - 1
         }
     }

@@ -16,8 +16,9 @@
 
 package com.aheidelbacher.algostorm.ecs
 
-import com.aheidelbacher.algostorm.ecs.Entity.Companion.validateId
+import com.aheidelbacher.algostorm.ecs.EntityGroup.Companion.checkIsValid
 import com.aheidelbacher.algostorm.ecs.EntityRef.Companion.validateComponents
+import com.aheidelbacher.algostorm.ecs.EntityRef.Companion.validateId
 
 import kotlin.reflect.KClass
 
@@ -139,17 +140,17 @@ private class EntityRefImpl(
     override fun <T : Component> get(type: KClass<T>): T? =
             type.java.cast(componentTable[type])
 
-    override fun <T : Component> remove(type: KClass<T>): T? = checkIsValid {
+    override fun <T : Component> remove(type: KClass<T>): T? {
+        checkIsValid()
         val component = type.java.cast(componentTable.remove(type))
         entityPool.onChanged(this)
-        component
+        return component
     }
 
     override fun set(component: Component) {
-        checkIsValid {
-            componentTable[component.javaClass.kotlin] = component
-            entityPool.onChanged(this)
-        }
+        checkIsValid()
+        componentTable[component.javaClass.kotlin] = component
+        entityPool.onChanged(this)
     }
 }
 
@@ -166,18 +167,21 @@ private class EntityGroupImpl(
     override val entities: Iterable<EntityRefImpl>
         get() = entityTable.values
 
-    override fun get(id: Int): EntityRefImpl? = entityTable[id]
+    override fun get(id: Int): EntityRefImpl? = entityTable[validateId(id)]
 
-    override fun contains(id: Int): Boolean = id in entityTable
+    override fun contains(id: Int): Boolean = validateId(id) in entityTable
 
     override fun addGroup(
             name: String,
             filter: (EntityRef) -> Boolean
-    ): EntityGroupImpl? =
-            if (!isValid) null else EntityGroupImpl(filter).apply {
-                groups[name] = this
-                entityTable.forEach { this.onChanged(it.value) }
-            }
+    ): EntityGroupImpl {
+        checkIsValid()
+        return EntityGroupImpl(filter).apply {
+            require(name !in groups) { "$this already contains $name!" }
+            groups[name] = this
+            entityTable.forEach { this.onChanged(it.value) }
+        }
+    }
 
     override fun removeGroup(name: String): Boolean {
         groups[name]?.onCleared()
@@ -185,7 +189,7 @@ private class EntityGroupImpl(
     }
 
     fun onChanged(entity: EntityRefImpl) {
-        if (filter?.invoke(entity) ?: error("")) {
+        if (filter?.invoke(entity) ?: error("$this was invalidated!")) {
             entityTable[entity.id] = entity
             groups.forEach { it.value.onChanged(entity) }
         } else {
@@ -231,7 +235,7 @@ private class EntityPoolImpl(
         return entity
     }
 
-    override fun delete(id: Int): Boolean = group[id]?.apply {
+    override fun delete(id: Int): Boolean = group[validateId(id)]?.apply {
         group.onRemoved(this)
         invalidate()
     } != null

@@ -123,7 +123,7 @@ class RenderingSystem(
                 dy = 1F * tileSet.tileOffsetY + y
         )
         canvas.drawBitmap(
-                imageSource = Resource("res:///" + viewport.image.source.path),
+                resource = Resource("res:///" + viewport.image.source.path),
                 x = viewport.x,
                 y = viewport.y,
                 width = viewport.width,

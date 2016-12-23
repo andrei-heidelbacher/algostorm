@@ -28,7 +28,7 @@ abstract class MutableEntityRef protected constructor(
         id: Int
 ) : EntityRef(entityPool, id) {
     /**
-     * Sets the value of the specified component type.
+     * Sets the value of the specified `component` type.
      *
      * @param component the new value of the component type
      * @throws IllegalStateException if this entity reference is invalid
@@ -36,7 +36,7 @@ abstract class MutableEntityRef protected constructor(
     abstract fun set(component: Component): Unit
 
     /**
-     * Removes the component with the specified type and returns it.
+     * Removes the component with the specified `type` and returns it.
      *
      * @param T the type of the component; must be final
      * @param type the class object of the component

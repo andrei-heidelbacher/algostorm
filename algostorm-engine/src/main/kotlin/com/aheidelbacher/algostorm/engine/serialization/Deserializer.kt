@@ -35,7 +35,7 @@ interface Deserializer {
      *
      * @param src the stream from which the object is deserialized
      * @param type the class of the deserialized object type
-     * @param T the type of the deserialized object type
+     * @param T the type of the deserialized object
      * @return the deserialized object
      * @throws IOException if there were any input-related or deserialization
      * errors

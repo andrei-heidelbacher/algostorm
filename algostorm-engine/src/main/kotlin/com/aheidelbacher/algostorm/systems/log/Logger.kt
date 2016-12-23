@@ -42,9 +42,9 @@ interface Logger {
     }
 
     /**
-     * Logs the given event.
+     * Logs the given `event`.
      *
-     * @param event the event to be recorded
+     * @param event the event to be logged
      */
     fun log(event: Event): Unit
 }

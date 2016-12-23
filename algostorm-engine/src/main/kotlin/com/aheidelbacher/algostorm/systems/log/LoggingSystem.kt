@@ -29,7 +29,7 @@ import com.aheidelbacher.algostorm.event.Subscriber
  */
 class LoggingSystem(private val logger: Logger) : Subscriber {
     /**
-     * Logs the string representation of the given event.
+     * Logs the string representation of the given `event`.
      *
      * @param event the event which should be logged
      */

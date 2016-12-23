@@ -26,9 +26,9 @@ import kotlin.reflect.KFunction
 interface ScriptEngine {
     companion object {
         inline fun <reified T : Any> ScriptEngine.invokeFunction(
-                functionName: String,
-                vararg args: Any?
-        ): T? = invokeFunction(functionName, T::class, *args)
+                name: String,
+                vararg arguments: Any?
+        ): T? = invokeFunction(name, T::class, *arguments)
     }
 
     /**
@@ -49,34 +49,32 @@ interface ScriptEngine {
     fun <T> loadFunction(function: KFunction<T>): Unit
 
     /**
-     * Executes the script procedure with the given name and the specified
-     * arguments.
+     * Executes the script procedure with the given `name` and the specified
+     * `arguments`.
      *
-     * @param procedureName the name of the script procedure that should be
-     * executed
-     * @param args the script procedure parameters
-     * @throws IllegalArgumentException if the given [procedureName] is not
-     * available to this engine
+     * @param name the name of the script procedure that should be executed
+     * @param arguments the script procedure parameters
+     * @throws IllegalArgumentException if the given `name` is not available to
+     * this engine
      */
-    fun invokeProcedure(procedureName: String, vararg args: Any?): Unit
+    fun invokeProcedure(name: String, vararg arguments: Any?): Unit
 
     /**
-     * Executes the script function with the given name and the specified
-     * arguments and returns its result.
+     * Executes the script function with the given `name` and the specified
+     * `arguments` and returns its result.
      *
-     * @param functionName the name of the script function that should be
-     * executed
+     * @param name the name of the script function that should be executed
      * @param returnType the expected type of the result
-     * @param args the script function parameters
+     * @param arguments the script function parameters
      * @return the script function result
-     * @throws IllegalArgumentException if the given [functionName] is not
-     * available to this engine
+     * @throws IllegalArgumentException if the given `name` is not available to
+     * this engine
      * @throws ClassCastException if the result couldn't be converted to the
-     * [returnType]
+     * `returnType`
      */
     fun <T : Any> invokeFunction(
-            functionName: String,
+            name: String,
             returnType: KClass<T>,
-            vararg args: Any?
+            vararg arguments: Any?
     ): T?
 }

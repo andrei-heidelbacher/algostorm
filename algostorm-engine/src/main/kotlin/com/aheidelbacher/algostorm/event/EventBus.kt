@@ -21,9 +21,9 @@ import java.lang.reflect.Modifier
 import java.util.LinkedList
 
 /**
- * An event bus which allows a [Subscriber] to subscribe and unsubscribe from
- * certain topics and allows to post or publish an event to the bus and notify
- * its subscribers.
+ * An event bus which allows a [Subscriber] to [subscribe] and [unsubscribe]
+ * from certain topics and allows to `post` or `publish` an event to the bus and
+ * notify its subscribers.
  */
 interface EventBus : Publisher {
     companion object {
@@ -107,19 +107,19 @@ interface EventBus : Publisher {
     }
 
     /**
-     * Registers the given [subscriber] to this event bus.
+     * Registers the given `subscriber` to this event bus.
      *
      * @param subscriber the object that subscribes for events posted to this
      * event bus
-     * @throws IllegalArgumentException if the subscriber contains an annotated
-     * handler that does not conform to the [Subscribe] contract. However, if
-     * any non-public or static method is annotated, it will be ignored instead
-     * of throwing an exception.
+     * @throws IllegalArgumentException if the `subscriber` contains an
+     * annotated handler that does not conform to the [Subscribe] contract.
+     * However, if any non-public or static method is annotated, it will be
+     * ignored instead of throwing an exception.
      */
     fun subscribe(subscriber: Subscriber): Unit
 
     /**
-     * Unregisters the given [subscriber] from this event bus.
+     * Unregisters the given `subscriber` from this event bus.
      *
      * @param subscriber the object that should be unsubscribed from events
      * posted to this event bus

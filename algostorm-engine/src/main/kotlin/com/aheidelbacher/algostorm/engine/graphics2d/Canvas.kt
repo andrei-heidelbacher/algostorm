@@ -21,11 +21,12 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
 /** A canvas that allows primitive `draw` calls. */
 interface Canvas {
     /**
-     * Synchronously loads the given image resource.
+     * Synchronously loads the given image `resource`, making it available to
+     * future calls of [drawBitmap].
      *
-     * @param imageSource the image resource which should be loaded
+     * @param resource the image resource which should be loaded
      */
-    fun loadBitmap(imageSource: Resource): Unit
+    fun loadBitmap(resource: Resource): Unit
 
     /** The width of this canvas in pixels. */
     val width: Int
@@ -37,14 +38,14 @@ interface Canvas {
     fun clear(): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap to this canvas using
-     * the specified [matrix].
+     * Draws the viewport projected on the indicated bitmap `resource` to this
+     * canvas using the specified `matrix`.
      *
-     * @param imageSource the image resource
-     * @param x the x-axis coordinate in pixels of the top-left corner of the
-     * bitmap viewport which should be rendered
-     * @param y the y-axis coordinate in pixels of the top-left corner of the
-     * bitmap viewport which should be rendered
+     * @param resource the image resource
+     * @param x the horizontal coordinate in pixels of the top-left corner of
+     * the bitmap viewport which should be rendered
+     * @param y the vertical coordinate in pixels of the top-left corner of the
+     * bitmap viewport which should be rendered (positive is down)
      * @param width the width in pixels of the bitmap viewport which should be
      * rendered
      * @param height the height in pixels of the bitmap viewport which should be
@@ -52,10 +53,10 @@ interface Canvas {
      * @param matrix the matrix that should be applied to the viewport when
      * rendering. Initially, the viewport rectangle is considered to have the
      * top-left corner overlap with the top-left corner of the canvas.
-     * @throws IllegalArgumentException if [imageSource] was not loaded
+     * @throws IllegalArgumentException if the image `resource` was not loaded
      */
     fun drawBitmap(
-            imageSource: Resource,
+            resource: Resource,
             x: Int,
             y: Int,
             width: Int,
@@ -65,7 +66,7 @@ interface Canvas {
 
     /**
      * Draws the given colored rectangle to this canvas using the specified
-     * [matrix].
+     * `matrix`.
      *
      * @param color the color with which the rectangle should be filled
      * @param width the width in pixels of the rectangle
@@ -82,7 +83,7 @@ interface Canvas {
     )
 
     /**
-     * Fills the entire canvas with the given color.
+     * Fills the entire canvas with the given `color`.
      *
      * @param color the color which should fill the canvas
      */

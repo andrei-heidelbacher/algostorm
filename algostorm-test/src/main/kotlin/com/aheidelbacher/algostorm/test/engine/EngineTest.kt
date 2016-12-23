@@ -95,9 +95,4 @@ abstract class EngineTest {
         engine.stop()
         engine.shutdown()
     }
-
-    @Test(expected = FileNotFoundException::class)
-    fun testGetNonExistingResourceStreamShouldThrow() {
-        Engine.getResourceStream("/non_existing.txt")
-    }
 }

@@ -23,7 +23,7 @@ import java.io.InputStream
  * A resource used by various drivers.
  *
  * @property path the absolute path of the resource
- * @throws IllegalArgumentException if [path] doesn't begin with `res:///`
+ * @throws IllegalArgumentException if `path` doesn't begin with `res:///`
  * @throws FileNotFoundException if this resource doesn't exist
  */
 data class Resource(val path: String) {

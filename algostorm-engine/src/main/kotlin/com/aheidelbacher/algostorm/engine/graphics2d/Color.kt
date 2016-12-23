@@ -17,19 +17,19 @@
 package com.aheidelbacher.algostorm.engine.graphics2d
 
 /**
- * A color in the ARGB8888 format.
+ * A color in the `ARGB8888` format.
  *
- * @property color the ARGB8888 encoded color
+ * @property color the `ARGB8888` encoded color
  */
 data class Color(val color: Int) {
     /**
-     * Builds an ARGB8888 encoded color from a color code.
+     * Builds an `ARGB8888` encoded color from a color `code`.
      *
-     * @param colorCode the color code
-     * @throws IllegalArgumentException if the given string doesn't conform to
-     * the `#AARRGGBB` or `#RRGGBB` format (base 16, case insensitive)
+     * @param code the color code
+     * @throws IllegalArgumentException if the given `code` doesn't conform to
+     * the `#AARRGGBB` or `#RRGGBB` format (base `16`, case insensitive)
      */
-    constructor(colorCode: String) : this (colorCode.let { code ->
+    constructor(code: String) : this (code.let {
         require((code.length == 7 || code.length == 9) && code[0] == '#') {
             "Invalid color code $code format!"
         }

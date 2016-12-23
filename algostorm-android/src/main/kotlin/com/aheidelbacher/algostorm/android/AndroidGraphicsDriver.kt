@@ -59,10 +59,10 @@ class AndroidGraphicsDriver(
         check(isLocked.get()) { "Canvas is not locked!" }
     }
 
-    override fun loadBitmap(imageSource: Resource) {
-        if (imageSource !in bitmaps) {
-            imageSource.inputStream().use { src ->
-                bitmaps[imageSource] = BitmapFactory.decodeStream(src)
+    override fun loadBitmap(resource: Resource) {
+        if (resource !in bitmaps) {
+            resource.inputStream().use { src ->
+                bitmaps[resource] = BitmapFactory.decodeStream(src)
             }
         }
     }
@@ -76,7 +76,7 @@ class AndroidGraphicsDriver(
     fun getBitmap(imageSource: Resource): Bitmap? = bitmaps[imageSource]
 
     override fun drawBitmap(
-            imageSource: Resource,
+            resource: Resource,
             x: Int,
             y: Int,
             width: Int,
@@ -84,8 +84,8 @@ class AndroidGraphicsDriver(
             matrix: Matrix
     ) {
         checkIsLocked()
-        val bitmap = requireNotNull(bitmaps[imageSource]) {
-            "Invalid bitmap $imageSource!"
+        val bitmap = requireNotNull(bitmaps[resource]) {
+            "Invalid bitmap $resource!"
         }
         srcRect.set(x, y, x + width, y + height)
         dstRect.set(0, 0, width, height)

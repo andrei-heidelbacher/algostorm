@@ -36,7 +36,7 @@ class SoundSystem(
      * A request to set the sound effects volume to the given value.
      *
      * @property volume the new value of the volume
-     * @throws IllegalArgumentException if [volume] is not in the range `0..1`
+     * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
     class SetSoundVolume(val volume: Float) : Request<Unit>() {
         init {
@@ -47,9 +47,9 @@ class SoundSystem(
     /**
      * A request to play a short sound.
      *
-     * @property source the sound resource which should be played
+     * @property resource the sound resource which should be played
      */
-    class PlaySoundEffect(val source: Resource) : Request<Unit>()
+    class PlaySoundEffect(val resource: Resource) : Request<Unit>()
 
     init {
         soundSources.forEach { soundPlayer.loadSound(it) }
@@ -72,7 +72,7 @@ class SoundSystem(
      * @param request the request
      */
     @Subscribe fun onPlaySoundEffect(request: PlaySoundEffect) {
-        soundPlayer.playSound(request.source)
+        soundPlayer.playSound(request.resource)
         request.complete(Unit)
     }
 }

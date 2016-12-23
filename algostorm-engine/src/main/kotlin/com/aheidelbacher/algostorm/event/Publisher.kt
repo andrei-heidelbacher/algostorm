@@ -17,8 +17,8 @@
 package com.aheidelbacher.algostorm.event
 
 /**
- * Provides functionality to post and publish events and requests and notify
- * subscribers.
+ * Provides functionality to [post] and [publish] events, [request] services and
+ * notify subscribers.
  *
  * It should preserve the order of posted events (if an event A is posted before
  * an event B, then subscribers will be notified for A before they are notified
@@ -26,15 +26,14 @@ package com.aheidelbacher.algostorm.event
  */
 interface Publisher {
     /**
-     * Posts the given [event] and notifies all subscribers which subscribed at
-     * this publisher for this `event` type.
+     * Posts the given `event` and notifies all subscribers.
      *
-     * This should be an asynchronous method and return before the event was
+     * This should be an asynchronous method and return before the `event` was
      * handled by its subscribers.
      *
-     * If the given event goes unhandled at the moment it is published, then a
-     * [DeadEvent] will be immediately published at that moment. A `DeadEvent`
-     * is never republished.
+     * If the given `event` goes unhandled at the moment it is published, then a
+     * [DeadEvent] will be immediately published. A `DeadEvent` is never
+     * republished.
      *
      * @param event the event that should be posted
      */
@@ -54,13 +53,13 @@ interface Publisher {
     }
 
     /**
-     * Immediately publishes the given event and blocks until it was handled by
-     * all subscribers.
+     * Immediately publishes the given `event` and blocks until it was handled
+     * by all subscribers.
      *
      * This is a synchronous method and may not respect the order of other
      * posted events.
      *
-     * If the given event goes unhandled, a [DeadEvent] will be immediately
+     * If the given `event` goes unhandled, a [DeadEvent] will be immediately
      * published. A `DeadEvent` is never republished.
      *
      * @param event the event that should be published
@@ -81,12 +80,12 @@ interface Publisher {
     }
 
     /**
-     * Publishes the given request and returns its result.
+     * Publishes the given `request` and returns its result.
      *
      * @param T the result type
      * @param request the request which should be completed
-     * @return the result with which the request was completed
-     * @throws IllegalStateException if the request was not completed or if it
+     * @return the result with which the `request` was completed
+     * @throws IllegalStateException if the `request` was not completed or if it
      * was completed more than once
      */
     fun <T : Any> request(request: Request<T>): T

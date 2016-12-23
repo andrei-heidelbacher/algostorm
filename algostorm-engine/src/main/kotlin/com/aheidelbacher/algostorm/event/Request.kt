@@ -41,7 +41,7 @@ abstract class Request<T> {
     }
 
     /**
-     * Completes this request with the given value.
+     * Completes this request with the given `value`.
      *
      * @param value the value with which this request should be completed
      * @throws IllegalStateException if this request is already completed

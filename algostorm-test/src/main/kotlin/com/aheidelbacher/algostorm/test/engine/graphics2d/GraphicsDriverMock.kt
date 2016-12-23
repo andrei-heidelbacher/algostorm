@@ -72,8 +72,8 @@ class GraphicsDriverMock(
     private var isLocked = false
     private val queue: Queue<DrawCall> = LinkedList()
 
-    override fun loadBitmap(imageSource: Resource) {
-        bitmaps.add(imageSource)
+    override fun loadBitmap(resource: Resource) {
+        bitmaps.add(resource)
     }
 
     override fun release() {
@@ -94,7 +94,7 @@ class GraphicsDriverMock(
     }
 
     override fun drawBitmap(
-            imageSource: Resource,
+            resource: Resource,
             x: Int,
             y: Int,
             width: Int,
@@ -102,9 +102,9 @@ class GraphicsDriverMock(
             matrix: Matrix
     ) {
         require(isLocked) { "Canvas is not locked!" }
-        require(imageSource in bitmaps) { "Invalid bitmap $imageSource!" }
+        require(resource in bitmaps) { "Invalid bitmap $resource!" }
         val m = matrix.copy()
-        queue.add(DrawCall.Bitmap(imageSource, x, y, width, height, m))
+        queue.add(DrawCall.Bitmap(resource, x, y, width, height, m))
     }
 
     override fun drawColor(color: Color) {
