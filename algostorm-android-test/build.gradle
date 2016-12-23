@@ -1,14 +1,14 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
-apply plugin: 'com.github.dcendents.android-maven'
 
 buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath "com.android.tools.build:gradle:$android_plugin_version"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:$android_maven_plugin_version"
     }
 }
 
@@ -17,10 +17,13 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
+        applicationId "com.aheidelbacher.algostorm.android.test"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -39,6 +42,14 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
     lintOptions {
         abortOnError false
     }
@@ -50,26 +61,7 @@ android {
 
 dependencies {
     compile project(":algostorm-engine")
+    compile project(":algostorm-android")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile "junit:junit:$junit_version"
-}
-
-dokka {
-    outputFormat = 'javadoc'
-    outputDirectory = "$buildDir/javadoc"
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-task javadocJar(type: Jar, dependsOn: dokka) {
-    classifier = 'javadoc'
-    from "$buildDir/javadoc"
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }

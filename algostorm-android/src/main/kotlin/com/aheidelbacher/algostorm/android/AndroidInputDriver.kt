@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.android
 
 import android.util.Log
 import android.view.GestureDetector
+import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
 
@@ -61,6 +62,7 @@ class AndroidInputDriver(
         notify {
             onScroll(distanceX.pxToDp.toInt(), distanceY.pxToDp.toInt())
         }
+        println("Hello")
         return true
     }
 
@@ -92,18 +94,5 @@ class AndroidInputDriver(
             }
         }
         return false
-    }
-
-    fun onClick(x: Int, y: Int) {
-        notify { onTouch(x, y) }
-    }
-
-    fun onWait() {
-        Log.i(TAG, "Clicked wait!")
-        notify { println("Please wait..."); onKey(0) }
-    }
-
-    fun onInventory() {
-        Log.i(TAG, "Clicked inventory!")
     }
 }

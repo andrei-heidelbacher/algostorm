@@ -17,11 +17,91 @@
 package com.aheidelbacher.algostorm.android
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.view.SurfaceView
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
-class EngineActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle) {
+import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.input.InputDriver
+
+abstract class EngineActivity : Activity() {
+    companion object {
+        const val EXTRA_SAVE_FILE_NAME =
+                "com.aheidelbacher.algostorm.android.test.SAVE_FILE_NAME"
+
+        protected inline fun <reified T : EngineActivity> start(
+                context: Context,
+                saveFileName: String
+        ) {
+            val intent = Intent(context, T::class.java)
+            intent.putExtra(EXTRA_SAVE_FILE_NAME, saveFileName)
+            context.startActivity(intent)
+        }
+    }
+
+    private lateinit var saveFileName: String
+    private lateinit var surfaceView: SurfaceView
+    protected lateinit var audioDriver: AndroidAudioDriver
+        private set
+    protected lateinit var graphicsDriver: AndroidGraphicsDriver
+        private set
+    protected lateinit var inputDriver: AndroidInputDriver
+        private set
+    private lateinit var engine: Engine
+
+    protected abstract val layoutResourceId: Int
+
+    protected abstract fun createEngine(
+            audioDriver: AudioDriver,
+            graphicsDriver: GraphicsDriver,
+            inputDriver: InputDriver
+    ): Engine
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_engine)
+        setContentView(layoutResourceId)
+        surfaceView = SurfaceView(this).apply {
+            layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        }
+        (findViewById(android.R.id.content) as ViewGroup).addView(surfaceView)
+        saveFileName = savedInstanceState?.getString(EXTRA_SAVE_FILE_NAME)
+                ?: intent.getStringExtra(EXTRA_SAVE_FILE_NAME)
+                ?: "save.json"
+        val density = resources.displayMetrics.density
+        audioDriver = AndroidAudioDriver(this)
+        graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density)
+        inputDriver = AndroidInputDriver(density)
+        engine = createEngine(audioDriver, graphicsDriver, inputDriver)
+        surfaceView.setOnTouchListener(inputDriver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        engine.start()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(EXTRA_SAVE_FILE_NAME, saveFileName)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        engine.stop()
+        openFileOutput(saveFileName, Context.MODE_PRIVATE).use {
+            engine.serializeState(it)
+        }
+    }
+
+    override fun onDestroy() {
+        surfaceView.setOnTouchListener(null)
+        engine.shutdown()
+        super.onDestroy()
     }
 }
