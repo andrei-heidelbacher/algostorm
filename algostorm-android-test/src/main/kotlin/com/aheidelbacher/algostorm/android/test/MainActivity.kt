@@ -28,6 +28,9 @@ class MainActivity : EngineActivity() {
     override val layoutResourceId: Int
         get() = R.layout.activity_main
 
+    override val surfaceViewContainerId: Int
+        get() = R.id.mainActivity
+
     override fun createEngine(
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,

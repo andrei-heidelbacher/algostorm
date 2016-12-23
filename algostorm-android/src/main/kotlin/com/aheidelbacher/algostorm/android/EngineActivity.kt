@@ -56,6 +56,7 @@ abstract class EngineActivity : Activity() {
     private lateinit var engine: Engine
 
     protected abstract val layoutResourceId: Int
+    protected abstract val surfaceViewContainerId: Int
 
     protected abstract fun createEngine(
             audioDriver: AudioDriver,
@@ -69,14 +70,14 @@ abstract class EngineActivity : Activity() {
         surfaceView = SurfaceView(this).apply {
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
-        (findViewById(android.R.id.content) as ViewGroup).addView(surfaceView)
+        (findViewById(surfaceViewContainerId) as ViewGroup).addView(surfaceView)
         saveFileName = savedInstanceState?.getString(EXTRA_SAVE_FILE_NAME)
                 ?: intent.getStringExtra(EXTRA_SAVE_FILE_NAME)
-                ?: "save.json"
+                ?: "autosave.json"
         val density = resources.displayMetrics.density
         audioDriver = AndroidAudioDriver(this)
-        graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density)
-        inputDriver = AndroidInputDriver(density)
+        graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density * 2)
+        inputDriver = AndroidInputDriver(density * 2)
         engine = createEngine(audioDriver, graphicsDriver, inputDriver)
         surfaceView.setOnTouchListener(inputDriver)
     }

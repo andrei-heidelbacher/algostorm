@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class AndroidGraphicsDriver(
         surfaceHolder: SurfaceHolder,
-        private val density: Float
+        private val scale: Float
 ) : GraphicsDriver {
     private var surfaceHolder: SurfaceHolder? = surfaceHolder
     private val bitmaps = hashMapOf<Resource, Bitmap>()
@@ -47,7 +47,7 @@ class AndroidGraphicsDriver(
     private val paint = Paint()
 
     private val Int.pxToDp: Float
-        get() = toFloat() / density
+        get() = toFloat() / scale
 
     @Volatile override var height: Int = 0
         private set
@@ -93,7 +93,7 @@ class AndroidGraphicsDriver(
             matrixValues[i] = matrix[i]
         }
         canvasMatrix.setValues(matrixValues)
-        canvasMatrix.postScale(density, density)
+        canvasMatrix.postScale(scale, scale)
         canvas?.apply {
             save()
             concat(canvasMatrix)
@@ -118,7 +118,7 @@ class AndroidGraphicsDriver(
             matrixValues[i] = matrix[i]
         }
         canvasMatrix.setValues(matrixValues)
-        canvasMatrix.postScale(density, density)
+        canvasMatrix.postScale(scale, scale)
         paint.color = color.color
         canvas?.apply {
             save()

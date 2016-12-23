@@ -25,7 +25,7 @@ import android.view.View
 import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
 
 class AndroidInputDriver(
-        private val density: Float
+        private val scale: Float
 ) : AbstractInputDriver(), View.OnTouchListener, GestureDetector.OnGestureListener {
     companion object {
         private const val TAG = "inputListener"
@@ -34,10 +34,10 @@ class AndroidInputDriver(
     //private val gestureDetector = GestureDetector(context, this)
 
     private val Float.pxToDp: Float
-        get() = this * density
+        get() = this / scale
 
     private val Int.pxToDp: Int
-        get() = (this * density).toInt()
+        get() = (this.toFloat() / scale).toInt()
 
 
     override fun onDown(e: MotionEvent): Boolean = true
@@ -77,6 +77,7 @@ class AndroidInputDriver(
         //v.performClick()
         val x = (event.x - v.left).pxToDp.toInt()
         val y = (event.y - v.top).pxToDp.toInt()
+        println("Touched at $x, $y!")
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 notify {
