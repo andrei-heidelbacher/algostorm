@@ -41,7 +41,7 @@
         "id": 1,
         "components": [
           {
-            "@class": "com.aheidelbacher.algostorm.state.ComponentMock",
+            "@class": "com.aheidelbacher.algostorm.systems.state.ComponentMock",
             "id": 1
           }
         ]

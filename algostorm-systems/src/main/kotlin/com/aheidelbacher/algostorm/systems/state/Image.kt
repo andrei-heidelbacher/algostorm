@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.serialization
+package com.aheidelbacher.algostorm.systems.state
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
-
-data class TestDataMock(
-        val primitiveTestField: Int,
-        val defaultPrimitiveTestField: Float,
-        val innerTestData: InnerTestDataMock,
-        val testList: List<Int>,
-        val testResource: Resource,
-        val testColor: Color
-) {
-    data class InnerTestDataMock(val testField: String)
+/**
+ * Meta-data associated to an image.
+ *
+ * @property source the location of the image
+ * @property width the width in pixels of this image
+ * @property height the height in pixels of this image
+ * @throws IllegalArgumentException if [width] or [height] are not positive
+ */
+data class Image(val source: File, val width: Int, val height: Int) {
+    init {
+        require(width > 0) { "$this width must be positive!" }
+        require(height > 0) { "$this height must be positive!" }
+    }
 }

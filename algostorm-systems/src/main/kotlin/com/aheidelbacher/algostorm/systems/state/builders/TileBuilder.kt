@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.serialization
+package com.aheidelbacher.algostorm.systems.state.builders
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.systems.state.TileSet.Tile
+import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Frame
 
-data class TestDataMock(
-        val primitiveTestField: Int,
-        val defaultPrimitiveTestField: Float,
-        val innerTestData: InnerTestDataMock,
-        val testList: List<Int>,
-        val testResource: Resource,
-        val testColor: Color
-) {
-    data class InnerTestDataMock(val testField: String)
+import kotlin.properties.Delegates
+
+class TileBuilder {
+    var id: Int by Delegates.notNull()
+    val animation: MutableList<Frame> = arrayListOf()
+
+    operator fun Frame.unaryPlus() {
+        animation.add(this)
+    }
+
+    fun build(): Tile = Tile(
+            id = id,
+            animation = if (animation.isEmpty()) null else animation
+    )
 }

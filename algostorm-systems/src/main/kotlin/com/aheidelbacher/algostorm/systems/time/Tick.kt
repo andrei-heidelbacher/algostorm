@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.serialization
+package com.aheidelbacher.algostorm.systems.time
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.event.Event
 
-data class TestDataMock(
-        val primitiveTestField: Int,
-        val defaultPrimitiveTestField: Float,
-        val innerTestData: InnerTestDataMock,
-        val testList: List<Int>,
-        val testResource: Resource,
-        val testColor: Color
-) {
-    data class InnerTestDataMock(val testField: String)
-}
+/**
+ * An event which signals an atomic time unit has passed.
+ *
+ * @property elapsedMillis the number of milliseconds of an atomic time unit
+ */
+data class Tick(val elapsedMillis: Int) : com.aheidelbacher.algostorm.event.Event

@@ -1,6 +1,6 @@
 { "columns":12,
   "image": {
-    "source": "/tileset/algoventure/world.png",
+    "source": "/tileset/algostorm/world.png",
     "width": 288,
     "height": 240
   },

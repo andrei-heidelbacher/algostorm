@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.serialization
+package com.aheidelbacher.algostorm.systems.state
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.ecs.Component
 
-data class TestDataMock(
-        val primitiveTestField: Int,
-        val defaultPrimitiveTestField: Float,
-        val innerTestData: InnerTestDataMock,
-        val testList: List<Int>,
-        val testResource: Resource,
-        val testColor: Color
-) {
-    data class InnerTestDataMock(val testField: String)
-}
+data class ComponentMock(val id: Int) : Component

@@ -11,5 +11,6 @@
     4,
     5
   ],
-  "testResource": "res:///testResource.txt"
+  "testResource": "res:///testResource.txt",
+  "testColor": "#ff00FF00"
 }

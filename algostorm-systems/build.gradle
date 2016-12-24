@@ -14,10 +14,11 @@ buildscript {
 }
 
 dependencies {
-    compile project(':algostorm-systems')
+    compile project(':algostorm-engine')
+    kapt project(':algostorm-processor')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    compile "junit:junit:$junit_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
 }
 
 dokka {

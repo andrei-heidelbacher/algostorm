@@ -1,6 +1,6 @@
 rootProject.name = 'algostorm'
 include ':algostorm-android', ':algostorm-android-test'
-include 'algostorm-engine'
-include 'algostorm-processor'
-include 'algostorm-test'
-
+include ':algostorm-engine'
+include ':algostorm-processor'
+include ':algostorm-systems'
+include ':algostorm-test'

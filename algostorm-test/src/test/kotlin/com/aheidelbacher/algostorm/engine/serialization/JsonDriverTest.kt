@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.engine.serialization
 
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 import com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.TestDataMock.InnerTestDataMock
@@ -33,6 +34,7 @@ class JsonDriverTest : SerializationDriverTest() {
             innerTestData = InnerTestDataMock("non-empty"),
             testList = listOf(1, 2, 3, 4, 5),
             defaultPrimitiveTestField = 1.5F,
-            testResource = Resource("$SCHEMA/testResource.txt")
+            testResource = Resource("$SCHEMA/testResource.txt"),
+            testColor = Color("#ff00ff00")
     )
 }

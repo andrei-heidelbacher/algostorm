@@ -16,6 +16,11 @@
 
 package com.aheidelbacher.algostorm.processor
 
+import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Request
+import com.aheidelbacher.algostorm.event.Subscribe
+import com.aheidelbacher.algostorm.event.Subscriber
+
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
@@ -34,30 +39,28 @@ import javax.lang.model.util.Types
 import javax.tools.Diagnostic
 
 /**
- * Checks that all subscribers comply to the `Subscribe` annotation contract
- * from the package `com.aheidelbacher.algostorm.event`.
+ * Checks that all subscribers comply to the [Subscribe] annotation contract.
  */
 class SubscribeProcessor : AbstractProcessor() {
     private companion object {
         val UNIT: String = Unit::class.java.canonicalName
-        val PACKAGE: String = "com.aheidelbacher.algostorm.event"
-        val SUBSCRIBE: String = "$PACKAGE.Subscribe"
-        val EVENT: String = "$PACKAGE.Event"
-        val REQUEST: String = "$PACKAGE.Request"
-        val SUBSCRIBER: String = "$PACKAGE.Subscriber"
+        val SUBSCRIBE: String = Subscribe::class.java.canonicalName
+        val EVENT: String = Event::class.java.canonicalName
+        val REQUEST: String = Request::class.java.canonicalName
+        val SUBSCRIBER: String = Subscriber::class.java.canonicalName
     }
 
     private lateinit var typeUtils: Types
     private lateinit var elementUtils: Elements
     private lateinit var filer: Filer
-    private lateinit var messager: Messager
+    private lateinit var logger: Messager
 
     override fun init(processingEnv: ProcessingEnvironment) {
         super.init(processingEnv)
         typeUtils = processingEnv.typeUtils
         elementUtils = processingEnv.elementUtils
         filer = processingEnv.filer
-        messager = processingEnv.messager
+        logger = processingEnv.messager
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> =
@@ -137,16 +140,12 @@ class SubscribeProcessor : AbstractProcessor() {
             roundEnv: RoundEnvironment
     ): Boolean {
         try {
-            annotations.find { annotation ->
-                annotation.qualifiedName.contentEquals(SUBSCRIBE)
-            }?.let { annotation ->
-                roundEnv.getElementsAnnotatedWith(annotation).forEach { e ->
-                    validateMethod(e)
-                    validateEnclosingClass(e.enclosingElement)
-                }
+            roundEnv.getElementsAnnotatedWith(Subscribe::class.java).forEach {
+                validateMethod(it)
+                validateEnclosingClass(it.enclosingElement)
             }
         } catch (e: ProcessingException) {
-            messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
+            logger.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
         }
         return true
     }

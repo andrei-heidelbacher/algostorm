@@ -16,24 +16,23 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-//import com.aheidelbacher.algostorm.state.Color
-import com.aheidelbacher.algostorm.state.File
-import com.aheidelbacher.algostorm.state.Image
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipDiagonally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
-import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.state.builders.MapObjectBuilder
-import com.aheidelbacher.algostorm.state.builders.entity
-import com.aheidelbacher.algostorm.state.builders.entityGroup
-import com.aheidelbacher.algostorm.state.builders.tileLayer
-import com.aheidelbacher.algostorm.state.builders.tileSet
+import com.aheidelbacher.algostorm.systems.state.File
+import com.aheidelbacher.algostorm.systems.state.Image
+import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipDiagonally
+import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.systems.state.builders.MapObjectBuilder
+import com.aheidelbacher.algostorm.systems.state.builders.entity
+import com.aheidelbacher.algostorm.systems.state.builders.entityGroup
+import com.aheidelbacher.algostorm.systems.state.builders.tileLayer
+import com.aheidelbacher.algostorm.systems.state.builders.tileSet
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
@@ -61,7 +60,7 @@ class RenderingSystemTest {
         height = 12
         tileWidth = 24
         tileHeight = 24
-        backgroundColor = com.aheidelbacher.algostorm.state.Color("#ffffffff")
+        backgroundColor = com.aheidelbacher.algostorm.systems.state.Color("#ffffffff")
         +tileSet {
             name = "test"
             tileWidth = 24
@@ -122,7 +121,7 @@ class RenderingSystemTest {
                             height = tileHeight,
                             z = 0,
                             priority = 0,
-                            color = com.aheidelbacher.algostorm.state.Color("#000000ff")
+                            color = com.aheidelbacher.algostorm.systems.state.Color("#000000ff")
                     )
                     +Position(x = 0, y = 0)
                 }
