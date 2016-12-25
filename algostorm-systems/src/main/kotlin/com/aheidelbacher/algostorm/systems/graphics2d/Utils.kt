@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.ecs.Entity
+import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.systems.state.MapObject
 import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedHorizontally
@@ -25,7 +25,7 @@ import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.systems.state.TileSet.Viewport
 
 /** The `Sprite` component of this entity. */
-val Entity.sprite: Sprite?
+val EntityRef.sprite: Sprite?
     get() = get(Sprite::class)
 
 /** Utility flag. */

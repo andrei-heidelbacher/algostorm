@@ -17,22 +17,31 @@
 package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.Entity
+import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.ecs.EntityManager
+import com.aheidelbacher.algostorm.ecs.EntityRef
+import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
+import com.aheidelbacher.algostorm.ecs.MutableEntityRef
 
-val Entity.position: Position?
+val EntityRef.position: Position?
     get() = get(Position::class)
+
+val EntityRef.isRigid: Boolean
+    get() = RigidBody::class in this
 
 fun Position.transformed(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)
 
-val Entity.isRigid: Boolean
-    get() = com.aheidelbacher.algostorm.systems.physics2d.RigidBody::class in this
-
-fun Entity.overlaps(other: com.aheidelbacher.algostorm.ecs.Entity): Boolean = position.let { p ->
+fun EntityRef.overlaps(other: EntityRef): Boolean = position.let { p ->
     p != null && p == other.position
 }
 
-fun EntityManager.getEntitiesAt(x: Int, y: Int): List<Entity> =
+fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<EntityRef> =
+        Position(x, y).let { position ->
+            entities.filter { entity -> entity.position == position }
+        }
+
+fun MutableEntityGroup.getEntitiesAt(x: Int, y: Int): List<MutableEntityRef> =
         Position(x, y).let { position ->
             entities.filter { entity -> entity.position == position }
         }

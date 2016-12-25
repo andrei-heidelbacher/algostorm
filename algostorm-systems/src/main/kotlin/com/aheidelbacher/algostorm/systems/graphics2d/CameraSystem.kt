@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.ecs.EntityManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -24,9 +25,9 @@ import com.aheidelbacher.algostorm.systems.physics2d.position
 
 class CameraSystem(
         private val camera: Camera,
-        private val entityManager: EntityManager,
+        private val entityGroup: EntityGroup,
         private var followedEntityId: Int? = null
-) : com.aheidelbacher.algostorm.event.Subscriber {
+) : Subscriber {
     object UpdateCamera : Event
 
     data class FocusOn(val x: Int, val y: Int) : Event
@@ -40,7 +41,7 @@ class CameraSystem(
     @Suppress("unused_parameter")
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedEntityId?.let { id ->
-            entityManager[id]?.position?.let { entity ->
+            entityGroup[id]?.position?.let { entity ->
                 camera.x = entity.x //+ obj.width / 2
                 camera.y = entity.y //+ obj.height / 2
             }

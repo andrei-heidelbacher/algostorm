@@ -16,7 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.ecs.Entity
+import com.aheidelbacher.algostorm.ecs.EntityGroup
+import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
@@ -24,17 +25,22 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.data.MapObject
+import com.aheidelbacher.algostorm.data.TileSetCollection
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.state.Layer
-import com.aheidelbacher.algostorm.systems.state.Layer.EntityGroup
+//import com.aheidelbacher.algostorm.systems.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.systems.state.Layer.TileLayer
-import com.aheidelbacher.algostorm.systems.state.MapObject
+//import com.aheidelbacher.algostorm.systems.state.MapObject
 import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.LEFT_DOWN
 import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.LEFT_UP
 import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.RIGHT_DOWN
 import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.RIGHT_UP
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedVertically
+//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedDiagonally
+//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedHorizontally
+//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.getViewport
 import com.aheidelbacher.algostorm.systems.graphics2d.sprite
@@ -67,7 +73,7 @@ class RenderingSystem(
      */
     data class Render(val cameraX: Int, val cameraY: Int) : Event
 
-    private val xRange = when (map.renderOrder) {
+    /*private val xRange = when (map.renderOrder) {
         RIGHT_DOWN, RIGHT_UP -> 0 until map.width
         LEFT_DOWN, LEFT_UP -> map.width - 1 downTo 0
     }
@@ -75,9 +81,9 @@ class RenderingSystem(
     private val yRange = when (map.renderOrder) {
         RIGHT_DOWN, LEFT_DOWN -> 0 until map.height
         RIGHT_UP, LEFT_UP -> map.height - 1 downTo 0
-    }
+    }*/
 
-    private val comparator = Comparator<Entity> { e1, e2 ->
+    private val comparator = Comparator<EntityRef> { e1, e2 ->
         val p1 = e1.position ?: error("")
         val p2 = e2.position ?: error("")
         val s1 = e1.sprite ?: error("")
@@ -91,9 +97,10 @@ class RenderingSystem(
     private val matrix = Matrix.identity()
 
     init {
-        map.tileSets.forEach {
+        map.tileSetCollection.tileSets.forEach {
+            canvas.loadBitmap(it.image.resource)
             //canvas.loadBitmap(it.image.source.path)
-            canvas.loadBitmap(Resource("res:///" + it.image.source.path))
+            //canvas.loadBitmap(Resource("res:///" + it.image.source.path))
         }
     }
 
@@ -103,8 +110,8 @@ class RenderingSystem(
         if (gid == 0) {
             return
         }
-        val tileSet = map.getTileSet(gid)
-        val viewport = map.getViewport(gid, currentTimeMillis)
+        val tileSet = map.tileSetCollection.getTileSet(gid)
+        val viewport = map.tileSetCollection.getViewport(gid, currentTimeMillis)
         matrix.reset()
         matrix.postScale(
                 sx = 1F * width / viewport.width,
@@ -120,12 +127,9 @@ class RenderingSystem(
         }.let {
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, 1F * height)
-        }.postTranslate(
-                dx = 1F * tileSet.tileOffsetX + x,
-                dy = 1F * tileSet.tileOffsetY + y
-        )
+        }.postTranslate(1F * x, 1F * y)
         canvas.drawBitmap(
-                resource = Resource("res:///" + viewport.image.source.path),
+                resource = viewport.image.resource,
                 x = viewport.x,
                 y = viewport.y,
                 width = viewport.width,
@@ -134,7 +138,7 @@ class RenderingSystem(
         )
     }
 
-    private fun TileLayer.draw(offX: Int, offY: Int) {
+    /*private fun TileLayer.draw(offX: Int, offY: Int) {
         for (ty in yRange) {
             for (tx in xRange) {
                 val gid = get(ty * map.width + tx)
@@ -148,7 +152,7 @@ class RenderingSystem(
                 }
             }
         }
-    }
+    }*/
 
     private fun Sprite.draw(offX: Int, offY: Int) {
         if (isVisible && gid != 0) {
@@ -160,7 +164,7 @@ class RenderingSystem(
         }
     }
 
-    private fun Entity.draw(offX: Int, offY: Int) {
+    private fun EntityRef.draw(offX: Int, offY: Int) {
         val p = position ?: return
         val x = p.x * map.tileWidth
         val y = p.y * map.tileHeight
@@ -169,7 +173,7 @@ class RenderingSystem(
 
     private fun EntityGroup.draw(offX: Int, offY: Int) {
         val size = entities.count { it.position != null && it.sprite != null }
-        val entityArray = arrayOfNulls<Entity>(size)
+        val entityArray = arrayOfNulls<EntityRef>(size)
         var i = 0
         entities.forEach {
             if (it.position != null && it.sprite != null) {
@@ -179,18 +183,18 @@ class RenderingSystem(
         entityArray.requireNoNulls().apply {
             sortWith(comparator)
         }.forEach {
-            it.draw(offX + offsetX, offY + offsetY)
+            it.draw(offX, offY)
         }
     }
 
-    private fun Layer.draw(offX: Int, offY: Int) {
+    /*private fun Layer.draw(offX: Int, offY: Int) {
         if (isVisible) {
             when (this) {
                 is EntityGroup -> draw(offX + offsetX, offY + offsetY)
                 is TileLayer -> draw(offX + offsetX, offY + offsetY)
             }
         }
-    }
+    }*/
 
     /**
      * When an [Update] event is received, the [currentTimeMillis] is increased.
@@ -217,7 +221,8 @@ class RenderingSystem(
             map.backgroundColor?.color?.let {
                 canvas.drawColor(Color(it))
             } ?: canvas.clear()
-            map.layers.forEach { it.draw(-cameraX, -cameraY) }
+            //map.layers.forEach { it.draw(-cameraX, -cameraY) }
+            map.entityPool.group.draw(-cameraX, -cameraY)
         }
     }
 }
