@@ -198,8 +198,9 @@ private class EntityGroupImpl(
     }
 
     fun onRemoved(entity: EntityRefImpl) {
-        entityTable.remove(entity.id)
-        groups.forEach { it.value.onRemoved(entity) }
+        if (entityTable.remove(entity.id) != null) {
+            groups.forEach { it.value.onRemoved(entity) }
+        }
     }
 
     fun onCleared() {
