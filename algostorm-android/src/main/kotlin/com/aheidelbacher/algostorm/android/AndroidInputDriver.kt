@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.android
 
+import android.content.Context
 import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.OnGestureListener
@@ -25,20 +26,20 @@ import android.view.View
 import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
 
 class AndroidInputDriver(
+        context: Context,
         private val scale: Float
 ) : AbstractInputDriver(), View.OnTouchListener, GestureDetector.OnGestureListener {
     companion object {
         private const val TAG = "inputListener"
     }
 
-    //private val gestureDetector = GestureDetector(context, this)
+    private val gestureDetector = GestureDetector(context, this)
 
     private val Float.pxToDp: Float
         get() = this / scale
 
     private val Int.pxToDp: Int
         get() = (this.toFloat() / scale).toInt()
-
 
     override fun onDown(e: MotionEvent): Boolean = true
 
@@ -47,10 +48,18 @@ class AndroidInputDriver(
             e2: MotionEvent,
             velocityX: Float,
             velocityY: Float
-    ): Boolean = false
+    ): Boolean {
+        val vx = velocityX.pxToDp.toInt()
+        val vy = velocityY.pxToDp.toInt()
+        println("Fling $vx, $vy")
+        return true
+    }
 
     override fun onLongPress(e: MotionEvent) {
+        val x = e.x.pxToDp.toInt()
+        val y = e.y.pxToDp.toInt()
         //onClick(e.x.pxToDp.toInt(), e.y.pxToDp.toInt())
+        println("Long press $x, $y")
     }
 
     override fun onScroll(
@@ -59,23 +68,29 @@ class AndroidInputDriver(
             distanceX: Float,
             distanceY: Float
     ): Boolean {
+        val dx = distanceX.pxToDp.toInt()
+        val dy = distanceY.pxToDp.toInt()
         notify {
-            onScroll(distanceX.pxToDp.toInt(), distanceY.pxToDp.toInt())
+            onScroll(dx, dy)
         }
-        println("Hello")
+        println("Scroll $dx, $dy")
         return true
     }
 
     override fun onSingleTapUp(e: MotionEvent): Boolean {
+        val x = e.x.pxToDp.toInt()
+        val y = e.y.pxToDp.toInt()
         //onClick(e.x.pxToDp.toInt(), e.y.pxToDp.toInt())
+        println("Single tap up")
         return true
     }
 
     override fun onShowPress(e: MotionEvent) {}
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(event)
         //v.performClick()
-        val x = (event.x - v.left).pxToDp.toInt()
+        /*val x = (event.x - v.left).pxToDp.toInt()
         val y = (event.y - v.top).pxToDp.toInt()
         println("Touched at $x, $y!")
         when (event.action) {
@@ -93,7 +108,7 @@ class AndroidInputDriver(
             }
             MotionEvent.ACTION_CANCEL -> {
             }
-        }
-        return false
+        }*/
+        return true
     }
 }

@@ -78,7 +78,7 @@ abstract class EngineActivity : Activity() {
         val density = resources.displayMetrics.density
         audioDriver = AndroidAudioDriver(this)
         graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density * 2)
-        inputDriver = AndroidInputDriver(density * 2)
+        inputDriver = AndroidInputDriver(this, density * 2)
         engine = createEngine(audioDriver, graphicsDriver, inputDriver)
         surfaceView.setOnTouchListener(inputDriver)
     }

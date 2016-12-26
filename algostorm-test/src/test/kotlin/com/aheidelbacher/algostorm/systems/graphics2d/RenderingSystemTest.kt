@@ -95,6 +95,46 @@ class RenderingSystemTest {
         graphicsDriver.unlockAndPostCanvas()
     }
 
+    @Test
+    fun testRenderingOrder() {
+        val map = mapBuilder.apply {
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    entity(listOf(
+                            Position(x, y),
+                            Sprite(
+                                    width = tileWidth,
+                                    height = tileHeight,
+                                    z = 0,
+                                    priority = 0,
+                                    gid = 1
+                            )
+                    ))
+                }
+            }
+        }.build()
+        val renderingSystem = RenderingSystem(map, graphicsDriver)
+        renderingSystem.onRender(Render(cameraX, cameraY))
+        graphicsDriver.assertColor(Color(-1))
+        for (ty in 0 until height) {
+            for (tx in 0 until width) {
+                val y = ty * tileHeight
+                val x = tx * tileWidth
+                graphicsDriver.assertBitmap(
+                        image = imageRes,
+                        x = 0,
+                        y = 0,
+                        width = tileWidth,
+                        height = tileHeight,
+                        matrix = Matrix.identity().postTranslate(
+                                dx = 1F * x - camera.x,
+                                dy = 1F * y - camera.y
+                        )
+                )
+            }
+        }
+        graphicsDriver.assertEmptyDrawQueue()
+    }
     /*@Test
     fun testRenderTileLayer() {
         val map = mapBuilder.apply {
