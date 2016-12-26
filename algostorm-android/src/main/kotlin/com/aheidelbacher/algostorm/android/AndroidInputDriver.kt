@@ -17,29 +17,22 @@
 package com.aheidelbacher.algostorm.android
 
 import android.content.Context
-import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 
 import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
 
 class AndroidInputDriver(
         context: Context,
         private val scale: Float
-) : AbstractInputDriver(), View.OnTouchListener, GestureDetector.OnGestureListener {
-    companion object {
-        private const val TAG = "inputListener"
-    }
-
+) : AbstractInputDriver(), OnTouchListener, OnGestureListener {
     private val gestureDetector = GestureDetector(context, this)
 
     private val Float.pxToDp: Float
         get() = this / scale
-
-    private val Int.pxToDp: Int
-        get() = (this.toFloat() / scale).toInt()
 
     override fun onDown(e: MotionEvent): Boolean = true
 
@@ -58,7 +51,6 @@ class AndroidInputDriver(
     override fun onLongPress(e: MotionEvent) {
         val x = e.x.pxToDp.toInt()
         val y = e.y.pxToDp.toInt()
-        //onClick(e.x.pxToDp.toInt(), e.y.pxToDp.toInt())
         println("Long press $x, $y")
     }
 
@@ -80,8 +72,7 @@ class AndroidInputDriver(
     override fun onSingleTapUp(e: MotionEvent): Boolean {
         val x = e.x.pxToDp.toInt()
         val y = e.y.pxToDp.toInt()
-        //onClick(e.x.pxToDp.toInt(), e.y.pxToDp.toInt())
-        println("Single tap up")
+        println("Single tap up $x, $y")
         return true
     }
 
@@ -89,26 +80,6 @@ class AndroidInputDriver(
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
-        //v.performClick()
-        /*val x = (event.x - v.left).pxToDp.toInt()
-        val y = (event.y - v.top).pxToDp.toInt()
-        println("Touched at $x, $y!")
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                notify {
-                    val dx = x - v.width.pxToDp / 2
-                    val dy = y - v.height.pxToDp / 2
-                    println("Touched at $dx, $dy!")
-                    onTouch(x - v.width.pxToDp / 2, y - v.height.pxToDp / 2)
-                }
-            }
-            MotionEvent.ACTION_MOVE -> {
-            }
-            MotionEvent.ACTION_UP -> {
-            }
-            MotionEvent.ACTION_CANCEL -> {
-            }
-        }*/
         return true
     }
 }
