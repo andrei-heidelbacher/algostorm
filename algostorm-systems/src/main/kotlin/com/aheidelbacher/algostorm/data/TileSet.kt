@@ -85,7 +85,7 @@ data class TileSet private constructor(
                 spacing = spacing,
                 columns = image.width / tileWidth,
                 tileCount = image.width / tileWidth * image.height / tileWidth,
-                tiles = tiles
+                tiles = tiles.toSet()
         )
     }
 

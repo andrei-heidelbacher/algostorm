@@ -85,7 +85,7 @@ abstract class EntityRef protected constructor(
     abstract val isValid: Boolean
 
     /** An immutable view of this entity's components. */
-    abstract val components: Iterable<Component>
+    abstract val components: Collection<Component>
 
     /**
      * Checks whether this entity contains a component of the specified `type`.

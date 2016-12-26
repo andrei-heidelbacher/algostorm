@@ -55,8 +55,8 @@ abstract class EngineActivity : Activity() {
         private set
     private lateinit var engine: Engine
 
-    protected abstract val layoutResourceId: Int
-    protected abstract val surfaceViewContainerId: Int
+    protected abstract val contentLayoutId: Int
+    protected abstract val surfaceViewContainerLayoutId: Int
 
     protected abstract fun createEngine(
             audioDriver: AudioDriver,
@@ -66,11 +66,12 @@ abstract class EngineActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layoutResourceId)
+        setContentView(contentLayoutId)
         surfaceView = SurfaceView(this).apply {
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
-        (findViewById(surfaceViewContainerId) as ViewGroup).addView(surfaceView)
+        (findViewById(surfaceViewContainerLayoutId) as ViewGroup)
+                .addView(surfaceView)
         saveFileName = savedInstanceState?.getString(EXTRA_SAVE_FILE_NAME)
                 ?: intent.getStringExtra(EXTRA_SAVE_FILE_NAME)
                 ?: "autosave.json"

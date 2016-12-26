@@ -134,7 +134,7 @@ private class EntityRefImpl(
         isValid = false
     }
 
-    override val components: Iterable<Component>
+    override val components: Collection<Component>
         get() = componentTable.values
 
     override fun <T : Component> get(type: KClass<T>): T? =

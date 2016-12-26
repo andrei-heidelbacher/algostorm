@@ -31,10 +31,6 @@ interface Publisher {
      * This should be an asynchronous method and return before the `event` was
      * handled by its subscribers.
      *
-     * If the given `event` goes unhandled at the moment it is published, then a
-     * [DeadEvent] will be immediately published. A `DeadEvent` is never
-     * republished.
-     *
      * @param event the event that should be posted
      */
     fun post(event: Event): Unit
@@ -58,9 +54,6 @@ interface Publisher {
      *
      * This is a synchronous method and may not respect the order of other
      * posted events.
-     *
-     * If the given `event` goes unhandled, a [DeadEvent] will be immediately
-     * published. A `DeadEvent` is never republished.
      *
      * @param event the event that should be published
      */

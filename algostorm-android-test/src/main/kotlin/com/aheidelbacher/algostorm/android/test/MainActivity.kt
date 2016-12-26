@@ -25,10 +25,10 @@ import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.input.InputDriver
 
 class MainActivity : EngineActivity() {
-    override val layoutResourceId: Int
+    override val contentLayoutId: Int
         get() = R.layout.activity_main
 
-    override val surfaceViewContainerId: Int
+    override val surfaceViewContainerLayoutId: Int
         get() = R.id.mainActivity
 
     override fun createEngine(

@@ -68,17 +68,12 @@ interface EventBus : Publisher {
             }
 
             private fun <T : Any> publish(value: T) {
-                var isHandled = false
                 for ((subscriber, handlers) in subscribers) {
                     for ((handler, parameterType) in handlers) {
                         if (parameterType.isInstance(value)) {
                             handler.invoke(subscriber, value)
-                            isHandled = true
                         }
                     }
-                }
-                if (!isHandled && value is Event && value !is DeadEvent) {
-                    publish<Event>(DeadEvent(value))
                 }
             }
 

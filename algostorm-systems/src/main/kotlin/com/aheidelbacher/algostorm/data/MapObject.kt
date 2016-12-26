@@ -68,7 +68,7 @@ class MapObject private constructor(
                 height = height,
                 tileWidth = tileWidth,
                 tileHeight = tileHeight,
-                tileSets = tileSets,
+                tileSets = tileSets.toList(),
                 entities = initialEntities,
                 backgroundColor = backgroundColor,
                 version = version
