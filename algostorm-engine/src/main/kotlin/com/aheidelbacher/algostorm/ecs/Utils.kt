@@ -176,11 +176,11 @@ private class EntityGroupImpl(
             filter: (EntityRef) -> Boolean
     ): EntityGroupImpl {
         checkIsValid()
-        return EntityGroupImpl(filter).apply {
-            require(name !in groups) { "$this already contains $name!" }
-            groups[name] = this
-            entityTable.forEach { this.onChanged(it.value) }
-        }
+        require(name !in groups) { "$this already contains $name!" }
+        val subgroup = EntityGroupImpl(filter)
+        groups[name] = subgroup
+        entityTable.forEach { subgroup.onChanged(it.value) }
+        return subgroup
     }
 
     override fun removeGroup(name: String): Boolean {

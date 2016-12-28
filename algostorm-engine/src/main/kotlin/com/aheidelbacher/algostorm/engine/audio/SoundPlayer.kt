@@ -19,8 +19,8 @@ package com.aheidelbacher.algostorm.engine.audio
 import com.aheidelbacher.algostorm.engine.driver.Resource
 
 /**
- * A sound player which should be used for short sound effects (at most `1 MB`
- * for all loaded sound effects).
+ * A sound player which should be used for short sound effects (each loaded
+ * sound must be at most `1 MB` in uncompressed PCM format).
  */
 interface SoundPlayer {
     /**

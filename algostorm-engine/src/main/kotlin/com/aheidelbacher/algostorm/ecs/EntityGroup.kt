@@ -25,7 +25,7 @@ interface EntityGroup {
          * @throws IllegalStateException if this entity group is not valid
          */
         fun EntityGroup.checkIsValid() {
-            check(!isValid) { "$this invalid entity group!" }
+            check(isValid) { "$this invalid entity group!" }
         }
     }
 
