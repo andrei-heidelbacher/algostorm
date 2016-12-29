@@ -35,6 +35,7 @@ import com.aheidelbacher.algostorm.systems.state.builders.tileLayer
 //import com.aheidelbacher.algostorm.systems.state.builders.tileSet
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
@@ -57,6 +58,7 @@ class RenderingSystemTest {
             width = graphicsDriver.width,
             height = graphicsDriver.height
     )
+    val eventBus = EventBus()
 
     val mapBuilder = com.aheidelbacher.algostorm.data.MapObject.Builder().apply {
         width = 12
@@ -114,7 +116,9 @@ class RenderingSystemTest {
             }
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(Render(cameraX, cameraY))
+        eventBus.subscribe(renderingSystem)
+        eventBus.publish(Render(cameraX, cameraY))
+        //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         for (ty in 0 until height) {
             for (tx in 0 until width) {
@@ -193,7 +197,9 @@ class RenderingSystemTest {
             ))
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(Render(cameraX, cameraY))
+        eventBus.subscribe(renderingSystem)
+        eventBus.publish(Render(cameraX, cameraY))
+        //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertRectangle(
                 color = Color(255),
@@ -235,7 +241,9 @@ class RenderingSystemTest {
             }*/
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(Render(cameraX, cameraY))
+        eventBus.subscribe(renderingSystem)
+        eventBus.publish(Render(cameraX, cameraY))
+        //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,
@@ -279,7 +287,9 @@ class RenderingSystemTest {
             }*/
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(Render(cameraX, cameraY))
+        eventBus.subscribe(renderingSystem)
+        eventBus.publish(Render(cameraX, cameraY))
+        //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,
@@ -323,7 +333,9 @@ class RenderingSystemTest {
             }*/
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
-        renderingSystem.onRender(Render(cameraX, cameraY))
+        eventBus.subscribe(renderingSystem)
+        eventBus.publish(Render(cameraX, cameraY))
+        //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
                 image = imageRes,

@@ -30,6 +30,7 @@ import com.aheidelbacher.algostorm.data.TileSetCollection
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.systems.state.Layer
 //import com.aheidelbacher.algostorm.systems.state.Layer.EntityGroup
 import com.aheidelbacher.algostorm.systems.state.Layer.TileLayer
@@ -62,6 +63,58 @@ class RenderingSystem(
         private val map: MapObject,
         private val canvas: Canvas
 ) : Subscriber {
+    companion object {
+        const val RENDERABLE_GROUP_NAME: String = "renderable"
+    }
+
+    private val tileWidth: Int = map.tileWidth
+    private val tileHeight: Int = map.tileHeight
+    private val tileSetCollection: TileSetCollection = map.tileSetCollection
+    private val entityGroup: EntityGroup = map.entityPool.group
+    private lateinit var renderableGroup: EntityGroup
+    private var sortedIds = Array(0) { 0 }
+    private val comparator = Comparator<Int> { id1, id2 ->
+        val e1 = renderableGroup[id1] ?: error("")
+        val e2 = renderableGroup[id2] ?: error("")
+        val p1 = e1.position ?: error("")
+        val p2 = e2.position ?: error("")
+        val s1 = e1.sprite ?: error("")
+        val s2 = e2.sprite ?: error("")
+        if (s1.z != s2.z) s1.z - s2.z
+        else if (p1.y != p2.y) p1.y - p2.y
+        else if (s1.priority != s2.priority) s1.priority - s2.priority
+        else p1.x - p2.x
+    }
+
+    override fun onSubscribe(publisher: Publisher) {
+        renderableGroup = entityGroup.addGroup(RENDERABLE_GROUP_NAME) {
+            it.sprite != null && it.position != null
+        }
+    }
+
+    override fun onUnsubscribe(publisher: Publisher) {
+        entityGroup.removeGroup(RENDERABLE_GROUP_NAME)
+    }
+
+    private fun updateSortedOrder() {
+        val size = renderableGroup.entities.count()
+        val isChanged = size != sortedIds.size || sortedIds.any {
+            it !in renderableGroup
+        }
+        if (isChanged) {
+            sortedIds = Array(size) { 0 }
+            renderableGroup.entities.forEachIndexed { i, entityRef ->
+                sortedIds[i] = entityRef.id
+            }
+        }
+        val isSorted = (0 until sortedIds.size - 1).none {
+            comparator.compare(sortedIds[it], sortedIds[it + 1]) > 0
+        }
+        if (!isSorted) {
+            sortedIds.sortWith(comparator)
+        }
+    }
+
     /**
      * An event which requests the rendering of the entire game state to the
      * screen.
@@ -83,17 +136,6 @@ class RenderingSystem(
         RIGHT_UP, LEFT_UP -> map.height - 1 downTo 0
     }*/
 
-    private val comparator = Comparator<EntityRef> { e1, e2 ->
-        val p1 = e1.position ?: error("")
-        val p2 = e2.position ?: error("")
-        val s1 = e1.sprite ?: error("")
-        val s2 = e2.sprite ?: error("")
-        if (s1.z != s2.z) s1.z - s2.z
-        else if (p1.y != p2.y) p1.y - p2.y
-        else if (s1.priority != s2.priority) s1.priority - s2.priority
-        else p1.x - p2.x
-    }
-
     private val matrix = Matrix.identity()
 
     init {
@@ -110,8 +152,7 @@ class RenderingSystem(
         if (gid == 0) {
             return
         }
-        val tileSet = map.tileSetCollection.getTileSet(gid)
-        val viewport = map.tileSetCollection.getViewport(gid, currentTimeMillis)
+        val viewport = tileSetCollection.getViewport(gid, currentTimeMillis)
         matrix.reset()
         matrix.postScale(
                 sx = 1F * width / viewport.width,
@@ -166,12 +207,12 @@ class RenderingSystem(
 
     private fun EntityRef.draw(offX: Int, offY: Int) {
         val p = position ?: return
-        val x = p.x * map.tileWidth
-        val y = p.y * map.tileHeight
+        val x = p.x * tileWidth
+        val y = p.y * tileHeight
         sprite?.draw(offX + x, offY + y)
     }
 
-    private fun EntityGroup.draw(offX: Int, offY: Int) {
+    /*private fun EntityGroup.draw(offX: Int, offY: Int) {
         val size = entities.count { it.position != null && it.sprite != null }
         val entityArray = arrayOfNulls<EntityRef>(size)
         var i = 0
@@ -185,7 +226,7 @@ class RenderingSystem(
         }.forEach {
             it.draw(offX, offY)
         }
-    }
+    }*/
 
     /*private fun Layer.draw(offX: Int, offY: Int) {
         if (isVisible) {
@@ -221,8 +262,10 @@ class RenderingSystem(
             map.backgroundColor?.color?.let {
                 canvas.drawColor(Color(it))
             } ?: canvas.clear()
+            updateSortedOrder()
+            sortedIds.forEach { renderableGroup[it]?.draw(-cameraX, -cameraY) }
             //map.layers.forEach { it.draw(-cameraX, -cameraY) }
-            map.entityPool.group.draw(-cameraX, -cameraY)
+            //map.entityPool.group.draw(-cameraX, -cameraY)
         }
     }
 }

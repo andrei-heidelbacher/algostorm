@@ -57,10 +57,12 @@ interface EventBus : Publisher {
                 subscribers[subscriber] = handlers.map {
                     it to it.parameterTypes[0]
                 }
+                subscriber.onSubscribe(this)
             }
 
             override fun unsubscribe(subscriber: Subscriber) {
                 subscribers.remove(subscriber)
+                subscriber.onUnsubscribe(this)
             }
 
             override fun post(event: Event) {
