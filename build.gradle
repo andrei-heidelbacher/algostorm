@@ -5,7 +5,7 @@ allprojects {
 
 subprojects {
     buildscript {
-        ext.kotlin_version = '1.0.5-3'
+        ext.kotlin_version = '1.0.6'
         ext.dokka_version = '0.9.10'
         ext.jackson_version = '2.7.7'
         ext.junit_version = '4.12'
