@@ -16,21 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
+import com.aheidelbacher.algostorm.ecs.Component
 
-class PathFindingSystem : Subscriber {
-    class FindPath(
-            sourceId: Int,
-            destinationX: Int,
-            destinationY: Int,
-            directions: List<Direction> = Direction.ORDINAL,
-            ignoreRigidDestination: Boolean = true
-    ) : Request<List<Direction>?>()
-
-    @Subscribe fun onFindPath(request: FindPath) {
-        request.complete(null)
-    }
+enum class Body : Component {
+    RIGID, STATIC, TRIGGER
 }

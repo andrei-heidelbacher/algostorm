@@ -18,4 +18,4 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.event.Event
 
-data class TriggerExited(val transformedId: Int) : Event
+data class TriggerExited(val rigidId: Int, val triggerId: Int) : Event

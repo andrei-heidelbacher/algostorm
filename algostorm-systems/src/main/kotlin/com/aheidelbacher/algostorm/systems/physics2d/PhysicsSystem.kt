@@ -74,6 +74,7 @@ class PhysicsSystem(
             entity.set(nextPosition)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
         } else {
+            //collidingEntities.single().id
             collidingEntities.forEach {
                 publisher.post(Collision(entity.id, it.id))
             }

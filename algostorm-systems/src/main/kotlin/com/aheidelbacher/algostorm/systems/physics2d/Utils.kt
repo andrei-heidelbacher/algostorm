@@ -16,9 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.Entity
 import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityManager
 import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.ecs.MutableEntityRef
@@ -27,7 +25,22 @@ val EntityRef.position: Position?
     get() = get(Position::class)
 
 val EntityRef.isRigid: Boolean
-    get() = RigidBody::class in this
+    get() = when (get(Body::class)) {
+        Body.RIGID, Body.STATIC -> true
+        else -> false
+    }
+
+val EntityRef.isStatic: Boolean
+    get() = when (get(Body::class)) {
+        Body.STATIC, Body.TRIGGER -> true
+        else -> false
+    }
+
+val EntityRef.isTrigger: Boolean
+    get() = when (get(Body::class)) {
+        Body.TRIGGER -> true
+        else -> false
+    }
 
 fun Position.transformed(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)

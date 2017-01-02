@@ -16,19 +16,36 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityGroup
+import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-class TriggerSystem : Subscriber {
+class TriggerSystem(private val entityGroup: EntityGroup) : Subscriber {
+    companion object {
+        const val TRIGGERS_GROUP: String = "triggers"
+    }
+
     private lateinit var publisher: Publisher
+    private lateinit var triggers: EntityGroup
 
     override fun onSubscribe(publisher: Publisher) {
         this.publisher = publisher
+        triggers = entityGroup.addGroup(TRIGGERS_GROUP) { it.isTrigger }
     }
 
-    @Subscribe
-    fun onTransformed(event: Transformed) {
+    override fun onUnsubscribe(publisher: Publisher) {
+        entityGroup.removeGroup(TRIGGERS_GROUP)
+    }
 
+    @Subscribe fun onTransformed(event: Transformed) {
+        val entity = entityGroup[event.entityId] ?: return
+        val (x, y) = entity.position ?: error("")
+        if (!entity.isRigid) return
+        val entered = triggers.getEntitiesAt(x, y)
+        val exited = triggers.getEntitiesAt(x - event.dx, y - event.dy)
+        entered.forEach { publisher.post(TriggerEntered(entity.id, it.id)) }
+        exited.forEach { publisher.post(TriggerExited(entity.id, it.id)) }
     }
 }

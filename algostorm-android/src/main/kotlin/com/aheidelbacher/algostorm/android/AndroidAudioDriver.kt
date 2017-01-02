@@ -21,6 +21,7 @@ import android.content.Context.MODE_PRIVATE
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
+import android.os.Build
 
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.driver.Resource
@@ -30,7 +31,11 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
             val context: Context,
             var mediaPlayer: MediaPlayer? = null,
             var musicVolume: Float = 1F,
-            val soundPool: SoundPool = SoundPool(3, AudioManager.STREAM_MUSIC, 0),
+            val soundPool: SoundPool =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                SoundPool.Builder().setMaxStreams(3).build()
+            else
+                SoundPool(3, AudioManager.STREAM_MUSIC, 0),
             val soundIds: MutableMap<String, Int> = hashMapOf(),
             var soundVolume: Float = 1F
     )
