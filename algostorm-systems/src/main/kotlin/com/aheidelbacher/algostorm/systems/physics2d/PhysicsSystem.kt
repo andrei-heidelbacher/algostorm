@@ -32,6 +32,11 @@ import com.aheidelbacher.algostorm.event.Subscriber
 class PhysicsSystem(
         private val entityGroup: MutableEntityGroup
 ) : Subscriber {
+    companion object {
+        fun Position.transformed(dx: Int, dy: Int): Position =
+                copy(x = x + dx, y = y + dy)
+    }
+
     private lateinit var publisher: Publisher
 
     override fun onSubscribe(publisher: Publisher) {
@@ -65,19 +70,29 @@ class PhysicsSystem(
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
         val entity = entityGroup[event.entityId] ?: return
-        val nextPosition = entity.position?.transformed(event.dx, event.dy)
+        val currentPosition = entity.position
                 ?: error("Can't transform $entity without a position!")
-        val collidingEntities = entityGroup.entities.filter {
-            it != entity && it.isRigid && it.position == nextPosition
+        val nextPosition = currentPosition.transformed(event.dx, event.dy)
+        val bodies = entityGroup.entities.filter {
+            it != entity && Body::class in it && it.position == nextPosition
         }
-        if (!entity.isRigid || collidingEntities.isEmpty()) {
+        val (collided, enteredTriggers) = bodies.partition { it.isRigid }
+        val exitedTriggers = entityGroup.entities.filter {
+            it != entity && it.isTrigger && it.position == currentPosition
+        }
+        if (!entity.isRigid || collided.isEmpty()) {
             entity.set(nextPosition)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
-        } else {
-            //collidingEntities.single().id
-            collidingEntities.forEach {
-                publisher.post(Collision(entity.id, it.id))
+            if (entity.isRigid) {
+                publisher.post(exitedTriggers.map {
+                    TriggerExited(entity.id, it.id)
+                })
+                publisher.post(enteredTriggers.map {
+                    TriggerEntered(entity.id, it.id)
+                })
             }
+        } else {
+            publisher.post(collided.map { Collision(entity.id, it.id) })
         }
     }
 }
