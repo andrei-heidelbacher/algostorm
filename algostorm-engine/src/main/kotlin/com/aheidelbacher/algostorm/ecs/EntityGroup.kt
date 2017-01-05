@@ -84,8 +84,4 @@ interface EntityGroup {
      * in this group
      */
     fun removeGroup(name: String): Boolean
-
-    fun addOnAddedListener(listener: (Int) -> Unit): Unit
-
-    fun addOnRemovedListener(listener: (Int) -> Unit): Unit
 }

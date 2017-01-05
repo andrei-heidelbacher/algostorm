@@ -35,8 +35,27 @@ class AndroidGraphicsDriver(
         surfaceHolder: SurfaceHolder,
         private val scale: Float
 ) : GraphicsDriver {
+    companion object {
+        private val bitmaps = hashMapOf<Resource, Bitmap>()
+
+        fun loadBitmap(resource: Resource) {
+            if (resource !in bitmaps) {
+                resource.inputStream().use { src ->
+                    bitmaps[resource] = BitmapFactory.decodeStream(src)
+                }
+            }
+        }
+
+        /**
+         * Retrieves the requested bitmap.
+         *
+         * @param resource the requested image resource
+         * @return the requested bitmap, or `null` if it wasn't loaded
+         */
+        fun getBitmap(resource: Resource): Bitmap? = bitmaps[resource]
+    }
+
     private var surfaceHolder: SurfaceHolder? = surfaceHolder
-    private val bitmaps = hashMapOf<Resource, Bitmap>()
     private var canvas: Canvas? = null
     private val isLocked = AtomicBoolean(false)
 
@@ -60,20 +79,8 @@ class AndroidGraphicsDriver(
     }
 
     override fun loadBitmap(resource: Resource) {
-        if (resource !in bitmaps) {
-            resource.inputStream().use { src ->
-                bitmaps[resource] = BitmapFactory.decodeStream(src)
-            }
-        }
+        Companion.loadBitmap(resource)
     }
-
-    /**
-     * Retrieves the requested bitmap.
-     *
-     * @param imageSource the requested image resource
-     * @return the requested bitmap, or `null` if it wasn't loaded
-     */
-    fun getBitmap(imageSource: Resource): Bitmap? = bitmaps[imageSource]
 
     override fun drawBitmap(
             resource: Resource,

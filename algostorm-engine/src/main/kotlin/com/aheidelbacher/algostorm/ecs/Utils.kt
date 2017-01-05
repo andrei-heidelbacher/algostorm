@@ -160,8 +160,6 @@ private class EntityGroupImpl(
     private var filter: ((EntityRef) -> Boolean)? = filter
     private val entityTable = hashMapOf<Int, EntityRefImpl>()
     private val groups = hashMapOf<String, EntityGroupImpl>()
-    private val onAddedListeners = arrayListOf<(Int) -> Unit>()
-    private val onRemovedListeners = arrayListOf<(Int) -> Unit>()
 
     override val isValid: Boolean
         get() = filter != null
@@ -190,22 +188,10 @@ private class EntityGroupImpl(
         return groups.remove(name) != null
     }
 
-    override fun addOnAddedListener(listener: (Int) -> Unit) {
-        onAddedListeners.add(listener)
-    }
-
-    override fun addOnRemovedListener(listener: (Int) -> Unit) {
-        onRemovedListeners.add(listener)
-    }
-
     fun onChanged(entity: EntityRefImpl) {
         if (filter?.invoke(entity) ?: error("$this was invalidated!")) {
-            val isAdded = entityTable[entity.id] == entity
             entityTable[entity.id] = entity
             groups.forEach { it.value.onChanged(entity) }
-            if (isAdded) {
-                onAddedListeners.forEach { it.invoke(entity.id) }
-            }
         } else {
             onRemoved(entity)
         }
@@ -214,7 +200,6 @@ private class EntityGroupImpl(
     fun onRemoved(entity: EntityRefImpl) {
         if (entityTable.remove(entity.id) != null) {
             groups.forEach { it.value.onRemoved(entity) }
-            onRemovedListeners.forEach { it.invoke(entity.id) }
         }
     }
 
@@ -223,7 +208,6 @@ private class EntityGroupImpl(
         groups.clear()
         entityTable.clear()
         filter = null
-        //onClearedListeners.forEach { it.invoke() }
     }
 }
 

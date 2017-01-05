@@ -19,5 +19,5 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.aheidelbacher.algostorm.ecs.Component
 
 enum class Body : Component {
-    RIGID, STATIC, TRIGGER
+    KINEMATIC, STATIC, TRIGGER
 }

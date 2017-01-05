@@ -33,14 +33,33 @@ class PhysicsSystem(
         private val entityGroup: MutableEntityGroup
 ) : Subscriber {
     companion object {
+        const val KINEMATIC_BODIES_GROUP: String = "kinematic-bodies"
         fun Position.transformed(dx: Int, dy: Int): Position =
                 copy(x = x + dx, y = y + dy)
     }
 
     private lateinit var publisher: Publisher
+    private lateinit var kinematicBodies: MutableEntityGroup
+    private lateinit var staticIds: Map<Position, Int>
 
     override fun onSubscribe(publisher: Publisher) {
         this.publisher = publisher
+        kinematicBodies = entityGroup.addGroup(KINEMATIC_BODIES_GROUP) {
+            it.position != null && it.isKinematic
+        }
+        val map = hashMapOf<Position, Int>()
+        for (entity in entityGroup.entities) {
+            val position = entity.position
+            if (entity.isStatic && position != null) {
+                map[position] = entity.id
+            }
+        }
+        staticIds = map
+    }
+
+    override fun onUnsubscribe(publisher: Publisher) {
+        entityGroup.removeGroup(KINEMATIC_BODIES_GROUP)
+        staticIds = emptyMap()
     }
 
     /**
@@ -76,7 +95,7 @@ class PhysicsSystem(
         val bodies = entityGroup.entities.filter {
             it != entity && Body::class in it && it.position == nextPosition
         }
-        val (collided, enteredTriggers) = bodies.partition { it.isRigid }
+        /*val (collided, enteredTriggers) = bodies.partition { it.isRigid }
         val exitedTriggers = entityGroup.entities.filter {
             it != entity && it.isTrigger && it.position == currentPosition
         }
@@ -93,6 +112,6 @@ class PhysicsSystem(
             }
         } else {
             publisher.post(collided.map { Collision(entity.id, it.id) })
-        }
+        }*/
     }
 }

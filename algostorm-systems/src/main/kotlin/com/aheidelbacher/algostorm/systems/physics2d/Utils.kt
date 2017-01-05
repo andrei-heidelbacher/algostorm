@@ -24,9 +24,12 @@ import com.aheidelbacher.algostorm.ecs.MutableEntityRef
 val EntityRef.position: Position?
     get() = get(Position::class)
 
-val EntityRef.isRigid: Boolean
+val EntityRef.isKinematic: Boolean
+    get() = get(Body::class) == Body.KINEMATIC
+
+val EntityRef.isCollider: Boolean
     get() = when (get(Body::class)) {
-        Body.RIGID, Body.STATIC -> true
+        Body.KINEMATIC, Body.STATIC -> true
         else -> false
     }
 
