@@ -27,7 +27,7 @@ package com.aheidelbacher.algostorm.event
  * @param T the result type of this request
  */
 abstract class Request<T> {
-    private var value: T? = null
+    private var result: T? = null
 
     /**
      * Returns the value with which this request was completed.
@@ -37,7 +37,7 @@ abstract class Request<T> {
      */
     fun get(): T {
         check(isCompleted) { "$this was not completed!" }
-        return value as T
+        return result as T
     }
 
     /**
@@ -48,7 +48,7 @@ abstract class Request<T> {
      */
     fun complete(value: T) {
         check(!isCompleted) { "$this was already completed!" }
-        this.value = value
+        result = value
         isCompleted = true
     }
 

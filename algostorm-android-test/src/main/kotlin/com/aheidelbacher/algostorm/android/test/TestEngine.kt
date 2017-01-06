@@ -32,6 +32,8 @@ import com.aheidelbacher.algostorm.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Follow
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
@@ -75,8 +77,8 @@ class TestEngine(
                 ))
             }
         }
-        for (x in 0 until width step 4) {
-            for (y in 0 until height step 4) {
+        for (x in 0 until width) {
+            for (y in listOf(0, height - 1)) {
                 entity(listOf(
                         Position(x, y),
                         Sprite(
@@ -85,7 +87,38 @@ class TestEngine(
                                 z = 0,
                                 priority = 1,
                                 gid = 1089
-                        )
+                        ),
+                        Body.STATIC
+                ))
+            }
+        }
+        for (x in listOf(0, width - 1)) {
+            for (y in 1 until height - 1) {
+                entity(listOf(
+                        Position(x, y),
+                        Sprite(
+                                width = tileWidth,
+                                height = tileHeight,
+                                z = 0,
+                                priority = 1,
+                                gid = 1089
+                        ),
+                        Body.STATIC
+                ))
+            }
+        }
+        for (x in 1 until width - 1 step 4) {
+            for (y in 1 until height - 1 step 4) {
+                entity(listOf(
+                        Position(x, y),
+                        Sprite(
+                                width = tileWidth,
+                                height = tileHeight,
+                                z = 0,
+                                priority = 1,
+                                gid = 1089
+                        ),
+                        Body.STATIC
                 ))
             }
         }
@@ -137,12 +170,21 @@ class TestEngine(
 
     override fun onHandleInput() {
         inputListener.pollMostRecent(object : InputListener {
+            override fun onScroll(dx: Int, dy: Int) {
+                eventBus.post(Scroll(dx, dy))
+            }
+
             override fun onTouch(x: Int, y: Int) {
-                val tx = (x + camera.x) / map.tileWidth
-                val ty = (y + camera.y) / map.tileHeight
-                val path = eventBus.request(FindPath(1, tx, ty))
-                for (d in path) {
-                    eventBus.post(TransformIntent(1, d.dx, d.dy))
+                try {
+                    val tx = (x + camera.x - graphicsDriver.width / 2) / map.tileWidth
+                    val ty = (y + camera.y - graphicsDriver.height / 2) / map.tileHeight
+                    eventBus.post(Follow(1))
+                    val path = eventBus.request(FindPath(1, tx, ty))
+                    path?.forEach { d ->
+                        eventBus.post(TransformIntent(1, d.dx, d.dy))
+                    }
+                } catch (e : Exception) {
+                    e.printStackTrace()
                 }
             }
         })

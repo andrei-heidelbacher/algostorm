@@ -81,5 +81,5 @@ interface Publisher {
      * @throws IllegalStateException if the `request` was not completed or if it
      * was completed more than once
      */
-    fun <T : Any> request(request: Request<T>): T
+    fun <T> request(request: Request<T>): T
 }

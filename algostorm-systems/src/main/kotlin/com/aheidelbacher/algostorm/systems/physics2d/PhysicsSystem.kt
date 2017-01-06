@@ -87,7 +87,7 @@ class PhysicsSystem(
             val destinationY: Int,
             val directions: List<Direction> = Direction.ORDINAL,
             val ignoreColliderDestination: Boolean = true
-    ) : Request<List<Direction>>()
+    ) : Request<List<Direction>?>()
 
     /**
      * Upon receiving a [TransformIntent] event, the entity is transformed by
@@ -125,7 +125,7 @@ class PhysicsSystem(
             destination: Position,
             directions: List<Direction>,
             isCollider: (Position) -> Boolean
-    ): List<Direction> {
+    ): List<Direction>? {
         data class HeapNode(val p: Position, val f: Int) : Comparable<HeapNode> {
             override fun compareTo(other: HeapNode): Int = f - other.f
         }
@@ -169,7 +169,7 @@ class PhysicsSystem(
                 }
             }
         }
-        return emptyList()
+        return null
     }
 
     @Subscribe fun onFindPath(request: FindPath) {

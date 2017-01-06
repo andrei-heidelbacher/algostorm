@@ -89,7 +89,7 @@ interface EventBus : Publisher {
                 }
             }
 
-            override fun <T : Any> request(request: Request<T>): T {
+            override fun <T> request(request: Request<T>): T {
                 publish(request)
                 return request.get()
             }

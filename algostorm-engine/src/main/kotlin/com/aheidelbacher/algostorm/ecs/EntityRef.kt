@@ -73,7 +73,7 @@ abstract class EntityRef protected constructor(
          * @throws IllegalStateException if this entity is not valid
          */
         fun EntityRef.checkIsValid() {
-            check(!isValid) { "$this invalid entity reference!" }
+            check(isValid) { "$this invalid entity reference!" }
         }
     }
 

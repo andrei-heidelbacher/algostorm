@@ -101,5 +101,5 @@ class PublisherMock : Publisher {
         }
     }
 
-    override fun <T : Any> request(request: Request<T>): T = TODO()
+    override fun <T> request(request: Request<T>): T = TODO()
 }
