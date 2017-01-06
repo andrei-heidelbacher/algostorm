@@ -16,11 +16,16 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
+import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
+
+import java.util.PriorityQueue
 
 /**
  * A system that handles [TransformIntent] events and publishes [Transformed]
@@ -40,26 +45,26 @@ class PhysicsSystem(
 
     private lateinit var publisher: Publisher
     private lateinit var kinematicBodies: MutableEntityGroup
-    private lateinit var staticIds: Map<Position, Int>
+    private lateinit var staticBodies: Map<Position, EntityRef>
 
     override fun onSubscribe(publisher: Publisher) {
         this.publisher = publisher
         kinematicBodies = entityGroup.addGroup(KINEMATIC_BODIES_GROUP) {
             it.position != null && it.isKinematic
         }
-        val map = hashMapOf<Position, Int>()
+        val map = hashMapOf<Position, EntityRef>()
         for (entity in entityGroup.entities) {
             val position = entity.position
             if (entity.isStatic && position != null) {
-                map[position] = entity.id
+                map[position] = entity
             }
         }
-        staticIds = map
+        staticBodies = map
     }
 
     override fun onUnsubscribe(publisher: Publisher) {
         entityGroup.removeGroup(KINEMATIC_BODIES_GROUP)
-        staticIds = emptyMap()
+        staticBodies = emptyMap()
     }
 
     /**
@@ -76,6 +81,14 @@ class PhysicsSystem(
             val dy: Int
     ) : Event
 
+    class FindPath(
+            val sourceId: Int,
+            val destinationX: Int,
+            val destinationY: Int,
+            val directions: List<Direction> = Direction.ORDINAL,
+            val ignoreColliderDestination: Boolean = true
+    ) : Request<List<Direction>>()
+
     /**
      * Upon receiving a [TransformIntent] event, the entity is transformed by
      * the indicated amount. If the moved entity is rigid and there are any
@@ -88,30 +101,85 @@ class PhysicsSystem(
      * [Position] component
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
-        val entity = entityGroup[event.entityId] ?: return
-        val currentPosition = entity.position
-                ?: error("Can't transform $entity without a position!")
-        val nextPosition = currentPosition.transformed(event.dx, event.dy)
-        val bodies = entityGroup.entities.filter {
-            it != entity && Body::class in it && it.position == nextPosition
-        }
-        /*val (collided, enteredTriggers) = bodies.partition { it.isRigid }
-        val exitedTriggers = entityGroup.entities.filter {
-            it != entity && it.isTrigger && it.position == currentPosition
-        }
-        if (!entity.isRigid || collided.isEmpty()) {
+        val entity = kinematicBodies[event.entityId] ?: return
+        val nextPosition = entity.position?.transformed(event.dx, event.dy)
+                ?: return
+        val (nx, ny) = nextPosition
+        val static = staticBodies[nextPosition]
+        val kinematic = kinematicBodies.getEntitiesAt(nx, ny)
+        if (static != null || kinematic.isNotEmpty()) {
+            static?.let { publisher.post(Collision(entity.id, it.id)) }
+            publisher.post(kinematic.map { Collision(entity.id, it.id) })
+        } else {
             entity.set(nextPosition)
             publisher.post(Transformed(entity.id, event.dx, event.dy))
-            if (entity.isRigid) {
-                publisher.post(exitedTriggers.map {
-                    TriggerExited(entity.id, it.id)
-                })
-                publisher.post(enteredTriggers.map {
-                    TriggerEntered(entity.id, it.id)
-                })
+            val trigger = entityGroup.getEntitiesAt(nx, ny).filter {
+                it != entity && it.isTrigger
             }
-        } else {
-            publisher.post(collided.map { Collision(entity.id, it.id) })
-        }*/
+            publisher.post(trigger.map { TriggerEntered(entity.id, it.id) })
+        }
+    }
+
+    private fun findPath(
+            source: Position,
+            destination: Position,
+            directions: List<Direction>,
+            isCollider: (Position) -> Boolean
+    ): List<Direction> {
+        data class HeapNode(val p: Position, val f: Int) : Comparable<HeapNode> {
+            override fun compareTo(other: HeapNode): Int = f - other.f
+        }
+
+        fun hScore(p : Position): Int = Math.max(
+                Math.abs(p.x - destination.x),
+                Math.abs(p.y - destination.y)
+        )
+
+        val INF = 0x0fffffff
+
+        val visited = hashSetOf<Position>()
+        val father = hashMapOf<Position, Direction>()
+        val gScore = hashMapOf(source to 0)
+        val fScore = hashMapOf(source to hScore(source))
+        val heap = PriorityQueue<HeapNode>()
+        heap.add(HeapNode(source, fScore[source] ?: INF))
+        while (heap.isNotEmpty()) {
+            val v = heap.poll().p
+            if (v == destination) {
+                val path = arrayListOf<Direction>()
+                var head = destination
+                while (head in father) {
+                    father[head]?.let { d ->
+                        path.add(d)
+                        head = head.transformed(-d.dx, -d.dy)
+                    }
+                }
+                path.reverse()
+                return path
+            }
+            val vCost = gScore[v] ?: INF
+            visited.add(v)
+            for (d in directions) {
+                val w = v.transformed(d.dx, d.dy)
+                val wCost = gScore[w] ?: INF
+                if (!isCollider(w) && w !in visited && vCost + 1 < wCost) {
+                    gScore[w] = vCost + 1
+                    father[w] = d
+                    heap.add(HeapNode(w, vCost + 1 + hScore(w)))
+                }
+            }
+        }
+        return emptyList()
+    }
+
+    @Subscribe fun onFindPath(request: FindPath) {
+        val kinematic = kinematicBodies.entities
+                .mapNotNullTo(hashSetOf(), EntityRef::position)
+        val source = checkNotNull(entityGroup[request.sourceId]?.position)
+        val destination = Position(request.destinationX, request.destinationY)
+        request.complete(findPath(source, destination, request.directions) {
+            (it in kinematic || it in staticBodies)
+                    && (it != destination || request.ignoreColliderDestination)
+        })
     }
 }

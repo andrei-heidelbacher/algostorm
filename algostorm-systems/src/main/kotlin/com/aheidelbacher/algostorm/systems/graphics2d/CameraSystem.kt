@@ -24,6 +24,8 @@ import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
 class CameraSystem(
+        private val tileWidth: Int,
+        private val tileHeight: Int,
         private val camera: Camera,
         private val entityGroup: EntityGroup,
         private var followedEntityId: Int? = null
@@ -41,9 +43,10 @@ class CameraSystem(
     @Suppress("unused_parameter")
     @Subscribe fun onUpdateCamera(event: UpdateCamera) {
         followedEntityId?.let { id ->
-            entityGroup[id]?.position?.let { entity ->
-                camera.x = entity.x //+ obj.width / 2
-                camera.y = entity.y //+ obj.height / 2
+            entityGroup[id]?.let { entity ->
+                val (x, y) = entity.position ?: return
+                camera.x = tileWidth * x + tileWidth / 2
+                camera.y = tileHeight * y + tileHeight / 2
             }
         }
     }

@@ -22,57 +22,143 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.engine.input.InputDriver
-import java.io.OutputStream
+import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
+import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.engine.input.InputListener
+import com.aheidelbacher.algostorm.engine.input.PollingInputListener
+import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.systems.graphics2d.Camera
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
+import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
+import com.aheidelbacher.algostorm.systems.physics2d.Body
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
+import com.aheidelbacher.algostorm.systems.physics2d.Position
 
+import java.io.OutputStream
 
 class TestEngine(
         audioDriver: AudioDriver,
         graphicsDriver: GraphicsDriver,
         inputDriver: InputDriver
 ) : Engine(audioDriver, graphicsDriver, inputDriver) {
-    private data class Rectangle(
-            val x: Int,
-            val y: Int,
-            val width: Int,
-            val height: Int
+    private val eventBus = EventBus()
+    private val map = mapObject {
+        width = 32
+        height = 32
+        tileWidth = 32
+        tileHeight = 32
+        +tileSet {
+            name = "world"
+            tileWidth = 32
+            tileHeight = 32
+            image(Resource("$SCHEMA/tileset.png"), 2048, 1536)
+        }
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                entity(listOf(
+                        Position(x, y),
+                        Sprite(
+                                width = tileWidth,
+                                height = tileHeight,
+                                z = 0,
+                                priority = 0,
+                                gid = 961
+                        )
+                ))
+            }
+        }
+        for (x in 0 until width step 4) {
+            for (y in 0 until height step 4) {
+                entity(listOf(
+                        Position(x, y),
+                        Sprite(
+                                width = tileWidth,
+                                height = tileHeight,
+                                z = 0,
+                                priority = 1,
+                                gid = 1089
+                        )
+                ))
+            }
+        }
+        entity(1, listOf(
+                Position(15, 15),
+                Sprite(
+                        width = tileWidth,
+                        height = tileHeight,
+                        z = 0,
+                        priority = 1,
+                        gid = 129
+                ),
+                Body.KINEMATIC
+        ))
+    }
+    private val camera = Camera(0, 0)
+    private val systems = listOf(
+            RenderingSystem(map, graphicsDriver),
+            CameraSystem(
+                    map.tileWidth,
+                    map.tileHeight,
+                    camera,
+                    map.entityPool.group,
+                    1
+            ),
+            PhysicsSystem(map.entityPool.group)
     )
+    private val inputListener = PollingInputListener()
+
+    init {
+        inputDriver.addListener(inputListener)
+    }
 
     override val millisPerUpdate: Int
         get() = 25
 
-
-    private val rectangle = Rectangle(0, 0, 64, 64)
-
     override fun onStart() {
+        systems.forEach { eventBus.subscribe(it) }
     }
 
     override fun onRender() {
         if (graphicsDriver.isCanvasReady) {
             graphicsDriver.lockCanvas()
-            graphicsDriver.drawRectangle(
-                    color = Color("#FF0000FF"),
-                    width = rectangle.width,
-                    height = rectangle.height,
-                    matrix = Matrix.identity().postTranslate(
-                            dx = rectangle.x.toFloat(),
-                            dy = rectangle.y.toFloat()
-                    )
-            )
+            eventBus.publish(UpdateCamera)
+            eventBus.publish(Render(camera.x, camera.y))
             graphicsDriver.unlockAndPostCanvas()
         }
     }
 
     override fun onHandleInput() {
+        inputListener.pollMostRecent(object : InputListener {
+            override fun onTouch(x: Int, y: Int) {
+                val tx = (x + camera.x) / map.tileWidth
+                val ty = (y + camera.y) / map.tileHeight
+                val path = eventBus.request(FindPath(1, tx, ty))
+                for (d in path) {
+                    eventBus.post(TransformIntent(1, d.dx, d.dy))
+                }
+            }
+        })
     }
 
     override fun onUpdate() {
+        eventBus.post(Update(millisPerUpdate))
+        eventBus.publishPosts()
     }
 
     override fun onSerializeState(outputStream: OutputStream) {
-        serializationDriver.writeValue(outputStream, rectangle)
+        serializationDriver.writeValue(outputStream, map)
     }
 
     override fun onStop() {
+        systems.forEach { eventBus.unsubscribe(it) }
     }
 
     override fun onShutdown() {

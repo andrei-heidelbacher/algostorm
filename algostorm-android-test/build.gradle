@@ -61,6 +61,8 @@ android {
 
 dependencies {
     compile project(':algostorm-engine')
+    compile project(':algostorm-systems')
+    compile project(':algostorm-test')
     compile project(':algostorm-android')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile "junit:junit:$junit_version"
