@@ -20,26 +20,20 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
+import com.aheidelbacher.algostorm.systems.physics2d.Position
+import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.systems.state.File
 import com.aheidelbacher.algostorm.systems.state.Image
 import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.systems.state.builders.MapObjectBuilder
-import com.aheidelbacher.algostorm.systems.state.builders.entity
-import com.aheidelbacher.algostorm.systems.state.builders.entityGroup
-import com.aheidelbacher.algostorm.systems.state.builders.tileLayer
-//import com.aheidelbacher.algostorm.systems.state.builders.tileSet
-import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
-import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.event.EventBus
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
-import com.aheidelbacher.algostorm.systems.physics2d.Position
-import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.systems.state.MapObject
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
 class RenderingSystemTest {
@@ -117,7 +111,8 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         eventBus.subscribe(renderingSystem)
-        eventBus.publish(Render(cameraX, cameraY))
+        eventBus.post(Render(cameraX, cameraY))
+        eventBus.publishPosts()
         //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         for (ty in 0 until height) {
@@ -198,7 +193,8 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         eventBus.subscribe(renderingSystem)
-        eventBus.publish(Render(cameraX, cameraY))
+        eventBus.post(Render(cameraX, cameraY))
+        eventBus.publishPosts()
         //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertRectangle(
@@ -242,7 +238,8 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         eventBus.subscribe(renderingSystem)
-        eventBus.publish(Render(cameraX, cameraY))
+        eventBus.post(Render(cameraX, cameraY))
+        eventBus.publishPosts()
         //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
@@ -288,7 +285,8 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         eventBus.subscribe(renderingSystem)
-        eventBus.publish(Render(cameraX, cameraY))
+        eventBus.post(Render(cameraX, cameraY))
+        eventBus.publishPosts()
         //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(
@@ -334,7 +332,8 @@ class RenderingSystemTest {
         }.build()
         val renderingSystem = RenderingSystem(map, graphicsDriver)
         eventBus.subscribe(renderingSystem)
-        eventBus.publish(Render(cameraX, cameraY))
+        eventBus.post(Render(cameraX, cameraY))
+        eventBus.publishPosts()
         //renderingSystem.onRender(Render(cameraX, cameraY))
         graphicsDriver.assertColor(Color(-1))
         graphicsDriver.assertBitmap(

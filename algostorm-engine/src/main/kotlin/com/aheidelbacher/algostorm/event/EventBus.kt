@@ -79,10 +79,6 @@ interface EventBus : Publisher {
                 }
             }
 
-            override fun publish(event: Event) {
-                publish<Event>(event)
-            }
-
             override fun publishPosts() {
                 while (eventQueue.isNotEmpty()) {
                     publish(eventQueue.remove())

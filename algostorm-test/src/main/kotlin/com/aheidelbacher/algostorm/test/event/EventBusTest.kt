@@ -63,22 +63,7 @@ abstract class EventBusTest {
     }
 
     @Test
-    fun publishShouldNotifySubscribers() {
-        val publishedEvent = EventMock(5)
-        var handledEvent: EventMock? = null
-        val subscriber = object : Subscriber {
-            @Suppress("unused", "unused_parameter")
-            @Subscribe fun handleEventMock(event: EventMock) {
-                handledEvent = event
-            }
-        }
-        eventBus.subscribe(subscriber)
-        eventBus.publish(publishedEvent)
-        assertEquals(publishedEvent, handledEvent)
-    }
-
-    @Test
-    fun publishAfterUnsubscribeShouldNotNotifySubscriber() {
+    fun publishPostsAfterUnsubscribeShouldNotNotifySubscriber() {
         val publishedEvent = EventMock(5)
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
@@ -88,7 +73,8 @@ abstract class EventBusTest {
         }
         eventBus.subscribe(subscriber)
         eventBus.unsubscribe(subscriber)
-        eventBus.publish(publishedEvent)
+        eventBus.post(publishedEvent)
+        eventBus.publishPosts()
     }
 
     @Test(expected = IllegalArgumentException::class)
