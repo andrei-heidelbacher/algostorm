@@ -73,7 +73,7 @@ class PhysicsSystemTest {
         }
     }
 
-    @Test
+    /*@Test
     fun testFindPath() {
         testMap(
                 4,
@@ -113,7 +113,7 @@ class PhysicsSystemTest {
     @Test
     fun instantiatePublisherMock() {
         val publisherMock = PublisherMock()
-    }
+    }*/
 
     /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): MapObject<String, Any> = mapOf(
             Box.PROPERTY to Box(x, y, tileWidth, tileHeight),
