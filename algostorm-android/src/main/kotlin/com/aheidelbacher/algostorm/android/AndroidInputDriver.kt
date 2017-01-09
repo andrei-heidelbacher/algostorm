@@ -66,6 +66,7 @@ class AndroidInputDriver(
             onScroll(dx, dy)
         }
         println("Scroll $dx, $dy")
+        notify { onScroll(dx, dy) }
         return true
     }
 
@@ -73,6 +74,7 @@ class AndroidInputDriver(
         val x = e.x.pxToDp.toInt()
         val y = e.y.pxToDp.toInt()
         println("Single tap up $x, $y")
+        notify { onTouch(x, y) }
         return true
     }
 

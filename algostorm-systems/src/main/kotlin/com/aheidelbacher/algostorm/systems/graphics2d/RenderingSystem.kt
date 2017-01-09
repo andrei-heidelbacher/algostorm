@@ -72,14 +72,12 @@ class RenderingSystem(
     private val tileSetCollection: TileSetCollection = map.tileSetCollection
     private val entityGroup: EntityGroup = map.entityPool.group
     private lateinit var renderableGroup: EntityGroup
-    private var sortedIds = Array(0) { 0 }
-    private val comparator = Comparator<Int> { id1, id2 ->
-        val e1 = renderableGroup[id1] ?: error("")
-        val e2 = renderableGroup[id2] ?: error("")
-        val p1 = e1.position ?: error("")
-        val p2 = e2.position ?: error("")
-        val s1 = e1.sprite ?: error("")
-        val s2 = e2.sprite ?: error("")
+    private var sortedEntities = arrayOfNulls<EntityRef?>(0)
+    private val comparator = Comparator<EntityRef?> { e1, e2 ->
+        val p1 = e1?.position ?: error("")
+        val p2 = e2?.position ?: error("")
+        val s1 = e1?.sprite ?: error("")
+        val s2 = e2?.sprite ?: error("")
         if (s1.z != s2.z) s1.z - s2.z
         else if (p1.y != p2.y) p1.y - p2.y
         else if (s1.priority != s2.priority) s1.priority - s2.priority
@@ -98,20 +96,20 @@ class RenderingSystem(
 
     private fun updateSortedOrder() {
         val size = renderableGroup.entities.count()
-        val isChanged = size != sortedIds.size || sortedIds.any {
-            it !in renderableGroup
+        val isChanged = size != sortedEntities.size || sortedEntities.any {
+            it == null || it.id !in renderableGroup
         }
         if (isChanged) {
-            sortedIds = Array(size) { 0 }
+            sortedEntities = arrayOfNulls(size)
             renderableGroup.entities.forEachIndexed { i, entityRef ->
-                sortedIds[i] = entityRef.id
+                sortedEntities[i] = entityRef
             }
         }
-        val isSorted = (0 until sortedIds.size - 1).none {
-            comparator.compare(sortedIds[it], sortedIds[it + 1]) > 0
+        val isSorted = (0 until sortedEntities.size - 1).none {
+            comparator.compare(sortedEntities[it], sortedEntities[it + 1]) > 0
         }
         if (!isSorted) {
-            sortedIds.sortWith(comparator)
+            sortedEntities.sortWith(comparator)
         }
     }
 
@@ -126,23 +124,11 @@ class RenderingSystem(
      */
     data class Render(val cameraX: Int, val cameraY: Int) : Event
 
-    /*private val xRange = when (map.renderOrder) {
-        RIGHT_DOWN, RIGHT_UP -> 0 until map.width
-        LEFT_DOWN, LEFT_UP -> map.width - 1 downTo 0
-    }
-
-    private val yRange = when (map.renderOrder) {
-        RIGHT_DOWN, LEFT_DOWN -> 0 until map.height
-        RIGHT_UP, LEFT_UP -> map.height - 1 downTo 0
-    }*/
-
     private val matrix = Matrix.identity()
 
     init {
         map.tileSetCollection.tileSets.forEach {
             canvas.loadBitmap(it.image.resource)
-            //canvas.loadBitmap(it.image.source.path)
-            //canvas.loadBitmap(Resource("res:///" + it.image.source.path))
         }
     }
 
@@ -169,6 +155,7 @@ class RenderingSystem(
             if (!gid.isFlippedVertically) it
             else it.postScale(1F, -1F).postTranslate(0F, 1F * height)
         }.postTranslate(1F * x, 1F * y)
+
         canvas.drawBitmap(
                 resource = viewport.image.resource,
                 x = viewport.x,
@@ -178,22 +165,6 @@ class RenderingSystem(
                 matrix = matrix
         )
     }
-
-    /*private fun TileLayer.draw(offX: Int, offY: Int) {
-        for (ty in yRange) {
-            for (tx in xRange) {
-                val gid = get(ty * map.width + tx)
-                if (gid != 0) {
-                    val x = tx * map.tileWidth
-                    val y = ty * map.tileHeight
-                    val tileSet = map.getTileSet(gid)
-                    val tw = tileSet.tileWidth
-                    val th = tileSet.tileHeight
-                    drawGid(gid, x + offX + offsetX, y + offY + offsetY, tw, th)
-                }
-            }
-        }
-    }*/
 
     private fun Sprite.draw(offX: Int, offY: Int) {
         if (isVisible && gid != 0) {
@@ -211,31 +182,6 @@ class RenderingSystem(
         val y = p.y * tileHeight
         sprite?.draw(offX + x, offY + y)
     }
-
-    /*private fun EntityGroup.draw(offX: Int, offY: Int) {
-        val size = entities.count { it.position != null && it.sprite != null }
-        val entityArray = arrayOfNulls<EntityRef>(size)
-        var i = 0
-        entities.forEach {
-            if (it.position != null && it.sprite != null) {
-                entityArray[i++] = it
-            }
-        }
-        entityArray.requireNoNulls().apply {
-            sortWith(comparator)
-        }.forEach {
-            it.draw(offX, offY)
-        }
-    }*/
-
-    /*private fun Layer.draw(offX: Int, offY: Int) {
-        if (isVisible) {
-            when (this) {
-                is EntityGroup -> draw(offX + offsetX, offY + offsetY)
-                is TileLayer -> draw(offX + offsetX, offY + offsetY)
-            }
-        }
-    }*/
 
     /**
      * When an [Update] event is received, the [currentTimeMillis] is increased.
@@ -263,9 +209,7 @@ class RenderingSystem(
                 canvas.drawColor(Color(it))
             } ?: canvas.clear()
             updateSortedOrder()
-            sortedIds.forEach { renderableGroup[it]?.draw(-cameraX, -cameraY) }
-            //map.layers.forEach { it.draw(-cameraX, -cameraY) }
-            //map.entityPool.group.draw(-cameraX, -cameraY)
+            sortedEntities.forEach { it?.draw(-cameraX, -cameraY) }
         }
     }
 }

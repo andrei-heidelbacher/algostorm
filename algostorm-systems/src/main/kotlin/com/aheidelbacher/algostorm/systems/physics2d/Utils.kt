@@ -24,6 +24,9 @@ import com.aheidelbacher.algostorm.ecs.MutableEntityRef
 val EntityRef.position: Position?
     get() = get(Position::class)
 
+val EntityRef.isBody: Boolean
+    get() = contains(Body::class)
+
 val EntityRef.isKinematic: Boolean
     get() = get(Body::class) == Body.KINEMATIC
 
@@ -44,6 +47,13 @@ val EntityRef.isTrigger: Boolean
         Body.TRIGGER -> true
         else -> false
     }
+
+fun MutableEntityRef.transform(dx: Int, dy: Int) {
+    check(!isBody) { "Can't transform $this directly because it's a body!" }
+    val newPosition = position?.transformed(dx, dy)
+            ?: error("Can't transform $this because it has no position!")
+    set(newPosition)
+}
 
 fun Position.transformed(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)
