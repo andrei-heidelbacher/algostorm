@@ -18,9 +18,7 @@ package com.aheidelbacher.algostorm.android.test
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
@@ -162,8 +160,9 @@ class TestEngine(
     override fun onRender() {
         if (graphicsDriver.isCanvasReady) {
             graphicsDriver.lockCanvas()
-            eventBus.publish(UpdateCamera)
-            eventBus.publish(Render(camera.x, camera.y))
+            eventBus.post(UpdateCamera)
+            eventBus.post(Render(camera.x, camera.y))
+            eventBus.publishPosts()
             graphicsDriver.unlockAndPostCanvas()
         }
     }
