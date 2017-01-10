@@ -16,10 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.event.Event
 
-/**
- * A component which indicates that this entity can collide with other rigid
- * entities.
- */
-object RigidBody : Component
+data class Triggered internal constructor(
+        val kinematicId: Int,
+        val triggerId: Int
+) : Event

@@ -18,7 +18,7 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
+//import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 import org.junit.Test
 
@@ -30,7 +30,7 @@ class PhysicsSystemTest {
     val tileWidth: Int = 32
     val tileHeight: Int = 32
 
-    fun makeMap(vararg rows: String): EntityGroup = mapObject {
+    /*fun makeMap(vararg rows: String): EntityGroup = mapObject {
         width = 32
         height = 32
         tileWidth = 32
@@ -73,7 +73,7 @@ class PhysicsSystemTest {
         }
     }
 
-    /*@Test
+    @Test
     fun testFindPath() {
         testMap(
                 4,

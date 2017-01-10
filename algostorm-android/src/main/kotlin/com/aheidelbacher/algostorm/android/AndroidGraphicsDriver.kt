@@ -29,6 +29,7 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AndroidGraphicsDriver(
@@ -36,7 +37,7 @@ class AndroidGraphicsDriver(
         private val scale: Float
 ) : GraphicsDriver {
     companion object {
-        private val bitmaps = hashMapOf<Resource, Bitmap>()
+        private val bitmaps = ConcurrentHashMap<Resource, Bitmap>()
 
         fun loadBitmap(resource: Resource) {
             if (resource !in bitmaps) {

@@ -45,6 +45,7 @@ import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.RIGHT_UP
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.getViewport
 import com.aheidelbacher.algostorm.systems.graphics2d.sprite
+import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
 import java.util.Comparator
@@ -67,22 +68,28 @@ class RenderingSystem(
         const val RENDERABLE_GROUP_NAME: String = "renderable"
     }
 
+    private data class Node(
+            val id: Int,
+            val position: Position,
+            val sprite: Sprite
+    ) : Comparable<Node> {
+        override fun compareTo(other: Node): Int =
+                if (sprite.z != other.sprite.z)
+                    sprite.z - other.sprite.z
+                else if (position.y != other.position.y)
+                    position.y - other.position.y
+                else if (sprite.priority != other.sprite.priority)
+                    sprite.priority - other.sprite.priority
+                else
+                    position.x - other.position.x
+    }
+
     private val tileWidth: Int = map.tileWidth
     private val tileHeight: Int = map.tileHeight
     private val tileSetCollection: TileSetCollection = map.tileSetCollection
     private val entityGroup: EntityGroup = map.entityPool.group
     private lateinit var renderableGroup: EntityGroup
-    private var sortedEntities = arrayOfNulls<EntityRef?>(0)
-    private val comparator = Comparator<EntityRef?> { e1, e2 ->
-        val p1 = e1?.position ?: error("")
-        val p2 = e2?.position ?: error("")
-        val s1 = e1?.sprite ?: error("")
-        val s2 = e2?.sprite ?: error("")
-        if (s1.z != s2.z) s1.z - s2.z
-        else if (p1.y != p2.y) p1.y - p2.y
-        else if (s1.priority != s2.priority) s1.priority - s2.priority
-        else p1.x - p2.x
-    }
+    private var sortedEntities = emptyArray<Node>()
 
     override fun onSubscribe(publisher: Publisher) {
         renderableGroup = entityGroup.addGroup(RENDERABLE_GROUP_NAME) {
@@ -97,19 +104,24 @@ class RenderingSystem(
     private fun updateSortedOrder() {
         val size = renderableGroup.entities.count()
         val isChanged = size != sortedEntities.size || sortedEntities.any {
-            it == null || it.id !in renderableGroup
+            it.id !in renderableGroup
         }
         if (isChanged) {
-            sortedEntities = arrayOfNulls(size)
+            val entities = arrayOfNulls<Node?>(size)
             renderableGroup.entities.forEachIndexed { i, entityRef ->
-                sortedEntities[i] = entityRef
+                sortedEntities[i] = Node(
+                        id = entityRef.id,
+                        position = checkNotNull(entityRef.position),
+                        sprite = checkNotNull(entityRef.sprite)
+                )
             }
+            sortedEntities = entities.requireNoNulls()
         }
         val isSorted = (0 until sortedEntities.size - 1).none {
-            comparator.compare(sortedEntities[it], sortedEntities[it + 1]) > 0
+            sortedEntities[it] > sortedEntities[it + 1]
         }
         if (!isSorted) {
-            sortedEntities.sortWith(comparator)
+            sortedEntities.sort()
         }
     }
 
@@ -176,11 +188,11 @@ class RenderingSystem(
         }
     }
 
-    private fun EntityRef.draw(offX: Int, offY: Int) {
-        val p = position ?: return
-        val x = p.x * tileWidth
-        val y = p.y * tileHeight
-        sprite?.draw(offX + x, offY + y)
+    private fun Node.draw(offX: Int, offY: Int) {
+        sprite.draw(
+                offX = offX + position.x * tileWidth,
+                offY = offY + position.y * tileHeight
+        )
     }
 
     /**
@@ -209,7 +221,7 @@ class RenderingSystem(
                 canvas.drawColor(Color(it))
             } ?: canvas.clear()
             updateSortedOrder()
-            sortedEntities.forEach { it?.draw(-cameraX, -cameraY) }
+            sortedEntities.forEach {it.draw(-cameraX, -cameraY) }
         }
     }
 }
