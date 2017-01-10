@@ -37,8 +37,8 @@ import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
 import com.aheidelbacher.algostorm.systems.physics2d.Body
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 
