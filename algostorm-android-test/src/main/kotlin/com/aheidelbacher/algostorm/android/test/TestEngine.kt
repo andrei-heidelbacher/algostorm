@@ -37,6 +37,7 @@ import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
 import com.aheidelbacher.algostorm.systems.physics2d.Body
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
@@ -142,7 +143,8 @@ class TestEngine(
                     map.entityPool.group,
                     1
             ),
-            PhysicsSystem(map.entityPool.group)
+            PhysicsSystem(map.entityPool.group),
+            PathFindingSystem(map.entityPool.group)
     )
     private val inputListener = PollingInputListener()
 
@@ -160,7 +162,6 @@ class TestEngine(
     override fun onRender() {
         if (graphicsDriver.isCanvasReady) {
             graphicsDriver.lockCanvas()
-            eventBus.post(UpdateCamera)
             eventBus.post(Render(camera.x, camera.y))
             eventBus.publishPosts()
             graphicsDriver.unlockAndPostCanvas()
@@ -177,8 +178,8 @@ class TestEngine(
                 try {
                     val tx = (x + camera.x - graphicsDriver.width / 2) / map.tileWidth
                     val ty = (y + camera.y - graphicsDriver.height / 2) / map.tileHeight
-                    eventBus.post(Follow(1))
                     val path = eventBus.request(FindPath(1, tx, ty))
+                    path?.let { eventBus.post(Follow(1)) }
                     path?.forEach { d ->
                         eventBus.post(TransformIntent(1, d.dx, d.dy))
                     }
@@ -191,6 +192,7 @@ class TestEngine(
 
     override fun onUpdate() {
         eventBus.post(Update(millisPerUpdate))
+        eventBus.post(UpdateCamera)
         eventBus.publishPosts()
     }
 

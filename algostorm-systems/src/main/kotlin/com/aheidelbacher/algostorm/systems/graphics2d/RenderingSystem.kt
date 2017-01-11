@@ -70,8 +70,8 @@ class RenderingSystem(
 
     private data class Node(
             val id: Int,
-            val position: Position,
-            val sprite: Sprite
+            var position: Position,
+            var sprite: Sprite
     ) : Comparable<Node> {
         override fun compareTo(other: Node): Int =
                 if (sprite.z != other.sprite.z)
@@ -109,13 +109,18 @@ class RenderingSystem(
         if (isChanged) {
             val entities = arrayOfNulls<Node?>(size)
             renderableGroup.entities.forEachIndexed { i, entityRef ->
-                sortedEntities[i] = Node(
+                entities[i] = Node(
                         id = entityRef.id,
                         position = checkNotNull(entityRef.position),
                         sprite = checkNotNull(entityRef.sprite)
                 )
             }
             sortedEntities = entities.requireNoNulls()
+        } else {
+            sortedEntities.forEach {
+                it.position = checkNotNull(renderableGroup[it.id]?.position)
+                it.sprite = checkNotNull(renderableGroup[it.id]?.sprite)
+            }
         }
         val isSorted = (0 until sortedEntities.size - 1).none {
             sortedEntities[it] > sortedEntities[it + 1]
@@ -221,7 +226,7 @@ class RenderingSystem(
                 canvas.drawColor(Color(it))
             } ?: canvas.clear()
             updateSortedOrder()
-            sortedEntities.forEach {it.draw(-cameraX, -cameraY) }
+            sortedEntities.forEach { it.draw(-cameraX, -cameraY) }
         }
     }
 }
