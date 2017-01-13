@@ -21,6 +21,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.test.engine.driver.DriverTest
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -29,11 +30,11 @@ import kotlin.test.assertEquals
 /**
  * An abstract test class for a [ScriptDriver].
  *
- * In order to test common functionality to all script engines, you may
+ * In order to test common functionality to all script drivers, you may
  * implement this class and provide a concrete script driver instance to test.
  */
 @Ignore
-abstract class ScriptDriverTest {
+abstract class ScriptDriverTest : DriverTest() {
     data class ProcedureInvocation(val name: String, val args: List<*>) {
         constructor(name: String, vararg args: Any?) : this(name, args.asList())
     }
@@ -50,14 +51,7 @@ abstract class ScriptDriverTest {
         ) : this(name, returnType, args.asList())
     }
 
-    protected abstract fun createScriptDriver(): ScriptDriver
-
-    /**
-     * The script driver which will be initialized using the
-     * [createScriptDriver] method.
-     */
-    protected lateinit var scriptDriver: ScriptDriver
-        private set
+    override abstract val driver: ScriptDriver
 
     /**
      * The script procedures which will be loaded evaluated before any tests
@@ -77,36 +71,27 @@ abstract class ScriptDriverTest {
     /** The functions which will be tested. */
     protected abstract val functionInvocations: Map<FunctionInvocation<*>, *>
 
-    @Before
-    fun evalScripts() {
-        scriptDriver = createScriptDriver()
-        scriptProcedures.forEach { scriptDriver.loadProcedure(it) }
-        scriptFunctions.forEach { scriptDriver.loadFunction(it) }
+    @Before fun evalScripts() {
+        scriptProcedures.forEach { driver.loadProcedure(it) }
+        scriptFunctions.forEach { driver.loadFunction(it) }
     }
 
-    @Test
-    fun testProcedures() {
+    @Test fun testProcedures() {
         procedureInvocations.forEach {
-            scriptDriver.invokeProcedure(it.name, *it.args.toTypedArray())
+            driver.invokeProcedure(it.name, *it.args.toTypedArray())
         }
     }
 
-    @Test
-    fun testFunctions() {
+    @Test fun testFunctions() {
         functionInvocations.forEach {
             assertEquals(
                     expected = it.value,
-                    actual = scriptDriver.invokeFunction(
+                    actual = driver.invokeFunction(
                             it.key.name,
                             it.key.returnType,
                             *it.key.args.toTypedArray()
                     )
             )
         }
-    }
-
-    @Test
-    fun testRelease() {
-        scriptDriver.release()
     }
 }

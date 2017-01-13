@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -37,17 +36,9 @@ import kotlin.test.fail
  */
 @Ignore
 abstract class EventBusTest {
-    private lateinit var eventBus: EventBus
+    protected abstract val eventBus: EventBus
 
-    protected abstract fun createEventBus(): EventBus
-
-    @Before
-    fun initializeEventBus() {
-        eventBus = createEventBus()
-    }
-
-    @Test
-    fun publishPostsShouldNotifySubscribers() {
+    @Test fun publishPostsShouldNotifySubscribers() {
         val postedEvent = EventMock(5)
         var handledEvent: EventMock? = null
         val subscriber = object : Subscriber {
@@ -62,8 +53,7 @@ abstract class EventBusTest {
         assertEquals(postedEvent, handledEvent)
     }
 
-    @Test
-    fun publishPostsAfterUnsubscribeShouldNotNotifySubscriber() {
+    @Test fun publishPostsAfterUnsubscribeShouldNotNotifySubscriber() {
         val publishedEvent = EventMock(5)
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
@@ -104,8 +94,7 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
     }
 
-    @Test
-    fun protectedHandlerShouldBeIgnored() {
+    @Test fun protectedHandlerShouldBeIgnored() {
         val postedEvent = EventMock(5)
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
@@ -118,8 +107,7 @@ abstract class EventBusTest {
         eventBus.publishPosts()
     }
 
-    @Test
-    fun privateHandlerShouldBeIgnored() {
+    @Test fun privateHandlerShouldBeIgnored() {
         val postedEvent = EventMock(5)
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")

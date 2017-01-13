@@ -27,8 +27,8 @@ const val TOLERANCE: Float = 1e-7F
 fun Float.eq(other: Float): Boolean = Math.abs(this - other) < TOLERANCE
 
 fun Matrix.eq(other: Matrix): Boolean =
-        sx.eq(other.sx) && kx.eq(other.kx) && dx.eq(other.dx) &&
-                ky.eq(other.ky) && sy.eq(other.sy) && dy.eq(other.dy)
+        sx.eq(other.sx) && kx.eq(other.kx) && dx.eq(other.dx)
+                && ky.eq(other.ky) && sy.eq(other.sy) && dy.eq(other.dy)
 
 fun assertEquals(expected: Matrix, actual: Matrix, tolerance: Float) {
     assertArrayEquals(

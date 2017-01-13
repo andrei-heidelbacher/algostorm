@@ -16,14 +16,11 @@
 
 package com.aheidelbacher.algostorm.test.engine
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Engine.Status
-
-import java.io.FileNotFoundException
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -41,15 +38,8 @@ abstract class EngineTest {
         const val MAX_TIME_LIMIT: Long = 5000
     }
 
-    private lateinit var engine: Engine
-
-    /** Factory method to create engine instances. */
-    protected abstract fun createEngine(): Engine
-
-    @Before
-    fun initializeEngine() {
-        engine = createEngine()
-    }
+    /** The engine instance that should be tested. */
+    protected abstract val engine: Engine
 
     @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantStop() {

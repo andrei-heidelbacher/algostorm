@@ -16,12 +16,12 @@
 
 package com.aheidelbacher.algostorm.test.engine.serialization
 
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.test.engine.driver.DriverTest
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -29,45 +29,25 @@ import java.io.InputStream
 import kotlin.test.assertEquals
 
 @Ignore
-abstract class SerializationDriverTest {
-    protected abstract fun createSerializationDriver(): SerializationDriver
+abstract class SerializationDriverTest : DriverTest() {
+    override abstract val driver: SerializationDriver
 
-    protected lateinit var serializationDriver: SerializationDriver
-        private set
-
-    protected abstract val testDataMock: TestDataMock
+    protected abstract val data: DataMock
 
     protected abstract val inputStream: InputStream
 
-    @Before
-    fun initializeSerializationDriver() {
-        serializationDriver = createSerializationDriver()
+    @Test fun testDataInlineDeserialization() {
+        assertEquals(data, driver.readValue<DataMock>(inputStream))
     }
 
-    @Test
-    fun testDataInlineDeserialization() {
-        assertEquals(
-                testDataMock,
-                serializationDriver.readValue<TestDataMock>(inputStream)
-        )
+    @Test fun testDataDeserialization() {
+        assertEquals(data, driver.readValue(inputStream, DataMock::class))
     }
 
-    @Test
-    fun testDataDeserialization() {
-        assertEquals(
-                testDataMock,
-                serializationDriver.readValue(inputStream, TestDataMock::class)
-        )
-    }
-
-    @Test
-    fun testDataSerialization() {
+    @Test fun testDataSerialization() {
         val byteStream = ByteArrayOutputStream()
-        serializationDriver.writeValue(byteStream, testDataMock)
+        driver.writeValue(byteStream, data)
         val inputStream = byteStream.toByteArray().inputStream()
-        assertEquals(
-                testDataMock,
-                serializationDriver.readValue<TestDataMock>(inputStream)
-        )
+        assertEquals(data, driver.readValue<DataMock>(inputStream))
     }
 }

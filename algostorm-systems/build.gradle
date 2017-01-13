@@ -19,6 +19,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    testCompile project(':algostorm-test')
+    testCompile "junit:junit:$junit_version"
 }
 
 dokka {

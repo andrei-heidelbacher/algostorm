@@ -1,0 +1,16 @@
+{
+  "primitiveField": 1,
+  "innerData": {
+    "field": "non-empty"
+  },
+  "primitiveFloatField": 1.5,
+  "list": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "resource": "res:///resource.txt",
+  "color": "#ff00FF00"
+}
