@@ -18,6 +18,17 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.Component
 
+/**
+ * A component which indicates how this entity interacts with other bodies.
+ *
+ * Kinematic bodies can be transformed, activate triggers and collide with other
+ * static or kinematic bodies.
+ *
+ * Static bodies can't be transformed and can be collided by other kinematic
+ * bodies.
+ *
+ * Triggers can't be transformed and can be activated by other kinematic bodies.
+ */
 enum class Body : Component {
     KINEMATIC, STATIC, TRIGGER
 }

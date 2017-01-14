@@ -37,6 +37,14 @@ class PhysicsSystem(
     companion object {
         const val KINEMATIC_BODIES_GROUP: String = "kinematic-bodies"
 
+        /**
+         * Transforms this non-body entity by the indicated amount.
+         *
+         * @param dx the horizontal translation amount in tiles
+         * @param dy the vertical translation amount in tiles (positive is down)
+         * @throws IllegalStateException if this entity is a [Body] or if it
+         * doesn't have a [Position]
+         */
         fun MutableEntityRef.transform(dx: Int, dy: Int) {
             check(!isBody) { "Can't transform $this directly if it's a body!" }
             val newPosition = position?.transformed(dx, dy)
@@ -47,7 +55,7 @@ class PhysicsSystem(
 
     /**
      * An event which signals a transformation that should be applied on the
-     * given entity.
+     * given [Body.KINEMATIC] entity.
      *
      * @property entityId the id of the entity which should be transformed
      * @property dx the horizontal translation amount in tiles
@@ -90,7 +98,7 @@ class PhysicsSystem(
      * location, the entity is not transformed and a [Collision] event is
      * triggered with every overlapping entity.
      *
-     * @param event the [TransformIntent] event
+     * @param event the transform intent event
      * @throws IllegalStateException if the transformed entity doesn't have a
      * [Position] component
      */

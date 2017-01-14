@@ -214,7 +214,7 @@ class RenderingSystem(
      * the map background color and every renderable tile and entity in the game
      * is drawn.
      *
-     * @param event the rendering request
+     * @param event the rendering event
      */
     @Subscribe fun onRender(event: Render) {
         val cameraWidth = canvas.width

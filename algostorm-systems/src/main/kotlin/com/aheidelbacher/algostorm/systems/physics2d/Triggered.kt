@@ -18,7 +18,15 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.event.Event
 
+/**
+ * An event which signals that [selfId] triggered [triggerId].
+ *
+ * Only the [PhysicsSystem] should post this event.
+ *
+ * @property selfId the id of this entity, which activated the trigger
+ * @property triggerId the id of the other entity, which was triggered
+ */
 data class Triggered internal constructor(
-        val kinematicId: Int,
+        val selfId: Int,
         val triggerId: Int
 ) : Event
