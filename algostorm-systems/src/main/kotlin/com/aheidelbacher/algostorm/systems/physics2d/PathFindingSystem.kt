@@ -33,7 +33,10 @@ class PathFindingSystem(private val entityGroup: EntityGroup) : Subscriber {
                 directions: List<Direction>,
                 isCollider: (Position) -> Boolean
         ): List<Direction>? {
-            data class HeapNode(val p: Position, val f: Int) : Comparable<HeapNode> {
+            data class HeapNode(
+                    val p: Position,
+                    val f: Int
+            ) : Comparable<HeapNode> {
                 override fun compareTo(other: HeapNode): Int = f - other.f
             }
 
