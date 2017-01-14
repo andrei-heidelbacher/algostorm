@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
+import com.aheidelbacher.algostorm.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -35,8 +36,13 @@ class PhysicsSystem(
 ) : Subscriber {
     companion object {
         const val KINEMATIC_BODIES_GROUP: String = "kinematic-bodies"
-        fun Position.transformed(dx: Int, dy: Int): Position =
-                copy(x = x + dx, y = y + dy)
+
+        fun MutableEntityRef.transform(dx: Int, dy: Int) {
+            check(!isBody) { "Can't transform $this directly if it's a body!" }
+            val newPosition = position?.transformed(dx, dy)
+                    ?: error("Can't transform $this without position!")
+            set(newPosition)
+        }
     }
 
     /**
