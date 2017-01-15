@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.systems
 
-import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.event.Subscriber
 
-/**
- * A component which indicates how this entity interacts with other bodies.
- *
- * Kinematic and static bodies are colliders (they can trigger collisions).
- *
- * Kinematic bodies can be transformed, activate triggers and collide with other
- * static or kinematic bodies.
- *
- * Static bodies can't be transformed and can be collided by other kinematic
- * bodies.
- *
- * Triggers can't be transformed and can be activated by other kinematic bodies.
- */
-enum class Body : Component {
-    KINEMATIC, STATIC, TRIGGER
+abstract class EntitySystem(private val eventBus: EventBus) : Subscriber {
+    protected fun onInit() {}
+    protected fun onDeactivate() {}
+
+    fun init() {
+        eventBus.subscribe(this)
+        onInit()
+    }
+
+    fun deactivate() {
+        eventBus.unsubscribe(this)
+        onDeactivate()
+    }
 }

@@ -23,10 +23,17 @@ import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
+import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
+import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER
 
 /**
  * A system that handles [TransformIntent] events and publishes [Transformed],
  * [Collision] and [Triggered] events.
+ *
+ * [STATIC] entities are preprocessed at initialization time. If any static
+ * entity is created, deleted or has its [Body] or [Position] components
+ * changed, this system has undefined behavior.
  *
  * @property entityGroup the entity group used to retrieve and update the
  * entities
@@ -35,6 +42,7 @@ class PhysicsSystem(
         private val entityGroup: MutableEntityGroup
 ) : Subscriber {
     companion object {
+        /** The name of the kinematic bodies entity subgroup. */
         const val KINEMATIC_BODIES_GROUP: String = "kinematic-bodies"
 
         /**
@@ -55,7 +63,7 @@ class PhysicsSystem(
 
     /**
      * An event which signals a transformation that should be applied on the
-     * given [Body.KINEMATIC] entity.
+     * given [KINEMATIC] entity.
      *
      * @property entityId the id of the entity which should be transformed
      * @property dx the horizontal translation amount in tiles
@@ -93,14 +101,18 @@ class PhysicsSystem(
 
     /**
      * Upon receiving a [TransformIntent] event, the entity is transformed by
-     * the indicated amount. If the moved entity is rigid and there are any
-     * other rigid entities with their boxes overlapping the destination
-     * location, the entity is not transformed and a [Collision] event is
-     * triggered with every overlapping entity.
+     * the indicated amount.
+     *
+     * If there are any colliders at the destination location, the entity is not
+     * transformed and a [Collision] event is posted with every overlapping
+     * collider. If the entity is transformed, a [Transformed] event is posted
+     * and a [Triggered] event is posted for every [TRIGGER] which overlaps the
+     * destination location.
+     *
+     * If the entity doesn't exist, isn't kinematic or doesn't have a position,
+     * nothing happens.
      *
      * @param event the transform intent event
-     * @throws IllegalStateException if the transformed entity doesn't have a
-     * [Position] component
      */
     @Subscribe fun onTransformIntent(event: TransformIntent) {
         val entity = kinematicBodies[event.entityId] ?: return

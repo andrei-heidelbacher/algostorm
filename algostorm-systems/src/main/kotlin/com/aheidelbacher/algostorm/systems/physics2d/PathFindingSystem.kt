@@ -27,6 +27,18 @@ import java.util.PriorityQueue
 
 class PathFindingSystem(private val entityGroup: EntityGroup) : Subscriber {
     companion object {
+        /**
+         * Returns the path going from `source` to `destination` using the given
+         * `directions` and avoiding the given colliders.
+         *
+         * @param source the source location
+         * @param destination the destination location
+         * @param directions the directions used for movement
+         * @param isCollider the map which contains all colliders
+         * @return the directions in which the `source` should move in order to
+         * reach the `destination`, or `null` if the `destination` can't be
+         * reached
+         */
         fun findPath(
                 source: Position,
                 destination: Position,

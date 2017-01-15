@@ -20,34 +20,52 @@ import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.ecs.MutableEntityRef
+import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
+import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
+import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER
 
+/** The current [Position] of this entity, or `null` if it doesn't have one. */
 val EntityRef.position: Position?
     get() = get(Position::class)
 
+/** Returns whether this entity is a [Body]. */
 val EntityRef.isBody: Boolean
     get() = contains(Body::class)
 
+/** Returns whether this entity is [KINEMATIC]. */
 val EntityRef.isKinematic: Boolean
-    get() = get(Body::class) == Body.KINEMATIC
+    get() = get(Body::class) == KINEMATIC
 
+/**
+ * Returns whether this entity is a collider ([KINEMATIC] or [STATIC]).
+ */
 val EntityRef.isCollider: Boolean
     get() = when (get(Body::class)) {
-        Body.KINEMATIC, Body.STATIC -> true
+        KINEMATIC, STATIC -> true
         else -> false
     }
 
+/** Returns whether this entity is [STATIC]. */
 val EntityRef.isStatic: Boolean
     get() = when (get(Body::class)) {
-        Body.STATIC, Body.TRIGGER -> true
+        STATIC, TRIGGER -> true
         else -> false
     }
 
+/** Returns whether this entity is [TRIGGER]. */
 val EntityRef.isTrigger: Boolean
     get() = when (get(Body::class)) {
-        Body.TRIGGER -> true
+        TRIGGER -> true
         else -> false
     }
 
+/**
+ * Returns a transformed version of this position by the indicated amount.
+ *
+ * @param dx the horizontal translation amount in tiles
+ * @param dy the vertical translation amount in tiles (positive is down)
+ * @return the new position
+ */
 fun Position.transformed(dx: Int, dy: Int): Position =
         copy(x = x + dx, y = y + dy)
 

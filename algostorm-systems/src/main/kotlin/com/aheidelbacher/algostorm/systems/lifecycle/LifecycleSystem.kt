@@ -25,8 +25,19 @@ import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-
+/**
+ * A system that handles entity creation and deletion requests.
+ *
+ * @property entityPool the entity pool used to create and delete entities
+ */
 class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
+    /**
+     * A request to create an entity with the given [components].
+     *
+     * @property components the initial components of the created entity
+     * @throws IllegalArgumentException if there are multiple [components] of
+     * the same type
+     */
     class Create(
             val components: Collection<Component>
     ) : Request<MutableEntityRef>() {
@@ -35,6 +46,12 @@ class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
         }
     }
 
+    /**
+     * A request to delete the entity with the given [id].
+     *
+     * @property id the id of the entity which should be deleted
+     * @throws IllegalArgumentException if the given [id] is not positive
+     */
     class Delete(val id: Int) : Request<Boolean>() {
         init {
             validateId(id)
