@@ -16,13 +16,19 @@
 
 package com.aheidelbacher.algostorm.engine.script
 
+import org.junit.Test
+
+import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeScript
 import com.aheidelbacher.algostorm.test.engine.script.ResultMock
 import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverTest
 
+import kotlin.reflect.KFunction
+import kotlin.test.assertEquals
+
 class KotlinScriptDriverTest : ScriptDriverTest() {
     override val driver = KotlinScriptDriver()
-    override val scriptProcedures = listOf(::procedure)
-    override val scriptFunctions = listOf(
+    override val scripts: List<KFunction<*>> = listOf(
+            ::procedure,
             ::intFunction,
             ::stringFunction,
             ::resultMockFunction
@@ -31,23 +37,32 @@ class KotlinScriptDriverTest : ScriptDriverTest() {
     private val value = 42
     private val message = "Hello!"
 
-    override val procedureInvocations =
-            setOf(ProcedureInvocation(::procedure.name, message))
-    override val functionInvocations = mapOf(
-            FunctionInvocation(
+    override val runs = setOf(Run(::procedure.name, message))
+    override val invocations: Map<Invocation<*>, *> = mapOf(
+            Invocation(
                     ::stringFunction.name,
                     String::class,
                     message
             ) to message,
-            FunctionInvocation(
+            Invocation(
                     ::intFunction.name,
                     Int::class.javaObjectType.kotlin,
                     value
             ) to value,
-            FunctionInvocation(
+            Invocation(
                     ::resultMockFunction.name,
                     ResultMock::class,
                     ResultMock(value, message)
             ) to ResultMock(value, message)
     )
+
+    @Test fun testInlineInvokeStringScript() {
+        val result = driver.invokeScript<String>(::stringFunction.name, message)
+        assertEquals(message, result)
+    }
+
+    @Test fun testInlineInvokeIntScript() {
+        val result = driver.invokeScript<Int>(::intFunction.name, value)
+        assertEquals(value, result)
+    }
 }

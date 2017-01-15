@@ -28,71 +28,63 @@ import kotlin.reflect.KFunction
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scriptProcedures the procedures which will be loaded in the script
- * engine at construction time
- * @param scriptFunctions the functions which will be loaded in the script
- * engine at construction time
+ * @param scripts the scripts which will be loaded in the script engine at
+ * construction time
  */
 class ScriptingSystem(
         private val scriptEngine: ScriptEngine,
-        scriptProcedures: List<KFunction<Unit>>,
-        scriptFunctions: List<KFunction<*>>
+        scripts: List<KFunction<*>>
 ) : Subscriber {
     /**
-     * A request to execute the script procedure with the given `name` and
-     * `arguments`.
+     * A request to execute the script with the given `name` and arguments.
      *
-     * @property name the name of script procedure that should be executed
-     * @property arguments the parameters of the script procedure
+     * @property name the name of script which should be executed
+     * @property args the parameters of the script
      */
-    class InvokeProcedure private constructor(
+    class RunScript private constructor(
             val name: String,
-            val arguments: List<*>
+            val args: List<*>
     ) : Request<Unit>() {
-        constructor(name: String, vararg arguments: Any?) : this(
+        constructor(name: String, vararg args: Any?) : this(
                 name = name,
-                arguments = arguments.asList()
+                args = args.asList()
         )
     }
 
     /**
-     * A request to execute the script function with the given `name` and
-     * `arguments`, returning the result.
+     * A request to execute the script with the given `name` and arguments,
+     * returning the result.
      *
-     * @property name the name of the script function that should be executed
+     * @property name the name of the script which should be executed
      * @property returnType the expected type of the result
-     * @property arguments the parameters of the script function
+     * @property args the parameters of the script
      */
-    class InvokeFunction private constructor(
+    class InvokeScript private constructor(
             val name: String,
             val returnType: KClass<*>,
-            val arguments: List<*>
+            val args: List<*>
     ) : Request<Any?>() {
         constructor(
                 name: String,
                 returnType: KClass<*>,
-                vararg arguments: Any?
-        ) : this(name, returnType, arguments.asList())
+                vararg args: Any?
+        ) : this(name, returnType, args.asList())
     }
 
     init {
-        scriptProcedures.forEach { scriptEngine.loadProcedure(it) }
-        scriptFunctions.forEach { scriptEngine.loadFunction(it) }
+        scripts.forEach { scriptEngine.loadScript(it) }
     }
 
-    @Subscribe fun onInvokeProcedure(request: InvokeProcedure) {
-        scriptEngine.invokeProcedure(
-                request.name,
-                *request.arguments.toTypedArray()
-        )
+    @Subscribe fun onRunScript(request: RunScript) {
+        scriptEngine.runScript(request.name, *request.args.toTypedArray())
         request.complete(Unit)
     }
 
-    @Subscribe fun onInvokeFunction(request: InvokeFunction) {
-        request.complete(scriptEngine.invokeFunction(
+    @Subscribe fun onInvokeScript(request: InvokeScript) {
+        request.complete(scriptEngine.invokeScript(
                 request.name,
                 request.returnType,
-                *request.arguments.toTypedArray()
+                *request.args.toTypedArray()
         ))
     }
 }

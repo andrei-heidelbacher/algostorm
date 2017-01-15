@@ -20,30 +20,29 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.script.KotlinScriptDriver
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeFunction
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeProcedure
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeScript
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
 
 class ScriptingSystemTest {
     private val system = ScriptingSystem(
             KotlinScriptDriver(),
-            listOf(::testProcedure),
-            listOf(::testFunction)
+            listOf(::testProcedure, ::testFunction)
     )
 
     @Test fun testInvokeProcedure() {
-        val event = InvokeProcedure(::testProcedure.name, "Hello!")
-        system.onInvokeProcedure(event)
+        val event = RunScript(::testProcedure.name, "Hello!")
+        system.onRunScript(event)
         assertEquals(Unit, event.get())
     }
 
     @Test fun testInvokeFunction() {
         val message = "Hello!"
-        val event = InvokeFunction(
+        val event = InvokeScript(
                 ::testFunction.name,
                 String::class,
                 message
         )
-        system.onInvokeFunction(event)
+        system.onInvokeScript(event)
         assertEquals(message, event.get() as String)
     }
 }

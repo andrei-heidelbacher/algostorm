@@ -20,31 +20,23 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 class KotlinScriptDriver : ScriptDriver {
-    private val procedures = hashMapOf<String, KFunction<Unit>>()
-    private val functions = hashMapOf<String, KFunction<*>>()
+    private val scripts = hashMapOf<String, KFunction<*>>()
 
-    override fun loadProcedure(procedure: KFunction<Unit>) {
-        procedures[procedure.name] = procedure
+    override fun loadScript(script: KFunction<*>) {
+        scripts[script.name] = script
     }
 
-    override fun <T> loadFunction(function: KFunction<T>) {
-        functions[function.name] = function
+    override fun runScript(name: String, vararg args: Any?) {
+        requireNotNull(scripts[name]).call(*args)
     }
 
-    override fun invokeProcedure(name: String, vararg arguments: Any?) {
-        requireNotNull(procedures[name]).call(*arguments)
-    }
-
-    override fun <T : Any> invokeFunction(
+    override fun <T : Any> invokeScript(
             name: String,
             returnType: KClass<T>,
-            vararg arguments: Any?
-    ): T? = returnType.java.cast(
-            requireNotNull(functions[name]).call(*arguments)
-    )
+            vararg args: Any?
+    ): T? = returnType.java.cast(requireNotNull(scripts[name]).call(*args))
 
     override fun release() {
-        procedures.clear()
-        functions.clear()
+        scripts.clear()
     }
 }

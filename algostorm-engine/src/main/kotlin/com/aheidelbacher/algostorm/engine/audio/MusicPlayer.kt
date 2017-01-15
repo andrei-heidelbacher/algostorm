@@ -29,6 +29,8 @@ interface MusicPlayer {
      * Synchronously loads the given music `resource`, making it available to
      * future calls of [playMusic].
      *
+     * If the same resource is loaded multiple times, nothing happens.
+     *
      * @param resource the music resource which should be loaded
      */
     fun loadMusic(resource: Resource): Unit

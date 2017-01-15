@@ -35,11 +35,11 @@ import kotlin.test.assertEquals
  */
 @Ignore
 abstract class ScriptDriverTest : DriverTest() {
-    data class ProcedureInvocation(val name: String, val args: List<*>) {
+    data class Run(val name: String, val args: List<*>) {
         constructor(name: String, vararg args: Any?) : this(name, args.asList())
     }
 
-    data class FunctionInvocation<T : Any>(
+    data class Invocation<T : Any>(
             val name: String,
             val returnType: KClass<T>,
             val args: List<*>
@@ -53,40 +53,30 @@ abstract class ScriptDriverTest : DriverTest() {
 
     override abstract val driver: ScriptDriver
 
-    /**
-     * The script procedures which will be loaded evaluated before any tests
-     * are run.
-     */
-    protected abstract val scriptProcedures: List<KFunction<Unit>>
+    /** The scripts which will be loaded before any tests are run. */
+    protected abstract val scripts: List<KFunction<*>>
 
-    /**
-     * The script functions which will be loaded evaluated before any tests are
-     * run.
-     */
-    protected abstract val scriptFunctions: List<KFunction<*>>
+    /** The script runs which will be tested. */
+    protected abstract val runs: Set<Run>
 
-    /** The procedures which will be tested. */
-    protected abstract val procedureInvocations: Set<ProcedureInvocation>
-
-    /** The functions which will be tested. */
-    protected abstract val functionInvocations: Map<FunctionInvocation<*>, *>
+    /** The script invocations which will be tested.*/
+    protected abstract val invocations: Map<Invocation<*>, *>
 
     @Before fun evalScripts() {
-        scriptProcedures.forEach { driver.loadProcedure(it) }
-        scriptFunctions.forEach { driver.loadFunction(it) }
+        scripts.forEach { driver.loadScript(it) }
     }
 
-    @Test fun testProcedures() {
-        procedureInvocations.forEach {
-            driver.invokeProcedure(it.name, *it.args.toTypedArray())
+    @Test fun testRunScript() {
+        runs.forEach {
+            driver.runScript(it.name, *it.args.toTypedArray())
         }
     }
 
-    @Test fun testFunctions() {
-        functionInvocations.forEach {
+    @Test fun testInvokeScript() {
+        invocations.forEach {
             assertEquals(
                     expected = it.value,
-                    actual = driver.invokeFunction(
+                    actual = driver.invokeScript(
                             it.key.name,
                             it.key.returnType,
                             *it.key.args.toTypedArray()

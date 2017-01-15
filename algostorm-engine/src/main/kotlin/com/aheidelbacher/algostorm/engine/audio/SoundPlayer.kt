@@ -27,6 +27,8 @@ interface SoundPlayer {
      * Synchronously loads the given sound `resource`, making it available to
      * future calls of [playSound].
      *
+     * If the same resource is loaded multiple times, nothing happens.
+     *
      * @param resource the sound resource which should be loaded
      */
     fun loadSound(resource: Resource): Unit

@@ -24,7 +24,7 @@ import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER
 
-/** The current [Position] of this entity, or `null` if it doesn't have one. */
+/** The `Position` component of this entity. */
 val EntityRef.position: Position?
     get() = get(Position::class)
 

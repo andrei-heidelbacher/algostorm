@@ -24,6 +24,8 @@ interface Canvas {
      * Synchronously loads the given image `resource`, making it available to
      * future calls of [drawBitmap].
      *
+     * If the same resource is loaded multiple times, nothing happens.
+     *
      * @param resource the image resource which should be loaded
      */
     fun loadBitmap(resource: Resource): Unit

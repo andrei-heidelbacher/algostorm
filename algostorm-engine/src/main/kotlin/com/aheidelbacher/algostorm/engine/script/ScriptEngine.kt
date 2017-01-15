@@ -25,56 +25,48 @@ import kotlin.reflect.KFunction
  */
 interface ScriptEngine {
     companion object {
-        inline fun <reified T : Any> ScriptEngine.invokeFunction(
+        inline fun <reified T : Any> ScriptEngine.invokeScript(
                 name: String,
-                vararg arguments: Any?
-        ): T? = invokeFunction(name, T::class, *arguments)
+                vararg args: Any?
+        ): T? = invokeScript(name, T::class, *args)
     }
 
     /**
-     * Loads the given procedure with the [KFunction.name] name, making it
-     * available to future [invokeProcedure] calls.
+     * Loads the given script with the [KFunction.name] name, making it
+     * available to future [runScript] and [invokeScript] calls.
      *
-     * @param procedure the procedure which should be loaded
+     * If the same script is loaded multiple times, nothing happens.
+     *
+     * @param script the script which should be loaded
      */
-    fun loadProcedure(procedure: KFunction<Unit>): Unit
+    fun loadScript(script: KFunction<*>): Unit
 
     /**
-     * Loads the given function with the [KFunction.name] name, making it
-     * available to future [invokeFunction] calls.
+     * Executes the script with the given `name` and the specified arguments.
      *
-     * @param T the return type of the function
-     * @param function the function which should be loaded.
-     */
-    fun <T> loadFunction(function: KFunction<T>): Unit
-
-    /**
-     * Executes the script procedure with the given `name` and the specified
-     * `arguments`.
-     *
-     * @param name the name of the script procedure that should be executed
-     * @param arguments the script procedure parameters
+     * @param name the name of the script which should be executed
+     * @param args the script parameters
      * @throws IllegalArgumentException if the given `name` is not available to
      * this engine
      */
-    fun invokeProcedure(name: String, vararg arguments: Any?): Unit
+    fun runScript(name: String, vararg args: Any?): Unit
 
     /**
-     * Executes the script function with the given `name` and the specified
-     * `arguments` and returns its result.
+     * Executes the script with the given `name` and the specified arguments and
+     * returns its result.
      *
-     * @param name the name of the script function that should be executed
+     * @param name the name of the script which should be executed
      * @param returnType the expected type of the result
-     * @param arguments the script function parameters
-     * @return the script function result
+     * @param args the script parameters
+     * @return the script result
      * @throws IllegalArgumentException if the given `name` is not available to
      * this engine
      * @throws ClassCastException if the result couldn't be converted to the
      * `returnType`
      */
-    fun <T : Any> invokeFunction(
+    fun <T : Any> invokeScript(
             name: String,
             returnType: KClass<T>,
-            vararg arguments: Any?
+            vararg args: Any?
     ): T?
 }
