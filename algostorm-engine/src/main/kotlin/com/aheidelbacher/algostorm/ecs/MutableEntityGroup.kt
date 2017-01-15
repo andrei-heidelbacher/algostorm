@@ -16,14 +16,13 @@
 
 package com.aheidelbacher.algostorm.ecs
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+
 /** A read-only view of a group of filtered mutable entities. */
 interface MutableEntityGroup : EntityGroup {
     override val entities: Iterable<MutableEntityRef>
 
-    override fun get(id: Int): MutableEntityRef?
+    override fun get(id: Id): MutableEntityRef?
 
-    override fun addGroup(
-            name: String,
-            filter: (EntityRef) -> Boolean
-    ): MutableEntityGroup
+    override fun addGroup(filter: (EntityRef) -> Boolean): MutableEntityGroup
 }

@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.state
+package com.aheidelbacher.algostorm.ecs
 
-/**
- * Meta-data associated to an image.
- *
- * @property source the location of the image
- * @property width the width in pixels of this image
- * @property height the height in pixels of this image
- * @throws IllegalArgumentException if [width] or [height] are not positive
- */
-data class Image(val source: File, val width: Int, val height: Int) {
+data class Prefab internal constructor(val components: Set<Component>) {
     init {
-        require(width > 0) { "$this width must be positive!" }
-        require(height > 0) { "$this height must be positive!" }
+        val size = components.size
+        require(components.distinctBy { it.javaClass }.size == size) {
+            "Multiple components of the same type given in $components!"
+        }
     }
 }

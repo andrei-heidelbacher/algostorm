@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.ecs
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.ecs.EntityPoolTest
 
@@ -24,10 +25,12 @@ class EntityPoolImplTest : EntityPoolTest() {
         const val ENTITY_COUNT: Int = 1000
     }
 
-    override fun createInitialEntities(): Map<Int, Collection<Component>> =
-            (1 until ENTITY_COUNT).associate { it to listOf(ComponentMock(it)) }
+    override fun createInitialEntities(): Map<Id, Prefab> =
+            (1 until ENTITY_COUNT).associate {
+                Id(it) to prefabOf(ComponentMock(it))
+            }
 
     override fun createEntityPool(
-            entities: Map<Int, Collection<Component>>
+            entities: Map<Id, Prefab>
     ): EntityPool = entityPoolOf(entities)
 }

@@ -16,14 +16,16 @@
 
 package com.aheidelbacher.algostorm.test.ecs
 
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.ecs.Component
-import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.ecs.EntityPool
 import com.aheidelbacher.algostorm.ecs.EntityRef
-import org.junit.Before
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.Prefab
+import com.aheidelbacher.algostorm.ecs.prefabOf
+import com.aheidelbacher.algostorm.ecs.toPrefab
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -42,13 +44,11 @@ abstract class EntityPoolTest {
         }
     }
 
-    abstract fun createInitialEntities(): Map<Int, Collection<Component>>
+    abstract fun createInitialEntities(): Map<Id, Prefab>
 
-    abstract fun createEntityPool(
-            entities: Map<Int, Collection<Component>>
-    ): EntityPool
+    abstract fun createEntityPool(entities: Map<Id, Prefab>): EntityPool
 
-    protected lateinit var initialEntities: Map<Int, Collection<Component>>
+    protected lateinit var initialEntities: Map<Id, Prefab>
     protected lateinit var entityPool: EntityPool
 
     @Before
@@ -58,46 +58,31 @@ abstract class EntityPoolTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun getInvalidIdShouldThrow() {
-        entityPool.group[-1]
-    }
-
-    @Test(expected = IllegalArgumentException::class)
     fun createDuplicatedComponentTypeShouldThrow() {
-        entityPool.create(listOf(ComponentMock(1), ComponentMock(2)))
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun addDuplicatedGroupShouldThrow() {
-        val name = "duplicated"
-        entityPool.group.addGroup(name) { true }
-        entityPool.group.addGroup(name) { true }
+        entityPool.create(prefabOf(ComponentMock(1), ComponentMock(2)))
     }
 
     @Test
     fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
-                expected = initialEntities.mapValues { it.value.toSet() },
+                expected = initialEntities,
                 actual = entityPool.group.entities.associate {
-                    it.id to it.components.toSet()
+                    it.id to it.toPrefab()
                 }
         )
     }
 
     @Test
     fun getNonExistingShouldReturnNull() {
-        val maxId = initialEntities.keys.max() ?: 0
-        assertNull(entityPool.group[maxId + 1])
+        val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
+        assertNull(entityPool.group[Id(maxId + 1)])
     }
 
     @Test
     fun getExistingShouldReturnEqualEntity() {
-        for ((id, components) in initialEntities) {
+        for ((id, prefab) in initialEntities) {
             assertEquals(id, entityPool.group[id]?.id)
-            assertEquals(
-                    expected = components.toSet(),
-                    actual = entityPool.group[id]?.components?.toSet()
-            )
+            assertEquals(prefab, entityPool.group[id]?.toPrefab())
         }
     }
 
@@ -110,35 +95,35 @@ abstract class EntityPoolTest {
 
     @Test
     fun containsNonExistingShouldReturnFalse() {
-        val maxId = initialEntities.keys.max() ?: 0
-        assertFalse((maxId + 1) in entityPool.group)
+        val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
+        assertFalse(Id(maxId + 1) in entityPool.group)
     }
 
     @Test
     fun removeExistingShouldReturnTrue() {
         for (id in initialEntities.keys) {
-            assertTrue(entityPool.delete(id))
+            assertTrue(entityPool.remove(id))
         }
     }
 
     @Test
     fun getAfterRemoveShouldReturnNull() {
         for (id in initialEntities.keys) {
-            entityPool.delete(id)
+            entityPool.remove(id)
             assertNull(entityPool.group[id])
         }
     }
 
     @Test
     fun removeNonExistingShouldReturnFalse() {
-        val maxId = initialEntities.keys.max() ?: 0
-        assertFalse(entityPool.delete(maxId + 1))
+        val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
+        assertFalse(entityPool.remove(Id(maxId + 1)))
     }
 
     @Test
     fun getAfterCreateShouldReturnEqualEntity() {
-        val maxId = initialEntities.keys.max() ?: 0
-        val entity = entityPool.create(listOf(ComponentMock(maxId + 1)))
+        val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
+        val entity = entityPool.create(prefabOf(ComponentMock(maxId + 1)))
         assertEquals(entity, entityPool.group[entity.id])
     }
 
@@ -152,10 +137,10 @@ abstract class EntityPoolTest {
 
     @Test
     fun filterGroupShouldContainFilteredEntities() {
-        val subgroup = entityPool.group.addGroup("odd-id") { it.id % 2 == 1 }
+        val subgroup = entityPool.group.addGroup { it.id.value % 2 == 1 }
         assertEquals(
                 expected = entityPool.group.entities.filter {
-                    it.id % 2 == 1
+                    it.id.value % 2 == 1
                 }.associateBy {
                     it.id to it.components.toSet()
                 },

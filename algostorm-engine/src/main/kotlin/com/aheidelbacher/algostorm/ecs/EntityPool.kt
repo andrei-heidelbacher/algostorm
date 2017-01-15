@@ -16,36 +16,35 @@
 
 package com.aheidelbacher.algostorm.ecs
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+
 /** A collection of unique entities. */
 interface EntityPool {
     /** The entity group containing all the entities in this pool. */
     val group: MutableEntityGroup
 
     /**
-     * Creates an entity with the given `components`, adds it to this pool and
+     * Creates an entity from the given `prefab`, adds it to this pool and
      * returns it.
      *
      * If creating and adding the entity to this pool fails, the entity pool
      * remains unchanged.
      *
-     * @param components the initial components of the entity
+     * @param prefab the prefab containing the initial components of the entity
      * @return the created entity
-     * @throws IllegalArgumentException if there are given two components of the
-     * same type
      * @throws IllegalStateException if there are too many entities in this pool
      */
-    fun create(components: Collection<Component>): MutableEntityRef
+    fun create(prefab: Prefab): MutableEntityRef
 
     /**
-     * Deletes and invalidates the entity with the given `id` from this pool.
+     * Removes the entity with the given `id` from this pool.
      *
-     * @param id the id of the entity that should be deleted
-     * @return `true` if the entity was deleted, `false` if it didn't exist in
+     * @param id the id of the entity that should be removed
+     * @return `true` if the entity was removed, `false` if it didn't exist in
      * this pool
-     * @throws IllegalArgumentException if `id` is not a valid id
      */
-    fun delete(id: Int): Boolean
+    fun remove(id: Id): Boolean
 
-    /** Removes and invalidates all the entities from this pool. */
+    /** Removes all the entities from this pool. */
     fun clear(): Unit
 }

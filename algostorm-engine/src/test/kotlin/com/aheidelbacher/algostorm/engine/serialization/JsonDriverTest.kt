@@ -16,10 +16,13 @@
 
 package com.aheidelbacher.algostorm.engine.serialization
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver.Companion.FORMAT
+import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock
@@ -33,6 +36,11 @@ class JsonDriverTest : SerializationDriverTest() {
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
             resource = Resource("$SCHEMA/resource.txt"),
-            color = Color("#ff00ff00")
+            color = Color("#ff00ff00"),
+            id = Id(17),
+            prefabs = mapOf(
+                    Id(1) to prefabOf(ComponentMock(1)),
+                    Id(2) to prefabOf(ComponentMock(2))
+            )
     )
 }

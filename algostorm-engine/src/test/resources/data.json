@@ -12,5 +12,18 @@
     5
   ],
   "resource": "res:///resource.txt",
-  "color": "#ff00FF00"
+  "color": "#ff00FF00",
+  "id": 17,
+  "prefabs": {
+    "1": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+        "id": 1
+      }
+    },
+    "2": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+        "id": 2
+      }
+    }
+  }
 }

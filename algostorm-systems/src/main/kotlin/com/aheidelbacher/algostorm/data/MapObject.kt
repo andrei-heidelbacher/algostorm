@@ -18,9 +18,11 @@ package com.aheidelbacher.algostorm.data
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-import com.aheidelbacher.algostorm.ecs.Component
 import com.aheidelbacher.algostorm.ecs.EntityPool
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.Prefab
 import com.aheidelbacher.algostorm.ecs.entityPoolOf
+import com.aheidelbacher.algostorm.ecs.prefabOf
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
 import kotlin.properties.Delegates
@@ -31,7 +33,7 @@ class MapObject private constructor(
         val tileWidth: Int,
         val tileHeight: Int,
         private val tileSets: List<TileSet>,
-        entities: Map<Int, Collection<Component>>,
+        entities: Map<Id, Prefab>,
         val backgroundColor: Color?,
         val version: String
 ) {
@@ -46,8 +48,8 @@ class MapObject private constructor(
         var tileWidth: Int by Delegates.notNull<Int>()
         var tileHeight: Int by Delegates.notNull<Int>()
         private val tileSets: MutableList<TileSet> = arrayListOf()
-        private val initialEntities = hashMapOf<Int, Collection<Component>>()
-        private val entities = arrayListOf<Collection<Component>>()
+        private val initialEntities = hashMapOf<Id, Prefab>()
+        private val entities = arrayListOf<Prefab>()
         var backgroundColor: Color? = null
         var version: String = "1.0"
 
@@ -55,12 +57,12 @@ class MapObject private constructor(
             tileSets.add(this)
         }
 
-        fun entity(id: Int, components: Collection<Component>) {
-            initialEntities[id] = components
+        fun entity(id: Id, prefab: Prefab) {
+            initialEntities[id] = prefab
         }
 
-        fun entity(components: Collection<Component>) {
-            entities.add(components)
+        fun entity(prefab: Prefab) {
+            entities.add(prefab)
         }
 
         fun build(): MapObject = MapObject(
@@ -81,8 +83,8 @@ class MapObject private constructor(
     @Transient val tileSetCollection: TileSetCollection =
             TileSetCollection(tileSets)
 
-    private val entities: Map<Int, List<Component>>
+    private val entities: Map<Id, Prefab>
         @JsonProperty("entities") get() = entityPool.group.entities.associate {
-            it.id to it.components.toList()
+            it.id to prefabOf(*it.components.toTypedArray())
         }
 }

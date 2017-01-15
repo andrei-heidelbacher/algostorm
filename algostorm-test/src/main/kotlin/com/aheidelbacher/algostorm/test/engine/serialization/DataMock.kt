@@ -16,6 +16,8 @@
 
 package com.aheidelbacher.algostorm.test.engine.serialization
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.Prefab
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
@@ -25,7 +27,9 @@ data class DataMock(
         val innerData: InnerDataMock,
         val list: List<Int>,
         val resource: Resource,
-        val color: Color
+        val color: Color,
+        val id: Id,
+        val prefabs: Map<Id, Prefab>
 ) {
     data class InnerDataMock(val field: String)
 }

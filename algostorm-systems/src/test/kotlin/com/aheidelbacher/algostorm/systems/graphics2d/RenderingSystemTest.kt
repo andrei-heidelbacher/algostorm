@@ -16,12 +16,16 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.data.MapObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.data.MapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipDiagonally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipHorizontally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipVertically
+import com.aheidelbacher.algostorm.ecs.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
@@ -30,11 +34,6 @@ import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.systems.state.File
-import com.aheidelbacher.algostorm.systems.state.Image
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipDiagonally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipHorizontally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.flipVertically
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
 
 class RenderingSystemTest {
@@ -43,8 +42,7 @@ class RenderingSystemTest {
     val height = 12
     val tileWidth = 24
     val tileHeight = 24
-    val image = Image(File("image.png"), tileWidth, tileHeight)
-    val imageRes = Resource("res:///" + image.source.path)
+    val imageRes = Resource("$SCHEMA/image.png")
     val cameraX = 44
     val cameraY = 60
     val camera = Rectangle(
@@ -68,19 +66,6 @@ class RenderingSystemTest {
             image(Resource("$SCHEMA/image.png"), tileWidth, tileHeight)
         }
     }
-    /*val mapBuilder = MapObjectBuilder().apply {
-        width = 12
-        height = 12
-        tileWidth = 24
-        tileHeight = 24
-        backgroundColor = com.aheidelbacher.algostorm.systems.state.Color("#ffffffff")
-        +tileSet {
-            name = "test"
-            tileWidth = 24
-            tileHeight = 24
-            image("image.png", tileWidth, tileHeight)
-        }
-    }*/
 
     @Before
     fun lockCanvas() {
@@ -97,7 +82,7 @@ class RenderingSystemTest {
         val map = mapBuilder.apply {
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    entity(listOf(
+                    entity(prefabOf(
                             Position(x, y),
                             Sprite(
                                     width = tileWidth,
@@ -182,7 +167,7 @@ class RenderingSystemTest {
                     +Position(x = 0, y = 0)
                 }
             }*/
-            entity(listOf(
+            entity(prefabOf(
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,
@@ -213,7 +198,7 @@ class RenderingSystemTest {
     @Test
     fun testRenderFlippedHorizontallyObject() {
         val map = mapBuilder.apply {
-            entity(listOf(
+            entity(prefabOf(
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,
@@ -260,7 +245,7 @@ class RenderingSystemTest {
     @Test
     fun testRenderFlippedVerticallyObject() {
         val map = mapBuilder.apply {
-            entity(listOf(
+            entity(prefabOf(
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,
@@ -307,7 +292,7 @@ class RenderingSystemTest {
     @Test
     fun testRenderFlippedDiagonallyObject() {
         val map = mapBuilder.apply {
-            entity(listOf(
+            entity(prefabOf(
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,

@@ -16,13 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.systems.state.MapObject
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Frame
-import com.aheidelbacher.algostorm.systems.state.TileSet.Viewport
 
 /** The `Sprite` component of this entity. */
 val EntityRef.sprite: Sprite?
@@ -39,22 +36,3 @@ val Sprite.isFlippedHorizontally: Boolean
 /** Utility flag. */
 val Sprite.isFlippedVertically: Boolean
     get() = gid.isFlippedVertically
-
-fun MapObject.getViewport(gid: Int, currentTimeMillis: Long): Viewport {
-    val tileSet = getTileSet(gid)
-    val localTileId = getTileId(gid)
-    val animation = tileSet.getTile(localTileId).animation
-    val tileId = if (animation == null) {
-        localTileId
-    } else {
-        var elapsedTimeMillis =
-                currentTimeMillis % animation.sumBy(Frame::duration)
-        var i = 0
-        do {
-            elapsedTimeMillis -= animation[i].duration
-            ++i
-        } while (elapsedTimeMillis >= 0)
-        animation[i - 1].tileId
-    }
-    return tileSet.getViewport(tileId)
-}

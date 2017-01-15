@@ -56,7 +56,7 @@ class SoundSystem(
     }
 
     /**
-     * After receiving a [SetSoundVolume] request, the volume of the music is
+     * After receiving a [SetSoundVolume] request, the volume of the sounds is
      * modified accordingly.
      *
      * @param request the request

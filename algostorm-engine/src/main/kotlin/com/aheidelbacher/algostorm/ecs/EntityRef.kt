@@ -26,63 +26,24 @@ import kotlin.reflect.KClass
  *
  * Entity references are not serializable.
  *
- * An invalid entity reference can be read, but it has no `components`.
- *
  * @property entityPool the entity pool which created this entity
  * @property id the unique positive identifier of this entity
  * @throws IllegalArgumentException if `id` is not valid
  */
 abstract class EntityRef protected constructor(
         private val entityPool: EntityPool,
-        val id: Int
+        val id: Id
 ) {
-    companion object {
-        /**
-         * Validates the given entity `id` and returns it.
-         *
-         * @param id the entity id which should be validated
-         * @return the given entity `id`
-         * @throws IllegalArgumentException if `id` is not positive
-         */
-        fun validateId(id: Int): Int {
-            require(id > 0) { "Id $id must be positive!" }
-            return id
-        }
-
-        /**
-         * Validates the given `components` and returns them.
-         *
-         * @param components the components which should be validated
-         * @return the given `components`
-         * @throws IllegalArgumentException if `components` contains multiple
-         * components of the same type
-         */
-        fun validateComponents(
-                components: Collection<Component>
-        ): Collection<Component> {
-            val size = components.size
-            require(components.distinctBy { it.javaClass }.size == size) {
-                "Multiple components of the same type given in $components!"
-            }
-            return components
-        }
-
-        /**
-         * Asserts that this entity reference is valid.
-         *
-         * @throws IllegalStateException if this entity is not valid
-         */
-        fun EntityRef.checkIsValid() {
-            check(isValid) { "$this invalid entity reference!" }
+    /**
+     * An entity id.
+     *
+     * @throws IllegalArgumentException if `value` is not positive
+     */
+    data class Id(val value: Int) {
+        init {
+            require(value > 0) { "$this must be positive!" }
         }
     }
-
-    init {
-        validateId(id)
-    }
-
-    /** Whether this entity reference is valid or not. */
-    abstract val isValid: Boolean
 
     /** An immutable view of this entity's components. */
     abstract val components: Collection<Component>
@@ -108,7 +69,7 @@ abstract class EntityRef protected constructor(
      */
     abstract operator fun <T : Component> get(type: KClass<T>): T?
 
-    final override fun hashCode(): Int = id
+    final override fun hashCode(): Int = id.hashCode()
 
     /**
      * Two entity references are equal if and only if they were both created by

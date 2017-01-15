@@ -21,29 +21,25 @@
     "tiles": []
   }],
   "entities": {
-    "1": [
-      {
-        "@class": "com.aheidelbacher.algostorm.systems.state.ComponentMock",
+    "1": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 1
       }
-    ],
-    "2": [
-      {
-        "@class": "com.aheidelbacher.algostorm.systems.state.ComponentMock",
+    },
+    "2": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 2
       }
-    ],
-    "3": [
-      {
-        "@class": "com.aheidelbacher.algostorm.systems.state.ComponentMock",
+    },
+    "3": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 3
       }
-    ],
-    "4": [
-      {
-        "@class": "com.aheidelbacher.algostorm.systems.state.ComponentMock",
+    },
+    "4": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 4
       }
-    ]
+    }
   }
 }

@@ -25,13 +25,12 @@ import kotlin.reflect.KClass
  */
 abstract class MutableEntityRef protected constructor(
         entityPool: EntityPool,
-        id: Int
+        id: Id
 ) : EntityRef(entityPool, id) {
     /**
      * Sets the value of the specified `component` type.
      *
      * @param component the new value of the component type
-     * @throws IllegalStateException if this entity reference is invalid
      */
     abstract fun set(component: Component): Unit
 
@@ -42,7 +41,6 @@ abstract class MutableEntityRef protected constructor(
      * @param type the class object of the component
      * @return the removed component if it exists in this entity when this
      * method is called, `null` otherwise
-     * @throws IllegalStateException if this entity reference is invalid
      */
     abstract fun <T : Component> remove(type: KClass<T>): T?
 }

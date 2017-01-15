@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityManager
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -28,13 +28,13 @@ class CameraSystem(
         private val tileHeight: Int,
         private val camera: Camera,
         private val entityGroup: EntityGroup,
-        private var followedEntityId: Int? = null
+        private var followedEntityId: Id? = null
 ) : Subscriber {
     object UpdateCamera : Event
 
     data class FocusOn(val x: Int, val y: Int) : Event
 
-    data class Follow(val entityId: Int) : Event
+    data class Follow(val entityId: Id) : Event
 
     data class Scroll(val dx: Int, val dy: Int) : Event
 

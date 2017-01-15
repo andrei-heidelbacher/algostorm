@@ -18,6 +18,7 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.EntityGroup
 import com.aheidelbacher.algostorm.ecs.EntityRef
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -96,7 +97,7 @@ class PathFindingSystem(private val entityGroup: EntityGroup) : Subscriber {
     }
 
     class FindPath(
-            val sourceId: Int,
+            val sourceId: Id,
             val destinationX: Int,
             val destinationY: Int,
             val directions: List<Direction> = Direction.ORDINAL,

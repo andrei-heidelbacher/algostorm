@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Event
 
 /**
@@ -27,6 +28,6 @@ import com.aheidelbacher.algostorm.event.Event
  * @property otherId the id of the other entity, which was collided
  */
 data class Collision internal constructor(
-        val selfId: Int,
-        val otherId: Int
+        val selfId: Id,
+        val otherId: Id
 ) : Event

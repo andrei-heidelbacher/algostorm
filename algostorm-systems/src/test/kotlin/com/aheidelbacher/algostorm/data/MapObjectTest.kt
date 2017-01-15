@@ -20,6 +20,9 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.prefabOf
+import com.aheidelbacher.algostorm.ecs.toPrefab
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
@@ -41,6 +44,11 @@ class MapObjectTest {
             assertEquals(expected.tileHeight, actual.tileHeight)
             assertEquals(expected.backgroundColor, actual.backgroundColor)
             assertEquals(expected.tileSetCollection, actual.tileSetCollection)
+            val expectedEntities = expected.entityPool.group.entities
+                    .associate { it.id to it.toPrefab() }
+            val actualEntities = actual.entityPool.group.entities
+                    .associate { it.id to it.toPrefab() }
+            assertEquals(expectedEntities, actualEntities)
         }
     }
 
@@ -62,7 +70,7 @@ class MapObjectTest {
         var id = 1
         for (x in 0..width - 1) {
             for (y in 0..height - 1) {
-                entity(id, listOf(ComponentMock(id)))
+                entity(Id(id), prefabOf(ComponentMock(id)))
                 id += 1
             }
         }

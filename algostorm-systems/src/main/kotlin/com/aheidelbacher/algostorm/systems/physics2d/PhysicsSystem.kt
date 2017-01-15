@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.ecs.EntityRef
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.event.Event
@@ -42,9 +43,6 @@ class PhysicsSystem(
         private val entityGroup: MutableEntityGroup
 ) : Subscriber {
     companion object {
-        /** The name of the kinematic bodies entity subgroup. */
-        const val KINEMATIC_BODIES_GROUP: String = "kinematic-bodies"
-
         /**
          * Transforms this non-body entity by the indicated amount.
          *
@@ -70,7 +68,7 @@ class PhysicsSystem(
      * @property dy the vertical translation amount in tiles (positive is down)
      */
     data class TransformIntent(
-            val entityId: Int,
+            val entityId: Id,
             val dx: Int,
             val dy: Int
     ) : Event
@@ -81,7 +79,7 @@ class PhysicsSystem(
 
     override fun onSubscribe(publisher: Publisher) {
         this.publisher = publisher
-        kinematicBodies = entityGroup.addGroup(KINEMATIC_BODIES_GROUP) {
+        kinematicBodies = entityGroup.addGroup {
             it.position != null && it.isKinematic
         }
         val map = hashMapOf<Position, EntityRef>()
@@ -95,7 +93,7 @@ class PhysicsSystem(
     }
 
     override fun onUnsubscribe(publisher: Publisher) {
-        entityGroup.removeGroup(KINEMATIC_BODIES_GROUP)
+        entityGroup.removeGroup(kinematicBodies)
         staticBodies = emptyMap()
     }
 

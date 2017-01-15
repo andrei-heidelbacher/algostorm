@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Event
 
 /**
@@ -27,6 +28,6 @@ import com.aheidelbacher.algostorm.event.Event
  * @property triggerId the id of the other entity, which was triggered
  */
 data class Triggered internal constructor(
-        val selfId: Int,
-        val triggerId: Int
+        val selfId: Id,
+        val triggerId: Id
 ) : Event

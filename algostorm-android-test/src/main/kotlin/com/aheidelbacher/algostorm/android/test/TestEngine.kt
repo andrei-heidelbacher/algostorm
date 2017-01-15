@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.android.test
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
@@ -23,6 +24,7 @@ import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.ecs.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.input.InputListener
@@ -64,7 +66,7 @@ class TestEngine(
         }
         for (x in 0 until width) {
             for (y in 0 until height) {
-                entity(listOf(
+                entity(prefabOf(
                         Position(x, y),
                         Sprite(
                                 width = tileWidth,
@@ -78,7 +80,7 @@ class TestEngine(
         }
         for (x in 0 until width) {
             for (y in listOf(0, height - 1)) {
-                entity(listOf(
+                entity(prefabOf(
                         Position(x, y),
                         Sprite(
                                 width = tileWidth,
@@ -93,7 +95,7 @@ class TestEngine(
         }
         for (x in listOf(0, width - 1)) {
             for (y in 1 until height - 1) {
-                entity(listOf(
+                entity(prefabOf(
                         Position(x, y),
                         Sprite(
                                 width = tileWidth,
@@ -108,7 +110,7 @@ class TestEngine(
         }
         for (x in 1 until width - 1 step 4) {
             for (y in 1 until height - 1 step 4) {
-                entity(listOf(
+                entity(prefabOf(
                         Position(x, y),
                         Sprite(
                                 width = tileWidth,
@@ -121,7 +123,7 @@ class TestEngine(
                 ))
             }
         }
-        entity(1, listOf(
+        entity(Id(1), prefabOf(
                 Position(15, 15),
                 Sprite(
                         width = tileWidth,
@@ -141,7 +143,7 @@ class TestEngine(
                     map.tileHeight,
                     camera,
                     map.entityPool.group,
-                    1
+                    Id(1)
             ),
             PhysicsSystem(map.entityPool.group),
             PathFindingSystem(map.entityPool.group)
@@ -178,10 +180,10 @@ class TestEngine(
                 try {
                     val tx = (x + camera.x - graphicsDriver.width / 2) / map.tileWidth
                     val ty = (y + camera.y - graphicsDriver.height / 2) / map.tileHeight
-                    val path = eventBus.request(FindPath(1, tx, ty))
-                    path?.let { eventBus.post(Follow(1)) }
+                    val path = eventBus.request(FindPath(Id(1), tx, ty))
+                    path?.let { eventBus.post(Follow(Id(1))) }
                     path?.forEach { d ->
-                        eventBus.post(TransformIntent(1, d.dx, d.dy))
+                        eventBus.post(TransformIntent(Id(1), d.dx, d.dy))
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()

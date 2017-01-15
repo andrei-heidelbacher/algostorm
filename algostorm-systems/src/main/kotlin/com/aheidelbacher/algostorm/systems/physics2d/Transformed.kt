@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Event
 
 /**
@@ -28,7 +29,7 @@ import com.aheidelbacher.algostorm.event.Event
  * @property dy the vertical translation amount in tiles (positive is down)
  */
 data class Transformed internal constructor(
-        val entityId: Int,
+        val entityId: Id,
         val dx: Int,
         val dy: Int
 ) : Event

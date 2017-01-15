@@ -16,21 +16,27 @@
 
 package com.aheidelbacher.algostorm.engine.serialization
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.KeyDeserializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+
+import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.Prefab
+import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
 import java.io.IOException
 import java.io.InputStream
@@ -45,9 +51,7 @@ class JsonDriver : SerializationDriver {
         const val FORMAT: String = "json"
     }
 
-    private val resourceSerializer = object : StdSerializer<Resource>(
-            Resource::class.java
-    ) {
+    private val resourceSerializer = object : JsonSerializer<Resource>() {
         override fun serialize(
                 value: Resource?,
                 gen: JsonGenerator?,
@@ -57,9 +61,7 @@ class JsonDriver : SerializationDriver {
         }
     }
 
-    private val resourceDeserializer = object : StdDeserializer<Resource>(
-            Resource::class.java
-    ) {
+    private val resourceDeserializer = object : JsonDeserializer<Resource>() {
         override fun deserialize(
                 p: JsonParser?,
                 ctxt: DeserializationContext?
@@ -69,9 +71,7 @@ class JsonDriver : SerializationDriver {
         }
     }
 
-    private val colorSerializer = object : StdSerializer<Color>(
-            Color::class.java
-    ) {
+    private val colorSerializer = object : JsonSerializer<Color>() {
         override fun serialize(
                 value: Color?,
                 gen: JsonGenerator?,
@@ -81,15 +81,75 @@ class JsonDriver : SerializationDriver {
         }
     }
 
-    private val colorDeserializer = object : StdDeserializer<Color>(
-            Color::class.java
-    ) {
+    private val colorDeserializer = object : JsonDeserializer<Color>() {
         override fun deserialize(
                 p: JsonParser?,
                 ctxt: DeserializationContext?
-        ): Color? {
-            val colorCode = p?.codec?.readValue<String>(p, String::class.java)
-            return if (colorCode != null) Color(colorCode) else null
+        ) = p?.codec?.readValue<String>(p, String::class.java)?.let(::Color)
+    }
+
+    private val idSerializer = object : JsonSerializer<Id>() {
+        override fun serialize(
+                value: Id?,
+                gen: JsonGenerator?,
+                provider: SerializerProvider?
+        ) {
+            gen?.writeNumber(checkNotNull(value?.value))
+        }
+    }
+
+    private val idDeserializer = object : JsonDeserializer<Id>() {
+        override fun deserialize(
+                p: JsonParser?,
+                ctxt: DeserializationContext?
+        ) = p?.codec?.readValue<Int>(p, Int::class.java)?.let(::Id)
+    }
+
+    private val idKeySerializer = object : JsonSerializer<Id>() {
+        override fun serialize(
+                value: Id?,
+                gen: JsonGenerator?,
+                serializers: SerializerProvider?
+        ) {
+            gen?.writeFieldName("${value?.value}")
+        }
+    }
+
+    private val idKeyDeserializer = object : KeyDeserializer() {
+        override fun deserializeKey(
+                key: String?,
+                ctxt: DeserializationContext?
+        ): Any? = key?.toInt()?.let(::Id)
+    }
+
+    private val prefabSerializer = object : JsonSerializer<Prefab>() {
+        override fun serialize(
+                value: Prefab?,
+                gen: JsonGenerator?,
+                provider: SerializerProvider?
+        ) {
+            gen ?: return
+            gen.writeStartObject()
+            value?.components?.forEachIndexed { i, component ->
+                gen.writeFieldName(component.javaClass.canonicalName)
+                gen.writeObject(component)
+            }
+            gen.writeEndObject()
+        }
+    }
+
+    private val prefabDeserializer = object : JsonDeserializer<Prefab>() {
+        override fun deserialize(
+                p: JsonParser?,
+                ctxt: DeserializationContext?
+        ): Prefab? {
+            val components = hashSetOf<Component>()
+            p?.codec?.readTree<JsonNode>(p)?.fields()?.forEach {
+                val type = Class.forName(it.key)
+                val component = it.value.traverse(p.codec).readValueAs(type)
+                components.add(component as Component)
+            }
+            return Prefab(components)
         }
     }
 
@@ -100,6 +160,12 @@ class JsonDriver : SerializationDriver {
             addDeserializer(Resource::class.java, resourceDeserializer)
             addSerializer(Color::class.java, colorSerializer)
             addDeserializer(Color::class.java, colorDeserializer)
+            addSerializer(Id::class.java, idSerializer)
+            addDeserializer(Id::class.java, idDeserializer)
+            addKeySerializer(Id::class.java, idKeySerializer)
+            addKeyDeserializer(Id::class.java, idKeyDeserializer)
+            addSerializer(Prefab::class.java, prefabSerializer)
+            addDeserializer(Prefab::class.java, prefabDeserializer)
         })
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

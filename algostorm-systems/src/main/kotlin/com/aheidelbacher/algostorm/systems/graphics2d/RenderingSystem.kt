@@ -16,39 +16,23 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.data.MapObject
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.data.TileSetCollection
 import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.data.MapObject
-import com.aheidelbacher.algostorm.data.TileSetCollection
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.event.Publisher
-import com.aheidelbacher.algostorm.systems.state.Layer
-//import com.aheidelbacher.algostorm.systems.state.Layer.EntityGroup
-import com.aheidelbacher.algostorm.systems.state.Layer.TileLayer
-//import com.aheidelbacher.algostorm.systems.state.MapObject
-import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.LEFT_DOWN
-import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.LEFT_UP
-import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.RIGHT_DOWN
-import com.aheidelbacher.algostorm.systems.state.MapObject.RenderOrder.RIGHT_UP
-//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedDiagonally
-//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedHorizontally
-//import com.aheidelbacher.algostorm.systems.state.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.graphics2d.getViewport
-import com.aheidelbacher.algostorm.systems.graphics2d.sprite
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
-
-import java.util.Comparator
 
 /**
  * A system which handles the rendering of all tiles and entities in the game to
@@ -64,12 +48,8 @@ class RenderingSystem(
         private val map: MapObject,
         private val canvas: Canvas
 ) : Subscriber {
-    companion object {
-        const val RENDERABLE_GROUP_NAME: String = "renderable"
-    }
-
     private data class Node(
-            val id: Int,
+            val id: Id,
             var position: Position,
             var sprite: Sprite
     ) : Comparable<Node> {
@@ -92,13 +72,13 @@ class RenderingSystem(
     private var sortedEntities = emptyArray<Node>()
 
     override fun onSubscribe(publisher: Publisher) {
-        renderableGroup = entityGroup.addGroup(RENDERABLE_GROUP_NAME) {
+        renderableGroup = entityGroup.addGroup {
             it.sprite != null && it.position != null
         }
     }
 
     override fun onUnsubscribe(publisher: Publisher) {
-        entityGroup.removeGroup(RENDERABLE_GROUP_NAME)
+        entityGroup.removeGroup(renderableGroup)
     }
 
     private fun updateSortedOrder() {
@@ -118,8 +98,9 @@ class RenderingSystem(
             sortedEntities = entities.requireNoNulls()
         } else {
             sortedEntities.forEach {
-                it.position = checkNotNull(renderableGroup[it.id]?.position)
-                it.sprite = checkNotNull(renderableGroup[it.id]?.sprite)
+                val entity = checkNotNull(renderableGroup[it.id])
+                it.position = checkNotNull(entity.position)
+                it.sprite = checkNotNull(entity.sprite)
             }
         }
         val isSorted = (0 until sortedEntities.size - 1).none {

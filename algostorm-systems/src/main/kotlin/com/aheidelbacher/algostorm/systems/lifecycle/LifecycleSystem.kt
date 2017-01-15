@@ -16,11 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.lifecycle
 
-import com.aheidelbacher.algostorm.ecs.Component
 import com.aheidelbacher.algostorm.ecs.EntityPool
-import com.aheidelbacher.algostorm.ecs.EntityRef.Companion.validateComponents
-import com.aheidelbacher.algostorm.ecs.EntityRef.Companion.validateId
+import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.MutableEntityRef
+import com.aheidelbacher.algostorm.ecs.Prefab
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -38,13 +37,7 @@ class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
      * @throws IllegalArgumentException if there are multiple [components] of
      * the same type
      */
-    class Create(
-            val components: Collection<Component>
-    ) : Request<MutableEntityRef>() {
-        init {
-            validateComponents(components)
-        }
-    }
+    class Create(val prefab: Prefab) : Request<MutableEntityRef>()
 
     /**
      * A request to delete the entity with the given [id].
@@ -52,17 +45,13 @@ class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
      * @property id the id of the entity which should be deleted
      * @throws IllegalArgumentException if the given [id] is not positive
      */
-    class Delete(val id: Int) : Request<Boolean>() {
-        init {
-            validateId(id)
-        }
-    }
+    class Delete(val id: Id) : Request<Boolean>()
 
     @Subscribe fun onCreate(request: Create) {
-        request.complete(entityPool.create(request.components))
+        request.complete(entityPool.create(request.prefab))
     }
 
     @Subscribe fun onDelete(request: Delete) {
-        request.complete(entityPool.delete(request.id))
+        request.complete(entityPool.remove(request.id))
     }
 }

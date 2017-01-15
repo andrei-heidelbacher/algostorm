@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.ecs
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-
 /**
  * An abstract component which holds data about a certain aspect of the game.
  *
@@ -25,9 +23,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
  * component is denoted by its kotlin class object. Generic components are not
  * allowed.
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "@class"
-)
 interface Component
