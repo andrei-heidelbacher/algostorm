@@ -19,10 +19,10 @@ package com.aheidelbacher.algostorm.data
 import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.aheidelbacher.algostorm.ecs.EntityPool
+import com.aheidelbacher.algostorm.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.Prefab
-import com.aheidelbacher.algostorm.ecs.entityPoolOf
-import com.aheidelbacher.algostorm.ecs.prefabOf
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.toPrefab
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
 import kotlin.properties.Delegates
@@ -85,6 +85,6 @@ class MapObject private constructor(
 
     private val entities: Map<Id, Prefab>
         @JsonProperty("entities") get() = entityPool.group.entities.associate {
-            it.id to prefabOf(*it.components.toTypedArray())
+            it.id to it.toPrefab()
         }
 }

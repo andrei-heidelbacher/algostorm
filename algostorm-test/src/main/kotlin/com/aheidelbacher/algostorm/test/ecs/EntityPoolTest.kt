@@ -24,8 +24,8 @@ import com.aheidelbacher.algostorm.ecs.EntityPool
 import com.aheidelbacher.algostorm.ecs.EntityRef
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.Prefab
-import com.aheidelbacher.algostorm.ecs.prefabOf
-import com.aheidelbacher.algostorm.ecs.toPrefab
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.toPrefab
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -44,15 +44,16 @@ abstract class EntityPoolTest {
         }
     }
 
-    abstract fun createInitialEntities(): Map<Id, Prefab>
+    protected abstract fun createInitialEntities(): Map<Id, Prefab>
 
-    abstract fun createEntityPool(entities: Map<Id, Prefab>): EntityPool
+    protected abstract fun createEntityPool(
+            entities: Map<Id, Prefab>
+    ): EntityPool
 
     protected lateinit var initialEntities: Map<Id, Prefab>
     protected lateinit var entityPool: EntityPool
 
-    @Before
-    fun init() {
+    @Before fun init() {
         initialEntities = createInitialEntities()
         entityPool = createEntityPool(initialEntities)
     }
@@ -62,8 +63,7 @@ abstract class EntityPoolTest {
         entityPool.create(prefabOf(ComponentMock(1), ComponentMock(2)))
     }
 
-    @Test
-    fun entitiesShouldReturnAllExistingEntities() {
+    @Test fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
                 expected = initialEntities,
                 actual = entityPool.group.entities.associate {
@@ -72,71 +72,61 @@ abstract class EntityPoolTest {
         )
     }
 
-    @Test
-    fun getNonExistingShouldReturnNull() {
+    @Test fun getNonExistingShouldReturnNull() {
         val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
         assertNull(entityPool.group[Id(maxId + 1)])
     }
 
-    @Test
-    fun getExistingShouldReturnEqualEntity() {
+    @Test fun getExistingShouldReturnEqualEntity() {
         for ((id, prefab) in initialEntities) {
             assertEquals(id, entityPool.group[id]?.id)
             assertEquals(prefab, entityPool.group[id]?.toPrefab())
         }
     }
 
-    @Test
-    fun containsExistingShouldReturnTrue() {
+    @Test fun containsExistingShouldReturnTrue() {
         for (id in initialEntities.keys) {
             assertTrue(id in entityPool.group)
         }
     }
 
-    @Test
-    fun containsNonExistingShouldReturnFalse() {
+    @Test fun containsNonExistingShouldReturnFalse() {
         val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
         assertFalse(Id(maxId + 1) in entityPool.group)
     }
 
-    @Test
-    fun removeExistingShouldReturnTrue() {
+    @Test fun removeExistingShouldReturnTrue() {
         for (id in initialEntities.keys) {
             assertTrue(entityPool.remove(id))
         }
     }
 
-    @Test
-    fun getAfterRemoveShouldReturnNull() {
+    @Test fun getAfterRemoveShouldReturnNull() {
         for (id in initialEntities.keys) {
             entityPool.remove(id)
             assertNull(entityPool.group[id])
         }
     }
 
-    @Test
-    fun removeNonExistingShouldReturnFalse() {
+    @Test fun removeNonExistingShouldReturnFalse() {
         val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
         assertFalse(entityPool.remove(Id(maxId + 1)))
     }
 
-    @Test
-    fun getAfterCreateShouldReturnEqualEntity() {
+    @Test fun getAfterCreateShouldReturnEqualEntity() {
         val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
         val entity = entityPool.create(prefabOf(ComponentMock(maxId + 1)))
         assertEquals(entity, entityPool.group[entity.id])
     }
 
-    @Test
-    fun getAfterClearShouldReturnNull() {
+    @Test fun getAfterClearShouldReturnNull() {
         entityPool.clear()
         for (id in initialEntities.keys) {
             assertNull(entityPool.group[id])
         }
     }
 
-    @Test
-    fun filterGroupShouldContainFilteredEntities() {
+    @Test fun filterGroupShouldContainFilteredEntities() {
         val subgroup = entityPool.group.addGroup { it.id.value % 2 == 1 }
         assertEquals(
                 expected = entityPool.group.entities.filter {

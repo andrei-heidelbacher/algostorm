@@ -36,7 +36,8 @@ class ScriptingSystem(
         scripts: List<KFunction<*>>
 ) : Subscriber {
     /**
-     * A request to execute the script with the given `name` and arguments.
+     * A request to execute the script function with the given `name` and
+     * arguments.
      *
      * @property name the name of script which should be executed
      * @property args the parameters of the script
@@ -52,8 +53,8 @@ class ScriptingSystem(
     }
 
     /**
-     * A request to execute the script with the given `name` and arguments,
-     * returning the result.
+     * A request to execute the script function with the given `name` and
+     * arguments, returning the result.
      *
      * @property name the name of the script which should be executed
      * @property returnType the expected type of the result

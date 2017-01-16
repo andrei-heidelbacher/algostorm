@@ -29,7 +29,7 @@ interface MusicPlayer {
      * Synchronously loads the given music `resource`, making it available to
      * future calls of [playMusic].
      *
-     * If the same resource is loaded multiple times, nothing happens.
+     * If the same resource is loaded multiple times, this method has no effect.
      *
      * @param resource the music resource which should be loaded
      */

@@ -33,12 +33,6 @@ abstract class DriverTest {
     /** The driver instance which should be tested. */
     protected abstract val driver: Driver
 
-    @Test fun testReleaseMultipleTimesShouldNotThrow() {
-        repeat(5) {
-            driver.release()
-        }
-    }
-
     /** Releases the [driver]. */
     @After fun releaseDriver() {
         driver.release()

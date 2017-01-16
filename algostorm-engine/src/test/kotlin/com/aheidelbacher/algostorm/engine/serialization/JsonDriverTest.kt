@@ -17,11 +17,10 @@
 package com.aheidelbacher.algostorm.engine.serialization
 
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.prefabOf
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver.Companion.FORMAT
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
@@ -29,7 +28,8 @@ import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataM
 
 class JsonDriverTest : SerializationDriverTest() {
     override val driver = JsonDriver()
-    override val inputStream = Resource("$SCHEMA/data.$FORMAT").inputStream()
+    override val inputStream =
+            Resource("$SCHEMA/data.${driver.format}").inputStream()
     override val data = DataMock(
             primitiveField = 1,
             innerData = InnerDataMock("non-empty"),

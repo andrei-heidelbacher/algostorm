@@ -36,9 +36,7 @@ val EntityRef.isBody: Boolean
 val EntityRef.isKinematic: Boolean
     get() = get(Body::class) == KINEMATIC
 
-/**
- * Returns whether this entity is a collider ([KINEMATIC] or [STATIC]).
- */
+/** Returns whether this entity is a collider ([KINEMATIC] or [STATIC]). */
 val EntityRef.isCollider: Boolean
     get() = when (get(Body::class)) {
         KINEMATIC, STATIC -> true

@@ -24,9 +24,9 @@ import kotlin.reflect.KClass
  * An invalid mutable entity reference cannot be modified.
  */
 abstract class MutableEntityRef protected constructor(
-        entityPool: EntityPool,
+        owner: EntityPool,
         id: Id
-) : EntityRef(entityPool, id) {
+) : EntityRef(owner, id) {
     /**
      * Sets the value of the specified `component` type.
      *

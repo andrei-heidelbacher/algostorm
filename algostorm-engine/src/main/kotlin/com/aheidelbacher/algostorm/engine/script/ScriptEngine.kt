@@ -20,8 +20,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 /**
- * An interpreter that can evaluate scripts and invoke named functions contained
- * in previously evaluated scripts.
+ * An interpreter that can load scripts and invoke named functions contained in
+ * previously loaded scripts.
  */
 interface ScriptEngine {
     companion object {
@@ -35,14 +35,15 @@ interface ScriptEngine {
      * Loads the given script with the [KFunction.name] name, making it
      * available to future [runScript] and [invokeScript] calls.
      *
-     * If the same script is loaded multiple times, nothing happens.
+     * If the same script is loaded multiple times, this method has no effect.
      *
      * @param script the script which should be loaded
      */
     fun loadScript(script: KFunction<*>): Unit
 
     /**
-     * Executes the script with the given `name` and the specified arguments.
+     * Executes the script function with the given `name` and the specified
+     * arguments.
      *
      * @param name the name of the script which should be executed
      * @param args the script parameters
@@ -52,8 +53,8 @@ interface ScriptEngine {
     fun runScript(name: String, vararg args: Any?): Unit
 
     /**
-     * Executes the script with the given `name` and the specified arguments and
-     * returns its result.
+     * Executes the script function with the given `name` and the specified
+     * arguments and returns its result.
      *
      * @param name the name of the script which should be executed
      * @param returnType the expected type of the result

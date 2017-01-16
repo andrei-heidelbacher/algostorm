@@ -26,12 +26,12 @@ import kotlin.reflect.KClass
  *
  * Entity references are not serializable.
  *
- * @property entityPool the entity pool which created this entity
+ * @property owner the entity pool which created this entity
  * @property id the unique positive identifier of this entity
  * @throws IllegalArgumentException if `id` is not valid
  */
 abstract class EntityRef protected constructor(
-        private val entityPool: EntityPool,
+        private val owner: EntityPool,
         val id: Id
 ) {
     /**
@@ -43,6 +43,9 @@ abstract class EntityRef protected constructor(
         init {
             require(value > 0) { "$this must be positive!" }
         }
+
+        /** Returns the [value] of this id. */
+        override fun toString(): String = "$value"
     }
 
     /** An immutable view of this entity's components. */
@@ -76,8 +79,8 @@ abstract class EntityRef protected constructor(
      * the same entity pool and their ids are equal.
      */
     final override fun equals(other: Any?): Boolean = other is EntityRef
-            && id == other.id && entityPool === other.entityPool
+            && id == other.id && owner === other.owner
 
     final override fun toString(): String =
-            "EntityRef(${entityPool.hashCode()}, $id, $components)"
+            "EntityRef(${owner.hashCode()}, $id, $components)"
 }

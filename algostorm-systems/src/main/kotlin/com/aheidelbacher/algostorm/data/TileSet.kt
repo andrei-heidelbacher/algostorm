@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.data
 
-import com.aheidelbacher.algostorm.data.TileSet.Builder
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
 

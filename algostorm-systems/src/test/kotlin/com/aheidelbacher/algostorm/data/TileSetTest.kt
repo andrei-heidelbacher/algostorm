@@ -25,16 +25,16 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver.Companion.FORMAT
 
 import java.io.ByteArrayOutputStream
 
 import kotlin.test.assertEquals
 
 class TileSetTest {
-    private val jsonDriver = JsonDriver()
-    private val inputStream = Resource("$SCHEMA/tileSet.$FORMAT").inputStream()
-    private val tileSet = tileSet {
+    val jsonDriver = JsonDriver()
+    val inputStream =
+            Resource("$SCHEMA/tileSet.${jsonDriver.format}").inputStream()
+    val tileSet = tileSet {
         name = "world"
         tileWidth = 24
         tileHeight = 24

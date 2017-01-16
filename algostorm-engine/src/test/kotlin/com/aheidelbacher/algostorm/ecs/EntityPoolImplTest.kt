@@ -16,7 +16,9 @@
 
 package com.aheidelbacher.algostorm.ecs
 
+import com.aheidelbacher.algostorm.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.ecs.EntityPoolTest
 

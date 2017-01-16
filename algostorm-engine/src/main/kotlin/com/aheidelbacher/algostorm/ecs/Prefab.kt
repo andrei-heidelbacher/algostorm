@@ -16,11 +16,43 @@
 
 package com.aheidelbacher.algostorm.ecs
 
-data class Prefab internal constructor(val components: Set<Component>) {
+/**
+ * An immutable template for creating and initializing entities.
+ *
+ * @property components the initial components which the instantiated entities
+ * should contain
+ * @throws IllegalArgumentException if there are given multiple components of
+ * the same type
+ */
+data class Prefab private constructor(val components: Set<Component>) {
+    companion object {
+        private val empty = Prefab(emptySet())
+
+        /** Returns an empty prefab with no components. */
+        fun emptyPrefab(): Prefab = empty
+
+        /**
+         * Creates a prefab from the given `components`.
+         *
+         * @param components the components of the prefab
+         * @return the prefab
+         */
+        fun prefabOf(vararg components: Component): Prefab =
+                if (components.isEmpty()) emptyPrefab()
+                else Prefab(components.toSet())
+
+        /** Builds a prefab containing the current components of this entity. */
+        fun EntityRef.toPrefab(): Prefab = Prefab(components)
+    }
+
     init {
         val size = components.size
         require(components.distinctBy { it.javaClass }.size == size) {
             "Multiple components of the same type given in $components!"
         }
     }
+
+    constructor(components: Collection<Component>) : this(components.toSet())
+
+    constructor() : this(emptySet())
 }

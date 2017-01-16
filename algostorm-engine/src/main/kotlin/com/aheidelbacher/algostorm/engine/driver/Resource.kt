@@ -42,11 +42,10 @@ data class Resource(val path: String) {
     private val absolutePath: String
         get() = path.drop(SCHEMA.length)
 
-    /**
-     * Returns this resource as an input stream.
-     *
-     * @return the input stream
-     */
+    /** Returns this resource as an input stream. */
     fun inputStream(): InputStream =
             Resource::class.java.getResourceAsStream(path.drop(SCHEMA.length))
+
+    /** Returns the [path] of this resource. */
+    override fun toString(): String = path
 }

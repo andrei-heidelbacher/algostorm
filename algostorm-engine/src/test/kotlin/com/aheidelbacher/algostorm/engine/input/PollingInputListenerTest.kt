@@ -25,17 +25,15 @@ import com.aheidelbacher.algostorm.test.engine.input.InputListenerMock
 import kotlin.test.assertTrue
 
 class PollingInputListenerTest {
-    private val inputDriverMock = InputDriverMock()
-    private val listener = PollingInputListener()
-    private val listenerMock = InputListenerMock()
+    val inputDriverMock = InputDriverMock()
+    val listener = PollingInputListener()
+    val listenerMock = InputListenerMock()
 
-    @Before
-    fun initializeInputDriver() {
+    @Before fun initializeInputDriver() {
         inputDriverMock.addListener(listener)
     }
 
-    @Test
-    fun testPollShouldNotifyAllInputsAndNothingMore() {
+    @Test fun testPollShouldNotifyAllInputsAndNothingMore() {
         val x = 1
         val y = 1
         val keyCode = 2
@@ -48,8 +46,7 @@ class PollingInputListenerTest {
         listenerMock.assertEmptyInputQueue()
     }
 
-    @Test
-    fun testPollMostRecentShouldNotifyLastAndNothingMore() {
+    @Test fun testPollMostRecentShouldNotifyLastAndNothingMore() {
         val x = 1
         val y = 1
         val keyCode = 2

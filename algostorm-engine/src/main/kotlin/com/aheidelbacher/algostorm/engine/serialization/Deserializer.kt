@@ -30,6 +30,9 @@ interface Deserializer {
         ): T = readValue(src, T::class)
     }
 
+    /** The format from which objects are deserialized. */
+    val format: String
+
     /**
      * Deserializes an object of the given type from the given stream.
      *

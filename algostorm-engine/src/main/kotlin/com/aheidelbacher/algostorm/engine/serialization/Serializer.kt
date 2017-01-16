@@ -21,6 +21,9 @@ import java.io.OutputStream
 
 /** A serializer of arbitrary objects. */
 interface Serializer {
+    /** The format to which objects are serialized. */
+    val format: String
+
     /**
      * Serializes the given object to the given stream.
      *

@@ -31,11 +31,10 @@ import com.aheidelbacher.algostorm.event.Subscriber
  */
 class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
     /**
-     * A request to create an entity with the given [components].
+     * A request to create an entity from the given [prefab].
      *
-     * @property components the initial components of the created entity
-     * @throws IllegalArgumentException if there are multiple [components] of
-     * the same type
+     * @property prefab the prefab containing the initial components of the
+     * entity
      */
     class Create(val prefab: Prefab) : Request<MutableEntityRef>()
 
@@ -43,7 +42,6 @@ class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
      * A request to delete the entity with the given [id].
      *
      * @property id the id of the entity which should be deleted
-     * @throws IllegalArgumentException if the given [id] is not positive
      */
     class Delete(val id: Id) : Request<Boolean>()
 

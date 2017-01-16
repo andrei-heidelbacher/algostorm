@@ -92,7 +92,7 @@ class AndroidGraphicsDriver(
             matrix: Matrix
     ) {
         checkIsLocked()
-        val bitmap = requireNotNull(bitmaps[resource]) {
+        val bitmap = requireNotNull(getBitmap(resource)) {
             "Invalid bitmap $resource!"
         }
         srcRect.set(x, y, x + width, y + height)

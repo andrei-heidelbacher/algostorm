@@ -57,5 +57,6 @@ data class Color(val color: Int) {
     val b: Int
         get() = color and 255
 
+    /** Returns the color in `#AARRGGBB` format. */
     override fun toString(): String = "#${Integer.toHexString(color)}"
 }

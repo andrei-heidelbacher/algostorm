@@ -35,6 +35,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.aheidelbacher.algostorm.ecs.Component
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.Prefab
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
@@ -46,114 +47,92 @@ import kotlin.reflect.KClass
 
 /** A JSON serialization driver using the Jackson external library. */
 class JsonDriver : SerializationDriver {
-    companion object {
-        /** The serialization format. */
-        const val FORMAT: String = "json"
-    }
-
-    private val resourceSerializer = object : JsonSerializer<Resource>() {
-        override fun serialize(
-                value: Resource?,
-                gen: JsonGenerator?,
-                provider: SerializerProvider?
-        ) {
-            gen?.writeString(value?.path)
-        }
-    }
-
-    private val resourceDeserializer = object : JsonDeserializer<Resource>() {
-        override fun deserialize(
-                p: JsonParser?,
-                ctxt: DeserializationContext?
-        ): Resource? {
-            val path = p?.codec?.readValue<String>(p, String::class.java)
-            return if (path != null) Resource(path) else null
-        }
-    }
-
-    private val colorSerializer = object : JsonSerializer<Color>() {
-        override fun serialize(
-                value: Color?,
-                gen: JsonGenerator?,
-                provider: SerializerProvider?
-        ) {
-            gen?.writeString("$value")
-        }
-    }
-
-    private val colorDeserializer = object : JsonDeserializer<Color>() {
-        override fun deserialize(
-                p: JsonParser?,
-                ctxt: DeserializationContext?
-        ) = p?.codec?.readValue<String>(p, String::class.java)?.let(::Color)
-    }
-
-    private val idSerializer = object : JsonSerializer<Id>() {
-        override fun serialize(
-                value: Id?,
-                gen: JsonGenerator?,
-                provider: SerializerProvider?
-        ) {
-            gen?.writeNumber(checkNotNull(value?.value))
-        }
-    }
-
-    private val idDeserializer = object : JsonDeserializer<Id>() {
-        override fun deserialize(
-                p: JsonParser?,
-                ctxt: DeserializationContext?
-        ) = p?.codec?.readValue<Int>(p, Int::class.java)?.let(::Id)
-    }
-
-    private val idKeySerializer = object : JsonSerializer<Id>() {
-        override fun serialize(
-                value: Id?,
-                gen: JsonGenerator?,
-                serializers: SerializerProvider?
-        ) {
-            gen?.writeFieldName("${value?.value}")
-        }
-    }
-
-    private val idKeyDeserializer = object : KeyDeserializer() {
-        override fun deserializeKey(
-                key: String?,
-                ctxt: DeserializationContext?
-        ): Any? = key?.toInt()?.let(::Id)
-    }
-
-    private val prefabSerializer = object : JsonSerializer<Prefab>() {
-        override fun serialize(
-                value: Prefab?,
-                gen: JsonGenerator?,
-                provider: SerializerProvider?
-        ) {
-            gen ?: return
-            gen.writeStartObject()
-            value?.components?.forEachIndexed { i, component ->
-                gen.writeFieldName(component.javaClass.canonicalName)
-                gen.writeObject(component)
+    private companion object {
+        fun <T : Any> serializer(
+                serialize: (T, JsonGenerator) -> Unit
+        ): JsonSerializer<T> = object : JsonSerializer<T>() {
+            override fun serialize(
+                    value: T,
+                    gen: JsonGenerator,
+                    serializers: SerializerProvider?
+            ) {
+                serialize(value, gen)
             }
-            gen.writeEndObject()
+        }
+
+        fun <T : Any> deserializer(
+                deserialize: (JsonParser) -> T?
+        ): JsonDeserializer<T> = object : JsonDeserializer<T>() {
+            override fun deserialize(
+                    p: JsonParser,
+                    ctxt: DeserializationContext?
+            ): T? = deserialize(p)
+        }
+
+        fun keyDeserializer(
+                deserialize: (String?) -> Any?
+        ): KeyDeserializer = object : KeyDeserializer() {
+            override fun deserializeKey(
+                    key: String?,
+                    ctxt: DeserializationContext?
+            ): Any? = deserialize(key)
         }
     }
 
-    private val prefabDeserializer = object : JsonDeserializer<Prefab>() {
-        override fun deserialize(
-                p: JsonParser?,
-                ctxt: DeserializationContext?
-        ): Prefab? {
-            val components = hashSetOf<Component>()
-            p?.codec?.readTree<JsonNode>(p)?.fields()?.forEach {
-                val type = Class.forName(it.key)
-                val component = it.value.traverse(p.codec).readValueAs(type)
-                components.add(component as Component)
-            }
-            return Prefab(components)
-        }
+    override val format: String
+        get() = "json"
+
+    private val resourceSerializer = serializer<Resource> { value, gen ->
+        gen.writeString("$value")
     }
 
-    /** The object that handles serialization and deserialization. */
+    private val resourceDeserializer = deserializer { p ->
+        p.codec.readValue<String>(p, String::class.java)?.let(::Resource)
+    }
+
+    private val colorSerializer = serializer<Color> { value, gen ->
+        gen.writeString("$value")
+    }
+
+    private val colorDeserializer = deserializer { p ->
+        p.codec.readValue<String>(p, String::class.java)?.let(::Color)
+    }
+
+    private val idSerializer = serializer<Id> { value, gen ->
+        gen.writeNumber(value.value)
+    }
+
+    private val idDeserializer = deserializer { p ->
+        p.codec.readValue<Int>(p, Int::class.java)?.let(::Id)
+    }
+
+    private val idKeySerializer = serializer<Id> { value, gen ->
+        gen.writeFieldName("$value")
+    }
+
+    private val idKeyDeserializer = keyDeserializer { key ->
+        key?.toInt()?.let(::Id)
+    }
+
+    private val prefabSerializer = serializer<Prefab> { value, gen ->
+        gen.writeStartObject()
+        value.components.forEachIndexed { i, component ->
+            gen.writeFieldName(component.javaClass.canonicalName)
+            gen.writeObject(component)
+        }
+        gen.writeEndObject()
+    }
+
+    private val prefabDeserializer = deserializer { p ->
+        val components = arrayListOf<Component>()
+        p.codec.readTree<JsonNode>(p)?.fields()?.forEach {
+            val type = Class.forName(it.key)
+            val component = it.value.traverse(p.codec).readValueAs(type)
+            components.add(component as Component)
+        }
+        prefabOf(*components.toTypedArray())
+    }
+
     private var objectMapper: ObjectMapper? = jacksonObjectMapper().apply {
         registerModule(SimpleModule().apply {
             addSerializer(Resource::class.java, resourceSerializer)
@@ -183,12 +162,6 @@ class JsonDriver : SerializationDriver {
             objectMapper?.readValue(src, type.java)
                     ?: error("$this was released!")
 
-    /**
-     * Releases all resources acquired by this driver.
-     *
-     * Invoking any method after this driver was released will throw an
-     * [IllegalStateException].
-     */
     override fun release() {
         objectMapper = null
     }

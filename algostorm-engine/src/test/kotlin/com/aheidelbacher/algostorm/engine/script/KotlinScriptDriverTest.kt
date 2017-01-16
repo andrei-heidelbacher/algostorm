@@ -34,8 +34,8 @@ class KotlinScriptDriverTest : ScriptDriverTest() {
             ::resultMockFunction
     )
 
-    private val value = 42
-    private val message = "Hello!"
+    val value = 42
+    val message = "Hello!"
 
     override val runs = setOf(Run(::procedure.name, message))
     override val invocations: Map<Invocation<*>, *> = mapOf(

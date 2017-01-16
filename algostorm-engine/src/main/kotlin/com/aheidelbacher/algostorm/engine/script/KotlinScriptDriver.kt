@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.engine.script
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
+/** A driver that loads and executes kotlin script functions. */
 class KotlinScriptDriver : ScriptDriver {
     private val scripts = hashMapOf<String, KFunction<*>>()
 

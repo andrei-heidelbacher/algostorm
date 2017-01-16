@@ -24,7 +24,7 @@ import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeScript
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
 
 class ScriptingSystemTest {
-    private val system = ScriptingSystem(
+    val system = ScriptingSystem(
             KotlinScriptDriver(),
             listOf(::testProcedure, ::testFunction)
     )

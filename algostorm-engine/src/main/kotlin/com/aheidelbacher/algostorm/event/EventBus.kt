@@ -27,6 +27,9 @@ import java.util.LinkedList
  */
 interface EventBus : Publisher {
     companion object {
+        /** Returns a default implementation of an event bus. */
+        operator fun invoke(): EventBus = EventBusImpl()
+
         private class EventBusImpl : EventBus {
             private fun Method.validateHandler() {
                 require(Modifier.isFinal(modifiers)) { "$name is not final!" }
@@ -90,13 +93,6 @@ interface EventBus : Publisher {
                 return request.get()
             }
         }
-
-        /**
-         * Returns a default implementation of an event bus.
-         *
-         * @return the event bus
-         */
-        operator fun invoke(): EventBus = EventBusImpl()
     }
 
     /**

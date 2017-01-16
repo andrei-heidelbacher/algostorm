@@ -24,7 +24,7 @@ import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
-import com.aheidelbacher.algostorm.ecs.prefabOf
+import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.input.InputListener
