@@ -27,7 +27,7 @@ import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock
 
 class JsonDriverTest : SerializationDriverTest() {
-    override val driver = JsonDriver()
+    override val driver = SerializationDriver()
     override val inputStream =
             Resource("$SCHEMA/data.${driver.format}").inputStream()
     override val data = DataMock(

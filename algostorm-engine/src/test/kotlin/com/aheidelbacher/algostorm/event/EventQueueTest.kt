@@ -18,6 +18,6 @@ package com.aheidelbacher.algostorm.event
 
 import com.aheidelbacher.algostorm.test.event.EventBusTest
 
-class EventBusImplTest : EventBusTest() {
+class EventQueueTest : EventBusTest() {
     override val eventBus = EventBus()
 }

@@ -16,11 +16,16 @@
 
 package com.aheidelbacher.algostorm.test.engine
 
+import com.aheidelbacher.algostorm.engine.Client
 import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Engine.Status
+import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverMock
+import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
+import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
+import org.junit.Before
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -40,6 +45,15 @@ abstract class EngineTest {
 
     /** The engine instance that should be tested. */
     protected abstract val engine: Engine
+
+    @Before fun init() {
+        val client = object : Client {
+            override val audioDriver = AudioDriverMock()
+            override val graphicsDriver = GraphicsDriverMock(320, 240)
+            override val inputDriver = InputDriverMock()
+        }
+        engine.init(client, null)
+    }
 
     @Test(timeout = MAX_TIME_LIMIT)
     fun testStartAndInstantStop() {

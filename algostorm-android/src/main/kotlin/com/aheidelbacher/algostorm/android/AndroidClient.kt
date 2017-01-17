@@ -25,17 +25,15 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
+import com.aheidelbacher.algostorm.engine.Client
 import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.engine.input.InputDriver
 
-abstract class EngineActivity : Activity() {
+abstract class AndroidClient : Activity(), Client {
     companion object {
         const val EXTRA_SAVE_FILE_NAME =
                 "com.aheidelbacher.algostorm.android.test.SAVE_FILE_NAME"
 
-        protected inline fun <reified T : EngineActivity> start(
+        protected inline fun <reified T : AndroidClient> start(
                 context: Context,
                 saveFileName: String
         ) {
@@ -47,22 +45,16 @@ abstract class EngineActivity : Activity() {
 
     private lateinit var saveFileName: String
     private lateinit var surfaceView: SurfaceView
-    protected lateinit var audioDriver: AndroidAudioDriver
+    final override lateinit var audioDriver: AndroidAudioDriver
         private set
-    protected lateinit var graphicsDriver: AndroidGraphicsDriver
+    final override lateinit var graphicsDriver: AndroidGraphicsDriver
         private set
-    protected lateinit var inputDriver: AndroidInputDriver
+    final override lateinit var inputDriver: AndroidInputDriver
         private set
-    private lateinit var engine: Engine
 
+    protected abstract val engine: Engine
     protected abstract val contentLayoutId: Int
     protected abstract val surfaceViewContainerLayoutId: Int
-
-    protected abstract fun createEngine(
-            audioDriver: AudioDriver,
-            graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver
-    ): Engine
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +71,9 @@ abstract class EngineActivity : Activity() {
         audioDriver = AndroidAudioDriver(this)
         graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density * 2)
         inputDriver = AndroidInputDriver(this, density * 2)
-        engine = createEngine(audioDriver, graphicsDriver, inputDriver)
+        engine.init(this, savedInstanceState?.let {
+            openFileInput(saveFileName)
+        })
         surfaceView.setOnTouchListener(inputDriver)
     }
 

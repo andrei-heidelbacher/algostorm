@@ -20,12 +20,9 @@ import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.driver.Driver
 import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.input.InputDriver
-import com.aheidelbacher.algostorm.engine.script.KotlinScriptDriver
 import com.aheidelbacher.algostorm.engine.script.ScriptDriver
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -54,13 +51,7 @@ import kotlin.system.measureNanoTime
  * deserialization of the game state
  * @constructor initializes this engine's drivers
  */
-abstract class Engine(
-        protected val audioDriver: AudioDriver,
-        protected val graphicsDriver: GraphicsDriver,
-        protected val inputDriver: InputDriver,
-        protected val scriptDriver: ScriptDriver = KotlinScriptDriver(),
-        protected val serializationDriver: SerializationDriver = JsonDriver()
-) {
+abstract class Engine {
     companion object {
         /** Name of the engine thread. */
         const val NAME: String = "ALGOSTORM"
@@ -68,17 +59,24 @@ abstract class Engine(
 
     /** The status of an engine. */
     enum class Status {
-        RUNNING, STOPPING, STOPPED
+        UNINITIALIZED, RUNNING, STOPPING, STOPPED
     }
+
+    protected lateinit var audioDriver: AudioDriver
+        private set
+    protected lateinit var graphicsDriver: GraphicsDriver
+        private set
+    protected lateinit var inputDriver: InputDriver
+        private set
+    protected val scriptDriver: ScriptDriver = ScriptDriver()
+    protected val serializationDriver: SerializationDriver =
+            SerializationDriver()
 
     private val stateLock = Any()
     private val statusLock = Any()
     private var process: Thread? = null
     private val internalStatus = AtomicReference(Status.STOPPED)
     private val internalShutdownStatus = AtomicBoolean(false)
-
-    init {
-    }
 
     /** The current status of this engine. */
     val status: Status
@@ -155,6 +153,16 @@ abstract class Engine(
      * drivers. The call to this method is synchronized with the state lock.
      */
     protected abstract fun onShutdown(): Unit
+
+    protected abstract fun onInit(inputStream: InputStream?): Unit
+
+    fun init(client: Client, inputStream: InputStream?) {
+        audioDriver = client.audioDriver
+        graphicsDriver = client.graphicsDriver
+        inputDriver = client.inputDriver
+        onInit(inputStream)
+        internalStatus.compareAndSet(Status.UNINITIALIZED, Status.STOPPED)
+    }
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread.

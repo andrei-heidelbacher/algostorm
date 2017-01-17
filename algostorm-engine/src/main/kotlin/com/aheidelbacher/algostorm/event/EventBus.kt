@@ -16,10 +16,6 @@
 
 package com.aheidelbacher.algostorm.event
 
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
-import java.util.LinkedList
-
 /**
  * An event bus which allows a [Subscriber] to [subscribe] and [unsubscribe]
  * from certain topics and allows to `post` or `publish` an event to the bus and
@@ -27,72 +23,14 @@ import java.util.LinkedList
  */
 interface EventBus : Publisher {
     companion object {
-        /** Returns a default implementation of an event bus. */
-        operator fun invoke(): EventBus = EventBusImpl()
+        private const val SERVICE =
+                "com.aheidelbacher.algostorm.event.EventQueue"
 
-        private class EventBusImpl : EventBus {
-            private fun Method.validateHandler() {
-                require(Modifier.isFinal(modifiers)) { "$name is not final!" }
-                require(returnType.name == "void") {
-                    "$name doesn't return Unit/void!"
-                }
-                require(parameterTypes.size == 1) {
-                    "$name doesn't have single parameter!"
-                }
-                val parameterType = parameterTypes[0]
-                require(Event::class.java.isAssignableFrom(parameterType) ||
-                        Request::class.java.isAssignableFrom(parameterType)) {
-                    "$name doesn't receive an Event or Request as parameter!"
-                }
-                require(parameterType.typeParameters.isEmpty()) {
-                    "$name receives a generic parameter!"
-                }
-            }
-
-            private val subscribers =
-                    hashMapOf<Subscriber, List<Pair<Method, Class<*>>>>()
-            private val eventQueue = LinkedList<Event>()
-
-            override fun subscribe(subscriber: Subscriber) {
-                val handlers = subscriber.javaClass.methods.filter {
-                    it.isAnnotationPresent(Subscribe::class.java)
-                }.apply { forEach { it.validateHandler() } }
-                subscribers[subscriber] = handlers.map {
-                    it to it.parameterTypes[0]
-                }
-                subscriber.onSubscribe(this)
-            }
-
-            override fun unsubscribe(subscriber: Subscriber) {
-                subscribers.remove(subscriber)
-                subscriber.onUnsubscribe(this)
-            }
-
-            override fun post(event: Event) {
-                eventQueue.add(event)
-            }
-
-            private fun <T : Any> publish(value: T) {
-                for ((subscriber, handlers) in subscribers) {
-                    for ((handler, parameterType) in handlers) {
-                        if (parameterType.isInstance(value)) {
-                            handler.invoke(subscriber, value)
-                        }
-                    }
-                }
-            }
-
-            override fun publishPosts() {
-                while (eventQueue.isNotEmpty()) {
-                    publish(eventQueue.remove())
-                }
-            }
-
-            override fun <T> request(request: Request<T>): T {
-                publish(request)
-                return request.get()
-            }
-        }
+        /**
+         * Returns the registered implementation of an event bus.
+         */
+        operator fun invoke(): EventBus =
+                Class.forName(SERVICE).newInstance() as EventBus
     }
 
     /**

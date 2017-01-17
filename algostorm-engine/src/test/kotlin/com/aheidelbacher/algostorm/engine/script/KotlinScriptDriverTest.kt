@@ -26,7 +26,7 @@ import kotlin.reflect.KFunction
 import kotlin.test.assertEquals
 
 class KotlinScriptDriverTest : ScriptDriverTest() {
-    override val driver = KotlinScriptDriver()
+    override val driver = ScriptDriver()
     override val scripts: List<KFunction<*>> = listOf(
             ::procedure,
             ::intFunction,

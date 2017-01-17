@@ -24,16 +24,16 @@ import com.aheidelbacher.algostorm.data.TileSet.Tile.Builder.Companion.tile
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
+import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 
 import java.io.ByteArrayOutputStream
 
 import kotlin.test.assertEquals
 
 class TileSetTest {
-    val jsonDriver = JsonDriver()
-    val inputStream =
-            Resource("$SCHEMA/tileSet.${jsonDriver.format}").inputStream()
+    val serializationDriver = SerializationDriver()
+    val inputStream = Resource("$SCHEMA/tileSet.${serializationDriver.format}")
+            .inputStream()
     val tileSet = tileSet {
         name = "world"
         tileWidth = 24
@@ -50,14 +50,14 @@ class TileSetTest {
     }
 
     @Test fun testTileSetDeserialization() {
-        val actualTileSet = jsonDriver.readValue<TileSet>(inputStream)
+        val actualTileSet = serializationDriver.readValue<TileSet>(inputStream)
         assertEquals(tileSet, actualTileSet)
     }
 
     @Test fun testTileSetSerialization() {
         val bos = ByteArrayOutputStream()
-        jsonDriver.writeValue(bos, tileSet)
-        val actualTileSet = jsonDriver.readValue<TileSet>(
+        serializationDriver.writeValue(bos, tileSet)
+        val actualTileSet = serializationDriver.readValue<TileSet>(
                 src = bos.toByteArray().inputStream()
         )
         assertEquals(tileSet, actualTileSet)

@@ -19,4 +19,15 @@ package com.aheidelbacher.algostorm.engine.script
 import com.aheidelbacher.algostorm.engine.driver.Driver
 
 /** A driver that offers scripting services. */
-interface ScriptDriver : Driver, ScriptEngine
+interface ScriptDriver : Driver, ScriptEngine {
+    companion object {
+        private const val SERVICE =
+                "com.aheidelbacher.algostorm.engine.script.KotlinScriptDriver"
+
+        /**
+         * Returns the registered implementation of a script driver.
+         */
+        operator fun invoke(): ScriptDriver =
+                Class.forName(SERVICE).newInstance() as ScriptDriver
+    }
+}

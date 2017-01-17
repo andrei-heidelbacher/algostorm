@@ -46,7 +46,7 @@ import java.io.OutputStream
 import kotlin.reflect.KClass
 
 /** A JSON serialization driver using the Jackson external library. */
-class JsonDriver : SerializationDriver {
+private class JsonDriver : SerializationDriver {
     private companion object {
         fun <T : Any> serializer(
                 serialize: (T, JsonGenerator) -> Unit

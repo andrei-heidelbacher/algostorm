@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.engine
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
+import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
@@ -35,7 +35,7 @@ class EngineMockTest : EngineTest() {
         repeat(100) {
             val bos = ByteArrayOutputStream()
             engine.serializeState(bos)
-            val state = JsonDriver().readValue<EngineMock.State>(
+            val state = SerializationDriver().readValue<EngineMock.State>(
                     src = bos.toByteArray().inputStream()
             )
             assertEquals(engine.serializedState, state)

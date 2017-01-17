@@ -27,7 +27,7 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
+import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
 import java.io.ByteArrayOutputStream
@@ -51,9 +51,10 @@ class MapObjectTest {
         }
     }
 
-    val jsonDriver = JsonDriver()
+    val serializationDriver = SerializationDriver()
     val inputStream =
-            Resource("$SCHEMA/mapObject.${jsonDriver.format}").inputStream()
+            Resource("$SCHEMA/mapObject.${serializationDriver.format}")
+                    .inputStream()
     val mapObject = mapObject {
         width = 2
         height = 2
@@ -76,14 +77,14 @@ class MapObjectTest {
     }
 
     @Test fun testMapObjectDeserialization() {
-        val actualMapObject = jsonDriver.readValue<MapObject>(inputStream)
+        val actualMapObject = serializationDriver.readValue<MapObject>(inputStream)
         assertEquals(mapObject, actualMapObject)
     }
 
     @Test fun testMapObjectSerialization() {
         val bos = ByteArrayOutputStream()
-        jsonDriver.writeValue(bos, mapObject)
-        val actualMapObject = jsonDriver.readValue<MapObject>(
+        serializationDriver.writeValue(bos, mapObject)
+        val actualMapObject = serializationDriver.readValue<MapObject>(
                 src = bos.toByteArray().inputStream()
         )
         assertEquals(mapObject, actualMapObject)

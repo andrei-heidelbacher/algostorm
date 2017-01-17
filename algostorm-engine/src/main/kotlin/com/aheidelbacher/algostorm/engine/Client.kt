@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.android.test
+package com.aheidelbacher.algostorm.engine
 
-import android.os.Bundle
+import com.aheidelbacher.algostorm.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.input.InputDriver
 
-import com.aheidelbacher.algostorm.android.AndroidClient
-import com.aheidelbacher.algostorm.engine.Engine
-
-class MainActivity : AndroidClient() {
-    override val contentLayoutId: Int
-        get() = R.layout.activity_main
-
-    override val surfaceViewContainerLayoutId: Int
-        get() = R.id.surfaceViewContainer
-
-    override val engine: Engine = TestEngine()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+/** The main services implemented by the client platform. */
+interface Client {
+    val audioDriver: AudioDriver
+    val graphicsDriver: GraphicsDriver
+    val inputDriver: InputDriver
 }

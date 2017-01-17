@@ -16,17 +16,11 @@
 
 package com.aheidelbacher.algostorm.engine
 
-import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverMock
-import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
-import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
+import java.io.InputStream
 
 import java.io.OutputStream
 
-class EngineMock : Engine(
-        audioDriver = AudioDriverMock(),
-        graphicsDriver = GraphicsDriverMock(320, 230),
-        inputDriver = InputDriverMock()
-) {
+class EngineMock : Engine() {
     data class State(val values: List<Int>)
 
     private var i = 0
@@ -35,6 +29,8 @@ class EngineMock : Engine(
     val state: State = State(registeredValues)
 
     override var millisPerUpdate: Int = 25
+
+    override fun onInit(inputStream: InputStream?) {}
 
     override fun onStart() {}
 

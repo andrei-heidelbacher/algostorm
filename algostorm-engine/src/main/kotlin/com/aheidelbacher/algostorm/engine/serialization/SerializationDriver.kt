@@ -20,6 +20,17 @@ import com.aheidelbacher.algostorm.engine.driver.Driver
 
 /** A driver that offers serialization and deserialization services. */
 interface SerializationDriver : Driver, Serializer, Deserializer {
+    companion object {
+        private const val SERVICE =
+                "com.aheidelbacher.algostorm.engine.serialization.JsonDriver"
+
+        /**
+         * Returns the registered implementation of a serialization driver.
+         */
+        operator fun invoke(): SerializationDriver =
+                Class.forName(SERVICE).newInstance() as SerializationDriver
+    }
+
     /** The format used to serialize and deserialize objects. */
     override val format: String
 }
