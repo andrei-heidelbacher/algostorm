@@ -19,6 +19,8 @@ package com.aheidelbacher.algostorm.ecs
 /**
  * An immutable template for creating and initializing entities.
  *
+ * Prefabs are serializable.
+ *
  * @property components the initial components which the instantiated entities
  * should contain
  * @throws IllegalArgumentException if there are given multiple components of

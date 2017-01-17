@@ -37,6 +37,8 @@ abstract class EntityRef protected constructor(
     /**
      * An entity id.
      *
+     * Ids are serializable.
+     *
      * @throws IllegalArgumentException if `value` is not positive
      */
     data class Id(val value: Int) {

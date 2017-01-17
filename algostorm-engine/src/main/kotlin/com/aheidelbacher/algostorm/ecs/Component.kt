@@ -22,5 +22,7 @@ package com.aheidelbacher.algostorm.ecs
  * All components should be immutable and final data classes. The type of a
  * component is denoted by its kotlin class object. Generic components are not
  * allowed.
+ *
+ * Components must be serializable.
  */
 interface Component
