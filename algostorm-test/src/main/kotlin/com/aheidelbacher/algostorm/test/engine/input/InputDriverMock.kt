@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
+import com.aheidelbacher.algostorm.core.engine.input.AbstractInputDriver
 
 class InputDriverMock : AbstractInputDriver() {
     fun touch(x: Int, y: Int) {

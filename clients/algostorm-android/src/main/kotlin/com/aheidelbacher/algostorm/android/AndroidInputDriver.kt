@@ -23,7 +23,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 
-import com.aheidelbacher.algostorm.engine.input.AbstractInputDriver
+import com.aheidelbacher.algostorm.core.engine.input.AbstractInputDriver
 
 class AndroidInputDriver(
         context: Context,

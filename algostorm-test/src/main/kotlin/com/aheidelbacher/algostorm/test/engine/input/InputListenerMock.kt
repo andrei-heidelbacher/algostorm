@@ -16,8 +16,10 @@
 
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.engine.input.InputListener
+import com.aheidelbacher.algostorm.core.engine.input.InputListener
+
 import java.util.LinkedList
+
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

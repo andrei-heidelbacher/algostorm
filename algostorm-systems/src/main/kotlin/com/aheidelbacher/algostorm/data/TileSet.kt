@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.data
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
 
 import kotlin.properties.Delegates

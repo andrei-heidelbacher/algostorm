@@ -25,10 +25,10 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
-import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.engine.input.InputDriver
+import com.aheidelbacher.algostorm.core.engine.Engine
+import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 
 abstract class AndroidClient : Activity() {
     companion object {

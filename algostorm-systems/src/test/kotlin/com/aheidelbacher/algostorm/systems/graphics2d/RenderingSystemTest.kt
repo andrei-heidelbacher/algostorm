@@ -21,16 +21,16 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipDiagonally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.flipVertically
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Rectangle

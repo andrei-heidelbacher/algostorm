@@ -23,8 +23,8 @@ import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.Build
 
-import com.aheidelbacher.algostorm.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
 
 class AndroidAudioDriver(context: Context) : AudioDriver {
     private data class Resources(

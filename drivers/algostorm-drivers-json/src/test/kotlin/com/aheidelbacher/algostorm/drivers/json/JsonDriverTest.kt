@@ -18,9 +18,9 @@ package com.aheidelbacher.algostorm.drivers.json
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock

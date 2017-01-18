@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.script
 
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine
+import com.aheidelbacher.algostorm.core.engine.script.ScriptEngine
 import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber

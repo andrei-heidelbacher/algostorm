@@ -18,7 +18,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
-import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 import org.junit.Assert.assertArrayEquals
 

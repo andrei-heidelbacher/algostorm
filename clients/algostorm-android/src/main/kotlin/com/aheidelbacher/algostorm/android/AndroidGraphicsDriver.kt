@@ -24,10 +24,10 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.view.SurfaceHolder
 
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean

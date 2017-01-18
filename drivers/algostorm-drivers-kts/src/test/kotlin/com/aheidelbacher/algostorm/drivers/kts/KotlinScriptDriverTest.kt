@@ -18,7 +18,7 @@ package com.aheidelbacher.algostorm.drivers.kts
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeScript
+import com.aheidelbacher.algostorm.core.engine.script.ScriptEngine.Companion.invokeScript
 import com.aheidelbacher.algostorm.test.engine.script.ResultMock
 import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverTest
 

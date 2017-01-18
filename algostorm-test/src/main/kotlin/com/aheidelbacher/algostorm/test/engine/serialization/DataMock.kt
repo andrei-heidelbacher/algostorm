@@ -18,8 +18,8 @@ package com.aheidelbacher.algostorm.test.engine.serialization
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
-import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 
 data class DataMock(
         val primitiveField: Int,

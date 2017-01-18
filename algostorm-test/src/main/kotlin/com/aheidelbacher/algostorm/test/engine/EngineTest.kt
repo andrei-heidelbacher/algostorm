@@ -20,8 +20,8 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.engine.Engine.Status
+import com.aheidelbacher.algostorm.core.engine.Engine
+import com.aheidelbacher.algostorm.core.engine.Engine.Status
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
