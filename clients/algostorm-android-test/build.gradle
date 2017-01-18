@@ -60,7 +60,9 @@ android {
 }
 
 dependencies {
-    compile project(':algostorm-engine')
+    compile project(':algostorm-core')
+    compile project(':algostorm-drivers-json')
+    compile project(':algostorm-drivers-kts')
     compile project(':algostorm-systems')
     compile project(':algostorm-android')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

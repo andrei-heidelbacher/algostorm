@@ -19,13 +19,13 @@ package com.aheidelbacher.algostorm.systems.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeScript
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
 
 class ScriptingSystemTest {
     val system = ScriptingSystem(
-            ScriptDriver(),
+            KotlinScriptDriver(),
             listOf(::testProcedure, ::testFunction)
     )
 

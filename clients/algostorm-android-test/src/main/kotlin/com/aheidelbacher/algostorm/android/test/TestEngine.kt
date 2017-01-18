@@ -23,9 +23,14 @@ import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.r
 import com.aheidelbacher.algostorm.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.engine.input.InputListener
 import com.aheidelbacher.algostorm.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -48,7 +53,17 @@ import com.aheidelbacher.algostorm.systems.physics2d.Position
 import java.io.InputStream
 import java.io.OutputStream
 
-class TestEngine : Engine() {
+class TestEngine(
+        audioDriver: AudioDriver,
+        graphicsDriver: GraphicsDriver,
+        inputDriver: InputDriver
+) : Engine(
+        audioDriver = audioDriver,
+        graphicsDriver = graphicsDriver,
+        inputDriver = inputDriver,
+        scriptDriver = KotlinScriptDriver(),
+        serializationDriver = JsonDriver()
+) {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
     private val camera = Camera(0, 0)

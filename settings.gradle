@@ -1,14 +1,14 @@
 rootProject.name = 'algostorm'
 
-include ':algostorm-engine'
-include ':algostorm-processor'
-include ':algostorm-systems'
-include ':algostorm-test'
+include ':algostorm-core',
+        ':algostorm-processor',
+        ':algostorm-systems',
+        ':algostorm-test'
 
-include ':algostorm-services-script',
-        ':algostorm-services-serialization'
-project(':algostorm-services-script').projectDir = file('services/algostorm-services-script')
-project(':algostorm-services-serialization').projectDir = file('services/algostorm-services-serialization')
+include ':algostorm-drivers-json',
+        ':algostorm-drivers-kts'
+project(':algostorm-drivers-json').projectDir = file('drivers/algostorm-drivers-json')
+project(':algostorm-drivers-kts').projectDir = file('drivers/algostorm-drivers-kts')
 
 include ':algostorm-android',
         ':algostorm-android-test'

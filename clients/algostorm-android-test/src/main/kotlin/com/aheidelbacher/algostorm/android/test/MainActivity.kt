@@ -16,10 +16,11 @@
 
 package com.aheidelbacher.algostorm.android.test
 
-import android.os.Bundle
-
 import com.aheidelbacher.algostorm.android.AndroidClient
 import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.engine.input.InputDriver
 
 class MainActivity : AndroidClient() {
     override val contentLayoutId: Int
@@ -28,9 +29,13 @@ class MainActivity : AndroidClient() {
     override val surfaceViewContainerLayoutId: Int
         get() = R.id.surfaceViewContainer
 
-    override val engine: Engine = TestEngine()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    override fun createEngine(
+            audioDriver: AudioDriver,
+            graphicsDriver: GraphicsDriver,
+            inputDriver: InputDriver
+    ): Engine = TestEngine(
+            audioDriver = audioDriver,
+            graphicsDriver = graphicsDriver,
+            inputDriver = inputDriver
+    )
 }

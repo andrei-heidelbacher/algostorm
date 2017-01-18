@@ -39,7 +39,7 @@ class ScriptingSystem(
      * A request to execute the script function with the given `name` and
      * arguments.
      *
-     * @property name the name of script which should be executed
+     * @property name the name of script function which should be executed
      * @property args the parameters of the script
      */
     class RunScript private constructor(
@@ -56,7 +56,7 @@ class ScriptingSystem(
      * A request to execute the script function with the given `name` and
      * arguments, returning the result.
      *
-     * @property name the name of the script which should be executed
+     * @property name the name of the script function which should be executed
      * @property returnType the expected type of the result
      * @property args the parameters of the script
      */

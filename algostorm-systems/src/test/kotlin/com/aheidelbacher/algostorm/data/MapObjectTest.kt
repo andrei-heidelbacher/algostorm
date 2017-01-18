@@ -20,6 +20,7 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.ecs.Prefab.Companion.toPrefab
@@ -27,7 +28,6 @@ import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
 import java.io.ByteArrayOutputStream
@@ -51,7 +51,7 @@ class MapObjectTest {
         }
     }
 
-    val serializationDriver = SerializationDriver()
+    val serializationDriver = JsonDriver()
     val inputStream =
             Resource("$SCHEMA/mapObject.${serializationDriver.format}")
                     .inputStream()

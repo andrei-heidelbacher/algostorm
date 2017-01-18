@@ -19,19 +19,19 @@ package com.aheidelbacher.algostorm.data
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Builder.Companion.tile
+import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.SerializationDriver
 
 import java.io.ByteArrayOutputStream
 
 import kotlin.test.assertEquals
 
 class TileSetTest {
-    val serializationDriver = SerializationDriver()
+    val serializationDriver = JsonDriver()
     val inputStream = Resource("$SCHEMA/tileSet.${serializationDriver.format}")
             .inputStream()
     val tileSet = tileSet {
