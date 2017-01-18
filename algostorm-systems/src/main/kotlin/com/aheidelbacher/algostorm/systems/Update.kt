@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * An event which signals that all game logic should advance by an atomic time

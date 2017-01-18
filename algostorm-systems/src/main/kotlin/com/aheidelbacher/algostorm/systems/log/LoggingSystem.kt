@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.log
 
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system which captures all events and logs them.

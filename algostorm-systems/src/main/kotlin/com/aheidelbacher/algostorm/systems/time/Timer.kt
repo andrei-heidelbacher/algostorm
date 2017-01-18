@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.time
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * A timer which will post the associated [events] when [remainingTicks] ticks
@@ -27,7 +27,7 @@ import com.aheidelbacher.algostorm.event.Event
  * @property events the events which will be posted when the timer expires
  * @throws IllegalArgumentException if [remainingTicks] is negative
  */
-data class Timer(val remainingTicks: Int, val events: List<com.aheidelbacher.algostorm.event.Event>) {
+data class Timer(val remainingTicks: Int, val events: List<com.aheidelbacher.algostorm.core.event.Event>) {
     init {
         require(remainingTicks >= 0) { "Timer duration can't be negative!" }
     }
@@ -40,7 +40,7 @@ data class Timer(val remainingTicks: Int, val events: List<com.aheidelbacher.alg
      * @param event the event which will be posted when the timer expires
      * @throws IllegalArgumentException if [remainingTicks] is negative
      */
-    constructor(remainingTicks: Int, event: com.aheidelbacher.algostorm.event.Event) : this(
+    constructor(remainingTicks: Int, event: com.aheidelbacher.algostorm.core.event.Event) : this(
             remainingTicks = remainingTicks,
             events = listOf(event)
     )

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.core.event
 
 import com.aheidelbacher.algostorm.test.event.EventBusTest
 

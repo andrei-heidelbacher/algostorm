@@ -19,9 +19,9 @@ package com.aheidelbacher.algostorm.test.event
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.event.EventBus
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.EventBus
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 import kotlin.test.assertEquals
 import kotlin.test.fail

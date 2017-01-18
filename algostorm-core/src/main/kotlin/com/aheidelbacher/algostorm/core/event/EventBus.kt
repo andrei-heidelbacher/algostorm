@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.core.event
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier

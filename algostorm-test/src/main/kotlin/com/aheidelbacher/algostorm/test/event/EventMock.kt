@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * An event that should be used for testing purposes.

@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Publisher
-import com.aheidelbacher.algostorm.event.Request
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Request
 
 import java.util.LinkedList
 import java.util.Queue

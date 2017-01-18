@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.core.event
 
 /**
  * Annotation to mark a method of a [Subscriber] as an event or request handler.

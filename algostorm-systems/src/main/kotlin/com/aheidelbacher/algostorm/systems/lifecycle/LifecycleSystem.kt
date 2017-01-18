@@ -20,9 +20,9 @@ import com.aheidelbacher.algostorm.core.ecs.EntityPool
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.core.ecs.Prefab
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system that handles entity creation and deletion requests.

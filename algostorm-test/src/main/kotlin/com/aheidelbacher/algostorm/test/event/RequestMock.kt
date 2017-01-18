@@ -16,6 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.event.Request
+import com.aheidelbacher.algostorm.core.event.Request
 
 class RequestMock : Request<Int>()

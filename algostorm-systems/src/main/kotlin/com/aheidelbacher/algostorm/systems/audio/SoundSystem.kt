@@ -18,9 +18,9 @@ package com.aheidelbacher.algostorm.systems.audio
 
 import com.aheidelbacher.algostorm.engine.audio.SoundPlayer
 import com.aheidelbacher.algostorm.engine.driver.Resource
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system which handles playing short sound effects.

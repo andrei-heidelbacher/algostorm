@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * An event which signals that [selfId] triggered [triggerId].

@@ -18,6 +18,10 @@ package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.data.MapObject
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
@@ -26,10 +30,6 @@ import com.aheidelbacher.algostorm.data.TileSetCollection
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Publisher
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position

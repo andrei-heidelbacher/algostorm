@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.processor
 
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer

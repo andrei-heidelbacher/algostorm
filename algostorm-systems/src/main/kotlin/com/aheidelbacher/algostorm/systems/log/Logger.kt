@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.log
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * An object which provides logging facilities.

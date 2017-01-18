@@ -20,7 +20,7 @@ import com.aheidelbacher.algostorm.data.MapObject
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
@@ -33,7 +33,7 @@ import com.aheidelbacher.algostorm.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.engine.input.InputListener
 import com.aheidelbacher.algostorm.engine.input.PollingInputListener
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem

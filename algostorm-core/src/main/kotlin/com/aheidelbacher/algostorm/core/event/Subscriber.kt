@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.core.event
 
 /**
  * Marker interface for objects that wish to register event handling methods to

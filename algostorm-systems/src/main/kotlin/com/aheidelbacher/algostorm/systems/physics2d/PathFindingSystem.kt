@@ -19,9 +19,9 @@ package com.aheidelbacher.algostorm.systems.physics2d
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 
 import java.util.PriorityQueue

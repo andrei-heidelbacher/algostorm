@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems
 
-import com.aheidelbacher.algostorm.event.EventBus
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.EventBus
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 abstract class EntitySystem(private val eventBus: EventBus) : Subscriber {
     protected fun onInit() {}

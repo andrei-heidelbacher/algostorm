@@ -20,10 +20,10 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Publisher
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.event
+package com.aheidelbacher.algostorm.core.event
 
 /**
  * Provides functionality to [post] events, [request] services and notify

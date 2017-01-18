@@ -17,9 +17,9 @@
 package com.aheidelbacher.algostorm.systems.script
 
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine
-import com.aheidelbacher.algostorm.event.Request
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

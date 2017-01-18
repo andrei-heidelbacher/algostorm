@@ -19,9 +19,9 @@ package com.aheidelbacher.algostorm.systems.input
 import com.aheidelbacher.algostorm.engine.input.InputListener
 import com.aheidelbacher.algostorm.engine.input.InputSource
 import com.aheidelbacher.algostorm.engine.input.PollingInputListener
-import com.aheidelbacher.algostorm.event.Event
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /** A system which handles user input. */
 abstract class AbstractInputSystem(

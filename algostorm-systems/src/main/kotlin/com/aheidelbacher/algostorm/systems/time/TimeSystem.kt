@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.time
 
-import com.aheidelbacher.algostorm.event.Publisher
-import com.aheidelbacher.algostorm.event.Subscribe
-import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system that triggers every registered [Timer] when it expires.
@@ -28,14 +28,14 @@ import com.aheidelbacher.algostorm.event.Subscriber
  */
 class TimeSystem(
         private val timeline: com.aheidelbacher.algostorm.systems.time.Timeline,
-        private val publisher: com.aheidelbacher.algostorm.event.Publisher
-) : com.aheidelbacher.algostorm.event.Subscriber {
+        private val publisher: com.aheidelbacher.algostorm.core.event.Publisher
+) : com.aheidelbacher.algostorm.core.event.Subscriber {
     /**
      * Upon receiving a [RegisterTimer] event, it adds it to the [timeline].
      *
      * @param event the event which requests the registration of a timer
      */
-    @com.aheidelbacher.algostorm.event.Subscribe fun onRegisterTimer(event: RegisterTimer) {
+    @com.aheidelbacher.algostorm.core.event.Subscribe fun onRegisterTimer(event: RegisterTimer) {
         if (event.timer.remainingTicks == 0) {
             publisher.post(event.timer.events)
         } else {
@@ -49,7 +49,7 @@ class TimeSystem(
      *
      * @param event the event which signals a tick has elapsed
      */
-    @com.aheidelbacher.algostorm.event.Subscribe fun onTick(event: Tick) {
+    @com.aheidelbacher.algostorm.core.event.Subscribe fun onTick(event: Tick) {
         val (expired, remaining) = timeline.timers.map {
             it.copy(remainingTicks = it.remainingTicks - 1)
         }.partition { it.remainingTicks == 0 }

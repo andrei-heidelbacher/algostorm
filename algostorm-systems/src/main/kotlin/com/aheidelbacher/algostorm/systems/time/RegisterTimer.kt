@@ -16,11 +16,11 @@
 
 package com.aheidelbacher.algostorm.systems.time
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.core.event.Event
 
 /**
  * An event which requests the creation of a [timer].
  *
  * @property timer the timer that must be registered
  */
-data class RegisterTimer(val entityId: Int, val timer: Timer) : com.aheidelbacher.algostorm.event.Event
+data class RegisterTimer(val entityId: Int, val timer: Timer) : com.aheidelbacher.algostorm.core.event.Event
