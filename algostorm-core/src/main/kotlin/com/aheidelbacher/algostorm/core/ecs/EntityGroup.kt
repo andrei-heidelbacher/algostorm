@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.ecs
+package com.aheidelbacher.algostorm.core.ecs
 
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 
 /** A read-only view group of filtered read-only entities. */
 interface EntityGroup {

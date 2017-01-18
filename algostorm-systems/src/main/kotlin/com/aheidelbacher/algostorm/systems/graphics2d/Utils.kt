@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.ecs.EntityRef
 
 /** The `Sprite` component of this entity. */
 val EntityRef.sprite: Sprite?

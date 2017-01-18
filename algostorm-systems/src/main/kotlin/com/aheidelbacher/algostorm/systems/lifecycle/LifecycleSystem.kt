@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.lifecycle
 
-import com.aheidelbacher.algostorm.ecs.EntityPool
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.MutableEntityRef
-import com.aheidelbacher.algostorm.ecs.Prefab
+import com.aheidelbacher.algostorm.core.ecs.EntityPool
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
+import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber

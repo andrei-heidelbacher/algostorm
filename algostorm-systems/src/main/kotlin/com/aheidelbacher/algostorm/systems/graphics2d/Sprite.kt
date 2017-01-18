@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.core.ecs.Component
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 
 /**

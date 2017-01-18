@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.test.engine.serialization
 
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.Prefab
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 

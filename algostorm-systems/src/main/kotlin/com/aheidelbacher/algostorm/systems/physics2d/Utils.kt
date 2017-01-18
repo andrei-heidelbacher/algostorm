@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
-import com.aheidelbacher.algostorm.ecs.MutableEntityRef
+import com.aheidelbacher.algostorm.core.ecs.EntityGroup
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER

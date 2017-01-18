@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.ecs
+package com.aheidelbacher.algostorm.core.ecs
 
-import com.aheidelbacher.algostorm.ecs.EntityPool.Companion.entityPoolOf
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.ecs.EntityPoolTest
 

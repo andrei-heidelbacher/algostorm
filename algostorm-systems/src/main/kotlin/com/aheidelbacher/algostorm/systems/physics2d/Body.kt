@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.core.ecs.Component
 
 /**
  * A component which indicates how this entity interacts with other bodies.

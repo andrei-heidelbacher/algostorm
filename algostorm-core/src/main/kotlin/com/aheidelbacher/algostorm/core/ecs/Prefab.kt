@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.ecs
+package com.aheidelbacher.algostorm.core.ecs
 
 /**
  * An immutable template for creating and initializing entities.

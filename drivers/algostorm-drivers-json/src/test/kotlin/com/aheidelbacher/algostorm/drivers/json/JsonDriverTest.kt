@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.drivers.json
 
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color

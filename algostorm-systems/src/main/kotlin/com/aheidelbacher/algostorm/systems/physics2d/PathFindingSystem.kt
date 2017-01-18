@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.EntityGroup
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.event.Request
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber

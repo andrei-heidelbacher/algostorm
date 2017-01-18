@@ -18,12 +18,12 @@ package com.aheidelbacher.algostorm.data
 
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.toPrefab
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.engine.graphics2d.Color

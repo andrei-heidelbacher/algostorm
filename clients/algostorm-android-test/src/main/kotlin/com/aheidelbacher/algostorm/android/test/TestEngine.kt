@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.android.test
 
 import com.aheidelbacher.algostorm.data.MapObject
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.event.EventBus
@@ -25,7 +25,7 @@ import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.engine.driver.Resource
 import com.aheidelbacher.algostorm.engine.driver.Resource.Companion.SCHEMA

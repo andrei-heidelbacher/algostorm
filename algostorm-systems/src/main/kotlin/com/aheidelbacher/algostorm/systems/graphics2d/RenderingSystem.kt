@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.core.ecs.EntityGroup
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.data.MapObject
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.data.TileSetCollection
-import com.aheidelbacher.algostorm.ecs.EntityGroup
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix

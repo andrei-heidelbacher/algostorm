@@ -20,12 +20,12 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.ecs.EntityPool
-import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.Prefab
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.ecs.Prefab.Companion.toPrefab
+import com.aheidelbacher.algostorm.core.ecs.EntityPool
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

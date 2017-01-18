@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.ecs
+package com.aheidelbacher.algostorm.core.ecs
 
 /**
  * An abstract component which holds data about a certain aspect of the game.

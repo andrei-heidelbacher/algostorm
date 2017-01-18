@@ -16,6 +16,6 @@
 
 package com.aheidelbacher.algostorm.test.ecs
 
-import com.aheidelbacher.algostorm.ecs.Component
+import com.aheidelbacher.algostorm.core.ecs.Component
 
 data class ComponentMock(val id: Int) : Component

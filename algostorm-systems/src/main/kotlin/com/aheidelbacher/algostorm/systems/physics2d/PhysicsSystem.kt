@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.physics2d
 
-import com.aheidelbacher.algostorm.ecs.EntityRef
-import com.aheidelbacher.algostorm.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.ecs.MutableEntityGroup
-import com.aheidelbacher.algostorm.ecs.MutableEntityRef
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
