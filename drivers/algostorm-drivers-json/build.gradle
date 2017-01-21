@@ -1,4 +1,3 @@
-apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven'
@@ -24,8 +23,12 @@ dependencies {
 }
 
 dokka {
+    includes = ['Module.md']
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'javadoc'
-    outputDirectory = javadoc.destinationDir
+    outputDirectory = "$buildDir/javadoc"
 }
 
 jar {
@@ -39,12 +42,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: dokka) {
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     classifier = 'javadoc'
-    from javadoc.destinationDir
+    from dokkaJavadoc.outputDirectory
 }
 
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+    archives sourcesJar, javadocJar
 }
