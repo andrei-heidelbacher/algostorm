@@ -5,8 +5,6 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath "com.android.tools.build:gradle:$android_plugin_version"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$android_maven_plugin_version"
     }
@@ -49,8 +47,11 @@ android {
 }
 
 dependencies {
-    compile project(':algostorm-core')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    compile project(':algostorm-core')
+
     testCompile "junit:junit:$junit_version"
 }
 
@@ -74,5 +75,6 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
 }
 
 artifacts {
-    archives sourcesJar, javadocJar
+    archives sourcesJar
+    archives javadocJar
 }

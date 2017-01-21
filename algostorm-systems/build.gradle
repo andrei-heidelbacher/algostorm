@@ -5,23 +5,19 @@ apply plugin: 'maven'
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
-    }
-}
-
 dependencies {
-    compile project(':algostorm-core')
-    kapt project(':algostorm-processor')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    kapt project(':algostorm-processor')
+
+    compile project(':algostorm-core')
+
+    testCompile "junit:junit:$junit_version"
     testCompile project(':algostorm-test')
     testCompile project(':algostorm-drivers-json')
     testCompile project(':algostorm-drivers-kts')
-    testCompile "junit:junit:$junit_version"
 }
 
 dokka {
@@ -34,9 +30,8 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 jar {
-    from {
-        ["$rootDir/LICENSE", "$rootDir/NOTICE"]
-    }
+    from rootProject.file('LICENSE')
+    from rootProject.file('NOTICE')
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -50,5 +45,6 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
 }
 
 artifacts {
-    archives sourcesJar, javadocJar
+    archives sourcesJar
+    archives javadocJar
 }

@@ -16,8 +16,6 @@
 
 package com.aheidelbacher.algostorm.data
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 import com.aheidelbacher.algostorm.core.ecs.EntityPool
 import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
@@ -33,7 +31,7 @@ class MapObject private constructor(
         val tileWidth: Int,
         val tileHeight: Int,
         private val tileSets: List<TileSet>,
-        entities: Map<Id, Prefab>,
+        private var entities: Map<Id, Prefab>,
         val backgroundColor: Color?,
         val version: String
 ) {
@@ -83,8 +81,10 @@ class MapObject private constructor(
     @Transient val tileSetCollection: TileSetCollection =
             TileSetCollection(tileSets)
 
-    private val entities: Map<Id, Prefab>
-        @JsonProperty("entities") get() = entityPool.group.entities.associate {
+    fun updateSnapshot() {
+        entities = entityPool.group.entities.associate {
             it.id to it.toPrefab()
         }
+    }
+
 }

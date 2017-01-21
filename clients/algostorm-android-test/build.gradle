@@ -5,9 +5,6 @@ apply plugin: 'org.jetbrains.dokka-android'
 
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath "com.android.tools.build:gradle:$android_plugin_version"
     }
 }
@@ -60,12 +57,15 @@ android {
 }
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
     compile project(':algostorm-core')
     compile project(':algostorm-drivers-json')
     compile project(':algostorm-drivers-kts')
     compile project(':algostorm-systems')
     compile project(':algostorm-android')
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
     testCompile "junit:junit:$junit_version"
 }
 
@@ -89,5 +89,6 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
 }
 
 artifacts {
-    archives sourcesJar, javadocJar
+    archives sourcesJar
+    archives javadocJar
 }
