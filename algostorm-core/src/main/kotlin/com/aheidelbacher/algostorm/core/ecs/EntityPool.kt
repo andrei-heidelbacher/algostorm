@@ -17,6 +17,7 @@
 package com.aheidelbacher.algostorm.core.ecs
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 
 import kotlin.reflect.KClass
 
@@ -31,6 +32,10 @@ interface EntityPool {
          */
         fun entityPoolOf(entities: Map<Id, Prefab>): EntityPool =
                 EntityPoolImpl(entities)
+
+        /** Returns the current state of the entities in this pool. */
+        fun EntityPool.getSnapshot(): Map<Id, Prefab> =
+                group.entities.associate { it.id to it.toPrefab() }
 
         private class EntityRefImpl(
                 private val entityPool: EntityPoolImpl,
