@@ -1,6 +1,7 @@
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven'
+apply plugin: 'jacoco'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -51,4 +52,13 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
 }

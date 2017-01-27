@@ -2,11 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'jacoco-android'
 
 buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$android_plugin_version"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$android_maven_plugin_version"
+        //classpath "com.dicedmelon.gradle:jacoco-android:0.1.1"
     }
 }
 
@@ -28,12 +30,15 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled = true
         }
     }
 
@@ -78,3 +83,12 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+/*jacocoTestReport {
+    //dependsOn test
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+}*/

@@ -31,3 +31,42 @@ subprojects {
         mavenCentral()
     }
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'jacoco'
+
+task jacocoRootReport(type: JacocoReport) {
+    sourceDirectories = files()
+    classDirectories = files()
+    executionData = files()
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+
+    onlyIf = { true }
+
+    doFirst {
+        subprojects.findAll {
+            subProject.pluginManager.hasPlugin('jacoco')
+        }.each { subProject ->
+            additionalSourceDirs files((Set<File>) subProject.sourceSets.main.allSource.srcDirs)
+            additionalClassDirs files((FileCollection) subProject.sourceSets.main.output)
+            executionData subProject.tasks.jacocoTestReport.executionData
+        }
+
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
