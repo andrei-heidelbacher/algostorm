@@ -59,7 +59,7 @@ task jacocoRootReport(type: JacocoReport) {
     onlyIf = { true }
 
     doFirst {
-        subprojects.findAll {
+        subprojects.findAll { subProject ->
             subProject.pluginManager.hasPlugin('jacoco')
         }.each { subProject ->
             additionalSourceDirs files((Set<File>) subProject.sourceSets.main.allSource.srcDirs)
