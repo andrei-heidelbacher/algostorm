@@ -19,8 +19,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -58,15 +56,12 @@ android {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
     compile project(':algostorm-core')
     compile project(':algostorm-drivers-json')
     compile project(':algostorm-drivers-kts')
     compile project(':algostorm-systems')
     compile project(':algostorm-android')
-
-    testCompile "junit:junit:$junit_version"
 }
 
 dokka {

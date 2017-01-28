@@ -84,4 +84,16 @@ abstract class ScriptDriverTest : DriverTest() {
             )
         }
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testRunUnloadedScriptThrows() {
+        val name = "*invalidScript"
+        driver.runScript(name)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testInvokeUnloadedScriptThrows() {
+        val name = "*invalidScript"
+        driver.invokeScript(name, Any::class)
+    }
 }

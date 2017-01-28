@@ -62,19 +62,19 @@ class JsonDriver : SerializationDriver {
         }
 
         fun <T : Any> deserializer(
-                deserialize: (JsonParser) -> T?
+                deserialize: (JsonParser) -> T
         ): JsonDeserializer<T> = object : JsonDeserializer<T>() {
             override fun deserialize(
                     p: JsonParser,
                     ctxt: DeserializationContext?
-            ): T? = deserialize(p)
+            ): T = deserialize(p)
         }
 
         fun keyDeserializer(
-                deserialize: (String?) -> Any?
+                deserialize: (String) -> Any?
         ): KeyDeserializer = object : KeyDeserializer() {
             override fun deserializeKey(
-                    key: String?,
+                    key: String,
                     ctxt: DeserializationContext?
             ): Any? = deserialize(key)
         }
@@ -88,7 +88,7 @@ class JsonDriver : SerializationDriver {
     }
 
     private val resourceDeserializer = deserializer { p ->
-        p.codec.readValue<String>(p, String::class.java)?.let(::Resource)
+        Resource(p.codec.readValue<String>(p, String::class.java))
     }
 
     private val colorSerializer = serializer<Color> { value, gen ->
@@ -96,7 +96,7 @@ class JsonDriver : SerializationDriver {
     }
 
     private val colorDeserializer = deserializer { p ->
-        p.codec.readValue<String>(p, String::class.java)?.let(::Color)
+        Color(p.codec.readValue<String>(p, String::class.java))
     }
 
     private val idSerializer = serializer<Id> { value, gen ->
@@ -104,7 +104,7 @@ class JsonDriver : SerializationDriver {
     }
 
     private val idDeserializer = deserializer { p ->
-        p.codec.readValue<Int>(p, Int::class.java)?.let(::Id)
+        Id(p.codec.readValue<Int>(p, Int::class.java))
     }
 
     private val idKeySerializer = serializer<Id> { value, gen ->
@@ -112,7 +112,7 @@ class JsonDriver : SerializationDriver {
     }
 
     private val idKeyDeserializer = keyDeserializer { key ->
-        key?.toInt()?.let(::Id)
+        Id(key.toInt())
     }
 
     private val prefabSerializer = serializer<Prefab> { value, gen ->
