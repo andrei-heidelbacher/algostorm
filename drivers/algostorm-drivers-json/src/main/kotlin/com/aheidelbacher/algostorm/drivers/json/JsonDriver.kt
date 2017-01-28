@@ -126,7 +126,7 @@ class JsonDriver : SerializationDriver {
 
     private val prefabDeserializer = deserializer { p ->
         val components = arrayListOf<Component>()
-        p.codec.readTree<JsonNode>(p)?.fields()?.forEach {
+        p.codec.readTree<JsonNode>(p).fields().forEach {
             val type = Class.forName(it.key)
             val component = it.value.traverse(p.codec).readValueAs(type)
             components.add(component as Component)

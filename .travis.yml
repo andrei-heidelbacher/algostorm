@@ -8,5 +8,4 @@ android:
     - build-tools-25.0.2
     - android-25
 script: ./gradlew check connectedCheck jacocoRootReport
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+after_success: bash <(curl -s https://codecov.io/bash)
