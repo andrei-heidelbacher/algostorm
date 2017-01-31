@@ -83,13 +83,13 @@ abstract class EventBusTest {
         }
         assertFalse(publishedRequest.isCompleted)
         eventBus.subscribe(subscriber)
-        eventBus.request(publishedRequest)
+        assertEquals(id, eventBus.request(publishedRequest))
         eventBus.unsubscribe(subscriber)
         assertTrue(publishedRequest.isCompleted)
-        assertEquals(id, publishedRequest.get())
     }
 
-    @Test fun requestAfterUnsubscribeShouldNotBeCompleted() {
+    @Test(expected = IllegalStateException::class)
+    fun requestAfterUnsubscribeShouldThrow() {
         val publishedRequest = RequestMock()
         val id = 132
         val subscriber = object : Subscriber {
@@ -102,7 +102,6 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
         eventBus.unsubscribe(subscriber)
         eventBus.request(publishedRequest)
-        assertFalse(publishedRequest.isCompleted)
     }
 
     @Test(expected = IllegalArgumentException::class)
