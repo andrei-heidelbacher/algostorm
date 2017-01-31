@@ -26,6 +26,8 @@ import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
 
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 /**
@@ -79,10 +81,28 @@ abstract class EventBusTest {
                 request.complete(id)
             }
         }
+        assertFalse(publishedRequest.isCompleted)
         eventBus.subscribe(subscriber)
         eventBus.request(publishedRequest)
         eventBus.unsubscribe(subscriber)
+        assertTrue(publishedRequest.isCompleted)
         assertEquals(id, publishedRequest.get())
+    }
+
+    @Test fun requestAfterUnsubscribeShouldNotBeCompleted() {
+        val publishedRequest = RequestMock()
+        val id = 132
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun handleRequestMock(request: RequestMock) {
+                request.complete(id)
+            }
+        }
+        assertFalse(publishedRequest.isCompleted)
+        eventBus.subscribe(subscriber)
+        eventBus.request(publishedRequest)
+        eventBus.unsubscribe(subscriber)
+        assertFalse(publishedRequest.isCompleted)
     }
 
     @Test(expected = IllegalArgumentException::class)

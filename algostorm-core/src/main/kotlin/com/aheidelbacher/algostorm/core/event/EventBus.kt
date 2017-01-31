@@ -22,8 +22,8 @@ import java.util.LinkedList
 
 /**
  * An event bus which allows a [Subscriber] to [subscribe] and [unsubscribe]
- * from certain topics and allows to `post` or `publish` an event to the bus and
- * notify its subscribers.
+ * from certain topics and allows to [post] an event to the bus or make a
+ * [request] and notify its subscribers.
  */
 interface EventBus : Publisher {
     companion object {
@@ -43,6 +43,9 @@ interface EventBus : Publisher {
                 require(Event::class.java.isAssignableFrom(parameterType) ||
                         Request::class.java.isAssignableFrom(parameterType)) {
                     "$name doesn't receive an Event or Request as parameter!"
+                }
+                require(typeParameters.isEmpty()) {
+                    "$name is a generic method!"
                 }
                 require(parameterType.typeParameters.isEmpty()) {
                     "$name receives a generic parameter!"
