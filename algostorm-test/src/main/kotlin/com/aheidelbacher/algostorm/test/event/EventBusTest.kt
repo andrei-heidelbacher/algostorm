@@ -143,7 +143,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeGenericParameterShouldThrow() {
+    fun subscribeGenericHandlerShouldThrow() {
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun <T : Event> handleGeneric(event: T) {}
@@ -155,7 +155,7 @@ abstract class EventBusTest {
     fun subscribeGenericRequestShouldThrow() {
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
-            @Subscribe fun <T> handleRequest(request: Request<T>) {}
+            @Subscribe fun handleRequest(request: Request<*>) {}
         }
         eventBus.subscribe(subscriber)
     }
