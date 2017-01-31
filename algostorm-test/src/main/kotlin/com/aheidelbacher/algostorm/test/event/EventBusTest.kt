@@ -100,8 +100,8 @@ abstract class EventBusTest {
         }
         assertFalse(publishedRequest.isCompleted)
         eventBus.subscribe(subscriber)
-        eventBus.request(publishedRequest)
         eventBus.unsubscribe(subscriber)
+        eventBus.request(publishedRequest)
         assertFalse(publishedRequest.isCompleted)
     }
 
