@@ -16,12 +16,9 @@
 
 package com.aheidelbacher.algostorm.test.event
 
-import org.junit.Test
+import com.aheidelbacher.algostorm.core.event.Request
 
-class RequestMockTest {
-    @Test(expected = IllegalStateException::class)
-    fun testGetNotCompletedShouldThrow() {
-        val request = RequestMock()
-        request.get()
-    }
+class RequestMockTest : RequestTest<Int>() {
+    override val request: Request<Int> = RequestMock()
+    override val value: Int = 1
 }

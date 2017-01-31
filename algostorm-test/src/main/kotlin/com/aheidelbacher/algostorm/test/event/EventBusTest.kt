@@ -19,7 +19,9 @@ package com.aheidelbacher.algostorm.test.event
 import org.junit.Ignore
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.EventBus
+import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
 
@@ -50,6 +52,7 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
         eventBus.post(postedEvent)
         eventBus.publishPosts()
+        eventBus.unsubscribe(subscriber)
         assertEquals(postedEvent, handledEvent)
     }
 
@@ -65,6 +68,21 @@ abstract class EventBusTest {
         eventBus.unsubscribe(subscriber)
         eventBus.post(publishedEvent)
         eventBus.publishPosts()
+    }
+
+    @Test fun requestShouldBeCompleted() {
+        val publishedRequest = RequestMock()
+        val id = 132
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun handleRequestMock(request: RequestMock) {
+                request.complete(id)
+            }
+        }
+        eventBus.subscribe(subscriber)
+        eventBus.request(publishedRequest)
+        eventBus.unsubscribe(subscriber)
+        assertEquals(id, publishedRequest.get())
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -94,6 +112,35 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeNonFinalShouldThrow() {
+        open class OpenSubscriber : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe open fun handleEventMock(event: EventMock) {}
+        }
+
+        val subscriber = OpenSubscriber()
+        eventBus.subscribe(subscriber)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeGenericParameterShouldThrow() {
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun <T : Event> handleGeneric(event: T) {}
+        }
+        eventBus.subscribe(subscriber)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun subscribeGenericRequestShouldThrow() {
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun <T> handleRequest(request: Request<T>) {}
+        }
+        eventBus.subscribe(subscriber)
+    }
+
     @Test fun protectedHandlerShouldBeIgnored() {
         val postedEvent = EventMock(5)
         val subscriber = object : Subscriber {
@@ -105,6 +152,7 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
         eventBus.post(postedEvent)
         eventBus.publishPosts()
+        eventBus.unsubscribe(subscriber)
     }
 
     @Test fun privateHandlerShouldBeIgnored() {
@@ -118,5 +166,6 @@ abstract class EventBusTest {
         eventBus.subscribe(subscriber)
         eventBus.post(postedEvent)
         eventBus.publishPosts()
+        eventBus.unsubscribe(subscriber)
     }
 }
