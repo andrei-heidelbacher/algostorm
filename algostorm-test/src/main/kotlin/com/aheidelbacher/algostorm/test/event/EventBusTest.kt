@@ -120,6 +120,30 @@ abstract class EventBusTest {
         assertTrue(publishedRequest.isCompleted)
     }
 
+    @Test fun requestShouldNotifyCorrectSubscriber() {
+        class UnhandledRequest : Request<Unit>()
+
+        val publishedRequest = RequestMock()
+        val id = 132
+        val subscriber = object : Subscriber {
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun handleRequestMock(request: RequestMock) {
+                request.complete(id)
+            }
+
+            @Suppress("unused", "unused_parameter")
+            @Subscribe fun handleOtherRequest(request: UnhandledRequest) {
+                fail()
+            }
+        }
+
+        assertFalse(publishedRequest.isCompleted)
+        eventBus.subscribe(subscriber)
+        assertEquals(id, eventBus.request(publishedRequest))
+        eventBus.unsubscribe(subscriber)
+        assertTrue(publishedRequest.isCompleted)
+    }
+
     @Test(expected = IllegalStateException::class)
     fun requestAfterUnsubscribeShouldThrow() {
         val publishedRequest = RequestMock()
