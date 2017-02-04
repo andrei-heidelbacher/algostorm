@@ -82,7 +82,4 @@ abstract class EntityRef protected constructor(
      */
     final override fun equals(other: Any?): Boolean = other is EntityRef
             && id == other.id && owner === other.owner
-
-    final override fun toString(): String =
-            "EntityRef(${owner.hashCode()}, $id, $components)"
 }

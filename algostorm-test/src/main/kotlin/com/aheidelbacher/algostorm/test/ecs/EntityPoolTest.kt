@@ -21,6 +21,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.ecs.EntityPool
+import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.getSnapshot
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
@@ -36,6 +37,7 @@ import kotlin.test.assertTrue
 abstract class EntityPoolTest {
     companion object {
         fun assertEquals(expected: EntityRef?, actual: EntityRef?) {
+            kotlin.test.assertEquals(expected?.hashCode(), actual?.hashCode())
             kotlin.test.assertEquals(expected, actual)
             assertEquals(
                     expected = expected?.components?.toSet(),
@@ -56,6 +58,10 @@ abstract class EntityPoolTest {
     @Before fun init() {
         initialEntities = createInitialEntities()
         entityPool = createEntityPool(initialEntities)
+    }
+
+    @Test fun testGetSnapshotReturnsSameEntities() {
+        assertEquals(initialEntities, entityPool.getSnapshot())
     }
 
     @Test(expected = IllegalArgumentException::class)
