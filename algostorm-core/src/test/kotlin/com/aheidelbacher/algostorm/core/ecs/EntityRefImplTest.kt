@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.script
+package com.aheidelbacher.algostorm.core.ecs
 
-import org.junit.Test
+import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
+import com.aheidelbacher.algostorm.test.ecs.MutableEntityRefTest
 
-import com.aheidelbacher.algostorm.core.engine.script.ScriptEngine.Companion.invokeScript
-import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverStub
+class EntityRefImplTest : MutableEntityRefTest() {
+    private val entityPool = entityPoolOf()
 
-import kotlin.test.assertEquals
-
-class ScriptEngineTest {
-    @Test fun testStaticInvokeScript() {
-        val driver = ScriptDriverStub()
-        driver.loadScript(::testScript)
-        assertEquals(null, driver.invokeScript<Any>(::testScript.name))
-    }
+    override fun createEntity(prefab: Prefab): MutableEntityRef =
+            entityPool.create(prefab)
 }

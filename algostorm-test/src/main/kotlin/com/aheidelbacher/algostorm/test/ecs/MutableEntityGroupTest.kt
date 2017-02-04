@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.serialization
+package com.aheidelbacher.algostorm.test.ecs
 
-import org.junit.Test
-
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverStub
-
-import java.io.IOException
-
-class DeserializerTest {
-    @Test(expected = IOException::class)
-    fun testStaticReadValue() {
-        val driver = SerializationDriverStub()
-        driver.readValue<Int>("42".byteInputStream())
-    }
+class MutableEntityGroupTest {
 }

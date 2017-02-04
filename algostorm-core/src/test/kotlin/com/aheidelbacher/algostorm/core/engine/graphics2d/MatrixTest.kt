@@ -84,7 +84,7 @@ class MatrixTest {
         assertEquals(expected, actual, TOLERANCE)
     }
 
-    @Test fun testGetIndices() {
+    @Test fun testGetByIndex() {
         val matrix = Matrix(
                 0F, 1F, 2F,
                 3F, 4F, 5F
@@ -95,6 +95,22 @@ class MatrixTest {
         assertEquals(0F, matrix[6], TOLERANCE)
         assertEquals(0F, matrix[7], TOLERANCE)
         assertEquals(1F, matrix[8], TOLERANCE)
+    }
+
+    @Test fun testGetByRowAndColumn() {
+        val matrix = Matrix(
+                0F, 1F, 2F,
+                3F, 4F, 5F
+        )
+        val i = 0
+        for (r in 0..1) {
+            for (c in 0..2) {
+                assertEquals(1F * i, matrix[r, c], TOLERANCE)
+            }
+        }
+        assertEquals(0F, matrix[2, 0], TOLERANCE)
+        assertEquals(0F, matrix[2, 1], TOLERANCE)
+        assertEquals(1F, matrix[2, 2], TOLERANCE)
     }
 
     @Test(expected = IndexOutOfBoundsException::class)

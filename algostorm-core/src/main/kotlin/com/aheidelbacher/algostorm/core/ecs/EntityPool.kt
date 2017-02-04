@@ -33,6 +33,9 @@ interface EntityPool {
         fun entityPoolOf(entities: Map<Id, Prefab>): EntityPool =
                 EntityPoolImpl(entities)
 
+        fun entityPoolOf(vararg entities: Pair<Id, Prefab>): EntityPool =
+                entityPoolOf(mapOf(*entities))
+
         /** Returns the current state of the entities in this pool. */
         fun EntityPool.getSnapshot(): Map<Id, Prefab> =
                 group.entities.associate { it.id to it.toPrefab() }
