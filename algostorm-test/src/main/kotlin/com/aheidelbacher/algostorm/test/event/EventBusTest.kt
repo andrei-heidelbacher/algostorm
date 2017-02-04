@@ -42,7 +42,7 @@ import kotlin.test.fail
 abstract class EventBusTest {
     protected abstract val eventBus: EventBus
 
-    @Test fun publishPostsShouldNotifySubscribersInCorrectOrder() {
+    @Test fun testPublishPostsShouldNotifySubscribersInCorrectOrder() {
         val postedEvents = listOf<Event>(EventMock(5), EventMock(3))
         val handledEvents = mutableListOf<Event>()
         val subscriber = object : Subscriber {
@@ -59,7 +59,7 @@ abstract class EventBusTest {
         assertEquals(postedEvents, handledEvents)
     }
 
-    @Test fun publishPostsShouldNotifyCorrectSubscribers() {
+    @Test fun testPublishPostsShouldNotifyCorrectSubscribers() {
         data class HandledEvent(val id: Int) : Event
         data class UnhandledEvent(val id: Int) : Event
 
@@ -89,7 +89,7 @@ abstract class EventBusTest {
         assertEquals(postedEvents, handledEvents)
     }
 
-    @Test fun publishPostsAfterUnsubscribeShouldNotNotifySubscriber() {
+    @Test fun testPublishPostsAfterUnsubscribeShouldNotNotifySubscriber() {
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun handleEventMock(event: EventMock) {
@@ -103,7 +103,7 @@ abstract class EventBusTest {
         eventBus.publishPosts()
     }
 
-    @Test fun requestShouldBeCompleted() {
+    @Test fun testRequestShouldBeCompleted() {
         val publishedRequest = RequestMock()
         val id = 132
         val subscriber = object : Subscriber {
@@ -120,7 +120,7 @@ abstract class EventBusTest {
         assertTrue(publishedRequest.isCompleted)
     }
 
-    @Test fun requestShouldNotifyCorrectSubscriber() {
+    @Test fun testRequestShouldNotifyCorrectSubscriber() {
         class UnhandledRequest : Request<Unit>()
 
         val publishedRequest = RequestMock()
@@ -145,7 +145,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalStateException::class)
-    fun requestAfterUnsubscribeShouldThrow() {
+    fun testRequestAfterUnsubscribeShouldThrow() {
         val publishedRequest = RequestMock()
         val id = 132
         val subscriber = object : Subscriber {
@@ -162,7 +162,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeMultipleParametersReceivedShouldThrow() {
+    fun testSubscribeMultipleParametersReceivedShouldThrow() {
         eventBus.subscribe(object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun handleEventMock(event: EventMock, other: Any) {}
@@ -170,7 +170,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeNonEventShouldThrow() {
+    fun testSubscribeNonEventShouldThrow() {
         eventBus.subscribe(object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun handleNonEvent(any: Any) {}
@@ -178,7 +178,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeReturningNonVoidShouldThrow() {
+    fun testSubscribeReturningNonVoidShouldThrow() {
         eventBus.subscribe(object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun handleEventMock(event: EventMock): Any = event
@@ -186,7 +186,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeNonFinalShouldThrow() {
+    fun testSubscribeNonFinalShouldThrow() {
         open class OpenSubscriber : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe open fun handleEventMock(event: EventMock) {}
@@ -196,7 +196,7 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeGenericHandlerShouldThrow() {
+    fun testSubscribeGenericHandlerShouldThrow() {
         eventBus.subscribe(object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun <T : Event> handleGeneric(event: T) {}
@@ -204,14 +204,14 @@ abstract class EventBusTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun subscribeGenericRequestShouldThrow() {
+    fun testSubscribeGenericRequestShouldThrow() {
         eventBus.subscribe(object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe fun handleRequest(request: Request<*>) {}
         })
     }
 
-    @Test fun protectedHandlerShouldBeIgnored() {
+    @Test fun testProtectedHandlerShouldBeIgnored() {
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe protected fun handleEventMock(event: EventMock) {
@@ -225,7 +225,7 @@ abstract class EventBusTest {
         eventBus.unsubscribe(subscriber)
     }
 
-    @Test fun privateHandlerShouldBeIgnored() {
+    @Test fun testPrivateHandlerShouldBeIgnored() {
         val subscriber = object : Subscriber {
             @Suppress("unused", "unused_parameter")
             @Subscribe private fun handleEventMock(event: EventMock) {

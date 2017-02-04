@@ -16,15 +16,21 @@
 
 package com.aheidelbacher.algostorm.drivers.json
 
+import org.junit.Test
+
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
+
+import java.io.ByteArrayOutputStream
 
 class JsonDriverTest : SerializationDriverTest() {
     override val driver = JsonDriver()
@@ -43,4 +49,23 @@ class JsonDriverTest : SerializationDriverTest() {
                     Id(2) to prefabOf(ComponentMock(2))
             )
     )
+
+    @Test(expected = ClassCastException::class)
+    fun testDeserializePrefabWithInvalidComponentThrows() {
+        driver.readValue<Prefab>(
+                Resource("$SCHEMA/invalidPrefab.${driver.format}").inputStream()
+        )
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testSerializeAfterReleaseThrows() {
+        driver.release()
+        driver.writeValue(ByteArrayOutputStream(), data)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testDeserializeAfterReleaseThrows() {
+        driver.release()
+        driver.readValue<DataMock>(inputStream)
+    }
 }

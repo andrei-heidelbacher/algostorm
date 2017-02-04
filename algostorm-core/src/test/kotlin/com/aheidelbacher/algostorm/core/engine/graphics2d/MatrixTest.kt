@@ -69,19 +69,45 @@ class MatrixTest {
         assertEquals(expected, actual, TOLERANCE)
     }
 
+    @Test fun testPostConcat() {
+        val dx = 412F
+        val dy = -384F
+        val degrees = 213F
+        val px = 5F
+        val py = 8F
+        val expected = Matrix.identity()
+                .postTranslate(dx, dy)
+                .postRotate(degrees, px, py)
+        val actual = Matrix.identity()
+                .postConcat(Matrix.identity().postTranslate(dx, dy))
+                .postConcat(Matrix.identity().postRotate(degrees, px, py))
+        assertEquals(expected, actual, TOLERANCE)
+    }
+
     @Test fun testGetIndices() {
         val matrix = Matrix(
                 0F, 1F, 2F,
                 3F, 4F, 5F
         )
-        assertEquals(0F, matrix[0], TOLERANCE)
-        assertEquals(1F, matrix[1], TOLERANCE)
-        assertEquals(2F, matrix[2], TOLERANCE)
-        assertEquals(3F, matrix[3], TOLERANCE)
-        assertEquals(4F, matrix[4], TOLERANCE)
-        assertEquals(5F, matrix[5], TOLERANCE)
+        for (i in 0..5) {
+            assertEquals(1F * i, matrix[i], TOLERANCE)
+        }
         assertEquals(0F, matrix[6], TOLERANCE)
         assertEquals(0F, matrix[7], TOLERANCE)
         assertEquals(1F, matrix[8], TOLERANCE)
+    }
+
+    @Test(expected = IndexOutOfBoundsException::class)
+    fun testGetInvalidIndexThrows() {
+        val matrix = Matrix.identity()
+        matrix[-1]
+    }
+
+    @Test fun testToString() {
+        val matrix = Matrix.identity()
+        assertEquals(
+                "[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]",
+                "$matrix"
+        )
     }
 }

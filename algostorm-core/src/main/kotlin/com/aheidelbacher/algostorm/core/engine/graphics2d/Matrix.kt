@@ -148,5 +148,5 @@ class Matrix(sx: Float, kx: Float, dx: Float, ky: Float, sy: Float, dy: Float) {
     operator fun get(row: Int, column: Int): Float = get(row * 3 + column)
 
     override fun toString(): String =
-            "[[$sx, $kx, $dx], [$ky, $sy, $dy], [0, 0, 1]]"
+            "[[$sx, $kx, $dx], [$ky, $sy, $dy], [0.0, 0.0, 1.0]]"
 }

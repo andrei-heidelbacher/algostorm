@@ -22,7 +22,7 @@ import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 import org.junit.Assert.assertArrayEquals
 
-const val TOLERANCE: Float = 1e-7F
+const val TOLERANCE: Float = 1e-4F
 
 fun Float.eq(other: Float): Boolean = Math.abs(this - other) < TOLERANCE
 
