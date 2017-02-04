@@ -102,10 +102,11 @@ class MatrixTest {
                 0F, 1F, 2F,
                 3F, 4F, 5F
         )
-        val i = 0
+        var i = 0
         for (r in 0..1) {
             for (c in 0..2) {
                 assertEquals(1F * i, matrix[r, c], TOLERANCE)
+                i += 1
             }
         }
         assertEquals(0F, matrix[2, 0], TOLERANCE)
