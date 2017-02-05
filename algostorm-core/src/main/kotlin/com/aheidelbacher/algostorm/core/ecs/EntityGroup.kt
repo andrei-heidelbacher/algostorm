@@ -17,9 +17,17 @@
 package com.aheidelbacher.algostorm.core.ecs
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 
 /** A read-only view group of filtered read-only entities. */
 interface EntityGroup {
+    companion object {
+        /** Returns the current state of the entities in this group. */
+        fun EntityGroup.getSnapshot(): Map<Id, Prefab> = entities.associate {
+            it.id to it.toPrefab()
+        }
+    }
+
     /** A read-only view of the entities in this group. */
     val entities: Iterable<EntityRef>
 
@@ -55,8 +63,6 @@ interface EntityGroup {
      * @param filter the filter which must return `true` for an entity to be
      * included in the new group
      * @return the new subgroup
-     * @throws IllegalArgumentException if a subgroup with the same `name`
-     * already exists
      * @throws IllegalStateException if this group is invalid
      */
     fun addGroup(filter: (EntityRef) -> Boolean): EntityGroup

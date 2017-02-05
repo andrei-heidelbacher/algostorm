@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.ecs
+package com.aheidelbacher.algostorm.core.ecs
 
-import org.junit.Ignore
-import org.junit.Test
+import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
+import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
+import com.aheidelbacher.algostorm.test.ecs.MutableEntityGroupTest
 
-import com.aheidelbacher.algostorm.core.ecs.EntityRef
-import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
-import com.aheidelbacher.algostorm.core.ecs.Prefab
+class EntityGroupImplTest : MutableEntityGroupTest() {
+    override val initialEntities: Map<Id, Prefab> = emptyMap()
 
-@Ignore
-abstract class MutableEntityGroupTest : EntityGroupTest() {
-    override abstract fun createGroup(
+    override fun createGroup(
             entities: Map<EntityRef.Id, Prefab>
-    ): MutableEntityGroup
-
-    @Test fun testChangedEntityRemovedFromSubgroup() {
-
-    }
+    ): MutableEntityGroup = entityPoolOf(entities).group
 }
