@@ -22,6 +22,7 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup.Companion.getSnapshot
+import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
@@ -94,6 +95,26 @@ abstract class EntityGroupTest {
     @Test fun testRemoveRemovedGroupReturnsFalse() {
         val subgroup = group.addGroup { true }
         group.removeGroup(subgroup)
+        assertFalse(group.removeGroup(subgroup))
+    }
+
+    @Test fun testRemoveNonSubgroupReturnsFalse() {
+        val subgroup = object : EntityGroup {
+            override val entities: Iterable<EntityRef>
+                get() = error("")
+
+            override val isValid: Boolean
+                get() = error("")
+
+            override fun get(id: Id): EntityRef? = error("")
+
+            override fun contains(id: Id): Boolean = error("")
+
+            override fun addGroup(filter: (EntityRef) -> Boolean): EntityGroup =
+                    error("")
+
+            override fun removeGroup(group: EntityGroup): Boolean = error("")
+        }
         assertFalse(group.removeGroup(subgroup))
     }
 
