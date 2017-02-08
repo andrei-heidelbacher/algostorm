@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.ecs
 
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
@@ -23,13 +24,44 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
 @Ignore
 abstract class MutableEntityGroupTest : EntityGroupTest() {
+    private lateinit var group: MutableEntityGroup
+
     override abstract fun createGroup(
             entities: Map<EntityRef.Id, Prefab>
     ): MutableEntityGroup
 
-    @Test fun testChangedEntityRemovedFromSubgroup() {
+    @Before fun initMutableGroup() {
+        group = createGroup(createInitialEntities())
+    }
 
+    @Test fun testChangedEntityRemovedFromSubgroup() {
+        val subgroup = group.addGroup {
+            val id = it[ComponentMock::class]?.id
+            id != null && id % 2 == 1
+        }
+        group.entities.forEach {
+            if (it.id in subgroup) {
+                it.remove(ComponentMock::class)
+                assertFalse(it.id in subgroup)
+            }
+        }
+    }
+
+    @Test fun testChangedEntityAddedToSubgroup() {
+        val subgroup = group.addGroup {
+            val id = it[ComponentMock::class]?.id
+            id != null && id % 2 == 0
+        }
+        group.entities.forEach {
+            if (it.id !in subgroup) {
+                it.set(ComponentMock(it.id.value - it.id.value % 2))
+                assertTrue(it.id in subgroup)
+            }
+        }
     }
 }

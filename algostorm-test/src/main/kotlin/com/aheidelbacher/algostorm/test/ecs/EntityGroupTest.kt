@@ -24,6 +24,7 @@ import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup.Companion.getSnapshot
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -31,12 +32,18 @@ import kotlin.test.assertTrue
 
 @Ignore
 abstract class EntityGroupTest {
-    protected abstract val initialEntities: Map<Id, Prefab>
+    private lateinit var initialEntities: Map<Id, Prefab>
     private lateinit var group: EntityGroup
+
+    protected open fun createInitialEntities(): Map<Id, Prefab> =
+            (1 until 1000).associate {
+                Id(it) to prefabOf(ComponentMock(it))
+            }
 
     protected abstract fun createGroup(entities: Map<Id, Prefab>): EntityGroup
 
     @Before fun initGroup() {
+        initialEntities = createInitialEntities()
         group = createGroup(initialEntities)
     }
 
