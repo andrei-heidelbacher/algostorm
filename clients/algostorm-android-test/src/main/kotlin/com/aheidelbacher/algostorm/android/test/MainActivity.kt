@@ -33,7 +33,7 @@ class MainActivity : AndroidClient() {
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
             inputDriver: InputDriver
-    ): Engine = TestEngine(
+    ): Engine = SokobanEngine(
             audioDriver = audioDriver,
             graphicsDriver = graphicsDriver,
             inputDriver = inputDriver

@@ -53,7 +53,7 @@ import com.aheidelbacher.algostorm.systems.physics2d.Position
 import java.io.InputStream
 import java.io.OutputStream
 
-class TestEngine(
+class SokobanEngine(
         audioDriver: AudioDriver,
         graphicsDriver: GraphicsDriver,
         inputDriver: InputDriver
@@ -70,94 +70,80 @@ class TestEngine(
     private lateinit var systems: List<Subscriber>
     private val inputListener = PollingInputListener()
 
-    override val millisPerUpdate: Int
-        get() = 25
+    override val millisPerUpdate: Int = 30
 
     override fun onInit(inputStream: InputStream?) {
         inputDriver.addListener(inputListener)
         map = inputStream?.let {
             serializationDriver.readValue<MapObject>(it)
         } ?: mapObject {
-            width = 32
-            height = 32
-            tileWidth = 32
-            tileHeight = 32
+            width = 8
+            height = 8
+            tileWidth = 64
+            tileHeight = 64
             +tileSet {
-                name = "world"
-                tileWidth = 32
-                tileHeight = 32
-                image(Resource("$SCHEMA/assets/tileset.png"), 2048, 1536)
+                name = "sokoban"
+                tileWidth = 64
+                tileHeight = 64
+                image(Resource("$SCHEMA/assets/sokoban_tileset.png"), 832, 512)
             }
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    entity(prefabOf(
-                            Position(x, y),
-                            Sprite(
-                                    width = tileWidth,
-                                    height = tileHeight,
-                                    z = 0,
-                                    priority = 0,
-                                    gid = 961
-                            )
-                    ))
-                }
-            }
-            for (x in 0 until width) {
-                for (y in listOf(0, height - 1)) {
-                    entity(prefabOf(
-                            Position(x, y),
-                            Sprite(
-                                    width = tileWidth,
-                                    height = tileHeight,
-                                    z = 0,
-                                    priority = 1,
-                                    gid = 1089
-                            ),
-                            Body.STATIC
-                    ))
-                }
-            }
-            for (x in listOf(0, width - 1)) {
-                for (y in 1 until height - 1) {
-                    entity(prefabOf(
-                            Position(x, y),
-                            Sprite(
-                                    width = tileWidth,
-                                    height = tileHeight,
-                                    z = 0,
-                                    priority = 1,
-                                    gid = 1089
-                            ),
-                            Body.STATIC
-                    ))
-                }
-            }
-            for (x in 1 until width - 1 step 4) {
-                for (y in 1 until height - 1 step 4) {
-                    entity(prefabOf(
-                            Position(x, y),
-                            Sprite(
-                                    width = tileWidth,
-                                    height = tileHeight,
-                                    z = 0,
-                                    priority = 1,
-                                    gid = 1089
-                            ),
-                            Body.STATIC
-                    ))
-                }
-            }
-            entity(Id(1), prefabOf(
-                    Position(15, 15),
+
+            fun floor(x: Int, y: Int) = prefabOf(
+                    Position(x, y),
+                    Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            priority = 0,
+                            gid = 90
+                    )
+            )
+
+            fun wall(x: Int, y: Int) = prefabOf(
+                    Position(x, y),
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,
                             z = 0,
                             priority = 1,
-                            gid = 129
+                            gid = 98
+                    ),
+                    Body.STATIC
+            )
+
+            fun player(x: Int, y: Int) = prefabOf(
+                    Position(x, y),
+                    Sprite(
+                            width = tileWidth,
+                            height = tileHeight,
+                            z = 0,
+                            priority = 1,
+                            gid = 53
                     ),
                     Body.KINEMATIC
-            ))
+            )
+
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    entity(floor(x, y))
+                }
+            }
+            for (x in 0 until width) {
+                for (y in listOf(0, height - 1)) {
+                    entity(wall(x, y))
+                }
+            }
+            for (x in listOf(0, width - 1)) {
+                for (y in 1 until height - 1) {
+                    entity(wall(x, y))
+                }
+            }
+            for (x in 1 until width - 1 step 4) {
+                for (y in 1 until height - 1 step 4) {
+                    entity(wall(x, y))
+                }
+            }
+            entity(Id(1), player(1, 1))
         }
         systems = listOf(
                 RenderingSystem(map, graphicsDriver),
@@ -193,8 +179,10 @@ class TestEngine(
             }
 
             override fun onTouch(x: Int, y: Int) {
-                val tx = (x + camera.x - graphicsDriver.width / 2) / map.tileWidth
-                val ty = (y + camera.y - graphicsDriver.height / 2) / map.tileHeight
+                val tx = (x + camera.x - graphicsDriver.width / 2) /
+                        map.tileWidth
+                val ty = (y + camera.y - graphicsDriver.height / 2) /
+                        map.tileHeight
                 val path = eventBus.request(FindPath(Id(1), tx, ty))
                 path?.let { eventBus.post(Follow(Id(1))) }
                 path?.forEach { d ->
