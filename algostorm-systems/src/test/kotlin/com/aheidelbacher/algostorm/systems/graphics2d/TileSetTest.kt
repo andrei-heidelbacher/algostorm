@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.data
+package com.aheidelbacher.algostorm.systems.graphics2d
 
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Builder.Companion.tile
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Builder.Companion.tileSet
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Builder.Companion.tile
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Frame
 
 import java.io.ByteArrayOutputStream
 

@@ -25,12 +25,11 @@ import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
-import com.aheidelbacher.algostorm.data.MapObject
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.data.TileSetCollection
+import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
@@ -167,11 +166,11 @@ class RenderingSystem(
     private fun Sprite.draw(offX: Int, offY: Int) {
         if (isVisible && gid != 0) {
             drawGid(gid, offX + offsetX, offY + offsetY, width, height)
-        } else if (isVisible && color != null) {
+        }/* else if (isVisible && color != null) {
             matrix.reset()
             matrix.postTranslate(1F * offX + offsetX, 1F * offY + offsetY)
             canvas.drawRectangle(Color(color.color), width, height, matrix)
-        }
+        }*/
     }
 
     private fun Node.draw(offX: Int, offY: Int) {

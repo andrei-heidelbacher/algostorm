@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
-import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
+import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 //import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 import org.junit.Test

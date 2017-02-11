@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.data
+package com.aheidelbacher.algostorm.systems
 
 import org.junit.Test
 
@@ -25,9 +25,9 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.data.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.data.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
 import java.io.ByteArrayOutputStream
@@ -77,7 +77,9 @@ class MapObjectTest {
     }
 
     @Test fun testMapObjectDeserialization() {
-        val actualMapObject = serializationDriver.readValue<MapObject>(inputStream)
+        val actualMapObject = serializationDriver.readValue<MapObject>(
+                src = inputStream
+        )
         assertEquals(mapObject, actualMapObject)
     }
 

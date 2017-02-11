@@ -31,7 +31,6 @@ import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
  * @property isVisible
  * @property offsetX the horizontal rendering offset in pixels
  * @property offsetY the vertical rendering offset in pixels (positive is down)
- * @property color
  * @throws IllegalArgumentException if [gid] is negative or if [width] or
  * [height] are not positive
  */
@@ -43,8 +42,8 @@ data class Sprite(
         val gid: Int = 0,
         val isVisible: Boolean = true,
         val offsetX: Int = 0,
-        val offsetY: Int = 0,
-        val color: Color? = null
+        val offsetY: Int = 0//,
+        //val color: Color? = null
 ) : Component {
     init {
         require(gid >= 0) { "$this gid must not be negative!" }

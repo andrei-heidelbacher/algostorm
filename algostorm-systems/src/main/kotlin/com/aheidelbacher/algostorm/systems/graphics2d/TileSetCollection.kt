@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.data
+package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Companion.clearFlags
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
-import com.aheidelbacher.algostorm.data.TileSet.Viewport
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.clearFlags
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Viewport
 
 data class TileSetCollection(val tileSets: List<TileSet>) {
     @Transient private val gidToTileSet: Array<TileSet>
     @Transient private val gidToTileId: IntArray
+    @Transient private val aidToAnimationMap: Array<Map<String, List<Frame>>>
 
     init {
         require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
@@ -31,11 +32,13 @@ data class TileSetCollection(val tileSets: List<TileSet>) {
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
         val tileSetsByGid = arrayListOf<TileSet>()
         gidToTileId = IntArray(totalGidCount)
+        aidToAnimationMap = Array(totalGidCount) { emptyMap<String, List<Frame>>() }
         var firstGid = 1
         for (tileSet in tileSets) {
             for (tileId in 0 until tileSet.tileCount) {
                 tileSetsByGid.add(tileSet)
                 gidToTileId[tileId + firstGid - 1] = tileId
+                aidToAnimationMap[tileId + firstGid - 1] = tileSet.getAnimationMap(tileId)
             }
             firstGid += tileSet.tileCount
         }
@@ -61,6 +64,10 @@ data class TileSetCollection(val tileSets: List<TileSet>) {
      * is greater than the total number of tiles contained in the map tile sets
      */
     fun getTileId(gid: Int): Int = gidToTileId[gid.clearFlags() - 1]
+
+    fun getAnimationMap(aid: Int): Map<String, List<Frame>> =
+            aidToAnimationMap[aid - 1]
+            //getTileSet(aid).getAnimationMap(getTileId(aid))
 
     fun getViewport(gid: Int, elapsedMillis: Long): Viewport {
         val tileSet = getTileSet(gid)

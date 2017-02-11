@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.data
+package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.data.TileSet.Tile.Frame
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Frame
 
 import kotlin.properties.Delegates
 
@@ -51,7 +51,8 @@ data class TileSet private constructor(
         val spacing: Int,
         val columns: Int,
         val tileCount: Int,
-        val tiles: Set<Tile>
+        val tiles: Set<Tile>,
+        val animations: Map<Int, Map<String, List<Frame>>> = emptyMap()
 ) {
     class Builder {
         companion object {
@@ -272,6 +273,9 @@ data class TileSet private constructor(
      * it is greater than or equal to [tileCount]
      */
     fun getTile(tileId: Int): Tile = tilesArray[tileId]
+
+    fun getAnimationMap(tileId: Int): Map<String, List<Frame>> =
+            animations[tileId] ?: emptyMap()
 
     /**
      * Returns a viewport corresponding to the given tile id, by applying the

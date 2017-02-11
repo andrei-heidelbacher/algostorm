@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.data
+package com.aheidelbacher.algostorm.systems
 
 import com.aheidelbacher.algostorm.core.ecs.EntityPool
 import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
@@ -22,6 +22,8 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
 
 import kotlin.properties.Delegates
 
