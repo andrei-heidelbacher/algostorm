@@ -24,6 +24,9 @@ import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
@@ -47,6 +50,15 @@ class JsonDriverTest : SerializationDriverTest() {
             prefabs = mapOf(
                     Id(1) to prefabOf(ComponentMock(1)),
                     Id(2) to prefabOf(ComponentMock(2))
+            ),
+            tileSet = TileSet(
+                    name = "world",
+                    tileWidth = 24,
+                    tileHeight = 24,
+                    image = Image(Resource("$SCHEMA/data.json"), 288, 240),
+                    animations = mapOf(
+                            "tile:idle" to listOf(Frame(1, 250), Frame(2, 250))
+                    )
             )
     )
 

@@ -29,7 +29,7 @@ import com.aheidelbacher.algostorm.core.event.Event
  */
 data class Timer(val remainingTicks: Int, val events: List<com.aheidelbacher.algostorm.core.event.Event>) {
     init {
-        require(remainingTicks >= 0) { "Timer duration can't be negative!" }
+        require(remainingTicks >= 0) { "Timer durationMillis can't be negative!" }
     }
 
     /**

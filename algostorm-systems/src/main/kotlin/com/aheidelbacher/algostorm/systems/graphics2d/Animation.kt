@@ -20,10 +20,13 @@ import com.aheidelbacher.algostorm.core.ecs.Component
 
 data class Animation(
         val aid: String,
-        val animation: String,
+        val name: String,
         val elapsedMillis: Int,
         val loop: Boolean
 ) : Component {
+    val animation: String
+        get() = "$aid:$name"
+
     init {
         require(elapsedMillis >= 0)
     }

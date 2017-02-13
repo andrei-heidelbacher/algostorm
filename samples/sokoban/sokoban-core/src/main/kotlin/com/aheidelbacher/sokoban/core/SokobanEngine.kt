@@ -22,6 +22,7 @@ import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.input.InputListener
@@ -43,7 +44,9 @@ import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
+import com.aheidelbacher.algostorm.systems.graphics2d.Animation
+import com.aheidelbacher.algostorm.systems.graphics2d.AnimationSystem
 import com.aheidelbacher.algostorm.systems.physics2d.Body
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
@@ -109,6 +112,7 @@ class SokobanEngine(
 
             fun player(x: Int, y: Int) = prefabOf(
                     Position(x, y),
+                    Animation("player", "idle", 0, true),
                     Sprite(
                             width = tileWidth,
                             height = tileHeight,
@@ -143,11 +147,20 @@ class SokobanEngine(
         }
         val tileSetCollection = map.tileSets.map { resource ->
             resource.inputStream().use { src ->
-                serializationDriver.readValue<TileSet>(src)
+                val tileSet = serializationDriver.readValue<TileSet>(src)
+                graphicsDriver.loadBitmap(tileSet.image.resource)
+                tileSet
             }
         }.let(::TileSetCollection)
         systems = listOf(
-                RenderingSystem(map, tileSetCollection, graphicsDriver),
+                RenderingSystem(
+                        map.tileWidth,
+                        map.tileHeight,
+                        Color("#FF000000"),
+                        tileSetCollection,
+                        graphicsDriver,
+                        map.entityPool.group
+                ),
                 CameraSystem(
                         map.tileWidth,
                         map.tileHeight,
@@ -156,7 +169,8 @@ class SokobanEngine(
                         Id(1)
                 ),
                 PhysicsSystem(map.entityPool.group),
-                PathFindingSystem(map.entityPool.group)
+                PathFindingSystem(map.entityPool.group),
+                AnimationSystem(map.entityPool.group, tileSetCollection)
         )
     }
 

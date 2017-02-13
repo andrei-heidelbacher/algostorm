@@ -18,12 +18,14 @@ package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
+import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
 
 class AnimationSystem(
         private val group: MutableEntityGroup,
@@ -33,7 +35,7 @@ class AnimationSystem(
             val entityId: Id,
             val animation: String,
             val loop: Boolean
-    ) : Request<Boolean>()
+    ) : Request<Unit>()
 
     private lateinit var animated: MutableEntityGroup
 
@@ -43,36 +45,42 @@ class AnimationSystem(
 
     @Subscribe fun onAnimate(request: Animate) {
         val entity = animated[request.entityId] ?: return
-        val aid = entity[Animation::class]?.aid ?: return
-        val frames = tileSetCollection.getAnimation("$aid:${request.animation}")
+        val animation = entity[Animation::class]?.copy(
+                name = request.animation,
+                elapsedMillis = 0,
+                loop = request.loop
+        ) ?: return
+        val frames = tileSetCollection.getAnimation(animation.animation)
         if (frames != null) {
-            entity.set(Animation(aid, request.animation, 0, request.loop))
-            //entity.set(Sprite(frames.first()))
-            request.complete(true)
-        } else {
-            request.complete(false)
+            val sprite = entity.sprite?.copy(gid = frames.first().tileId)
+                    ?: return
+            entity.set(animation)
+            entity.set(sprite)
+            request.complete(Unit)
         }
     }
 
-    @Subscribe fun onUpdate(event: Update) {
-        animated.entities.forEach {
-            val animation = it[Animation::class] ?: error("")
-            val frames = tileSetCollection.getAnimation(
-                    animation = "${animation.aid}:${animation.animation}"
-            ) ?: error("")
-            val totalDuration = frames.sumBy(Frame::duration)
-            val elapsedMillis = animation.elapsedMillis + event.elapsedMillis
-            if (elapsedMillis >= totalDuration && animation.loop) {
-
-            }
-            it.set(animation.copy(elapsedMillis = elapsedMillis))
-            var t = elapsedMillis
-            var i = 0
-            do {
-                t -= frames[i].duration
-                i++
-            } while (t >= 0 && i < frames.size)
-            it.set(it.sprite?.copy(gid = frames[i - 1].tileId) ?: error(""))
+    private fun MutableEntityRef.update(deltaMillis: Int) {
+        val animation = get(Animation::class) ?: return
+        val frames = tileSetCollection.getAnimation(animation.animation)
+                ?: return
+        val totalDuration = frames.sumBy(Frame::durationMillis)
+        val elapsedMillis = animation.elapsedMillis + deltaMillis
+        if (elapsedMillis >= totalDuration && animation.loop) {
+            set(animation.copy(elapsedMillis = elapsedMillis % totalDuration))
+        } else {
+            set(animation.copy(elapsedMillis = Math.min(elapsedMillis, totalDuration)))
         }
+        var t = elapsedMillis
+        var i = 0
+        do {
+            t -= frames[i].durationMillis
+            i++
+        } while (t >= 0 && i < frames.size)
+        set(sprite?.copy(gid = frames[i - 1].tileId) ?: return)
+    }
+
+    @Subscribe fun onUpdate(event: Update) {
+        animated.entities.forEach { it.update(event.elapsedMillis) }
     }
 }

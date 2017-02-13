@@ -27,6 +27,7 @@ import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedDiagonally
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedHorizontally
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
@@ -117,12 +118,6 @@ class RenderingSystem(
      * pixels (positive is down)
      */
     data class Render(val cameraX: Int, val cameraY: Int) : Event
-
-    init {
-        tileSetCollection.tileSets.forEach {
-            canvas.loadBitmap(it.image.resource)
-        }
-    }
 
     private fun drawGid(gid: Int, x: Int, y: Int, width: Int, height: Int) {
         if (gid == 0) {

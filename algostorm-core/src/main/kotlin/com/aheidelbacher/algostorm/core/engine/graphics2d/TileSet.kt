@@ -78,25 +78,25 @@ data class TileSet private constructor(
             )
         }
 
-        /** Whether this global tile id is flipped horizontally. */
+        /** Whether this tile id is flipped horizontally. */
         val Int.isFlippedHorizontally: Boolean
             get() = and(0x40000000) != 0
 
-        /** Whether this global tile id is flipped vertically. */
+        /** Whether this tile id is flipped vertically. */
         val Int.isFlippedVertically: Boolean
             get() = and(0x20000000) != 0
 
-        /** Whether this global tile id is flipped diagonally. */
+        /** Whether this tile id is flipped diagonally. */
         val Int.isFlippedDiagonally: Boolean
             get() = and(0x10000000) != 0
 
-        /** Flips this global tile id horizontally. */
+        /** Flips this tile id horizontally. */
         fun Int.flipHorizontally(): Int = xor(0x40000000)
 
-        /** Flips this global tile id vertically. */
+        /** Flips this tile id vertically. */
         fun Int.flipVertically(): Int = xor(0x20000000)
 
-        /** Flips this global tile id diagonally. */
+        /** Flips this tile id diagonally. */
         fun Int.flipDiagonally(): Int = xor(0x10000000)
 
         /** Clears all flag bits. */
@@ -122,14 +122,14 @@ data class TileSet private constructor(
      * A frame within an animation.
      *
      * @property tileId the local id of the tile used for this frame
-     * @property duration the duration of this frame in milliseconds
+     * @property durationMillis the duration of this frame in milliseconds
      * @throws IllegalArgumentException if [tileId] is negative or if
-     * [duration] is not positive
+     * [durationMillis] is not positive
      */
-    data class Frame(val tileId: Int, val duration: Int) {
+    data class Frame(val tileId: Int, val durationMillis: Int) {
         init {
             require(tileId >= 0) { "$this tile id can't be negative!" }
-            require(duration > 0) { "$this duration must be positive!" }
+            require(durationMillis > 0) { "$this duration must be positive!" }
         }
     }
 

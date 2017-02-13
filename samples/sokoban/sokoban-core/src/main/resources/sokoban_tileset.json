@@ -12,5 +12,23 @@
   "columns": 13,
   "tileCount": 104,
   "animations": {
+    "player:idle": [
+      {
+        "tileId": 52,
+        "durationMillis": 250
+      },
+      {
+        "tileId": 53,
+        "durationMillis": 250
+      },
+      {
+        "tileId": 52,
+        "durationMillis": 250
+      },
+      {
+        "tileId": 54,
+        "durationMillis": 250
+      }
+    ]
   }
 }

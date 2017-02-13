@@ -17,22 +17,7 @@
 package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Tile.Companion.isFlippedVertically
 
 /** The `Sprite` component of this entity. */
 val EntityRef.sprite: Sprite?
     get() = get(Sprite::class)
-
-/** Utility flag. */
-val Sprite.isFlippedDiagonally: Boolean
-    get() = gid.isFlippedDiagonally
-
-/** Utility flag. */
-val Sprite.isFlippedHorizontally: Boolean
-    get() = gid.isFlippedHorizontally
-
-/** Utility flag. */
-val Sprite.isFlippedVertically: Boolean
-    get() = gid.isFlippedVertically

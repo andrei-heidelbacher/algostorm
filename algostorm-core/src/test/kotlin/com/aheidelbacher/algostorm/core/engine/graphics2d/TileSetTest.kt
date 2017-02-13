@@ -20,39 +20,13 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-//import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
-
-import java.io.ByteArrayOutputStream
 
 import kotlin.test.assertEquals
 
 class TileSetTest {
-    /*val serializationDriver = com.aheidelbacher.algostorm.drivers.json.JsonDriver()
-    val inputStream = Resource("$SCHEMA/tileSet.${serializationDriver.format}")
-            .inputStream()*/
-    val tileSet = TileSet(
-            name = "world",
-            tileWidth = 24,
-            tileHeight = 24,
-            image = TileSet.Image(Resource("$SCHEMA/image.png"), 288, 240),
-            animations = mapOf(
-                    "tile:idle" to listOf(Frame(1, 250), Frame(2, 250))
-            )
-    )
+    @Test
+    fun testNegative() {
 
-    /*@Test fun testTileSetDeserialization() {
-        val actualTileSet = serializationDriver.readValue<TileSet>(inputStream)
-        assertEquals(tileSet, actualTileSet)
     }
-
-    @Test fun testTileSetSerialization() {
-        val bos = ByteArrayOutputStream()
-        serializationDriver.writeValue(bos, tileSet)
-        val actualTileSet = serializationDriver.readValue<TileSet>(
-                src = bos.toByteArray().inputStream()
-        )
-        assertEquals(tileSet, actualTileSet)
-    }*/
 }
