@@ -21,9 +21,8 @@ import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
 
 import kotlin.properties.Delegates
 
@@ -32,7 +31,7 @@ class MapObject private constructor(
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
-        private val tileSets: List<TileSet>,
+        val tileSets: List<Resource>,
         private var entities: Map<Id, Prefab>,
         val backgroundColor: Color?,
         val version: String
@@ -47,14 +46,14 @@ class MapObject private constructor(
         var height: Int by Delegates.notNull<Int>()
         var tileWidth: Int by Delegates.notNull<Int>()
         var tileHeight: Int by Delegates.notNull<Int>()
-        private val tileSets: MutableList<TileSet> = arrayListOf()
+        private val tileSets: MutableList<Resource> = arrayListOf()
         private val initialEntities = hashMapOf<Id, Prefab>()
         private val entities = arrayListOf<Prefab>()
         var backgroundColor: Color? = null
         var version: String = "1.0"
 
-        operator fun TileSet.unaryPlus() {
-            tileSets.add(this)
+        fun tileSet(resource: Resource) {
+            tileSets.add(resource)
         }
 
         fun entity(id: Id, prefab: Prefab) {
@@ -80,8 +79,6 @@ class MapObject private constructor(
     }
 
     @Transient val entityPool: EntityPool = entityPoolOf(entities)
-    @Transient val tileSetCollection: TileSetCollection =
-            TileSetCollection(tileSets)
 
     fun updateSnapshot() {
         entities = entityPool.group.entities.associate {

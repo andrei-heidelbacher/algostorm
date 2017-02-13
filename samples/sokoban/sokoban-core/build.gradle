@@ -1,0 +1,46 @@
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    compile "junit:junit:$junit_version"
+    compile project(':algostorm-core')
+    compile project(':algostorm-systems')
+    compile project(':algostorm-drivers-kts')
+    compile project(':algostorm-drivers-json')
+}
+
+dokka {
+    includes = ['Module.md']
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+}
+
+jar {
+    from rootProject.file('LICENSE')
+    from rootProject.file('NOTICE')
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    classifier = 'javadoc'
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}

@@ -16,44 +16,42 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.clearFlags
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Frame
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Viewport
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.clearFlags
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Viewport
 
 data class TileSetCollection(val tileSets: List<TileSet>) {
+    @Transient private val gidToViewport: Array<Viewport>
     @Transient private val gidToTileSet: Array<TileSet>
     @Transient private val gidToTileId: IntArray
-    @Transient private val aidToAnimationMap: Array<Map<String, List<Frame>>>
+    @Transient private val animations: Map<String, List<Frame>>
 
     init {
         require(tileSets.distinctBy(TileSet::name).size == tileSets.size) {
             "$this can't contain multiple tile sets with the same name!"
         }
+        val animationList = tileSets.flatMap { it.animations.toList() }
+        require(
+                animationList.distinctBy { it.first }.size == animationList.size
+        ) { "$this tile sets can't contain animations with the same name!" }
+        animations = animationList.toMap()
         val totalGidCount = tileSets.sumBy(TileSet::tileCount)
+        val viewports = arrayListOf<Viewport>()
         val tileSetsByGid = arrayListOf<TileSet>()
         gidToTileId = IntArray(totalGidCount)
-        aidToAnimationMap = Array(totalGidCount) { emptyMap<String, List<Frame>>() }
         var firstGid = 1
         for (tileSet in tileSets) {
             for (tileId in 0 until tileSet.tileCount) {
+                viewports.add(tileSet.getViewport(tileId))
                 tileSetsByGid.add(tileSet)
                 gidToTileId[tileId + firstGid - 1] = tileId
-                aidToAnimationMap[tileId + firstGid - 1] = tileSet.getAnimationMap(tileId)
             }
             firstGid += tileSet.tileCount
         }
+        gidToViewport = viewports.toTypedArray()
         gidToTileSet = tileSetsByGid.toTypedArray()
     }
-
-    /**
-     * Returns the tile set which contains the given [gid].
-     *
-     * @param gid the searched global tile id
-     * @return the requested tile set
-     * @throws IndexOutOfBoundsException if the given [gid] is not positive or
-     * is greater than the total number of tiles contained in the map tile sets
-     */
-    fun getTileSet(gid: Int): TileSet = gidToTileSet[gid.clearFlags() - 1]
 
     /**
      * Returns the local tile id of the given [gid].
@@ -65,11 +63,11 @@ data class TileSetCollection(val tileSets: List<TileSet>) {
      */
     fun getTileId(gid: Int): Int = gidToTileId[gid.clearFlags() - 1]
 
-    fun getAnimationMap(aid: Int): Map<String, List<Frame>> =
-            aidToAnimationMap[aid - 1]
-            //getTileSet(aid).getAnimationMap(getTileId(aid))
+    fun getAnimation(animation: String): List<Frame>? = animations[animation]
 
-    fun getViewport(gid: Int, elapsedMillis: Long): Viewport {
+    fun getViewport(gid: Int): Viewport = gidToViewport[gid.clearFlags() - 1]
+
+    /*fun getViewport(gid: Int, elapsedMillis: Long): Viewport {
         val tileSet = getTileSet(gid)
         val localTileId = getTileId(gid)
         val animation = tileSet.getTile(localTileId).animation
@@ -85,5 +83,5 @@ data class TileSetCollection(val tileSets: List<TileSet>) {
             animation[i - 1].tileId
         }
         return tileSet.getViewport(tileId)
-    }
+    }*/
 }

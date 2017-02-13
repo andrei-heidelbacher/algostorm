@@ -20,16 +20,13 @@ import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
-import com.aheidelbacher.algostorm.systems.MapObject
-import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Tile.Companion.isFlippedVertically
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
@@ -44,8 +41,12 @@ import com.aheidelbacher.algostorm.systems.physics2d.position
  * @property canvas the canvas to which the system draws
  */
 class RenderingSystem(
-        private val map: MapObject,
-        private val canvas: Canvas
+        private val tileWidth: Int,
+        private val tileHeight: Int,
+        private val background: Color,
+        private val tileSetCollection: TileSetCollection,
+        private val canvas: Canvas,
+        private val entityGroup: EntityGroup
 ) : Subscriber {
     private data class Node(
             val id: Id,
@@ -63,10 +64,6 @@ class RenderingSystem(
                     position.x - other.position.x
     }
 
-    private val tileWidth: Int = map.tileWidth
-    private val tileHeight: Int = map.tileHeight
-    private val tileSetCollection: TileSetCollection = map.tileSetCollection
-    private val entityGroup: EntityGroup = map.entityPool.group
     private lateinit var renderableGroup: EntityGroup
     private var sortedEntities = emptyArray<Node>()
 
@@ -121,56 +118,51 @@ class RenderingSystem(
      */
     data class Render(val cameraX: Int, val cameraY: Int) : Event
 
-    private val matrix = Matrix.identity()
-
     init {
-        map.tileSetCollection.tileSets.forEach {
+        tileSetCollection.tileSets.forEach {
             canvas.loadBitmap(it.image.resource)
         }
     }
-
-    private var currentTimeMillis = 0L
 
     private fun drawGid(gid: Int, x: Int, y: Int, width: Int, height: Int) {
         if (gid == 0) {
             return
         }
-        val viewport = tileSetCollection.getViewport(gid, currentTimeMillis)
-        matrix.reset()
-        matrix.postScale(
-                sx = 1F * width / viewport.width,
-                sy = 1F * height / viewport.height
-        ).let {
-            if (!gid.isFlippedDiagonally) it
-            else it.postRotate(90F)
-                    .postScale(1F, -1F)
-                    .postTranslate(1F * width, 1F * height)
-        }.let {
-            if (!gid.isFlippedHorizontally) it
-            else it.postScale(-1F, 1F).postTranslate(1F * width, 0F)
-        }.let {
-            if (!gid.isFlippedVertically) it
-            else it.postScale(1F, -1F).postTranslate(0F, 1F * height)
-        }.postTranslate(1F * x, 1F * y)
-
-        canvas.drawBitmap(
-                resource = viewport.image.resource,
-                x = viewport.x,
-                y = viewport.y,
-                width = viewport.width,
-                height = viewport.height,
-                matrix = matrix
-        )
+        val viewport = tileSetCollection.getViewport(gid)
+        with(canvas) {
+            save()
+            if (gid.isFlippedDiagonally) {
+                rotate(90F)
+                scale(1F, -1F)
+                translate(1F * width, 1F * height)
+            }
+            if (gid.isFlippedHorizontally) {
+                scale(-1F, 1F)
+                translate(1F * width, 0F)
+            }
+            if (gid.isFlippedVertically) {
+                scale(1F, -1F)
+                translate(0F, 1F * height)
+            }
+            drawBitmap(
+                    resource = viewport.image.resource,
+                    sx = viewport.x,
+                    sy = viewport.y,
+                    sw = viewport.width,
+                    sh = viewport.height,
+                    dx = x,
+                    dy = y,
+                    dw = width,
+                    dh = height
+            )
+            restore()
+        }
     }
 
     private fun Sprite.draw(offX: Int, offY: Int) {
         if (isVisible && gid != 0) {
             drawGid(gid, offX + offsetX, offY + offsetY, width, height)
-        }/* else if (isVisible && color != null) {
-            matrix.reset()
-            matrix.postTranslate(1F * offX + offsetX, 1F * offY + offsetY)
-            canvas.drawRectangle(Color(color.color), width, height, matrix)
-        }*/
+        }
     }
 
     private fun Node.draw(offX: Int, offY: Int) {
@@ -181,18 +173,9 @@ class RenderingSystem(
     }
 
     /**
-     * When an [Update] event is received, the [currentTimeMillis] is increased.
-     *
-     * @param event the [Update] event
-     */
-    @Subscribe fun onUpdate(event: Update) {
-        currentTimeMillis += event.elapsedMillis
-    }
-
-    /**
-     * When a [Render] event is received, the canvas is cleared or filled with
-     * the map background color and every renderable tile and entity in the game
-     * is drawn.
+     * When a [Render] event is received, the canvas is filled with the
+     * background color and every renderable tile and entity in the game is
+     * drawn.
      *
      * @param event the rendering event
      */
@@ -202,9 +185,7 @@ class RenderingSystem(
         val cameraX = event.cameraX - canvas.width / 2
         val cameraY = event.cameraY - canvas.height / 2
         if (cameraWidth > 0 && cameraHeight > 0) {
-            map.backgroundColor?.color?.let {
-                canvas.drawColor(Color(it))
-            } ?: canvas.clear()
+            canvas.drawColor(background)
             updateSortedOrder()
             sortedEntities.forEach { it.draw(-cameraX, -cameraY) }
         }

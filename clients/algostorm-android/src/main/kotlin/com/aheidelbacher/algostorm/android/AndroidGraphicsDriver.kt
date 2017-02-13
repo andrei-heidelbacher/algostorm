@@ -27,7 +27,6 @@ import android.view.SurfaceHolder
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -62,8 +61,6 @@ class AndroidGraphicsDriver(
 
     private val srcRect = Rect()
     private val dstRect = Rect()
-    private val matrixValues = FloatArray(9) { 0F }
-    private val canvasMatrix = android.graphics.Matrix()
     private val paint = Paint()
 
     private val Int.pxToDp: Float
@@ -83,7 +80,50 @@ class AndroidGraphicsDriver(
         Companion.loadBitmap(resource)
     }
 
+    override fun save() {
+        checkIsLocked()
+        canvas?.save()
+    }
+
+    override fun translate(dx: Float, dy: Float) {
+        checkIsLocked()
+        canvas?.translate(dx, dy)
+    }
+
+    override fun scale(sx: Float, sy: Float) {
+        checkIsLocked()
+        canvas?.scale(sx, sy)
+    }
+
+    override fun rotate(degrees: Float) {
+        checkIsLocked()
+        canvas?.rotate(degrees)
+    }
+
+    override fun restore() {
+        checkIsLocked()
+        canvas?.restore()
+    }
+
     override fun drawBitmap(
+            resource: Resource,
+            sx: Int,
+            sy: Int,
+            sw: Int,
+            sh: Int,
+            dx: Int,
+            dy: Int,
+            dw: Int,
+            dh: Int
+    ) {
+        checkIsLocked()
+        val bitmap = requireNotNull(getBitmap(resource))
+        srcRect.set(sx, sy, sx + sw, sy + sh)
+        dstRect.set(dx, dy, dx + dw, dy + dh)
+        canvas?.drawBitmap(bitmap, srcRect, dstRect, null)
+    }
+
+    /*override fun drawBitmap(
             resource: Resource,
             x: Int,
             y: Int,
@@ -108,37 +148,17 @@ class AndroidGraphicsDriver(
             drawBitmap(bitmap, srcRect, dstRect, null)
             restore()
         }
-    }
+    }*/
 
     override fun drawColor(color: Color) {
         checkIsLocked()
         canvas?.drawColor(color.color)
     }
 
-    override fun drawRectangle(
-            color: Color,
-            width: Int,
-            height: Int,
-            matrix: Matrix
-    ) {
+    override fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int) {
         checkIsLocked()
-        for (i in 0..8) {
-            matrixValues[i] = matrix[i]
-        }
-        canvasMatrix.setValues(matrixValues)
-        canvasMatrix.postScale(scale, scale)
         paint.color = color.color
-        canvas?.apply {
-            save()
-            concat(canvasMatrix)
-            drawRect(0F, 0F, width.toFloat(), height.toFloat(), paint)
-            restore()
-        }
-    }
-
-    override fun clear() {
-        checkIsLocked()
-        canvas?.drawColor(0, PorterDuff.Mode.CLEAR)
+        canvas?.drawRect(1F * x, 1F * y, 1F * w, 1F * h, paint)
     }
 
     override val isCanvasReady: Boolean

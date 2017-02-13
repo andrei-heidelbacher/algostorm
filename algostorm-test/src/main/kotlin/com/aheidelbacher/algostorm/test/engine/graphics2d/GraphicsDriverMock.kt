@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.test.engine.graphics2d
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
+//import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 import java.util.LinkedList
 import java.util.Queue
@@ -28,7 +28,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class GraphicsDriverMock(
+/*class GraphicsDriverMock(
         override val width: Int,
         override val height: Int
 ) : GraphicsDriver {
@@ -168,4 +168,4 @@ class GraphicsDriverMock(
     fun assertNotLocked() {
         assertFalse(isLocked)
     }
-}
+}*/

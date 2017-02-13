@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.graphics2d
+package com.aheidelbacher.algostorm.desktop
 
-import com.aheidelbacher.algostorm.core.ecs.Component
+import com.aheidelbacher.algostorm.core.engine.input.InputDriver
+import com.aheidelbacher.algostorm.core.engine.input.InputListener
 
-data class Animation(
-        val aid: String,
-        val animation: String,
-        val elapsedMillis: Int,
-        val loop: Boolean
-) : Component {
-    init {
-        require(elapsedMillis >= 0)
+class DesktopInputDriver : InputDriver {
+    override fun addListener(listener: InputListener) {
+    }
+
+    override fun removeListener(listener: InputListener) {
+    }
+
+    override fun release() {
     }
 }

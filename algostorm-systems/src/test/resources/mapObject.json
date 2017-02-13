@@ -5,21 +5,9 @@
   "tileHeight": 24,
   "version": "1.0",
   "backgroundColor": "#ffffff5f",
-  "tileSets": [{
-    "name": "world",
-    "tileWidth": 24,
-    "tileHeight": 24,
-    "image": {
-      "resource": "res:///image.png",
-      "width": 48,
-      "height": 72
-    },
-    "columns": 2,
-    "tileCount": 6,
-    "margin": 0,
-    "spacing": 0,
-    "tiles": []
-  }],
+  "tileSets": [
+    "res:///tileSet.json"
+  ],
   "entities": {
     "1": {
       "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {

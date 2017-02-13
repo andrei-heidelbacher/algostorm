@@ -27,7 +27,6 @@ import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Builder.Companion.tileSet
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
 import java.io.ByteArrayOutputStream
@@ -42,7 +41,7 @@ class MapObjectTest {
             assertEquals(expected.tileWidth, actual.tileWidth)
             assertEquals(expected.tileHeight, actual.tileHeight)
             assertEquals(expected.backgroundColor, actual.backgroundColor)
-            assertEquals(expected.tileSetCollection, actual.tileSetCollection)
+            assertEquals(expected.tileSets, actual.tileSets)
             val expectedEntities = expected.entityPool.group.entities
                     .associate { it.id to it.toPrefab() }
             val actualEntities = actual.entityPool.group.entities
@@ -61,12 +60,7 @@ class MapObjectTest {
         tileWidth = 24
         tileHeight = 24
         backgroundColor = Color("#FFFFFF5f")
-        +tileSet {
-            name = "world"
-            image(Resource("$SCHEMA/image.png"), 48, 72)
-            tileWidth = 24
-            tileHeight = 24
-        }
+        tileSet(Resource("$SCHEMA/tileSet.json"))
         var id = 1
         for (x in 0..width - 1) {
             for (y in 0..height - 1) {

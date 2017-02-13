@@ -19,30 +19,32 @@ package com.aheidelbacher.algostorm.test.engine.graphics2d
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 
 class GraphicsDriverStub : GraphicsDriver {
     override val height: Int = 0
     override val width: Int = 0
     override val isCanvasReady: Boolean = false
     override fun loadBitmap(resource: Resource) {}
+    override fun lockCanvas() {}
+    override fun save() {}
+    override fun translate(dx: Float, dy: Float) {}
+    override fun scale(sx: Float, sy: Float) {}
+    override fun rotate(degrees: Float) {}
+    override fun restore() {}
     override fun clear() {}
     override fun drawBitmap(
             resource: Resource,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            matrix: Matrix
+            sx: Int,
+            sy: Int,
+            sw: Int,
+            sh: Int,
+            dx: Int,
+            dy: Int,
+            dw: Int,
+            dh: Int
     ) {}
     override fun drawColor(color: Color) {}
-    override fun drawRectangle(
-            color: Color,
-            width: Int,
-            height: Int,
-            matrix: Matrix
-    ) {}
-    override fun lockCanvas() {}
+    override fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int) {}
     override fun unlockAndPostCanvas() {}
     override fun release() {}
 }

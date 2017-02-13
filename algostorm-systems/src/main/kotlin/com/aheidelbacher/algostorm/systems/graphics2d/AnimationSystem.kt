@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 
 class AnimationSystem(
         private val group: MutableEntityGroup,
@@ -43,8 +44,7 @@ class AnimationSystem(
     @Subscribe fun onAnimate(request: Animate) {
         val entity = animated[request.entityId] ?: return
         val aid = entity[Animation::class]?.aid ?: return
-        val animationMap = tileSetCollection.getAnimationMap(aid)
-        val frames = animationMap[request.animation]
+        val frames = tileSetCollection.getAnimation("$aid:${request.animation}")
         if (frames != null) {
             entity.set(Animation(aid, request.animation, 0, request.loop))
             //entity.set(Sprite(frames.first()))
@@ -56,6 +56,23 @@ class AnimationSystem(
 
     @Subscribe fun onUpdate(event: Update) {
         animated.entities.forEach {
+            val animation = it[Animation::class] ?: error("")
+            val frames = tileSetCollection.getAnimation(
+                    animation = "${animation.aid}:${animation.animation}"
+            ) ?: error("")
+            val totalDuration = frames.sumBy(Frame::duration)
+            val elapsedMillis = animation.elapsedMillis + event.elapsedMillis
+            if (elapsedMillis >= totalDuration && animation.loop) {
+
+            }
+            it.set(animation.copy(elapsedMillis = elapsedMillis))
+            var t = elapsedMillis
+            var i = 0
+            do {
+                t -= frames[i].duration
+                i++
+            } while (t >= 0 && i < frames.size)
+            it.set(it.sprite?.copy(gid = frames[i - 1].tileId) ?: error(""))
         }
     }
 }

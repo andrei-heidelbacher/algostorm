@@ -1,0 +1,16 @@
+{
+  "name": "sokoban",
+  "tileWidth": 64,
+  "tileHeight": 64,
+  "image": {
+    "width": 832,
+    "height": 512,
+    "resource": "res:///sokoban_tileset.png"
+  },
+  "margin": 0,
+  "spacing": 0,
+  "columns": 13,
+  "tileCount": 104,
+  "animations": {
+  }
+}

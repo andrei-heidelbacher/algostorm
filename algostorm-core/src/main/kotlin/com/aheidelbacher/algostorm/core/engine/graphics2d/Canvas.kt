@@ -36,53 +36,59 @@ interface Canvas {
     /** The height of this canvas in pixels. */
     val height: Int
 
-    /** Clears this canvas. */
-    fun clear(): Unit
+    fun save(): Unit
+
+    fun translate(dx: Float, dy: Float): Unit
+
+    fun scale(sx: Float, sy: Float): Unit
+
+    fun rotate(degrees: Float): Unit
+
+    fun restore(): Unit
 
     /**
-     * Draws the viewport projected on the indicated bitmap `resource` to this
-     * canvas using the specified `matrix`.
+     * Draws the given viewport from the bitmap `resource` to the specified
+     * canvas location.
      *
      * @param resource the image resource
-     * @param x the horizontal coordinate in pixels of the top-left corner of
-     * the bitmap viewport which should be rendered
-     * @param y the vertical coordinate in pixels of the top-left corner of the
+     * @param sx the horizontal coordinate in pixels of the top-left corner of
+     * the bitmap viewport
+     * @param sy the vertical coordinate in pixels of the top-left corner of the
      * bitmap viewport which should be rendered (positive is down)
-     * @param width the width in pixels of the bitmap viewport which should be
-     * rendered
-     * @param height the height in pixels of the bitmap viewport which should be
-     * rendered
-     * @param matrix the matrix that should be applied to the viewport when
-     * rendering. Initially, the viewport rectangle is considered to have the
-     * top-left corner overlap with the top-left corner of the canvas.
+     * @param sw the width in pixels of the bitmap viewport
+     * @param sh the height in pixels of the bitmap viewport
+     * @param dx the horizontal coordinate in pixels of the top-left corner of
+     * the destination location
+     * @param dy the vertical coordinate in pixels of the top-left corner of the
+     * destination location
+     * @param dw the width in pixels of the destination location
+     * @param dh the height in pixels of the destination location
      * @throws IllegalArgumentException if the image `resource` was not loaded
      */
     fun drawBitmap(
             resource: Resource,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int,
-            matrix: Matrix
+            sx: Int,
+            sy: Int,
+            sw: Int,
+            sh: Int,
+            dx: Int,
+            dy: Int,
+            dw: Int,
+            dh: Int
     ): Unit
 
     /**
-     * Draws the given colored rectangle to this canvas using the specified
-     * `matrix`.
+     * Draws the given colored rectangle to this canvas.
      *
      * @param color the color with which the rectangle should be filled
-     * @param width the width in pixels of the rectangle
-     * @param height the height in pixels of the rectangle
-     * @param matrix the matrix that should be applied to the rectangle when
-     * rendering. Initially, the rectangle is considered to have the top-left
-     * corner overlap with the top-left corner of the canvas.
+     * @param x the horizontal coordinate in pixels of the top-left corner of
+     * the rectangle
+     * @param y the vertical coordinate in pixels of the top-left corner of the
+     * rectangle (positive is down)
+     * @param w the width in pixels of the rectangle
+     * @param h the height in pixels of the rectangle
      */
-    fun drawRectangle(
-            color: Color,
-            width: Int,
-            height: Int,
-            matrix: Matrix
-    )
+    fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int): Unit
 
     /**
      * Fills the entire canvas with the given `color`.

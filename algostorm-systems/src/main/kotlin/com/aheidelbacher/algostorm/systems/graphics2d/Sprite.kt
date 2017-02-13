@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.systems.graphics2d
 
 import com.aheidelbacher.algostorm.core.ecs.Component
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 
 /**
  * A component which contains data required for rendering.
@@ -42,8 +41,7 @@ data class Sprite(
         val gid: Int = 0,
         val isVisible: Boolean = true,
         val offsetX: Int = 0,
-        val offsetY: Int = 0//,
-        //val color: Color? = null
+        val offsetY: Int = 0
 ) : Component {
     init {
         require(gid >= 0) { "$this gid must not be negative!" }

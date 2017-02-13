@@ -11,7 +11,11 @@ project(':algostorm-drivers-json').projectDir = file('drivers/algostorm-drivers-
 project(':algostorm-drivers-kts').projectDir = file('drivers/algostorm-drivers-kts')
 
 include ':algostorm-android',
-        ':algostorm-android-test'
+        ':algostorm-desktop'
 project(':algostorm-android').projectDir = file('clients/algostorm-android')
-project(':algostorm-android-test').projectDir = file('clients/algostorm-android-test')
+project(':algostorm-desktop').projectDir = file('clients/algostorm-desktop')
 
+include ':sokoban-core',
+        ':sokoban-desktop'
+project(':sokoban-core').projectDir = file('samples/sokoban/sokoban-core')
+project(':sokoban-desktop').projectDir = file('samples/sokoban/sokoban-desktop')
