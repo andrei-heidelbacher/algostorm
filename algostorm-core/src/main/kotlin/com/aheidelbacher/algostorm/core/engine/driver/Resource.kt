@@ -22,30 +22,38 @@ import java.io.InputStream
 /**
  * A resource used by various drivers.
  *
- * @property path the absolute path of the resource
- * @throws IllegalArgumentException if `path` doesn't begin with `res:///`
+ * @property uri the URI of the resource
+ * @throws IllegalArgumentException if `uri` doesn't begin with `res:///`
  * @throws FileNotFoundException if this resource doesn't exist
  */
-data class Resource(val path: String) {
+data class Resource(val uri: String) {
     companion object {
         /** The schema used to identify resources. */
         const val SCHEMA: String = "res://"
+
+        /**
+         * Returns the resource at the given `path`.
+         *
+         * @throws IllegalArgumentException if the given `path` is not absolute
+         * @throws FileNotFoundException if this resource doesn't exist
+         */
+        fun resourceOf(path: String): Resource = Resource("$SCHEMA$path")
     }
 
     init {
-        require(path.startsWith(SCHEMA)) { "$this invalid resource schema!" }
-        require(absolutePath.startsWith("/")) { "$this path is not absolute!" }
-        Resource::class.java.getResource(absolutePath)
+        require(uri.startsWith(SCHEMA)) { "$this invalid resource schema!" }
+        require(path.startsWith("/")) { "$this path is not absolute!" }
+        Resource::class.java.getResource(path)
                 ?: throw FileNotFoundException("$this doesn't exist!")
     }
 
-    private val absolutePath: String
-        get() = path.drop(SCHEMA.length)
+    private val path: String
+        get() = uri.drop(SCHEMA.length)
 
     /** Returns this resource as an input stream. */
     fun inputStream(): InputStream =
-            Resource::class.java.getResourceAsStream(path.drop(SCHEMA.length))
+            Resource::class.java.getResourceAsStream(uri.drop(SCHEMA.length))
 
-    /** Returns the [path] of this resource. */
-    override fun toString(): String = path
+    /** Returns the [uri] of this resource. */
+    override fun toString(): String = uri
 }

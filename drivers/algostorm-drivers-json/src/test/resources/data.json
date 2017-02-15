@@ -16,12 +16,12 @@
   "id": 17,
   "prefabs": {
     "1": {
-      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+      "ComponentMock": {
         "id": 1
       }
     },
     "2": {
-      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+      "ComponentMock": {
         "id": 2
       }
     }

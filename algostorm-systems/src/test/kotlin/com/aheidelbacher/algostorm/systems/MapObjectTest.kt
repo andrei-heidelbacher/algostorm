@@ -21,8 +21,7 @@ import org.junit.Test
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
@@ -51,16 +50,14 @@ class MapObjectTest {
     }
 
     val serializationDriver = JsonDriver()
-    val inputStream =
-            Resource("$SCHEMA/mapObject.${serializationDriver.format}")
-                    .inputStream()
+    val inputStream = resourceOf("/mapObject.json").inputStream()
     val mapObject = mapObject {
         width = 2
         height = 2
         tileWidth = 24
         tileHeight = 24
         backgroundColor = Color("#FFFFFF5f")
-        tileSet(Resource("$SCHEMA/tileSet.json"))
+        tileSet(resourceOf("/tileSet.json"))
         var id = 1
         for (x in 0..width - 1) {
             for (y in 0..height - 1) {

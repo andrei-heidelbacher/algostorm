@@ -62,7 +62,11 @@ interface EntityPool {
             }
 
             override fun set(component: Component) {
-                componentTable[component.javaClass.kotlin] = component
+                val type = component.javaClass.kotlin
+                check(type in ComponentLibrary) {
+                    "$type is not a registered component type!"
+                }
+                componentTable[type] = component
                 entityPool.onChanged(this)
             }
         }

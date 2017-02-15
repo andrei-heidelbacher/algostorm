@@ -18,11 +18,11 @@ package com.aheidelbacher.algostorm.drivers.json
 
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
@@ -34,17 +34,21 @@ import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataM
 import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 
 class JsonDriverTest : SerializationDriverTest() {
+    init {
+        ComponentLibrary.registerComponentType(ComponentMock::class)
+    }
+
     override val driver = JsonDriver()
-    override val inputStream =
-            Resource("$SCHEMA/data.${driver.format}").inputStream()
+    override val inputStream = resourceOf("/data.json").inputStream()
     override val data = DataMock(
             primitiveField = 1,
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = Resource("$SCHEMA/data.${driver.format}"),
+            resource = resourceOf("/data.json"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(
@@ -55,17 +59,17 @@ class JsonDriverTest : SerializationDriverTest() {
                     name = "world",
                     tileWidth = 24,
                     tileHeight = 24,
-                    image = Image(Resource("$SCHEMA/data.json"), 288, 240),
+                    image = Image(resourceOf("/data.json"), 288, 240),
                     animations = mapOf(
                             "tile:idle" to listOf(Frame(1, 250), Frame(2, 250))
                     )
             )
     )
 
-    @Test(expected = ClassCastException::class)
+    @Test(expected = IOException::class)
     fun testDeserializePrefabWithInvalidComponentThrows() {
         driver.readValue<Prefab>(
-                Resource("$SCHEMA/invalidPrefab.${driver.format}").inputStream()
+                resourceOf("/invalidPrefab.json").inputStream()
         )
     }
 

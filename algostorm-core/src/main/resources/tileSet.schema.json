@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "pattern": "^res://(/[^/]+)+$"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "resource",
+        "width",
+        "height"
+      ]
+    },
+    "tileWidth": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tileHeight": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "margin": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "spacing": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "columns": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tileCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "animations": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tileId": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "durationMillis": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "tileId",
+              "durationMillis"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "image",
+    "tileWidth",
+    "tileHeight",
+    "margin",
+    "spacing",
+    "columns",
+    "tileCount",
+    "animations"
+  ]
+}

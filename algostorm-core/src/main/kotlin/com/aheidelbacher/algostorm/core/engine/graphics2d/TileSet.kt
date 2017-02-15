@@ -25,9 +25,9 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
  * from top to bottom.
  *
  * @property name the name of this tile set
+ * @property image the resource of the image represented by this tile set
  * @property tileWidth the width of each tile in this tile set in pixels
  * @property tileHeight the height of each tile in this tile set in pixels
- * @property image the path to the image represented by this tile set
  * @property margin the margin in pixels
  * @property spacing the spacing between adjacent tiles in pixels
  * @property columns the number of tiles per row
@@ -35,16 +35,16 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
  * @property animations the named animations in this tile set
  * @throws IllegalArgumentException if [tileWidth], [tileHeight], [columns] or
  * [tileCount] are not positive or if [margin] or [spacing] are negative or if
- * the specified offsets, tile sizes and tile count exceed the image dimensions
- * or if [animations] contains tile ids or animation frames with tile ids not in
+ * the specified offsets, tile sizes and tile count don't match the image
+ * dimensions or if [animations] contains animation frames with tile ids not in
  * the range `0..tileCount - 1` or if [animations] contains empty frame
  * sequences
  */
 data class TileSet private constructor(
         val name: String,
+        val image: Image,
         val tileWidth: Int,
         val tileHeight: Int,
-        val image: Image,
         val margin: Int,
         val spacing: Int,
         val columns: Int,
@@ -54,9 +54,9 @@ data class TileSet private constructor(
     companion object {
         operator fun invoke(
                 name: String,
+                image: Image,
                 tileWidth: Int,
                 tileHeight: Int,
-                image: Image,
                 margin: Int = 0,
                 spacing: Int = 0,
                 animations: Map<String, List<Frame>> = emptyMap()
@@ -67,9 +67,9 @@ data class TileSet private constructor(
                     (tileHeight + spacing)
             return TileSet(
                     name = name,
+                    image = image,
                     tileWidth = tileWidth,
                     tileHeight = tileHeight,
-                    image = image,
                     margin = margin,
                     spacing = spacing,
                     columns = columns,
@@ -121,7 +121,7 @@ data class TileSet private constructor(
     /**
      * A frame within an animation.
      *
-     * @property tileId the local id of the tile used for this frame
+     * @property tileId the id of the tile used for this frame
      * @property durationMillis the duration of this frame in milliseconds
      * @throws IllegalArgumentException if [tileId] is negative or if
      * [durationMillis] is not positive
@@ -200,14 +200,14 @@ data class TileSet private constructor(
      * Returns a viewport corresponding to the given tile id by applying the
      * appropriate margin and spacing offsets.
      *
-     * @param tileId the local id of the requested tile
+     * @param tileId the id of the requested tile
      * @return the viewport associated to the requested tile
-     * @throws IllegalArgumentException if the given [tileId] is negative or if
+     * @throws IndexOutOfBoundsException if the given [tileId] is negative or if
      * it is greater than or equal to [tileCount]
      */
     fun getViewport(tileId: Int): Viewport {
-        require(tileId in 0 until tileCount) {
-            "$tileId must be between 0 and ${tileCount - 1}!"
+        if (tileId !in 0 until tileCount) {
+            throw IndexOutOfBoundsException("Invalid tile id $tileId!")
         }
         return Viewport(
                 image = image,

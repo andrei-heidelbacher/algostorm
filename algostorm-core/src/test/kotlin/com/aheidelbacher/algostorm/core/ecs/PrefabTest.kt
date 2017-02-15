@@ -16,14 +16,20 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
+import org.junit.Before
+import org.junit.Test
+
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.emptyPrefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
-import org.junit.Test
 
 import kotlin.test.assertEquals
 
 class PrefabTest {
+    @Before fun init() {
+        ComponentLibrary.registerComponentType(ComponentMock::class)
+    }
+
     @Test fun testEmptyPrefabHasNoComponents() {
         assertEquals(emptySet(), emptyPrefab().components)
     }
@@ -46,8 +52,15 @@ class PrefabTest {
         Prefab(listOf(ComponentMock(1), ComponentMock(2)))
     }
 
-    @Test fun prefabOfComponentHasEqualComponent() {
+    @Test fun testPrefabOfComponentHasEqualComponent() {
         val component = ComponentMock(284)
         assertEquals(setOf(component), prefabOf(component).components)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testPrefabConstructorWithUnregisteredComponentTypeThrows() {
+        data class UnregisteredComponent(val id: Int) : Component
+
+        Prefab(listOf(UnregisteredComponent(1)))
     }
 }

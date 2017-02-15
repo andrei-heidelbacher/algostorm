@@ -31,7 +31,6 @@ class GraphicsDriverStub : GraphicsDriver {
     override fun scale(sx: Float, sy: Float) {}
     override fun rotate(degrees: Float) {}
     override fun restore() {}
-    override fun clear() {}
     override fun drawBitmap(
             resource: Resource,
             sx: Int,

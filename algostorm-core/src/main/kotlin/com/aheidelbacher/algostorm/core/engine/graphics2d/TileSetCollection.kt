@@ -21,7 +21,7 @@ import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Viewport
 
 class TileSetCollection(tileSets: List<TileSet>) {
-    @Transient private val gidToViewport: Array<Viewport>
+    @Transient private val viewports = arrayListOf<Viewport>()
     @Transient private val animations = hashMapOf<String, List<Frame>>()
 
     init {
@@ -46,10 +46,12 @@ class TileSetCollection(tileSets: List<TileSet>) {
             }
             firstGid += tileSet.tileCount
         }
-        gidToViewport = viewports.toTypedArray()
     }
 
     fun getAnimation(animation: String): List<Frame>? = animations[animation]
 
-    fun getViewport(gid: Int): Viewport = gidToViewport[gid.clearFlags() - 1]
+    /**
+     * @throws IndexOutOfBoundsException
+     */
+    fun getViewport(gid: Int): Viewport = viewports[gid.clearFlags() - 1]
 }

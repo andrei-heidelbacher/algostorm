@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.core.engine.driver
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
 
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -44,6 +45,13 @@ class ResourceTest {
     @Test(expected = FileNotFoundException::class)
     fun testNonExistentInputStreamShouldThrow() {
         Resource("$SCHEMA/nonExistent.txt")
+    }
+
+    @Test fun testResourceOfPathBuildsCorrectUri() {
+        assertEquals(
+                expected = Resource("$SCHEMA/resource.txt"),
+                actual = resourceOf("/resource.txt")
+        )
     }
 
     @Test fun testInputStreamShouldParseResource() {

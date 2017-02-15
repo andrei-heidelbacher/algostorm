@@ -25,6 +25,8 @@ package com.aheidelbacher.algostorm.core.ecs
  * should contain
  * @throws IllegalArgumentException if there are given multiple components of
  * the same type
+ * @throws IllegalStateException if there is given a component type which is not
+ * registered in the [ComponentLibrary]
  */
 data class Prefab private constructor(val components: Set<Component>) {
     companion object {
@@ -38,6 +40,10 @@ data class Prefab private constructor(val components: Set<Component>) {
          *
          * @param components the components of the prefab
          * @return the prefab
+         * @throws IllegalArgumentException if there are given multiple
+         * components of the same type
+         * @throws IllegalStateException if there is given a component type
+         * which is not registered in the [ComponentLibrary]
          */
         fun prefabOf(vararg components: Component): Prefab =
                 if (components.isEmpty()) emptyPrefab()
@@ -51,6 +57,11 @@ data class Prefab private constructor(val components: Set<Component>) {
         val size = components.size
         require(components.distinctBy { it.javaClass }.size == size) {
             "Multiple components of the same type given in $components!"
+        }
+        components.forEach {
+            check(it.javaClass.kotlin in ComponentLibrary) {
+                "${it.javaClass.kotlin} is not a registered component type!"
+            }
         }
     }
 

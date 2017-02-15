@@ -33,9 +33,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import com.aheidelbacher.algostorm.core.ecs.Component
+import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
-import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.serialization.SerializationDriver
@@ -118,7 +118,7 @@ class JsonDriver : SerializationDriver {
     private val prefabSerializer = serializer<Prefab> { value, gen ->
         gen.writeStartObject()
         value.components.forEachIndexed { i, component ->
-            gen.writeFieldName(component.javaClass.canonicalName)
+            gen.writeFieldName(component.javaClass.simpleName)
             gen.writeObject(component)
         }
         gen.writeEndObject()
@@ -127,11 +127,12 @@ class JsonDriver : SerializationDriver {
     private val prefabDeserializer = deserializer { p ->
         val components = arrayListOf<Component>()
         p.codec.readTree<JsonNode>(p).fields().forEach {
-            val type = Class.forName(it.key)
+            val type = ComponentLibrary[it.key]?.java
+                    ?: throw IOException("Invalid component type ${it.key}!")
             val component = it.value.traverse(p.codec).readValueAs(type)
-            components.add(component as Component)
+            components.add(component)
         }
-        prefabOf(*components.toTypedArray())
+        Prefab(components)
     }
 
     private var objectMapper: ObjectMapper? = jacksonObjectMapper().apply {
