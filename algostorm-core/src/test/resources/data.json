@@ -1,0 +1,29 @@
+{
+  "primitiveField": 1,
+  "innerData": {
+    "field": "non-empty"
+  },
+  "primitiveFloatField": 1.5,
+  "list": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "resource": "res:///data.json",
+  "color": "#ff00FF00",
+  "id": 17,
+  "prefabs": {
+    "1": {
+      "ComponentMock": {
+        "id": 1
+      }
+    },
+    "2": {
+      "ComponentMock": {
+        "id": 2
+      }
+    }
+  }
+}

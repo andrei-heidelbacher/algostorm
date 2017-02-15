@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.drivers.json
+package com.aheidelbacher.algostorm.core.engine.serialization
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.KeyDeserializer
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -38,7 +37,8 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
+import com.fasterxml.jackson.core.type.TypeReference
 
 import java.io.IOException
 import java.io.InputStream
@@ -47,37 +47,35 @@ import java.io.OutputStream
 import kotlin.reflect.KClass
 
 /** A JSON serialization driver using the Jackson external library. */
-class JsonDriver : SerializationDriver {
-    private companion object {
-        fun <T : Any> serializer(
-                serialize: (T, JsonGenerator) -> Unit
-        ): JsonSerializer<T> = object : JsonSerializer<T>() {
-            override fun serialize(
-                    value: T,
-                    gen: JsonGenerator,
-                    serializers: SerializerProvider?
-            ) {
-                serialize(value, gen)
-            }
+object JsonDriver : SerializationDriver {
+    private fun <T : Any> serializer(
+            serialize: (T, JsonGenerator) -> Unit
+    ): JsonSerializer<T> = object : JsonSerializer<T>() {
+        override fun serialize(
+                value: T,
+                gen: JsonGenerator,
+                serializers: SerializerProvider?
+        ) {
+            serialize(value, gen)
         }
+    }
 
-        fun <T : Any> deserializer(
-                deserialize: (JsonParser) -> T
-        ): JsonDeserializer<T> = object : JsonDeserializer<T>() {
-            override fun deserialize(
-                    p: JsonParser,
-                    ctxt: DeserializationContext?
-            ): T = deserialize(p)
-        }
+    private fun <T : Any> deserializer(
+            deserialize: (JsonParser) -> T
+    ): JsonDeserializer<T> = object : JsonDeserializer<T>() {
+        override fun deserialize(
+                p: JsonParser,
+                ctxt: DeserializationContext?
+        ): T = deserialize(p)
+    }
 
-        fun keyDeserializer(
-                deserialize: (String) -> Any?
-        ): KeyDeserializer = object : KeyDeserializer() {
-            override fun deserializeKey(
-                    key: String,
-                    ctxt: DeserializationContext?
-            ): Any? = deserialize(key)
-        }
+    private fun keyDeserializer(
+            deserialize: (String) -> Any?
+    ): KeyDeserializer = object : KeyDeserializer() {
+        override fun deserializeKey(
+                key: String,
+                ctxt: DeserializationContext?
+        ): Any? = deserialize(key)
     }
 
     override val format: String
@@ -135,7 +133,21 @@ class JsonDriver : SerializationDriver {
         Prefab(components)
     }
 
-    private var objectMapper: ObjectMapper? = jacksonObjectMapper().apply {
+    private val tileSetCollectionsSerializer =
+            serializer<TileSetCollection> { value, gen ->
+                gen.writeStartArray()
+                value.tileSets.forEach { gen.writeString("$it") }
+                gen.writeEndArray()
+            }
+
+    private val tileSetCollectionDeserializer = deserializer { p ->
+        TileSetCollection(p.codec.readValue<List<Resource>>(
+                p,
+                object : TypeReference<List<Resource>>() {}
+        ))
+    }
+
+    private val objectMapper = jacksonObjectMapper().apply {
         registerModule(SimpleModule().apply {
             addSerializer(Resource::class.java, resourceSerializer)
             addDeserializer(Resource::class.java, resourceDeserializer)
@@ -147,6 +159,14 @@ class JsonDriver : SerializationDriver {
             addKeyDeserializer(Id::class.java, idKeyDeserializer)
             addSerializer(Prefab::class.java, prefabSerializer)
             addDeserializer(Prefab::class.java, prefabDeserializer)
+            addSerializer(
+                    TileSetCollection::class.java,
+                    tileSetCollectionsSerializer
+            )
+            addDeserializer(
+                    TileSetCollection::class.java,
+                    tileSetCollectionDeserializer
+            )
         })
         enable(SerializationFeature.INDENT_OUTPUT)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -156,16 +176,13 @@ class JsonDriver : SerializationDriver {
 
     @Throws(IOException::class)
     override fun writeValue(out: OutputStream, value: Any) {
-        objectMapper?.writeValue(out, value) ?: error("$this was released!")
+        objectMapper.writeValue(out, value)
     }
 
     @Throws(IOException::class)
     override fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
-            objectMapper?.readValue(src, type.java)
-                    ?: error("$this was released!")
+            objectMapper.readValue(src, type.java)
 
-    override fun release() {
-        objectMapper = null
-    }
+    override fun release() {}
 }
 

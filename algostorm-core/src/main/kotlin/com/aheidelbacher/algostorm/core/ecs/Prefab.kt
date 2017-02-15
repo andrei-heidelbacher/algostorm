@@ -16,6 +16,12 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
+
+import java.io.IOException
+
 /**
  * An immutable template for creating and initializing entities.
  *
@@ -25,12 +31,14 @@ package com.aheidelbacher.algostorm.core.ecs
  * should contain
  * @throws IllegalArgumentException if there are given multiple components of
  * the same type
- * @throws IllegalStateException if there is given a component type which is not
- * registered in the [ComponentLibrary]
  */
 data class Prefab private constructor(val components: Set<Component>) {
     companion object {
         private val empty = Prefab(emptySet())
+
+        @Throws(IOException::class)
+        fun load(resource: Resource): Prefab =
+                resource.inputStream().use { JsonDriver.readValue<Prefab>(it) }
 
         /** Returns an empty prefab with no components. */
         fun emptyPrefab(): Prefab = empty
@@ -42,8 +50,6 @@ data class Prefab private constructor(val components: Set<Component>) {
          * @return the prefab
          * @throws IllegalArgumentException if there are given multiple
          * components of the same type
-         * @throws IllegalStateException if there is given a component type
-         * which is not registered in the [ComponentLibrary]
          */
         fun prefabOf(vararg components: Component): Prefab =
                 if (components.isEmpty()) emptyPrefab()
@@ -57,11 +63,6 @@ data class Prefab private constructor(val components: Set<Component>) {
         val size = components.size
         require(components.distinctBy { it.javaClass }.size == size) {
             "Multiple components of the same type given in $components!"
-        }
-        components.forEach {
-            check(it.javaClass.kotlin in ComponentLibrary) {
-                "${it.javaClass.kotlin} is not a registered component type!"
-            }
         }
     }
 

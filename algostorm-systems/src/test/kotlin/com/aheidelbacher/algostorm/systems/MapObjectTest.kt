@@ -18,13 +18,14 @@ package com.aheidelbacher.algostorm.systems
 
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
@@ -49,7 +50,11 @@ class MapObjectTest {
         }
     }
 
-    val serializationDriver = JsonDriver()
+    init {
+        ComponentLibrary.registerComponentType(ComponentMock::class)
+    }
+
+    val serializationDriver = JsonDriver
     val inputStream = resourceOf("/mapObject.json").inputStream()
     val mapObject = mapObject {
         width = 2

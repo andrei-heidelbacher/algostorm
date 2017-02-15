@@ -17,6 +17,10 @@
 package com.aheidelbacher.algostorm.core.engine.graphics2d
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
+
+import java.io.IOException
 
 /**
  * A tile set used for rendering.
@@ -52,6 +56,10 @@ data class TileSet private constructor(
         val animations: Map<String, List<Frame>>
 ) {
     companion object {
+        @Throws(IOException::class)
+        fun load(resource: Resource): TileSet =
+                resource.inputStream().use { JsonDriver.readValue(it) }
+
         operator fun invoke(
                 name: String,
                 image: Image,

@@ -16,11 +16,24 @@
 
 package com.aheidelbacher.algostorm.core.engine.graphics2d
 
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.clearFlags
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Viewport
+import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
 
-class TileSetCollection(tileSets: List<TileSet>) {
+import java.io.IOException
+
+data class TileSetCollection @Throws(IOException::class) constructor(
+        val tileSets: List<Resource>
+) {
+    companion object {
+        @Throws(IOException::class)
+        fun load(resource: Resource): TileSetCollection =
+                resource.inputStream().use { JsonDriver.readValue(it) }
+    }
+
     @Transient private val viewports = arrayListOf<Viewport>()
     @Transient private val animations = hashMapOf<String, List<Frame>>()
 
@@ -28,7 +41,8 @@ class TileSetCollection(tileSets: List<TileSet>) {
         val tileSetNames = hashSetOf<String>()
         val viewports = arrayListOf<Viewport>()
         var firstGid = 1
-        for (tileSet in tileSets) {
+        for (resource in tileSets) {
+            val tileSet = TileSet.load(resource)
             require(tileSet.name !in tileSetNames) {
                 "Multiple tile sets with the same name ${tileSet.name}!"
             }

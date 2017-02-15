@@ -16,12 +16,37 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
+
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 import kotlin.reflect.KClass
 
 object ComponentLibrary {
     private val components = ConcurrentHashMap<String, KClass<out Component>>()
+
+    @Throws(IOException::class)
+    fun load(resource: Resource) {
+        resource.inputStream().use { src ->
+            val types = JsonDriver.readValue<List<String>>(src).map { typeName ->
+                val type = try {
+                    Class.forName(typeName)
+                } catch (e: ClassNotFoundException) {
+                    throw IOException(e)
+                }
+                if (!Component::class.java.isAssignableFrom(type)) {
+                    throw IOException("$type is not a component type!")
+                }
+                type
+            }
+            types.forEach {
+                registerComponentType(it.kotlin as KClass<out Component>)
+            }
+        }
+    }
 
     /**
      * @throws IllegalArgumentException if the given `type` doesn't have a
@@ -40,7 +65,8 @@ object ComponentLibrary {
     operator fun contains(type: KClass<out Component>): Boolean =
             components[requireNotNull(type.simpleName)] == type
 
-    operator fun contains(type: String): Boolean = get(type) != null
+    operator fun contains(typeName: String): Boolean = get(typeName) != null
 
-    operator fun get(type: String): KClass<out Component>? = components[type]
+    operator fun get(typeName: String): KClass<out Component>? =
+            components[typeName]
 }

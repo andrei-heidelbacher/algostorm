@@ -72,7 +72,8 @@
               "tileId",
               "durationMillis"
             ]
-          }
+          },
+          "minItems": 1
         }
       }
     }

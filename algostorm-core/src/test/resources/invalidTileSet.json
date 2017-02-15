@@ -1,0 +1,27 @@
+{
+  "name":"world",
+  "image": {
+    "resource": "res:///data.json",
+    "width": 288,
+    "height": 240
+  },
+  "tileWidth": 24,
+  "tileHeight": 24,
+  "margin": 0,
+  "spacing": 0,
+  "columns": 12,
+  "tileCount": 120,
+  "animations": {
+    "tile:idle": [
+      {
+        "tileId": 1,
+        "durationMillis": 250
+      },
+      {
+        "tileId": 2,
+        "durationMillis": 250
+      }
+    ],
+    "tile:moving": []
+  }
+}

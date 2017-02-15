@@ -32,7 +32,7 @@ import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
@@ -66,7 +66,7 @@ class SokobanEngine(
         graphicsDriver = graphicsDriver,
         inputDriver = inputDriver,
         scriptDriver = KotlinScriptDriver(),
-        serializationDriver = JsonDriver()
+        serializationDriver = JsonDriver
 ) {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
@@ -149,8 +149,8 @@ class SokobanEngine(
             resource.inputStream().use { src ->
                 val tileSet = serializationDriver.readValue<TileSet>(src)
                 graphicsDriver.loadBitmap(tileSet.image.resource)
-                tileSet
             }
+            resource
         }.let(::TileSetCollection)
         systems = listOf(
                 RenderingSystem(

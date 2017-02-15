@@ -43,7 +43,7 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
     private var resources: Resources? = Resources(context = context)
 
     private val Resource.fdPath: String
-        get() = path.replace('/', '_')
+        get() = uri.replace('/', '_')
 
     private fun Resources.installResource(resource: Resource) {
         val path = resource.fdPath

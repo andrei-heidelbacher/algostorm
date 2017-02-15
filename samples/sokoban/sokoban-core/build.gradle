@@ -4,6 +4,11 @@ apply plugin: 'org.jetbrains.dokka'
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -13,7 +18,6 @@ dependencies {
     compile project(':algostorm-core')
     compile project(':algostorm-systems')
     compile project(':algostorm-drivers-kts')
-    compile project(':algostorm-drivers-json')
 }
 
 dokka {

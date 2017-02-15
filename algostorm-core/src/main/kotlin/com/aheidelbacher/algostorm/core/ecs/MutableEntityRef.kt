@@ -31,8 +31,6 @@ abstract class MutableEntityRef protected constructor(
      * Sets the value of the specified `component` type.
      *
      * @param component the new value of the component type
-     * @throws IllegalStateException if the given `component` type is not
-     * registered in the [ComponentLibrary]
      */
     abstract fun set(component: Component): Unit
 

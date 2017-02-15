@@ -16,17 +16,19 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
-import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.emptyPrefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
+
+import java.io.IOException
 
 import kotlin.test.assertEquals
 
 class PrefabTest {
-    @Before fun init() {
+    init {
         ComponentLibrary.registerComponentType(ComponentMock::class)
     }
 
@@ -57,10 +59,22 @@ class PrefabTest {
         assertEquals(setOf(component), prefabOf(component).components)
     }
 
-    @Test(expected = IllegalStateException::class)
+    /*@Test(expected = IllegalStateException::class)
     fun testPrefabConstructorWithUnregisteredComponentTypeThrows() {
         data class UnregisteredComponent(val id: Int) : Component
 
         Prefab(listOf(UnregisteredComponent(1)))
+    }*/
+
+    @Test fun testLoadPrefab() {
+        assertEquals(
+                expected = prefabOf(ComponentMock(1)),
+                actual = Prefab.load(resourceOf("/prefab.json"))
+        )
+    }
+
+    @Test(expected = IOException::class)
+    fun testLoadPrefabWithInvalidComponentThrows() {
+        Prefab.load(resourceOf("/invalidPrefab.json"))
     }
 }
