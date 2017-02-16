@@ -23,18 +23,21 @@ import java.io.InputStream
  * A resource used by various drivers.
  *
  * @property uri the URI of the resource
- * @throws IllegalArgumentException if `uri` doesn't begin with `res:///`
+ * @throws IllegalArgumentException if `uri` doesn't match `^res://(/[^/]+)+$`
  * @throws FileNotFoundException if this resource doesn't exist
  */
 data class Resource(val uri: String) {
     companion object {
+        private val regex = Regex("^res://(/[^/]+)+$")
+
         /** The schema used to identify resources. */
         const val SCHEMA: String = "res://"
 
         /**
          * Returns the resource at the given `path`.
          *
-         * @throws IllegalArgumentException if the given `path` is not absolute
+         * @throws IllegalArgumentException if the given `path` doesn't match
+         * `^(/[^/]+)+$`
          * @throws FileNotFoundException if this resource doesn't exist
          */
         fun resourceOf(path: String): Resource = Resource("$SCHEMA$path")
@@ -42,13 +45,12 @@ data class Resource(val uri: String) {
 
     init {
         require(uri.startsWith(SCHEMA)) { "$this invalid resource schema!" }
+        val path = uri.drop(SCHEMA.length)
         require(path.startsWith("/")) { "$this path is not absolute!" }
+        require(regex.matches(path)) { "$this invalid path!" }
         Resource::class.java.getResource(path)
                 ?: throw FileNotFoundException("$this doesn't exist!")
     }
-
-    private val path: String
-        get() = uri.drop(SCHEMA.length)
 
     /** Returns this resource as an input stream. */
     fun inputStream(): InputStream =

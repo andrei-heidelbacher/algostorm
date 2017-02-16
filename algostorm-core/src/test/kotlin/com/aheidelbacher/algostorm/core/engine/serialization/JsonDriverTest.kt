@@ -32,13 +32,14 @@ class JsonDriverTest : SerializationDriverTest() {
     }
 
     override val driver = JsonDriver
-    override val inputStream = resourceOf("/data.json").inputStream()
+    override val inputStream =
+            resourceOf("/data.${driver.format}").inputStream()
     override val data = DataMock(
             primitiveField = 1,
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = resourceOf("/data.json"),
+            resource = resourceOf("/data.${driver.format}"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(

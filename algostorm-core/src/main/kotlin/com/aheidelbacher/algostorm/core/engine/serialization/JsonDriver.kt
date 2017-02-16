@@ -125,9 +125,9 @@ object JsonDriver : SerializationDriver {
     private val prefabDeserializer = deserializer { p ->
         val components = arrayListOf<Component>()
         p.codec.readTree<JsonNode>(p).fields().forEach {
-            val type = ComponentLibrary[it.key]?.java
+            val type = ComponentLibrary[it.key]
                     ?: throw IOException("Invalid component type ${it.key}!")
-            val component = it.value.traverse(p.codec).readValueAs(type)
+            val component = it.value.traverse(p.codec).readValueAs(type.java)
             components.add(component)
         }
         Prefab(components)
@@ -174,15 +174,18 @@ object JsonDriver : SerializationDriver {
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
+    /** This method may be called, even if this driver was released. */
     @Throws(IOException::class)
     override fun writeValue(out: OutputStream, value: Any) {
         objectMapper.writeValue(out, value)
     }
 
+    /** This method may be called, even if this driver was released. */
     @Throws(IOException::class)
     override fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
             objectMapper.readValue(src, type.java)
 
+    /** This operation has no effect. */
     override fun release() {}
 }
 

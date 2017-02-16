@@ -19,32 +19,18 @@ package com.aheidelbacher.algostorm.core.engine.graphics2d
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
-
-import java.io.IOException
 
 import kotlin.test.assertEquals
 
-class TileSetTest {
+class TileSetCollectionTest {
     @Test fun testLoad() {
         assertEquals(
-                expected = TileSet(
-                        name = "world",
-                        tileWidth = 24,
-                        tileHeight = 24,
-                        image = Image(resourceOf("/data.json"), 288, 240),
-                        animations = mapOf("tile:idle" to listOf(
-                                Frame(1, 250),
-                                Frame(2, 250)
-                        ))
-                ),
-                actual = TileSet.load(resourceOf("/tileSet.json"))
+                expected = TileSetCollection(listOf(
+                        resourceOf("/tileSet.json")
+                )),
+                actual = TileSetCollection.load(
+                        resourceOf("/tileSetCollection.json")
+                )
         )
-    }
-
-    @Test(expected = IOException::class)
-    fun testLoadInvalidTileSetThrows() {
-        TileSet.load(resourceOf("/invalidTileSet.json"))
     }
 }

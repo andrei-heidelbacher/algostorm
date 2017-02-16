@@ -82,8 +82,6 @@ interface EntityPool {
 
             override fun get(id: Id): EntityRefImpl? = entityTable[id]
 
-            override fun contains(id: Id): Boolean = id in entityTable
-
             override fun addGroup(
                     filter: (EntityRef) -> Boolean
             ): EntityGroupImpl {
