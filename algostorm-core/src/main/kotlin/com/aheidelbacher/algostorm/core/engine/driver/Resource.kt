@@ -45,10 +45,8 @@ data class Resource(val uri: String) {
 
     init {
         require(uri.startsWith(SCHEMA)) { "$this invalid resource schema!" }
-        val path = uri.drop(SCHEMA.length)
-        require(path.startsWith("/")) { "$this path is not absolute!" }
-        require(regex.matches(path)) { "$this invalid path!" }
-        Resource::class.java.getResource(path)
+        require(regex.matches(uri)) { "$this invalid resource path!" }
+        Resource::class.java.getResource(uri.drop(SCHEMA.length))
                 ?: throw FileNotFoundException("$this doesn't exist!")
     }
 

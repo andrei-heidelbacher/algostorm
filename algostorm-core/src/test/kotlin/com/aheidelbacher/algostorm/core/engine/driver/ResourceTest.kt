@@ -28,22 +28,27 @@ import kotlin.test.assertEquals
 
 class ResourceTest {
     @Test(expected = IllegalArgumentException::class)
-    fun testInvalidSchemaShouldThrow() {
+    fun testInvalidSchemaThrows() {
         Resource("res:/path")
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testRelativePathShouldThrow() {
+    fun testRelativePathThrows() {
         Resource("${SCHEMA}path")
     }
 
-    @Test(expected = FileNotFoundException::class)
-    fun testInvalidPathShouldThrow() {
+    @Test(expected = IllegalArgumentException::class)
+    fun testDirectoryPathThrows() {
         Resource("$SCHEMA/path/")
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testMultipleFileSeparatorsThrows() {
+        Resource("$SCHEMA/path//file")
+    }
+
     @Test(expected = FileNotFoundException::class)
-    fun testNonExistentInputStreamShouldThrow() {
+    fun testNonExistentInputStreamThrows() {
         Resource("$SCHEMA/nonExistent.txt")
     }
 
