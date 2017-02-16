@@ -43,6 +43,14 @@ android {
         abortOnError false
     }
 
+    packagingOptions {
+        exclude 'NOTICE.txt'
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
     dexOptions {
         javaMaxHeapSize "256m"
     }
