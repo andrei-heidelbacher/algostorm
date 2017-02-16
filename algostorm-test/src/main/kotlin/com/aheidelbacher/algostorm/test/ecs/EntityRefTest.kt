@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.core.ecs.Component
 import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.Prefab
+import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.emptyPrefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 
 import kotlin.test.assertEquals
@@ -40,6 +41,16 @@ abstract class EntityRefTest {
     data class TestComponent(val id: Int) : Component
 
     protected abstract fun createEntity(prefab: Prefab): EntityRef
+
+    @Test fun testEqualsSameEntityReturnsTrue() {
+        val entity = createEntity(emptyPrefab())
+        assertTrue(entity == entity)
+    }
+
+    @Test fun testEqualsAnyReturnsFalse() {
+        val entity = createEntity(emptyPrefab())
+        assertFalse(entity == Any())
+    }
 
     @Test fun testComponentsAreEqualToPrefabComponents() {
         val id = 153
@@ -61,6 +72,7 @@ abstract class EntityRefTest {
         val entity = createEntity(prefab)
         assertNull(entity[TestComponent::class])
     }
+
     @Test fun testContainsComponentReturnsTrue() {
         val id = 9
         val prefab = prefabOf(ComponentMock(id), TestComponent(id))

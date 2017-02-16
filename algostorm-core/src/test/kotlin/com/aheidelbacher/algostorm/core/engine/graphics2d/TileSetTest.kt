@@ -86,6 +86,17 @@ class TileSetTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
+    fun testInvalidFrameIdShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                animations = mapOf("tile:idle" to listOf(Frame(1000, 100)))
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
     fun testNegativeMarginShouldThrow() {
         TileSet(
                 name = name,
@@ -129,5 +140,16 @@ class TileSetTest {
                 tileHeight = tileHeight + 1,
                 animations = animations
         )
+    }
+
+    @Test(expected = IndexOutOfBoundsException::class)
+    fun testGetViewportWithInvalidTileIdShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                animations = animations
+        ).getViewport(139)
     }
 }

@@ -106,19 +106,22 @@ abstract class EntityGroupTest {
     @Test fun testRemoveNonSubgroupReturnsFalse() {
         val subgroup = object : EntityGroup {
             override val entities: Iterable<EntityRef>
-                get() = error("")
+                get() = throw UnsupportedOperationException()
 
             override val isValid: Boolean
-                get() = error("")
+                get() = throw UnsupportedOperationException()
 
-            override fun get(id: Id): EntityRef? = error("")
+            override fun get(id: Id): EntityRef? =
+                    throw UnsupportedOperationException()
 
-            override fun contains(id: Id): Boolean = error("")
+            override fun contains(id: Id): Boolean =
+                    throw UnsupportedOperationException()
 
             override fun addGroup(filter: (EntityRef) -> Boolean): EntityGroup =
-                    error("")
+                    throw UnsupportedOperationException()
 
-            override fun removeGroup(group: EntityGroup): Boolean = error("")
+            override fun removeGroup(group: EntityGroup): Boolean =
+                    throw UnsupportedOperationException()
         }
         assertFalse(group.removeGroup(subgroup))
     }
