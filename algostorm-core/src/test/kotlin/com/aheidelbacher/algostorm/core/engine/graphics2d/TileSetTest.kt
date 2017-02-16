@@ -27,17 +27,21 @@ import java.io.IOException
 import kotlin.test.assertEquals
 
 class TileSetTest {
+    private val name = "world"
+    private val image = Image(resourceOf("/data.json"), 288, 240)
+    private val tileWidth = 24
+    private val tileHeight = 24
+    private val animations =
+            mapOf("tile:idle" to listOf(Frame(1, 250), Frame(2, 250)))
+
     @Test fun testLoad() {
         assertEquals(
                 expected = TileSet(
-                        name = "world",
-                        tileWidth = 24,
-                        tileHeight = 24,
-                        image = Image(resourceOf("/data.json"), 288, 240),
-                        animations = mapOf("tile:idle" to listOf(
-                                Frame(1, 250),
-                                Frame(2, 250)
-                        ))
+                        name = name,
+                        image = image,
+                        tileWidth = tileWidth,
+                        tileHeight = tileHeight,
+                        animations = animations
                 ),
                 actual = TileSet.load(resourceOf("/tileSet.json"))
         )
@@ -46,5 +50,84 @@ class TileSetTest {
     @Test(expected = IOException::class)
     fun testLoadInvalidTileSetThrows() {
         TileSet.load(resourceOf("/invalidTileSet.json"))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testNegativeTileWidthShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = -1,
+                tileHeight = tileHeight,
+                animations = animations
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testNegativeTileHeightShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = -1,
+                animations = animations
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testEmptyAnimationShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                animations = mapOf("tile:idle" to emptyList())
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testNegativeMarginShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                animations = animations,
+                margin = -1
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testNegativeSpacingShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                animations = animations,
+                spacing = -1
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testInvalidDimensionsShouldThrow() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth + 1,
+                tileHeight = tileHeight,
+                animations = animations
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testInvalidDimensionsShouldThrow2() {
+        TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight + 1,
+                animations = animations
+        )
     }
 }

@@ -149,6 +149,7 @@ class SokobanEngine(
             resource.inputStream().use { src ->
                 val tileSet = serializationDriver.readValue<TileSet>(src)
                 graphicsDriver.loadBitmap(tileSet.image.resource)
+                println(tileSet)
             }
             resource
         }.let(::TileSetCollection)

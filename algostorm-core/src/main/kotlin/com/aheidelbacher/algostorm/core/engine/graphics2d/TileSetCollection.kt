@@ -39,7 +39,6 @@ data class TileSetCollection @Throws(IOException::class) constructor(
 
     init {
         val tileSetNames = hashSetOf<String>()
-        val viewports = arrayListOf<Viewport>()
         var firstGid = 1
         for (resource in tileSets) {
             val tileSet = TileSet.load(resource)
