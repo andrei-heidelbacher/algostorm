@@ -26,12 +26,8 @@ import com.aheidelbacher.algostorm.core.event.Subscriber
  * A system which handles playing longer sounds.
  *
  * @property musicPlayer the music player used to play longer sounds
- * @param musicSources the music resources which are loaded at construction time
  */
-class MusicSystem(
-        private val musicPlayer: MusicPlayer,
-        musicSources: List<Resource>
-) : Subscriber {
+class MusicSystem(private val musicPlayer: MusicPlayer) : Subscriber {
     /**
      * A request to set the music volume to the given value.
      *
@@ -57,10 +53,6 @@ class MusicSystem(
 
     /** A request to stop the currently played music. */
     class StopMusic : Request<Unit>()
-
-    init {
-        musicSources.forEach { musicPlayer.loadMusic(it) }
-    }
 
     /**
      * After receiving a [SetMusicVolume] request, the volume of the music is

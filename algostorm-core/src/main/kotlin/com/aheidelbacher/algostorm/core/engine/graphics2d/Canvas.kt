@@ -20,34 +20,52 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
 
 /** A canvas that allows primitive `draw` calls. */
 interface Canvas {
-    /**
-     * Synchronously loads the given image `resource`, making it available to
-     * future calls of [drawBitmap].
-     *
-     * If the same resource is loaded multiple times, this method has no effect.
-     *
-     * @param resource the image resource which should be loaded
-     */
-    fun loadBitmap(resource: Resource): Unit
-
     /** The width of this canvas in pixels. */
     val width: Int
 
     /** The height of this canvas in pixels. */
     val height: Int
 
+    /**
+     * Saves the current transformation on a private stack.
+     *
+     * Initially, the stack is empty.
+     */
     fun save(): Unit
 
+    /**
+     * Translates the current transform by `dx, dy`
+     *
+     * @param dx value to translate horizontally
+     * @param dy value to translate vertically (positive is down)
+     */
     fun translate(dx: Float, dy: Float): Unit
 
+    /**
+     * Scales the current transform by `sx, sy`
+     *
+     * @param sx value to scale horizontally
+     * @param sy value to scale vertically
+     */
     fun scale(sx: Float, sy: Float): Unit
 
+    /**
+     * Rotates the current transform by `degrees`.
+     *
+     * @param degrees value in degrees to rotate
+     */
     fun rotate(degrees: Float): Unit
 
+    /**
+     * Pops the state off the stack, setting the current transform to the value
+     * at the time it was pushed on the stack.
+     *
+     * @throws IllegalStateException if the stack is empty
+     */
     fun restore(): Unit
 
     /**
-     * Draws the given viewport from the bitmap `resource` to the specified
+     * Draws the given viewport from the image `resource` to the specified
      * canvas location.
      *
      * @param resource the image resource
@@ -64,8 +82,9 @@ interface Canvas {
      * @param dw the width in pixels of the destination location
      * @param dh the height in pixels of the destination location
      * @throws IllegalArgumentException if the image `resource` was not loaded
+     * by the graphics driver
      */
-    fun drawBitmap(
+    fun drawImage(
             resource: Resource,
             sx: Int,
             sy: Int,

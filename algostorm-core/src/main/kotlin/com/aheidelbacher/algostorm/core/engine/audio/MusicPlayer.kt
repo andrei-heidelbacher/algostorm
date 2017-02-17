@@ -26,16 +26,6 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
  */
 interface MusicPlayer {
     /**
-     * Synchronously loads the given music `resource`, making it available to
-     * future calls of [playMusic].
-     *
-     * If the same resource is loaded multiple times, this method has no effect.
-     *
-     * @param resource the music resource which should be loaded
-     */
-    fun loadMusic(resource: Resource): Unit
-
-    /**
      * Sets the volume at which music is played.
      *
      * @param volume a value between `0` (mute) and `1` (maximum volume)
@@ -50,6 +40,7 @@ interface MusicPlayer {
      * @param resource the music resource which should be played
      * @param loop whether the music should be looped or not
      * @throws IllegalArgumentException if the given `resource` was not loaded
+     * by the audio driver
      */
     fun playMusic(resource: Resource, loop: Boolean = false): Unit
 

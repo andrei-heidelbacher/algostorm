@@ -20,7 +20,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.view.SurfaceHolder
 
@@ -76,7 +75,7 @@ class AndroidGraphicsDriver(
         check(isLocked.get()) { "Canvas is not locked!" }
     }
 
-    override fun loadBitmap(resource: Resource) {
+    override fun loadImage(resource: Resource) {
         Companion.loadBitmap(resource)
     }
 
@@ -105,7 +104,7 @@ class AndroidGraphicsDriver(
         canvas?.restore()
     }
 
-    override fun drawBitmap(
+    override fun drawImage(
             resource: Resource,
             sx: Int,
             sy: Int,

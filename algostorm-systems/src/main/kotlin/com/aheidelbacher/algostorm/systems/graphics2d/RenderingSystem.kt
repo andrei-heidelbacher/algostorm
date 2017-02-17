@@ -20,14 +20,13 @@ import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedVertically
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
@@ -139,7 +138,7 @@ class RenderingSystem(
                 scale(1F, -1F)
                 translate(0F, 1F * height)
             }
-            drawBitmap(
+            drawImage(
                     resource = viewport.image.resource,
                     sx = viewport.x,
                     sy = viewport.y,

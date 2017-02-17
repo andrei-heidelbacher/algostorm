@@ -24,17 +24,20 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.input.InputListener
 import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Subscriber
+import com.aheidelbacher.algostorm.driver.json.JsonDriver
+import com.aheidelbacher.algostorm.driver.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.systems.graphics2d.Animation
+import com.aheidelbacher.algostorm.systems.graphics2d.AnimationSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Follow
@@ -43,10 +46,7 @@ import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
-import com.aheidelbacher.algostorm.systems.graphics2d.Animation
-import com.aheidelbacher.algostorm.systems.graphics2d.AnimationSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.physics2d.Body
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
@@ -148,10 +148,9 @@ class SokobanEngine(
         val tileSetCollection = map.tileSets.map { resource ->
             resource.inputStream().use { src ->
                 val tileSet = serializationDriver.readValue<TileSet>(src)
-                graphicsDriver.loadBitmap(tileSet.image.resource)
-                println(tileSet)
+                graphicsDriver.loadImage(tileSet.image.resource)
+                tileSet
             }
-            resource
         }.let(::TileSetCollection)
         systems = listOf(
                 RenderingSystem(

@@ -17,6 +17,9 @@
 package com.aheidelbacher.algostorm.core.engine.graphics2d
 
 import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+
+import java.io.IOException
 
 /**
  * A driver that offers drawing services.
@@ -27,6 +30,19 @@ import com.aheidelbacher.algostorm.core.engine.driver.Driver
  * After the canvas was locked, it must be unlocked.
  */
 interface GraphicsDriver : Driver, Canvas {
+    /**
+     * Synchronously loads the given image `resource`, making it available to
+     * future calls of [drawImage].
+     *
+     * If the same resource is loaded multiple times, this method has no effect.
+     *
+     * @param resource the image resource which should be loaded
+     * @throws IOException if any error occurs when parsing and loading the
+     * `resource`
+     */
+    @Throws(IOException::class)
+    fun loadImage(resource: Resource): Unit
+
     /** Whether the canvas is ready to be drawn onto. */
     val isCanvasReady: Boolean
 

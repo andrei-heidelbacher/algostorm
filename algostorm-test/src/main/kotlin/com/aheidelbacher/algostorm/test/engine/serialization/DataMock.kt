@@ -20,6 +20,7 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
+import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
 
 data class DataMock(
         val primitiveField: Int,
@@ -29,7 +30,8 @@ data class DataMock(
         val resource: Resource,
         val color: Color,
         val id: Id,
-        val prefabs: Map<Id, Prefab>
+        val prefabs: Map<Id, Prefab>,
+        val tileSets: List<TileSet>
 ) {
     data class InnerDataMock(val field: String)
 }

@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.core.engine.script
 
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 
 /**
  * An interpreter that can load scripts and invoke named functions contained in
@@ -30,16 +29,6 @@ interface ScriptEngine {
                 vararg args: Any?
         ): T? = invokeScript(name, T::class, *args)
     }
-
-    /**
-     * Loads the given script with the [KFunction.name] name, making it
-     * available to future [runScript] and [invokeScript] calls.
-     *
-     * If the same script is loaded multiple times, this method has no effect.
-     *
-     * @param script the script which should be loaded
-     */
-    fun loadScript(script: KFunction<*>): Unit
 
     /**
      * Executes the script function with the given `name` and the specified

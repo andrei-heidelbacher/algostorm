@@ -40,7 +40,7 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
     override val height: Int
         get() = gc.canvas.height.toInt()
 
-    override fun loadBitmap(resource: Resource) {
+    override fun loadImage(resource: Resource) {
         resource.inputStream().use { src -> bitmaps[resource] = Image(src) }
     }
 
@@ -82,7 +82,7 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
         drawCalls.add { gc.restore() }
     }
 
-    override fun drawBitmap(
+    override fun drawImage(
             resource: Resource,
             sx: Int,
             sy: Int,

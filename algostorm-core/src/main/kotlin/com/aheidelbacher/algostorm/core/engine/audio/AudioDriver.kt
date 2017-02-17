@@ -17,6 +17,35 @@
 package com.aheidelbacher.algostorm.core.engine.audio
 
 import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.engine.driver.Resource
+
+import java.io.IOException
 
 /** A driver that offers audio services. */
-interface AudioDriver : Driver, MusicPlayer, SoundPlayer
+interface AudioDriver : Driver, MusicPlayer, SoundPlayer {
+    /**
+     * Synchronously loads the given music `resource`, making it available to
+     * future calls of [playMusic].
+     *
+     * If the same resource is loaded multiple times, this method has no effect.
+     *
+     * @param resource the music resource which should be loaded
+     * @throws IOException if any error occurs when parsing and loading the
+     * `resource`
+     */
+    @Throws(IOException::class)
+    fun loadMusic(resource: Resource): Unit
+
+    /**
+     * Synchronously loads the given sound `resource`, making it available to
+     * future calls of [playSound].
+     *
+     * If the same resource is loaded multiple times, this method has no effect.
+     *
+     * @param resource the sound resource which should be loaded
+     * @throws IOException if any error occurs when parsing and loading the
+     * `resource`
+     */
+    @Throws(IOException::class)
+    fun loadSound(resource: Resource): Unit
+}

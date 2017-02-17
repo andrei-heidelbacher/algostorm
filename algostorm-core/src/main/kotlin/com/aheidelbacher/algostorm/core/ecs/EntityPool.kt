@@ -102,7 +102,7 @@ interface EntityPool {
             }
 
             fun onChanged(entity: EntityRefImpl) {
-                if (filter?.invoke(entity) ?: error("$this was invalidated!")) {
+                if (checkNotNull(filter).invoke(entity)) {
                     entityTable[entity.id] = entity
                     groups.forEach { it.onChanged(entity) }
                 } else {

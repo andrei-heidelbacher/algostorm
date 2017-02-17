@@ -22,7 +22,8 @@ dependencies {
 
     testCompile "junit:junit:$junit_version"
     testCompile project(':algostorm-test')
-    testCompile project(':algostorm-drivers-kts')
+    testCompile project(':algostorm-driver-json')
+    testCompile project(':algostorm-driver-kts')
 }
 
 dokka {

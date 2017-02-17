@@ -26,12 +26,8 @@ import com.aheidelbacher.algostorm.core.event.Subscriber
  * A system which handles playing short sound effects.
  *
  * @property soundPlayer the sound player used to play short sound effects
- * @param soundSources the sound resources which are loaded at construction time
  */
-class SoundSystem(
-        private val soundPlayer: SoundPlayer,
-        soundSources: List<Resource>
-) : Subscriber {
+class SoundSystem(private val soundPlayer: SoundPlayer) : Subscriber {
     /**
      * A request to set the sound effects volume to the given value.
      *
@@ -50,10 +46,6 @@ class SoundSystem(
      * @property resource the sound resource which should be played
      */
     class PlaySoundEffect(val resource: Resource) : Request<Unit>()
-
-    init {
-        soundSources.forEach { soundPlayer.loadSound(it) }
-    }
 
     /**
      * After receiving a [SetSoundVolume] request, the volume of the sounds is

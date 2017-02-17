@@ -22,35 +22,15 @@ import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourc
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
 
-import java.io.IOException
-
 import kotlin.test.assertEquals
 
 class TileSetTest {
     private val name = "world"
-    private val image = Image(resourceOf("/data.json"), 288, 240)
+    private val image = Image(resourceOf("/resource.txt"), 288, 240)
     private val tileWidth = 24
     private val tileHeight = 24
     private val animations =
             mapOf("tile:idle" to listOf(Frame(1, 250), Frame(2, 250)))
-
-    @Test fun testLoad() {
-        assertEquals(
-                expected = TileSet(
-                        name = name,
-                        image = image,
-                        tileWidth = tileWidth,
-                        tileHeight = tileHeight,
-                        animations = animations
-                ),
-                actual = TileSet.load(resourceOf("/tileSet.json"))
-        )
-    }
-
-    @Test(expected = IOException::class)
-    fun testLoadInvalidTileSetThrows() {
-        TileSet.load(resourceOf("/invalidTileSet.json"))
-    }
 
     @Test(expected = IllegalArgumentException::class)
     fun testNegativeTileWidthShouldThrow() {

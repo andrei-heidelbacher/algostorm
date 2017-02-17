@@ -16,7 +16,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     testCompile "junit:junit:$junit_version"
     testCompile project(':algostorm-test')
 }

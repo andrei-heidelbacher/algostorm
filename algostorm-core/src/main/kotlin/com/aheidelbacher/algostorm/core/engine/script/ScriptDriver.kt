@@ -18,5 +18,22 @@ package com.aheidelbacher.algostorm.core.engine.script
 
 import com.aheidelbacher.algostorm.core.engine.driver.Driver
 
+import java.io.IOException
+
+import kotlin.reflect.KFunction
+
 /** A driver that offers scripting services. */
-interface ScriptDriver : Driver, ScriptEngine
+interface ScriptDriver : Driver, ScriptEngine {
+    /**
+     * Loads the given script with the [KFunction.name] name, making it
+     * available to future [runScript] and [invokeScript] calls.
+     *
+     * If the same script is loaded multiple times, this method has no effect.
+     *
+     * @param script the script which should be loaded
+     * @throws IOException if any error occurs when parsing and loading the
+     * script
+     */
+    @Throws(IOException::class)
+    fun loadScript(script: KFunction<*>): Unit
+}

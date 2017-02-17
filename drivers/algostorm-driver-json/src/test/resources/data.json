@@ -1,0 +1,57 @@
+{
+  "primitiveField": 1,
+  "innerData": {
+    "field": "non-empty"
+  },
+  "primitiveFloatField": 1.5,
+  "list": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "resource": "res:///data.json",
+  "color": "#ff00FF00",
+  "id": 17,
+  "prefabs": {
+    "1": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+        "id": 1
+      }
+    },
+    "2": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+        "id": 2
+      }
+    }
+  },
+  "tileSets": [
+    {
+      "name":"world",
+      "image": {
+        "resource": "res:///data.json",
+        "width": 288,
+        "height": 240
+      },
+      "tileWidth": 24,
+      "tileHeight": 24,
+      "margin": 0,
+      "spacing": 0,
+      "columns": 12,
+      "tileCount": 120,
+      "animations": {
+        "tile:idle": [
+          {
+            "tileId": 1,
+            "durationMillis": 250
+          },
+          {
+            "tileId": 2,
+            "durationMillis": 250
+          }
+        ]
+      }
+    }
+  ]
+}

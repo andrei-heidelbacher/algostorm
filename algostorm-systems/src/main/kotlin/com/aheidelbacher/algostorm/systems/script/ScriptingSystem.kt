@@ -22,19 +22,13 @@ import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber
 
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 
 /**
  * A system that handles script execution requests.
  *
  * @property scriptEngine the engine used to execute scripts
- * @param scripts the scripts which will be loaded in the script engine at
- * construction time
  */
-class ScriptingSystem(
-        private val scriptEngine: ScriptEngine,
-        scripts: List<KFunction<*>>
-) : Subscriber {
+class ScriptingSystem(private val scriptEngine: ScriptEngine) : Subscriber {
     /**
      * A request to execute the script function with the given `name` and
      * arguments.
@@ -70,10 +64,6 @@ class ScriptingSystem(
                 returnType: KClass<*>,
                 vararg args: Any?
         ) : this(name, returnType, args.asList())
-    }
-
-    init {
-        scripts.forEach { scriptEngine.loadScript(it) }
     }
 
     @Subscribe fun onRunScript(request: RunScript) {

@@ -17,7 +17,8 @@ dependencies {
     compile "junit:junit:$junit_version"
     compile project(':algostorm-core')
     compile project(':algostorm-systems')
-    compile project(':algostorm-drivers-kts')
+    compile project(':algostorm-driver-json')
+    compile project(':algostorm-driver-kts')
 }
 
 dokka {

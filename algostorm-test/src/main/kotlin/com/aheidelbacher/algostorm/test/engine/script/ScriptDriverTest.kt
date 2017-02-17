@@ -62,7 +62,7 @@ abstract class ScriptDriverTest : DriverTest() {
     /** The script invocations which will be tested.*/
     protected abstract val invocations: Map<Invocation<*>, *>
 
-    @Before fun evalScripts() {
+    @Before fun loadScripts() {
         scripts.forEach { driver.loadScript(it) }
     }
 
