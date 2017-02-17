@@ -68,7 +68,14 @@ class JsonDriverTest : SerializationDriverTest() {
     @Test(expected = IOException::class)
     fun testLoadPrefabWithInvalidComponentThrows() {
         driver.readValue<Prefab>(
-                src = resourceOf("/invalidPrefab.json").inputStream()
+                src = resourceOf("/invalidComponentPrefab.json").inputStream()
+        )
+    }
+
+    @Test(expected = IOException::class)
+    fun testLoadPrefabWithNonExistingComponentThrows() {
+        driver.readValue<Prefab>(
+                src = resourceOf("/nonExistingComponentPrefab.json").inputStream()
         )
     }
 }
