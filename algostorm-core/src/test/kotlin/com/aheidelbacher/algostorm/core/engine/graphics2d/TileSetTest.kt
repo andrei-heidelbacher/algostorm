@@ -18,7 +18,7 @@ package com.aheidelbacher.algostorm.core.engine.graphics2d
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
 

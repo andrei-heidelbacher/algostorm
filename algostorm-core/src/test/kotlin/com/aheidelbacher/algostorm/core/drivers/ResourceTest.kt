@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.driver
+package com.aheidelbacher.algostorm.core.drivers
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.resourceOf
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
 
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException

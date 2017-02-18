@@ -17,11 +17,11 @@
 package com.aheidelbacher.algostorm.core.engine
 
 import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.drivers.Driver
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.engine.input.InputDriver
-import com.aheidelbacher.algostorm.core.engine.script.ScriptDriver
-import com.aheidelbacher.algostorm.core.engine.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.core.drivers.script.ScriptDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 
 import java.io.InputStream
 import java.io.OutputStream

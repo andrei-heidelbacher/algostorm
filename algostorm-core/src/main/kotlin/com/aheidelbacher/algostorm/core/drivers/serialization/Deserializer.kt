@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.serialization
+package com.aheidelbacher.algostorm.core.drivers.serialization
 
 import java.io.IOException
 import java.io.InputStream

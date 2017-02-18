@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.script
+package com.aheidelbacher.algostorm.core.drivers.script
 
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.drivers.Driver
 
 import java.io.IOException
 

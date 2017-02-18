@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.systems.audio
 
+import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.engine.audio.SoundPlayer
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber

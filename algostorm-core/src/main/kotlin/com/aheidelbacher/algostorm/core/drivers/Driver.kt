@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.serialization
+package com.aheidelbacher.algostorm.core.drivers
 
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
-
-/** A driver that offers serialization and deserialization services. */
-interface SerializationDriver : Driver, Serializer, Deserializer {
-    /** The format used to serialize and deserialize objects. */
-    override val format: String
+/**
+ * A core component of the engine which offers specialized, lower level
+ * services.
+ */
+interface Driver {
+    /**
+     * Releases all resources acquired by this driver.
+     *
+     * Any method call after this driver was released may lead to undefined
+     * behavior.
+     */
+    fun release(): Unit
 }

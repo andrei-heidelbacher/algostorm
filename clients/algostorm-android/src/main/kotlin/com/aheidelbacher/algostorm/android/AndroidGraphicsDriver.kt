@@ -23,7 +23,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.SurfaceHolder
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
 

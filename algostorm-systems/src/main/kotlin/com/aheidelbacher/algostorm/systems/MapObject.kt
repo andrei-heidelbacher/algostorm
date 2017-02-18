@@ -16,12 +16,12 @@
 
 package com.aheidelbacher.algostorm.systems
 
+import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.ecs.EntityPool
 import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 
 import kotlin.properties.Delegates

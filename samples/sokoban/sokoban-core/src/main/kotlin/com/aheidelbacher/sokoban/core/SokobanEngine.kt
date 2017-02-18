@@ -16,19 +16,19 @@
 
 package com.aheidelbacher.sokoban.core
 
+import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.input.InputListener
 import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver

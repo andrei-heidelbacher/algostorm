@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
 //import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix

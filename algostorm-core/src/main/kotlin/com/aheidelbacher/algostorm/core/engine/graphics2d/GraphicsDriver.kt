@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.core.engine.graphics2d
 
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
+import com.aheidelbacher.algostorm.core.drivers.Driver
+import com.aheidelbacher.algostorm.core.drivers.Resource
 
 import java.io.IOException
 

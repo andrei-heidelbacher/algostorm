@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.script
+package com.aheidelbacher.algostorm.core.drivers.script
 
 import kotlin.reflect.KClass
 

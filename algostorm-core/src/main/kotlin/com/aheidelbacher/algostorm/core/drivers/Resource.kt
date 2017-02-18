@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.driver
+package com.aheidelbacher.algostorm.core.drivers
 
 import java.io.FileNotFoundException
 import java.io.InputStream

@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.core.engine.input
 
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.drivers.Driver
 
 /** A driver that allows listening for input events. */
 interface InputDriver : Driver, InputSource

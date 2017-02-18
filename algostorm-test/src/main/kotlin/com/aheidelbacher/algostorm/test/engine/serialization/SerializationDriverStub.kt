@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.serialization
 
-import com.aheidelbacher.algostorm.core.engine.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 
 import java.io.IOException
 import java.io.InputStream
