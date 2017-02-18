@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.input
+package com.aheidelbacher.algostorm.core.drivers.client.input
 
-import com.aheidelbacher.algostorm.core.drivers.Driver
+/** A source of input events. */
+interface InputSource {
+    /**
+     * Registers the given listener to input events.
+     *
+     * @param listener the listener that should be registered to input events
+     */
+    fun addListener(listener: InputListener): Unit
 
-/** A driver that allows listening for input events. */
-interface InputDriver : Driver, InputSource
+    /**
+     * Unregisters the given listener from input events.
+     *
+     * @param listener the listener that should be unregistered from input
+     * events
+     */
+    fun removeListener(listener: InputListener): Unit
+}

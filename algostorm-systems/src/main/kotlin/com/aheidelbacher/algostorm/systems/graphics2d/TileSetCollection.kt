@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.clearFlags
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Viewport
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion.clearFlags
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Viewport
 
 class TileSetCollection(tileSets: List<TileSet>) {
     @Transient private val viewports = arrayListOf<Viewport>()

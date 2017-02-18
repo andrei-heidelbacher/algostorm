@@ -17,7 +17,7 @@
 package com.aheidelbacher.algostorm.test.engine.audio
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 
 class AudioDriverMock : AudioDriver {
     override fun loadMusic(resource: Resource) {

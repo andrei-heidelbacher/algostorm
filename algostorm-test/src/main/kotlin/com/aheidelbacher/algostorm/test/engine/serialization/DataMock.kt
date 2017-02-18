@@ -17,10 +17,10 @@
 package com.aheidelbacher.algostorm.test.engine.serialization
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
 
 data class DataMock(
         val primitiveField: Int,

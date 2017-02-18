@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.input
+package com.aheidelbacher.algostorm.core.drivers.client.input
 
 import org.junit.Before
 import org.junit.Test

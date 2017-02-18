@@ -19,14 +19,14 @@ package com.aheidelbacher.algostorm.drivers.json
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Image
 import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
 import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock

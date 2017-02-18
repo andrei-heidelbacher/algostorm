@@ -24,7 +24,7 @@ import android.media.SoundPool
 import android.os.Build
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 
 class AndroidAudioDriver(context: Context) : AudioDriver {
     private data class Resources(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.graphics2d
+package com.aheidelbacher.algostorm.core.drivers.client.graphics2d
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.graphics2d
+package com.aheidelbacher.algostorm.core.drivers.client.graphics2d
 
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Image
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Image
 
 import kotlin.test.assertEquals
 

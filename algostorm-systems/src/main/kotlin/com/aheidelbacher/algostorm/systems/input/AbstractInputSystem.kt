@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.input
 
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
-import com.aheidelbacher.algostorm.core.engine.input.InputSource
-import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputListener
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputSource
+import com.aheidelbacher.algostorm.core.drivers.client.input.PollingInputListener
 import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.Subscribe
 import com.aheidelbacher.algostorm.core.event.Subscriber

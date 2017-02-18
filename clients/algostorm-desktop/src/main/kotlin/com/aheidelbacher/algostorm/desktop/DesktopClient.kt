@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.desktop
 
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 
 import javafx.application.Application
 import javafx.scene.Scene

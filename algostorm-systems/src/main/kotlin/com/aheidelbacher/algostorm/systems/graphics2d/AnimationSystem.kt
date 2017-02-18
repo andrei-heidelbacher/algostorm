@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Subscribe

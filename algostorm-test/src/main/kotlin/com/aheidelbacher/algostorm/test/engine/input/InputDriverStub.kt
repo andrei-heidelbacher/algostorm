@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.core.engine.input.InputDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputListener
 
 class InputDriverStub : InputDriver {
     override fun addListener(listener: InputListener) {}

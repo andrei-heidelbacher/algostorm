@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputListener
 
 import java.util.LinkedList
 

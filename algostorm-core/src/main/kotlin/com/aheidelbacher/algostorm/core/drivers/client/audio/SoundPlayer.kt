@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.engine.audio
+package com.aheidelbacher.algostorm.core.drivers.client.audio
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
 

@@ -24,8 +24,8 @@ import android.graphics.Rect
 import android.view.SurfaceHolder
 
 import com.aheidelbacher.algostorm.core.drivers.Resource
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean

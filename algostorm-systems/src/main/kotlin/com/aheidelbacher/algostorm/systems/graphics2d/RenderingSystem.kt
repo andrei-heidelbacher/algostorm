@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Canvas
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion.isFlippedDiagonally
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion.isFlippedHorizontally
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Canvas
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedDiagonally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedHorizontally
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet.Companion.isFlippedVertically
 import com.aheidelbacher.algostorm.core.event.Event
 import com.aheidelbacher.algostorm.core.event.Publisher
 import com.aheidelbacher.algostorm.core.event.Subscribe
