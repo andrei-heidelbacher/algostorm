@@ -31,8 +31,8 @@ import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
 import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Subscriber
-import com.aheidelbacher.algostorm.driver.json.JsonDriver
-import com.aheidelbacher.algostorm.driver.kts.KotlinScriptDriver
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.systems.Update

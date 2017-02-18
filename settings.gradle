@@ -5,10 +5,10 @@ include ':algostorm-core',
         ':algostorm-systems',
         ':algostorm-test'
 
-include ':algostorm-driver-json',
-        ':algostorm-driver-kts'
-project(':algostorm-driver-json').projectDir = file('drivers/algostorm-driver-json')
-project(':algostorm-driver-kts').projectDir = file('drivers/algostorm-driver-kts')
+include ':algostorm-drivers-json',
+        ':algostorm-drivers-kts'
+project(':algostorm-drivers-json').projectDir = file('drivers/algostorm-drivers-json')
+project(':algostorm-drivers-kts').projectDir = file('drivers/algostorm-drivers-kts')
 
 include ':algostorm-android',
         ':algostorm-desktop'

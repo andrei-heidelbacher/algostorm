@@ -61,6 +61,19 @@ data class TileSet private constructor(
                 spacing: Int = 0,
                 animations: Map<String, List<Frame>> = emptyMap()
         ): TileSet {
+            require(tileWidth > 0) { "Tile width $tileWidth must be positive!" }
+            require(tileHeight > 0) {
+                "Tile height $tileHeight must be positive!"
+            }
+            require(margin >= 0) { "Margin $margin can't be negative!" }
+            require(spacing >= 0) { "Spacing $spacing can't be negative!" }
+            val margins = 2 * margin
+            require(image.width > margins) {
+                "Image $image width must be greater than $margins!"
+            }
+            require(image.height > margins) {
+                "Image $image height must be greater than $margins!"
+            }
             val columns = (image.width - 2 * margin + spacing) /
                     (tileWidth + spacing)
             val rows = (image.height - 2 * margin + spacing) /

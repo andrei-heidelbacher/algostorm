@@ -127,9 +127,7 @@ interface EntityPool {
         private class EntityPoolImpl(
                 entities: Map<Id, Prefab>
         ) : EntityPool {
-            private var nextId =
-                    1 + (entities.keys.maxBy { it.value }?.value ?: 0)
-
+            private var nextId = 1 + (entities.keys.map(Id::value).max() ?: 0)
             override val group = EntityGroupImpl { true }
 
             init {

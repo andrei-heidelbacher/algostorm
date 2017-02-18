@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.systems.script
 import org.junit.Before
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.driver.kts.KotlinScriptDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeScript
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
 

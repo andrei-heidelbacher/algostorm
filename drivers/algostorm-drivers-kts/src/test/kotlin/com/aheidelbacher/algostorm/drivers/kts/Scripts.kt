@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.core.ecs
+package com.aheidelbacher.algostorm.drivers.kts
 
-/**
- * An abstract component which holds data about a certain aspect of the game.
- *
- * All components should be immutable and final data classes. The type of a
- * component is denoted by its kotlin class object. Generic components are not
- * allowed.
- *
- * Components must be serializable.
- *
- * Components can only contain fields of valid types, which are:
- * - primitive types and their boxed equivalents
- * - [String]
- * - immutable collections of valid types (the generics must be specified)
- * - immutable data classes composed of valid types
- */
-interface Component
+import com.aheidelbacher.algostorm.test.engine.script.ResultMock
+
+fun procedure(message: String) {
+    println(message)
+}
+
+fun intFunction(value: Int): Int = value + 1 - 1
+
+fun stringFunction(message: String): String = message + ""
+
+fun resultMockFunction(result: ResultMock): ResultMock =
+        ResultMock(result.id, result.message)
