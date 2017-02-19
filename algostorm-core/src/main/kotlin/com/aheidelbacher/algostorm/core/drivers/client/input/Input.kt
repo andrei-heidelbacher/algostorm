@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.time
+package com.aheidelbacher.algostorm.core.drivers.client.input
 
-import com.aheidelbacher.algostorm.core.event.Event
+sealed class Input {
+    class Scroll(val dx: Int, val dy: Int) : Input()
 
-/**
- * An event which requests the creation of a [timer].
- *
- * @property timer the timer that must be registered
- */
-data class RegisterTimer(val entityId: Int, val timer: Timer) : com.aheidelbacher.algostorm.core.event.Event
+    class Touch(val dx: Int, val dy: Int) : Input()
+
+    /**
+     * Base type of an input action.
+     *
+     * Events should be immutable data classes. The type of an action is denoted
+     * by its kotlin class object.
+     */
+    abstract class Action : Input()
+}

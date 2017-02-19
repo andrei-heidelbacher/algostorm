@@ -18,20 +18,12 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-//import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.test.event.PublisherMock
-
 import kotlin.test.assertEquals
 
-class PhysicsSystemTest {
-
-    @Test
-    fun instantiatePublisherMock() {
-        val publisherMock = PublisherMock()
-    }
+class PhysicsServiceTest {
 
     /*fun makeEntity(x: Int, y: Int, isRigid: Boolean): MapObject<String, Any> = mapOf(
             Box.PROPERTY to Box(x, y, tileWidth, tileHeight),

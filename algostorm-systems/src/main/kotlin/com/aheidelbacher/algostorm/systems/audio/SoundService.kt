@@ -19,15 +19,15 @@ package com.aheidelbacher.algostorm.systems.audio
 import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.audio.SoundPlayer
 import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system which handles playing short sound effects.
  *
  * @property soundPlayer the sound player used to play short sound effects
  */
-class SoundSystem(private val soundPlayer: SoundPlayer) : Subscriber {
+class SoundService(private val soundPlayer: SoundPlayer) : Service() {
     /**
      * A request to set the sound effects volume to the given value.
      *
@@ -46,6 +46,14 @@ class SoundSystem(private val soundPlayer: SoundPlayer) : Subscriber {
      * @property resource the sound resource which should be played
      */
     class PlaySoundEffect(val resource: Resource) : Request<Unit>()
+
+    override fun onStart() {
+        soundPlayer.resumeSounds()
+    }
+
+    override fun onStop() {
+        soundPlayer.pauseSounds()
+    }
 
     /**
      * After receiving a [SetSoundVolume] request, the volume of the sounds is

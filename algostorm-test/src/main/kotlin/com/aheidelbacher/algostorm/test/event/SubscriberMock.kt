@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.physics2d
+package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.core.event.Subscriber
 
-/**
- * An event which signals that the given entity has been transformed.
- *
- * Only the [PhysicsService] should post this event.
- *
- * @property entityId the id of the transformed entity
- * @property dx the horizontal translation amount in tiles
- * @property dy the vertical translation amount in tiles (positive is down)
- */
-data class Transformed internal constructor(
-        val entityId: Id,
-        val dx: Int,
-        val dy: Int
-) : Event
+import java.util.LinkedList
+import java.util.Queue
+
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+open class SubscriberMock : Subscriber {
+    private val eventQueue: Queue<Event> = LinkedList()
+
+    @Subscribe fun onEvent(event: Event) {
+        eventQueue.add(event)
+    }
+
+    fun assertPosted(event: Event) {
+        assertEquals(event, eventQueue.poll())
+    }
+
+    fun assertEmpty() {
+        assertTrue(eventQueue.isEmpty())
+    }
+}

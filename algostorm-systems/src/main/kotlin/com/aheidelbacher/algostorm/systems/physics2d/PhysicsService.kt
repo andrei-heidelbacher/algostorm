@@ -21,9 +21,8 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityGroup
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.core.event.Event
-import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.Body.KINEMATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.STATIC
 import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER
@@ -36,12 +35,11 @@ import com.aheidelbacher.algostorm.systems.physics2d.Body.TRIGGER
  * entity is created, deleted or has its [Body] or [Position] components
  * changed, this system has undefined behavior.
  *
- * @property entityGroup the entity group used to retrieve and update the
- * entities
+ * @property group the entity group used to retrieve and update the entities
  */
-class PhysicsSystem(
-        private val entityGroup: MutableEntityGroup
-) : Subscriber {
+class PhysicsService(
+        private val group: MutableEntityGroup
+) : Service() {
     companion object {
         /**
          * Transforms this non-body entity by the indicated amount.
@@ -73,17 +71,15 @@ class PhysicsSystem(
             val dy: Int
     ) : Event
 
-    private lateinit var publisher: Publisher
     private lateinit var kinematicBodies: MutableEntityGroup
     private lateinit var staticBodies: Map<Position, EntityRef>
 
-    override fun onSubscribe(publisher: Publisher) {
-        this.publisher = publisher
-        kinematicBodies = entityGroup.addGroup {
+    override fun onStart() {
+        kinematicBodies = group.addGroup {
             it.position != null && it.isKinematic
         }
         val map = hashMapOf<Position, EntityRef>()
-        for (entity in entityGroup.entities) {
+        for (entity in group.entities) {
             val position = entity.position
             if (entity.isStatic && position != null) {
                 map[position] = entity
@@ -92,8 +88,8 @@ class PhysicsSystem(
         staticBodies = map
     }
 
-    override fun onUnsubscribe(publisher: Publisher) {
-        entityGroup.removeGroup(kinematicBodies)
+    override fun onStop() {
+        group.removeGroup(kinematicBodies)
         staticBodies = emptyMap()
     }
 
@@ -120,15 +116,15 @@ class PhysicsSystem(
         val static = staticBodies[nextPosition]
         val kinematic = kinematicBodies.getEntitiesAt(nx, ny)
         if (static != null || kinematic.isNotEmpty()) {
-            static?.let { publisher.post(Collision(entity.id, it.id)) }
-            publisher.post(kinematic.map { Collision(entity.id, it.id) })
+            static?.let { post(Collision(entity.id, it.id)) }
+            post(kinematic.map { Collision(entity.id, it.id) })
         } else {
             entity.set(nextPosition)
-            publisher.post(Transformed(entity.id, event.dx, event.dy))
-            val trigger = entityGroup.getEntitiesAt(nx, ny).filter {
+            post(Transformed(entity.id, event.dx, event.dy))
+            val trigger = group.getEntitiesAt(nx, ny).filter {
                 it != entity && it.isTrigger
             }
-            publisher.post(trigger.map { Triggered(entity.id, it.id) })
+            post(trigger.map { Triggered(entity.id, it.id) })
         }
     }
 }

@@ -18,12 +18,12 @@ package com.aheidelbacher.algostorm.systems.physics2d
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.Companion.findPath
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService.Companion.findPath
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 
 import kotlin.test.assertEquals
 
-class PathFindingSystemTest {
+class PathFindingServiceTest {
     fun makeMap(vararg rows: String): (Position) -> Boolean = { p ->
         p.y < 0 || rows.size <= p.y || p.x < 0 || rows[p.y].length <= p.x
                 || rows[p.y][p.x] !in ".SD"

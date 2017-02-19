@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.time
+package com.aheidelbacher.algostorm.core.drivers.client.input
 
-import com.aheidelbacher.algostorm.core.event.Event
-
-/**
- * An event which signals an atomic time unit has passed.
- *
- * @property elapsedMillis the number of milliseconds of an atomic time unit
- */
-data class Tick(val elapsedMillis: Int) : com.aheidelbacher.algostorm.core.event.Event
+interface InputWriter {
+    fun write(input: Input): Unit
+}

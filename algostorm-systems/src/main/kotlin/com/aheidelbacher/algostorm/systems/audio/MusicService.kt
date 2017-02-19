@@ -19,15 +19,15 @@ package com.aheidelbacher.algostorm.systems.audio
 import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.audio.MusicPlayer
 import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system which handles playing longer sounds.
  *
  * @property musicPlayer the music player used to play longer sounds
  */
-class MusicSystem(private val musicPlayer: MusicPlayer) : Subscriber {
+class MusicService(private val musicPlayer: MusicPlayer) : Service() {
     /**
      * A request to set the music volume to the given value.
      *
@@ -53,6 +53,14 @@ class MusicSystem(private val musicPlayer: MusicPlayer) : Subscriber {
 
     /** A request to stop the currently played music. */
     class StopMusic : Request<Unit>()
+
+    override fun onStart() {
+        musicPlayer.resumeMusic()
+    }
+
+    override fun onStop() {
+        musicPlayer.pauseMusic()
+    }
 
     /**
      * After receiving a [SetMusicVolume] request, the volume of the music is

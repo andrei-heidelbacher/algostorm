@@ -21,15 +21,15 @@ import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system that handles entity creation and deletion requests.
  *
  * @property entityPool the entity pool used to create and delete entities
  */
-class LifecycleSystem(private val entityPool: EntityPool) : Subscriber {
+class LifecycleService(private val entityPool: EntityPool) : Service() {
     /**
      * A request to create an entity from the given [prefab].
      *

@@ -53,7 +53,7 @@ abstract class EventBusTest {
         }
 
         eventBus.subscribe(subscriber)
-        eventBus.post(*postedEvents.toTypedArray())
+        postedEvents.forEach { eventBus.post(it) }
         eventBus.publishPosts()
         eventBus.unsubscribe(subscriber)
         assertEquals(postedEvents, handledEvents)
@@ -83,7 +83,7 @@ abstract class EventBusTest {
         }
 
         eventBus.subscribe(subscriber)
-        eventBus.post(postedEvents)
+        postedEvents.forEach { eventBus.post(it) }
         eventBus.publishPosts()
         eventBus.unsubscribe(subscriber)
         assertEquals(postedEvents, handledEvents)

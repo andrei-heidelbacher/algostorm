@@ -16,32 +16,32 @@
 
 package com.aheidelbacher.algostorm.systems.input
 
-import com.aheidelbacher.algostorm.core.drivers.client.input.InputListener
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputSource
-import com.aheidelbacher.algostorm.core.drivers.client.input.PollingInputListener
 import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /** A system which handles user input. */
-abstract class AbstractInputSystem(
+class InputDispatchingService(
         private val inputSource: InputSource
-) : Subscriber, InputListener {
+) : Service() {
     /** An event which signals that user input should be processed. */
     object HandleInput : Event
 
-    private val pollingListener = PollingInputListener().apply {
-        inputSource.addListener(this@apply)
-    }
-
     /**
-     * Upon receiving a [HandleInput] event, the most recent user input is
+     * Upon receiving a [HandleInput] event, the unprocessed input actions are
      * processed.
      *
-     * @param event the [HandleInput] event.
+     * @param event the input handling event.
      */
     @Suppress("unused_parameter")
     @Subscribe fun onHandleInput(event: HandleInput) {
-        pollingListener.pollMostRecent(this)
+        var input = inputSource.read()
+        while (input != null) {
+            if (input is InputEvent) {
+                post(input)
+            }
+            input = inputSource.read()
+        }
     }
 }

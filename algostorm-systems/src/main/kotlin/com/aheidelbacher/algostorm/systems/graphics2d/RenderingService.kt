@@ -24,9 +24,8 @@ import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Compan
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.event.Event
-import com.aheidelbacher.algostorm.core.event.Publisher
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 import com.aheidelbacher.algostorm.systems.physics2d.position
 
@@ -39,15 +38,18 @@ import com.aheidelbacher.algostorm.systems.physics2d.position
  *
  * @property map the map object which should be rendered
  * @property canvas the canvas to which the system draws
+ * @property tileWidth the width of a tile in pixels
+ * @property tileHeight the height of a tile in pixels
+ * @property background the background color of the map
  */
-class RenderingSystem(
+class RenderingService(
+        private val group: EntityGroup,
         private val tileWidth: Int,
         private val tileHeight: Int,
         private val background: Color,
         private val tileSetCollection: TileSetCollection,
-        private val canvas: Canvas,
-        private val entityGroup: EntityGroup
-) : Subscriber {
+        private val canvas: Canvas
+) : Service() {
     private data class Node(
             val id: Id,
             var position: Position,
@@ -67,14 +69,14 @@ class RenderingSystem(
     private lateinit var renderableGroup: EntityGroup
     private var sortedEntities = emptyArray<Node>()
 
-    override fun onSubscribe(publisher: Publisher) {
-        renderableGroup = entityGroup.addGroup {
+    override fun onStart() {
+        renderableGroup = group.addGroup {
             it.sprite != null && it.position != null
         }
     }
 
-    override fun onUnsubscribe(publisher: Publisher) {
-        entityGroup.removeGroup(renderableGroup)
+    override fun onStop() {
+        group.removeGroup(renderableGroup)
     }
 
     private fun updateSortedOrder() {

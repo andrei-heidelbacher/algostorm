@@ -17,8 +17,8 @@
 package com.aheidelbacher.algostorm.systems.log
 
 import com.aheidelbacher.algostorm.core.event.Event
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 
 /**
  * A system which captures all events and logs them.
@@ -27,7 +27,7 @@ import com.aheidelbacher.algostorm.core.event.Subscriber
  * from the private engine thread and the provided implementation should be
  * thread-safe.
  */
-class LoggingSystem(private val logger: Logger) : Subscriber {
+class LoggingService(private val logger: Logger) : Service() {
     /**
      * Logs the string representation of the given `event`.
      *

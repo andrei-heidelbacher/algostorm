@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems.time
+package com.aheidelbacher.algostorm.core.drivers.client.input
 
-/**
- * A container for the timers in the game.
- */
-interface Timeline {
-    /**
-     * The active timers in the game.
-     */
-    var timers: List<Timer>
+import java.util.concurrent.ConcurrentLinkedQueue
+
+class InputSocket : InputSource, InputWriter {
+    private val queue = ConcurrentLinkedQueue<Input>()
+
+    override fun read(): Input? = queue.poll()
+
+    override fun write(input: Input) {
+        queue.add(input)
+    }
 }

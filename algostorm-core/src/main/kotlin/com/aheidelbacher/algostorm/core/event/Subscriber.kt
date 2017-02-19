@@ -22,20 +22,4 @@ package com.aheidelbacher.algostorm.core.event
  *
  * To mark a method as an event handler, annotate it with [Subscribe].
  */
-interface Subscriber {
-    /**
-     * Initializes resources after this subscriber subscribed to the given
-     * `publisher`.
-     *
-     * @param publisher the publisher to which this object was subscribed
-     */
-    fun onSubscribe(publisher: Publisher) {}
-
-    /**
-     * Releases resources after this subscriber unsubscribed from the given
-     * `publisher`.
-     *
-     * @param publisher the publisher from which this object was unsubscribed
-     */
-    fun onUnsubscribe(publisher: Publisher) {}
-}
+interface Subscriber

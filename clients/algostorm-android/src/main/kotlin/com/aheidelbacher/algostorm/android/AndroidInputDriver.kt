@@ -22,13 +22,15 @@ import android.view.GestureDetector.OnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-
-import com.aheidelbacher.algostorm.core.drivers.client.input.AbstractInputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.Input
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputSocket
 
 class AndroidInputDriver(
         context: Context,
         private val scale: Float
-) : AbstractInputDriver(), OnTouchListener, OnGestureListener {
+) : InputDriver, OnTouchListener, OnGestureListener {
+    private val inputSocket = InputSocket()
     private val gestureDetector = GestureDetector(context, this)
 
     private val Float.pxToDp: Float
@@ -62,14 +64,16 @@ class AndroidInputDriver(
     ): Boolean {
         val dx = distanceX.pxToDp.toInt()
         val dy = distanceY.pxToDp.toInt()
-        notify { onScroll(dx, dy) }
+        //inputSocket.write()
+        //notify { onScroll(dx, dy) }
         return true
     }
 
     override fun onSingleTapUp(e: MotionEvent): Boolean {
         val x = e.x.pxToDp.toInt()
         val y = e.y.pxToDp.toInt()
-        notify { onTouch(x, y) }
+        //inputSocket.write()
+        //notify { onTouch(x, y) }
         return true
     }
 
@@ -79,4 +83,8 @@ class AndroidInputDriver(
         gestureDetector.onTouchEvent(event)
         return true
     }
+
+    override fun read(): Input? = inputSocket.read()
+
+    override fun release() {}
 }

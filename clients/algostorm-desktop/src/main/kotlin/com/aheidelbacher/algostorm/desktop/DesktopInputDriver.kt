@@ -16,15 +16,11 @@
 
 package com.aheidelbacher.algostorm.desktop
 
+import com.aheidelbacher.algostorm.core.drivers.client.input.Input
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
-import com.aheidelbacher.algostorm.core.drivers.client.input.InputListener
 
 class DesktopInputDriver : InputDriver {
-    override fun addListener(listener: InputListener) {
-    }
-
-    override fun removeListener(listener: InputListener) {
-    }
+    override fun read(): Input? = null
 
     override fun release() {
     }

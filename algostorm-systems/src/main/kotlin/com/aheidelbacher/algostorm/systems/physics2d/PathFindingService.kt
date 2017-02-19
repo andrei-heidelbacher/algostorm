@@ -20,13 +20,13 @@ import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.event.Request
+import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
-import com.aheidelbacher.algostorm.core.event.Subscriber
 import com.aheidelbacher.algostorm.systems.physics2d.geometry2d.Direction
 
 import java.util.PriorityQueue
 
-class PathFindingSystem(private val entityGroup: EntityGroup) : Subscriber {
+class PathFindingService(private val group: EntityGroup) : Service() {
     companion object {
         /**
          * Returns the path going from `source` to `destination` using the given
@@ -105,9 +105,9 @@ class PathFindingSystem(private val entityGroup: EntityGroup) : Subscriber {
     ) : Request<List<Direction>?>()
 
     @Subscribe fun onFindPath(request: FindPath) {
-        val colliders = entityGroup.entities.filter { it.isCollider }
+        val colliders = group.entities.filter { it.isCollider }
                 .mapNotNullTo(hashSetOf(), EntityRef::position)
-        val source = checkNotNull(entityGroup[request.sourceId]?.position)
+        val source = checkNotNull(group[request.sourceId]?.position)
         val destination = Position(request.destinationX, request.destinationY)
         request.complete(findPath(source, destination, request.directions) {
             (it in colliders)

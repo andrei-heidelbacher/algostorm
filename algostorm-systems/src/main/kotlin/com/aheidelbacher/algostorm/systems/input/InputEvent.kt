@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.systems
+package com.aheidelbacher.algostorm.systems.input
 
-import com.aheidelbacher.algostorm.core.event.EventBus
-import com.aheidelbacher.algostorm.core.event.Subscriber
+import com.aheidelbacher.algostorm.core.drivers.client.input.Input
+import com.aheidelbacher.algostorm.core.event.Event
 
-abstract class EntitySystem(private val eventBus: EventBus) : Subscriber {
-    protected fun onInit() {}
-    protected fun onDeactivate() {}
-
-    fun init() {
-        eventBus.subscribe(this)
-        onInit()
-    }
-
-    fun deactivate() {
-        eventBus.unsubscribe(this)
-        onDeactivate()
-    }
-}
+abstract class InputEvent : Event, Input.Action()

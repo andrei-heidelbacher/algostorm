@@ -41,7 +41,7 @@ import javax.tools.Diagnostic
 /**
  * Checks that all subscribers comply to the [Subscribe] annotation contract.
  */
-class SubscribeProcessor : AbstractProcessor() {
+class AnnotationProcessor : AbstractProcessor() {
     private companion object {
         val UNIT: String = Unit::class.java.canonicalName
         val SUBSCRIBE: String = Subscribe::class.java.canonicalName
@@ -104,6 +104,11 @@ class SubscribeProcessor : AbstractProcessor() {
         require(executableType.parameterTypes.size == 1, method) {
             "$method: handlers must receive exactly one parameter!"
         }
+        val parameterIsNotGeneric = executableType.parameterTypes[0] ==
+                typeUtils.erasure(executableType.parameterTypes[0])
+        require(parameterIsNotGeneric) {
+            "$method: handlers must receive a non-generic parameter!"
+        }
         val parameterIsEvent = typeUtils.isSubtype(
                 executableType.parameterTypes[0],
                 elementUtils.getTypeElement(EVENT).asType()
@@ -114,11 +119,6 @@ class SubscribeProcessor : AbstractProcessor() {
         )
         require(parameterIsEvent || parameterIsRequest, method) {
             "$method: handlers must receive a subtype of $EVENT or $REQUEST!"
-        }
-        val parameterIsNotGeneric = executableType.parameterTypes[0] ==
-                typeUtils.erasure(executableType.parameterTypes[0])
-        require(parameterIsNotGeneric) {
-            "$method: handlers must receive a non-generic parameter!"
         }
     }
 

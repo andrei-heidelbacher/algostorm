@@ -20,14 +20,14 @@ import org.junit.Before
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.InvokeScript
-import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScript
+import com.aheidelbacher.algostorm.systems.script.ScriptingService.InvokeScript
+import com.aheidelbacher.algostorm.systems.script.ScriptingService.RunScript
 
 import kotlin.test.assertEquals
 
-class ScriptingSystemTest {
+class ScriptingServiceTest {
     val driver = KotlinScriptDriver()
-    val system = ScriptingSystem(driver)
+    val service = ScriptingService(driver)
 
     @Before fun loadScripts() {
         driver.loadScript(::testProcedure)
@@ -36,7 +36,7 @@ class ScriptingSystemTest {
 
     @Test fun testInvokeProcedure() {
         val event = RunScript(::testProcedure.name, "Hello!")
-        system.onRunScript(event)
+        service.onRunScript(event)
         assertEquals(Unit, event.get())
     }
 
@@ -47,7 +47,7 @@ class ScriptingSystemTest {
                 String::class,
                 message
         )
-        system.onInvokeScript(event)
+        service.onInvokeScript(event)
         assertEquals(message, event.get() as String)
     }
 }

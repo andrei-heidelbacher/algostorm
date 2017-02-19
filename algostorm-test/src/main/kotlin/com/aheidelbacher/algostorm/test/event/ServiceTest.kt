@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.test.engine.input
+package com.aheidelbacher.algostorm.test.event
 
-import com.aheidelbacher.algostorm.core.drivers.client.input.AbstractInputDriver
+import org.junit.Ignore
+import org.junit.Test
 
-class InputDriverMock : AbstractInputDriver() {
-    fun touch(x: Int, y: Int) {
-        notify { onTouch(x, y) }
+import com.aheidelbacher.algostorm.core.event.EventBus
+import com.aheidelbacher.algostorm.core.event.Service
+
+@Ignore
+abstract class ServiceTest {
+    protected abstract val service: Service
+
+    protected val eventBus: EventBus = EventBus()
+
+    @Test(expected = IllegalStateException::class)
+    fun testStartMultipleTimesThrows() {
+        service.start(eventBus)
+        service.start(eventBus)
     }
 
-    fun key(keyCode: Int) {
-        notify { onKey(keyCode) }
-    }
-
-    fun scroll(dx: Int, dy: Int) {
-        notify { onScroll(dx, dy) }
+    @Test(expected = IllegalStateException::class)
+    fun testStopMultipleTimesThrows() {
+        service.stop()
+        service.stop()
     }
 }
