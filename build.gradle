@@ -1,72 +1,192 @@
-allprojects {
-    group 'com.aheidelbacher'
-    version '0.1.66'
-}
-
-subprojects {
-    buildscript {
-        ext {
-            kotlin_version = '1.0.6'
-            dokka_version = '0.9.13'
-            jackson_version = '2.7.8'
-            junit_version = '4.12'
-            android_plugin_version = '2.2.0'
-            android_maven_plugin_version = '1.4.1'
-        }
-
-        repositories {
-            mavenCentral()
-            jcenter()
-        }
-
-        dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-            classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
-            classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
-            classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
-        }
+buildscript {
+    ext {
+        kotlin_version = '1.1.2-5'
+        dokka_version = '0.9.14'
+        jackson_version = '2.8.7'
+        junit_version = '4.12'
+        android_plugin_version = '2.3.2'
+        android_maven_plugin_version = '1.5'
     }
 
     repositories {
         mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+        classpath "com.android.tools.build:gradle:$android_plugin_version"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$android_maven_plugin_version"
     }
 }
 
-buildscript {
+allprojects {
+    group 'com.aheidelbacher'
+    version '0.1.66'
+
     repositories {
         mavenCentral()
         jcenter()
     }
 }
 
-repositories {
-    mavenCentral()
+configure(subprojects.findAll { !it.name.contains('android') }) {
+    apply plugin: 'java-library'
+    apply plugin: 'kotlin'
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: 'jacoco'
+
+    configurations {
+        apiElements {
+            outgoing.variants.getByName('classes').artifact(
+                    file: compileKotlin.destinationDir,
+                    type: ArtifactTypeDefinition.JVM_CLASS_DIRECTORY,
+                    builtBy: compileKotlin
+            )
+        }
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+
+    // after upgrading to Studio 3.0 and android plugin 3.0, move this to all subprojects
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+        testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        testImplementation "junit:junit:$junit_version"
+    }
+
+    jar {
+        from rootProject.file('LICENSE')
+        from rootProject.file('NOTICE')
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    jacocoTestReport {
+        dependsOn test
+
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+        }
+    }
+}
+
+project(':clients:algostorm-android') {
+    apply plugin: 'com.android.library'
+}
+
+configure(subprojects.findAll { it.name.contains('android') }) {
+    apply plugin: 'kotlin-android'
+    apply plugin: 'org.jetbrains.dokka-android'
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+        testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        testCompile "junit:junit:$junit_version"
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    android {
+        compileSdkVersion 25
+        buildToolsVersion "25.0.2"
+
+        defaultConfig {
+            minSdkVersion 19
+            targetSdkVersion 25
+            versionCode 1
+            versionName "1.0"
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_7
+            targetCompatibility = JavaVersion.VERSION_1_7
+        }
+
+        sourceSets {
+            main.java.srcDirs += 'src/main/kotlin'
+            test.java.srcDirs += 'src/test/kotlin'
+            androidTest.java.srcDirs += 'src/androidTest/kotlin'
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            }
+        }
+
+        lintOptions {
+            abortOnError false
+        }
+
+        dexOptions {
+            javaMaxHeapSize "256m"
+        }
+    }
+}
+
+subprojects {
+    dokka {
+        moduleName = project.name
+        includes = ['Module.md']
+        impliedPlatforms = ['JVM']
+        jdkVersion = 7
+        outputFormat = 'javadoc'
+
+        linkMapping {
+            dir = "src/main/kotlin"
+            url = "https://github.com/andrei-heidelbacher/${rootProject.name}/blob/master/${project.name}/$dir"
+            suffix = "#L"
+        }
+    }
+
+    task javadocJar(type: Jar, dependsOn: dokka) {
+        classifier = 'javadoc'
+        from dokka.outputDirectory
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
 }
 
 apply plugin: 'jacoco'
 
-task jacocoRootReport(type: JacocoReport) {
-    sourceDirectories = files()
-    classDirectories = files()
-    executionData = files()
+task codeCoverageReport(type: JacocoReport) {
+    dependsOn {
+        subprojects*.jacocoTestReport
+    }
+
+    executionData fileTree(project.rootDir.absolutePath)
+            .include("**/build/jacoco/*.exec")
+
+    subprojects.findAll { !it.name.contains('android') }.each {
+        sourceSets it.sourceSets.main
+    }
+
+    subprojects.findAll { it.name.contains('android') }.each {
+        //sourceSets it.android.sourceSets.main
+    }
 
     reports {
         html.enabled = true
         xml.enabled = true
         csv.enabled = false
-    }
-
-    onlyIf = { true }
-
-    doFirst {
-        subprojects.findAll { subProject ->
-            subProject.pluginManager.hasPlugin('jacoco')
-        }.each { subProject ->
-            additionalSourceDirs files((Set<File>) subProject.sourceSets.main.allSource.srcDirs)
-            additionalClassDirs files((FileCollection) subProject.sourceSets.main.output)
-            executionData subProject.tasks.jacocoTestReport.executionData
-        }
-
-        executionData = files(executionData.findAll { it.exists() })
     }
 }

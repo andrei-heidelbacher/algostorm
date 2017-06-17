@@ -1,8 +1,18 @@
 # Gradle
 .gradle
-/build
+build/
 
 # IntelliJ IDEA
-.idea
+.idea/
 *.iml
+*.ipr
+*.iws
+out/
 /local.properties
+
+# Mac
+*.DS_Store
+._*
+
+# Windows
+Thumbs.db

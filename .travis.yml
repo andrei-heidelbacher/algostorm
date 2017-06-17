@@ -7,5 +7,5 @@ android:
     - tools
     - build-tools-25.0.2
     - android-25
-script: ./gradlew check connectedCheck jacocoRootReport
+script: ./gradlew check connectedCheck codeCoverageReport
 after_success: bash <(curl -s https://codecov.io/bash)

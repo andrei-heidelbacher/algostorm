@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
 
 buildscript {
     dependencies {
@@ -10,31 +8,8 @@ buildscript {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-
     defaultConfig {
         applicationId "com.aheidelbacher.algostorm.android.test"
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_6
-        targetCompatibility = JavaVersion.VERSION_1_6
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
 
     packagingOptions {
@@ -44,46 +19,13 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/DEPENDENCIES'
     }
-
-    lintOptions {
-        abortOnError false
-    }
-
-    dexOptions {
-        javaMaxHeapSize "256m"
-    }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     compile project(':algostorm-core')
-    compile project(':algostorm-drivers-json')
-    compile project(':algostorm-drivers-kts')
+    compile project(':drivers:algostorm-drivers-kts')
     compile project(':algostorm-systems')
-    compile project(':algostorm-android')
-}
-
-dokka {
-    includes = ['Module.md']
-}
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = 'javadoc'
-    outputDirectory = "$buildDir/javadoc"
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    classifier = 'javadoc'
-    from dokkaJavadoc.outputDirectory
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+    compile project(':clients:algostorm-android')
 }
