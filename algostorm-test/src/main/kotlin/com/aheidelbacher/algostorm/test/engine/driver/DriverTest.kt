@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.test.engine.driver
 import org.junit.After
 import org.junit.Ignore
 
-import com.aheidelbacher.algostorm.core.engine.driver.Driver
+import com.aheidelbacher.algostorm.core.drivers.Driver
 
 /**
  * An abstract test class for a [Driver].

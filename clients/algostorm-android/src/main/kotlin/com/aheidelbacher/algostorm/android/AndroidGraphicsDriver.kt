@@ -20,13 +20,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.view.SurfaceHolder
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -76,7 +75,7 @@ class AndroidGraphicsDriver(
         check(isLocked.get()) { "Canvas is not locked!" }
     }
 
-    override fun loadBitmap(resource: Resource) {
+    override fun loadImage(resource: Resource) {
         Companion.loadBitmap(resource)
     }
 
@@ -105,7 +104,7 @@ class AndroidGraphicsDriver(
         canvas?.restore()
     }
 
-    override fun drawBitmap(
+    override fun drawImage(
             resource: Resource,
             sx: Int,
             sy: Int,

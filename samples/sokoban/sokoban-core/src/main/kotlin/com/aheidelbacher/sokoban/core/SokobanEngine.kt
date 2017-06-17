@@ -16,42 +16,40 @@
 
 package com.aheidelbacher.sokoban.core
 
+import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.Engine
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
-import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.event.EventBus
-import com.aheidelbacher.algostorm.core.event.Subscriber
+import com.aheidelbacher.algostorm.core.event.Service
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
-import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.Update
-import com.aheidelbacher.algostorm.systems.graphics2d.Camera
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Follow
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Scroll
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
-import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSet
-import com.aheidelbacher.algostorm.core.engine.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.graphics2d.Animation
-import com.aheidelbacher.algostorm.systems.graphics2d.AnimationSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.AnimationService
+import com.aheidelbacher.algostorm.systems.graphics2d.Camera
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraService
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.Follow
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.Scroll
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.UpdateCamera
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService.Render
+import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService.FindPath
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsService
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsService.TransformIntent
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 
 import java.io.InputStream
@@ -71,13 +69,11 @@ class SokobanEngine(
     private val eventBus = EventBus()
     private lateinit var map: MapObject
     private val camera = Camera(0, 0)
-    private lateinit var systems: List<Subscriber>
-    private val inputListener = PollingInputListener()
+    private lateinit var services: List<Service>
 
     override val millisPerUpdate: Int = 30
 
     override fun onInit(inputStream: InputStream?) {
-        inputDriver.addListener(inputListener)
         map = inputStream?.let {
             serializationDriver.readValue<MapObject>(it)
         } ?: mapObject {
@@ -148,35 +144,34 @@ class SokobanEngine(
         val tileSetCollection = map.tileSets.map { resource ->
             resource.inputStream().use { src ->
                 val tileSet = serializationDriver.readValue<TileSet>(src)
-                graphicsDriver.loadBitmap(tileSet.image.resource)
-                println(tileSet)
+                graphicsDriver.loadImage(tileSet.image.resource)
+                tileSet
             }
-            resource
         }.let(::TileSetCollection)
-        systems = listOf(
-                RenderingSystem(
+        services = listOf(
+                RenderingService(
+                        map.entityPool.group,
                         map.tileWidth,
                         map.tileHeight,
                         Color("#FF000000"),
                         tileSetCollection,
-                        graphicsDriver,
-                        map.entityPool.group
+                        graphicsDriver
                 ),
-                CameraSystem(
+                CameraService(
+                        map.entityPool.group,
                         map.tileWidth,
                         map.tileHeight,
                         camera,
-                        map.entityPool.group,
                         Id(1)
                 ),
-                PhysicsSystem(map.entityPool.group),
-                PathFindingSystem(map.entityPool.group),
-                AnimationSystem(map.entityPool.group, tileSetCollection)
+                PhysicsService(map.entityPool.group),
+                PathFindingService(map.entityPool.group),
+                AnimationService(map.entityPool.group, tileSetCollection)
         )
     }
 
     override fun onStart() {
-        systems.forEach { eventBus.subscribe(it) }
+        services.forEach { it.start(eventBus) }
     }
 
     override fun onRender() {
@@ -189,7 +184,7 @@ class SokobanEngine(
     }
 
     override fun onHandleInput() {
-        inputListener.pollMostRecent(object : InputListener {
+        /*inputListener.pollMostRecent(object {
             override fun onScroll(dx: Int, dy: Int) {
                 eventBus.post(Scroll(dx, dy))
             }
@@ -205,7 +200,7 @@ class SokobanEngine(
                     eventBus.post(TransformIntent(Id(1), d.dx, d.dy))
                 }
             }
-        })
+        })*/
     }
 
     override fun onUpdate() {
@@ -219,7 +214,7 @@ class SokobanEngine(
     }
 
     override fun onStop() {
-        systems.forEach { eventBus.unsubscribe(it) }
+        services.forEach { it.stop() }
     }
 
     override fun onShutdown() {

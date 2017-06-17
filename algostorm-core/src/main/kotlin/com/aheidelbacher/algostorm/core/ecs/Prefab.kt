@@ -16,12 +16,6 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.core.engine.serialization.JsonDriver
-
-import java.io.IOException
-
 /**
  * An immutable template for creating and initializing entities.
  *
@@ -35,10 +29,6 @@ import java.io.IOException
 data class Prefab private constructor(val components: Set<Component>) {
     companion object {
         private val empty = Prefab(emptySet())
-
-        @Throws(IOException::class)
-        fun load(resource: Resource): Prefab =
-                resource.inputStream().use { JsonDriver.readValue<Prefab>(it) }
 
         /** Returns an empty prefab with no components. */
         fun emptyPrefab(): Prefab = empty

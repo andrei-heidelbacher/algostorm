@@ -16,14 +16,12 @@
 
 package com.aheidelbacher.algostorm.test.engine.input
 
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
-
 import java.util.LinkedList
 
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class InputListenerMock : InputListener {
+/*class InputListenerMock {
     private interface InputCall {
         data class Touch(val x: Int, val y: Int) : InputCall
         data class Scroll(val dx: Int, val dy: Int) : InputCall
@@ -59,4 +57,4 @@ class InputListenerMock : InputListener {
     fun assertEmptyInputQueue() {
         assertTrue(queue.isEmpty())
     }
-}
+}*/

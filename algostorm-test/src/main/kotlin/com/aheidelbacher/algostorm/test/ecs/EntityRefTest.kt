@@ -20,7 +20,6 @@ import org.junit.Ignore
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.ecs.Component
-import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.emptyPrefab
@@ -33,11 +32,6 @@ import kotlin.test.assertTrue
 
 @Ignore
 abstract class EntityRefTest {
-    /*init {
-        ComponentLibrary.registerComponentType(Component::class)
-        ComponentLibrary.registerComponentType(TestComponent::class)
-    }*/
-
     data class TestComponent(val id: Int) : Component
 
     protected abstract fun createEntity(prefab: Prefab): EntityRef

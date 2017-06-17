@@ -20,7 +20,7 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.core.drivers.script.ScriptDriver
 import com.aheidelbacher.algostorm.test.engine.driver.DriverTest
 
 import kotlin.reflect.KClass
@@ -62,7 +62,7 @@ abstract class ScriptDriverTest : DriverTest() {
     /** The script invocations which will be tested.*/
     protected abstract val invocations: Map<Invocation<*>, *>
 
-    @Before fun evalScripts() {
+    @Before fun loadScripts() {
         scripts.forEach { driver.loadScript(it) }
     }
 

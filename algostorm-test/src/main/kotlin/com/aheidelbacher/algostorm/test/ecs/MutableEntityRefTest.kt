@@ -18,10 +18,8 @@ package com.aheidelbacher.algostorm.test.ecs
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.ecs.Component
 import com.aheidelbacher.algostorm.core.ecs.MutableEntityRef
 import com.aheidelbacher.algostorm.core.ecs.Prefab
-import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.emptyPrefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 
 import kotlin.test.assertEquals
@@ -55,11 +53,4 @@ abstract class MutableEntityRefTest : EntityRefTest() {
         entity.set(ComponentMock(id))
         assertEquals(ComponentMock(id), entity[ComponentMock::class])
     }
-
-    /*@Test(expected = IllegalStateException::class)
-    fun testSetUnregisteredComponentTypeThrows() {
-        data class UnregisteredComponent(val id: Int) : Component
-
-        createEntity(emptyPrefab()).set(UnregisteredComponent(1))
-    }*/
 }

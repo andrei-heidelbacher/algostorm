@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.script
 
-import com.aheidelbacher.algostorm.core.engine.script.ScriptDriver
+import com.aheidelbacher.algostorm.core.drivers.script.ScriptDriver
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

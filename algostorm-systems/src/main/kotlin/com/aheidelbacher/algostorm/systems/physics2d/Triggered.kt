@@ -22,7 +22,7 @@ import com.aheidelbacher.algostorm.core.event.Event
 /**
  * An event which signals that [selfId] triggered [triggerId].
  *
- * Only the [PhysicsSystem] should post this event.
+ * Only the [PhysicsService] should post this event.
  *
  * @property selfId the id of this entity, which activated the trigger
  * @property triggerId the id of the other entity, which was triggered

@@ -10,22 +10,22 @@
   ],
   "entities": {
     "1": {
-      "ComponentMock": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 1
       }
     },
     "2": {
-      "ComponentMock": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 2
       }
     },
     "3": {
-      "ComponentMock": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 3
       }
     },
     "4": {
-      "ComponentMock": {
+      "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
         "id": 4
       }
     }

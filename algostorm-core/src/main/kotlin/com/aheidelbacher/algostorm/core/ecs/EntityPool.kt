@@ -102,7 +102,7 @@ interface EntityPool {
             }
 
             fun onChanged(entity: EntityRefImpl) {
-                if (filter?.invoke(entity) ?: error("$this was invalidated!")) {
+                if (checkNotNull(filter).invoke(entity)) {
                     entityTable[entity.id] = entity
                     groups.forEach { it.onChanged(entity) }
                 } else {
@@ -127,9 +127,7 @@ interface EntityPool {
         private class EntityPoolImpl(
                 entities: Map<Id, Prefab>
         ) : EntityPool {
-            private var nextId =
-                    1 + (entities.keys.maxBy { it.value }?.value ?: 0)
-
+            private var nextId = 1 + (entities.keys.map(Id::value).max() ?: 0)
             override val group = EntityGroupImpl { true }
 
             init {

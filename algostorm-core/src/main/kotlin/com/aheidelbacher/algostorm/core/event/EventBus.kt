@@ -25,36 +25,34 @@ import java.util.LinkedList
  * from certain topics and allows to [post] an event to the bus or make a
  * [request] and notify its subscribers.
  */
-interface EventBus : Publisher {
+interface EventBus {
     companion object {
         /** Returns the default implementation of an event bus. */
         operator fun invoke(): EventBus = EventBusImpl()
 
-        private class EventBusImpl : EventBus {
-            private fun Method.validateHandler() {
-                require(Modifier.isFinal(modifiers)) { "$name is not final!" }
-                require(returnType.name == "void") {
-                    "$name doesn't return Unit/void!"
-                }
-                require(parameterTypes.size == 1) {
-                    "$name doesn't have single parameter!"
-                }
-                val parameterType = parameterTypes[0]
-                require(Event::class.java.isAssignableFrom(parameterType) ||
-                        Request::class.java.isAssignableFrom(parameterType)) {
-                    "$name doesn't receive an Event or Request as parameter!"
-                }
-                require(typeParameters.isEmpty()) {
-                    "$name is a generic method!"
-                }
-                require(parameterType.typeParameters.isEmpty()) {
-                    "$name receives a generic parameter!"
-                }
+        private fun Method.validateHandler() {
+            require(Modifier.isFinal(modifiers)) { "$name is not final!" }
+            require(returnType.name == "void") {
+                "$name doesn't return Unit/void!"
             }
+            require(parameterTypes.size == 1) {
+                "$name doesn't receive a single parameter!"
+            }
+            val parameterType = parameterTypes[0]
+            require(Event::class.java.isAssignableFrom(parameterType) ||
+                    Request::class.java.isAssignableFrom(parameterType)) {
+                "$name doesn't receive an Event or Request as parameter!"
+            }
+            require(typeParameters.isEmpty()) { "$name is a generic method!" }
+            require(parameterType.typeParameters.isEmpty()) {
+                "$name receives a generic parameter!"
+            }
+        }
 
+        private class EventBusImpl : EventBus {
+            private val eventQueue = LinkedList<Event>()
             private val subscribers =
                     hashMapOf<Subscriber, List<Pair<Method, Class<*>>>>()
-            private val eventQueue = LinkedList<Event>()
 
             override fun subscribe(subscriber: Subscriber) {
                 val handlers = subscriber.javaClass.methods.filter {
@@ -63,12 +61,10 @@ interface EventBus : Publisher {
                 subscribers[subscriber] = handlers.map {
                     it to it.parameterTypes[0]
                 }
-                subscriber.onSubscribe(this)
             }
 
             override fun unsubscribe(subscriber: Subscriber) {
                 subscribers.remove(subscriber)
-                subscriber.onUnsubscribe(this)
             }
 
             override fun post(event: Event) {
@@ -117,6 +113,27 @@ interface EventBus : Publisher {
      * posted to this event bus
      */
     fun unsubscribe(subscriber: Subscriber): Unit
+
+    /**
+     * Posts the given `event` and notifies all subscribers.
+     *
+     * This should be an asynchronous method and return before the `event` was
+     * handled by its subscribers.
+     *
+     * @param event the event that should be posted
+     */
+    fun post(event: Event): Unit
+
+    /**
+     * Immediately publishes the given `request` and returns its result.
+     *
+     * @param T the result type
+     * @param request the request which should be completed
+     * @return the result with which the `request` was completed
+     * @throws IllegalStateException if the `request` was not completed or if it
+     * was completed more than once
+     */
+    fun <T> request(request: Request<T>): T
 
     /**
      * Blocks until all posted events have been handled by their subscribers.

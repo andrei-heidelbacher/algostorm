@@ -20,7 +20,6 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup
 import com.aheidelbacher.algostorm.core.ecs.EntityGroup.Companion.getSnapshot
 import com.aheidelbacher.algostorm.core.ecs.EntityRef
@@ -34,10 +33,6 @@ import kotlin.test.assertTrue
 
 @Ignore
 abstract class EntityGroupTest {
-    /*init {
-        ComponentLibrary.registerComponentType(ComponentMock::class)
-    }*/
-
     private lateinit var initialEntities: Map<Id, Prefab>
     private lateinit var group: EntityGroup
 

@@ -18,8 +18,8 @@ package com.aheidelbacher.algostorm.core.engine
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.core.engine.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream

@@ -25,10 +25,9 @@ package com.aheidelbacher.algostorm.core.ecs
  *
  * Components must be serializable.
  *
- * Components can only contain fields of valid types. Valid types are:
+ * Components can only contain fields of valid types, which are:
  * - primitive types and their boxed equivalents
  * - [String]
- * - [EntityRef.Id]
  * - immutable collections of valid types (the generics must be specified)
  * - immutable data classes composed of valid types
  */

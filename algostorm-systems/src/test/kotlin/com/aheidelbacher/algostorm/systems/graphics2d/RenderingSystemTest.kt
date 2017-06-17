@@ -21,8 +21,8 @@ import org.junit.Before
 import org.junit.Test
 
 /*import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
+import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
 import com.aheidelbacher.algostorm.core.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.core.event.EventBus

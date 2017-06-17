@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.desktop
 
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.graphics2d.Color
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 
 import javafx.application.Platform
 import javafx.scene.canvas.Canvas
@@ -40,7 +40,7 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
     override val height: Int
         get() = gc.canvas.height.toInt()
 
-    override fun loadBitmap(resource: Resource) {
+    override fun loadImage(resource: Resource) {
         resource.inputStream().use { src -> bitmaps[resource] = Image(src) }
     }
 
@@ -82,7 +82,7 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
         drawCalls.add { gc.restore() }
     }
 
-    override fun drawBitmap(
+    override fun drawImage(
             resource: Resource,
             sx: Int,
             sy: Int,

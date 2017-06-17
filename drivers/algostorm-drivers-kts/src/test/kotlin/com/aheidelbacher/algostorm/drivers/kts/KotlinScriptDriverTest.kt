@@ -18,16 +18,15 @@ package com.aheidelbacher.algostorm.drivers.kts
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.engine.script.ScriptEngine.Companion.invokeScript
+import com.aheidelbacher.algostorm.core.drivers.script.ScriptEngine.Companion.invokeScript
 import com.aheidelbacher.algostorm.test.engine.script.ResultMock
 import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverTest
 
-import kotlin.reflect.KFunction
 import kotlin.test.assertEquals
 
 class KotlinScriptDriverTest : ScriptDriverTest() {
     override val driver = KotlinScriptDriver()
-    override val scripts: List<KFunction<*>> = listOf(
+    override val scripts = listOf(
             ::procedure,
             ::intFunction,
             ::stringFunction,
@@ -38,7 +37,7 @@ class KotlinScriptDriverTest : ScriptDriverTest() {
     val message = "Hello!"
 
     override val runs = setOf(Run(::procedure.name, message))
-    override val invocations: Map<Invocation<*>, *> = mapOf(
+    override val invocations = mapOf(
             Invocation(
                     ::stringFunction.name,
                     String::class,
