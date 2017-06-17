@@ -2,6 +2,7 @@ apply plugin: 'maven'
 
 dependencies {
     api project(':algostorm-core')
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     testImplementation project(':algostorm-test')
 }

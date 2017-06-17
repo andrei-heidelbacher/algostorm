@@ -5,7 +5,8 @@ include ':algostorm-core',
         ':algostorm-systems',
         ':algostorm-test'
 
-include ':drivers:algostorm-drivers-kts'
+include ':drivers:algostorm-drivers-kts',
+        ':drivers:algostorm-drivers-json'
 
 include ':clients:algostorm-android',
         ':clients:algostorm-desktop'

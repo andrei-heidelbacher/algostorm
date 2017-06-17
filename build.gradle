@@ -170,7 +170,8 @@ apply plugin: 'jacoco'
 
 task codeCoverageReport(type: JacocoReport) {
     dependsOn {
-        subprojects*.jacocoTestReport
+        subprojects.findAll { !it.name.contains('android') }*.jacocoTestReport
+        //subprojects*.jacocoTestReport
     }
 
     executionData fileTree(project.rootDir.absolutePath)
