@@ -9,7 +9,9 @@ include ':drivers:algostorm-drivers-kts',
         ':drivers:algostorm-drivers-json'
 
 include ':clients:algostorm-android',
+        ':clients:algostorm-android-test',
         ':clients:algostorm-desktop'
 
 include ':samples:sokoban:sokoban-core',
+        //':samples:sokoban:sokoban-android',
         ':samples:sokoban:sokoban-desktop'

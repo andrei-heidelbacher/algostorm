@@ -1,5 +1,5 @@
 {
-  "com.aheidelbacher.algostorm.test.ecs.ComponentMock": {
+  "ComponentMock": {
     "id": 1
   },
   "com.aheidelbacher.algostorm.core.ecs.Prefab": {}

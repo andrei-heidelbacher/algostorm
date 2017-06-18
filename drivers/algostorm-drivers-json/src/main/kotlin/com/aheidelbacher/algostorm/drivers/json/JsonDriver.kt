@@ -35,6 +35,7 @@ import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.core.ecs.Component
+import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 
@@ -113,8 +114,10 @@ object JsonDriver : SerializationDriver {
 
     private val prefabSerializer = serializer<Prefab> { value, gen ->
         gen.writeStartObject()
-        value.components.forEachIndexed { i, component ->
-            gen.writeFieldName(component.javaClass.canonicalName)
+        value.components.forEach { component ->
+            val name = ComponentLibrary[component::class]
+                    ?: throw IOException("'$component' is not registered!")
+            gen.writeFieldName(name)
             gen.writeObject(component)
         }
         gen.writeEndObject()
@@ -122,15 +125,10 @@ object JsonDriver : SerializationDriver {
 
     private val prefabDeserializer = deserializer { p ->
         val components = arrayListOf<Component>()
-        p.codec.readTree<JsonNode>(p).fields().forEach {
-            val type = try {
-                Class.forName(it.key)
-            } catch (e: ClassNotFoundException) {
-                throw IOException(e)
-            }
-            val component = it.value.traverse(p.codec).readValueAs(type)
-                    as? Component
-                    ?: throw IOException("$type is not a component!")
+        p.codec.readTree<JsonNode>(p).fields().forEach { (name, value) ->
+            val type = ComponentLibrary[name]
+                    ?: throw IOException("'$name' is not a component name!")
+            val component = value.traverse(p.codec).readValueAs(type.java)
             components.add(component)
         }
         Prefab(components)

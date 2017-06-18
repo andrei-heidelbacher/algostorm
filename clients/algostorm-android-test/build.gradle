@@ -1,15 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 
-buildscript {
-    dependencies {
-        classpath "com.android.tools.build:gradle:$android_plugin_version"
-    }
-}
-
 android {
     defaultConfig {
         applicationId "com.aheidelbacher.algostorm.android.test"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     packagingOptions {
@@ -23,9 +18,13 @@ android {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
     compile project(':algostorm-core')
+    compile project(':drivers:algostorm-drivers-json')
     compile project(':drivers:algostorm-drivers-kts')
     compile project(':algostorm-systems')
     compile project(':clients:algostorm-android')
+
+    androidTestCompile "com.android.support:support-annotations:25.1.0"
+    androidTestCompile "com.android.support.test:runner:0.5"
+    androidTestCompile "com.android.support.test:rules:0.5"
 }

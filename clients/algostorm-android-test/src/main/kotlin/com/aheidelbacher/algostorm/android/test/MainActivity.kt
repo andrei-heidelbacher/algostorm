@@ -17,10 +17,10 @@
 package com.aheidelbacher.algostorm.android.test
 
 import com.aheidelbacher.algostorm.android.AndroidClient
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputDriver
 
 class MainActivity : AndroidClient() {
     override val contentLayoutId: Int

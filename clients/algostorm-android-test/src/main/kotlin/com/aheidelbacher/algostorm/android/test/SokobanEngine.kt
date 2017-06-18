@@ -16,38 +16,23 @@
 
 package com.aheidelbacher.algostorm.android.test
 
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.Engine
-import com.aheidelbacher.algostorm.core.engine.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.engine.driver.Resource
-import com.aheidelbacher.algostorm.core.engine.driver.Resource.Companion.SCHEMA
-import com.aheidelbacher.algostorm.core.engine.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputDriver
-import com.aheidelbacher.algostorm.core.engine.input.InputListener
-import com.aheidelbacher.algostorm.core.engine.input.PollingInputListener
-import com.aheidelbacher.algostorm.core.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Subscriber
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
-import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Builder.Companion.tileSet
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
 import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Follow
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Scroll
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
 import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 
 import java.io.InputStream
@@ -62,18 +47,18 @@ class SokobanEngine(
         graphicsDriver = graphicsDriver,
         inputDriver = inputDriver,
         scriptDriver = KotlinScriptDriver(),
-        serializationDriver = JsonDriver()
+        serializationDriver = JsonDriver
 ) {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
     private val camera = Camera(0, 0)
     private lateinit var systems: List<Subscriber>
-    private val inputListener = PollingInputListener()
+    //private val inputListener = PollingInputListener()
 
     override val millisPerUpdate: Int = 30
 
     override fun onInit(inputStream: InputStream?) {
-        inputDriver.addListener(inputListener)
+        //inputDriver.addListener(inputListener)
         map = inputStream?.let {
             serializationDriver.readValue<MapObject>(it)
         } ?: mapObject {
@@ -81,7 +66,7 @@ class SokobanEngine(
             height = 8
             tileWidth = 64
             tileHeight = 64
-            +tileSet {
+            /*+tileSet {
                 name = "sokoban"
                 tileWidth = 64
                 tileHeight = 64
@@ -143,10 +128,10 @@ class SokobanEngine(
                     entity(wall(x, y))
                 }
             }
-            entity(Id(1), player(1, 1))
+            entity(Id(1), player(1, 1))*/
         }
         systems = listOf(
-                RenderingSystem(map, graphicsDriver),
+                /*RenderingSystem(map, graphicsDriver),
                 CameraSystem(
                         map.tileWidth,
                         map.tileHeight,
@@ -155,7 +140,7 @@ class SokobanEngine(
                         Id(1)
                 ),
                 PhysicsSystem(map.entityPool.group),
-                PathFindingSystem(map.entityPool.group)
+                PathFindingSystem(map.entityPool.group)*/
         )
     }
 
@@ -166,14 +151,14 @@ class SokobanEngine(
     override fun onRender() {
         if (graphicsDriver.isCanvasReady) {
             graphicsDriver.lockCanvas()
-            eventBus.post(Render(camera.x, camera.y))
+            //eventBus.post(Render(camera.x, camera.y))
             eventBus.publishPosts()
             graphicsDriver.unlockAndPostCanvas()
         }
     }
 
     override fun onHandleInput() {
-        inputListener.pollMostRecent(object : InputListener {
+        /*inputListener.pollMostRecent(object : InputListener {
             override fun onScroll(dx: Int, dy: Int) {
                 eventBus.post(Scroll(dx, dy))
             }
@@ -189,12 +174,12 @@ class SokobanEngine(
                     eventBus.post(TransformIntent(Id(1), d.dx, d.dy))
                 }
             }
-        })
+        })*/
     }
 
     override fun onUpdate() {
         eventBus.post(Update(millisPerUpdate))
-        eventBus.post(UpdateCamera)
+        //eventBus.post(UpdateCamera)
         eventBus.publishPosts()
     }
 

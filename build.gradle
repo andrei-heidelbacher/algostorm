@@ -85,6 +85,12 @@ project(':clients:algostorm-android') {
     apply plugin: 'com.android.library'
 }
 
+configure(subprojects.findAll {
+    it.name.contains('android') && !it.name.endsWith('algostorm-android')
+}) {
+    apply plugin: 'com.android.application'
+}
+
 configure(subprojects.findAll { it.name.contains('android') }) {
     apply plugin: 'kotlin-android'
     apply plugin: 'org.jetbrains.dokka-android'
@@ -94,6 +100,9 @@ configure(subprojects.findAll { it.name.contains('android') }) {
 
         testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
         testCompile "junit:junit:$junit_version"
+
+        androidTestCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        androidTestCompile "junit:junit:$junit_version"
     }
 
     task sourcesJar(type: Jar) {
