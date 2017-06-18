@@ -16,5 +16,25 @@
 
 package com.aheidelbacher.algostorm.android.test
 
-class AndroidAudioDriver {
+import android.content.Context.AUDIO_SERVICE
+import android.media.AudioManager
+import android.support.test.InstrumentationRegistry
+
+import com.aheidelbacher.algostorm.android.AndroidAudioDriver
+
+import org.junit.Test
+
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class AndroidAudioDriverTest {
+    private val context = InstrumentationRegistry.getTargetContext()
+    private val audioDriver = AndroidAudioDriver(context)
+    private val audioManager = context.getSystemService(AUDIO_SERVICE)
+            as AudioManager
+
+    @Test fun testPlayMusic() {
+        assertFalse(audioManager.isMusicActive)
+        assertTrue(audioManager.isMusicActive)
+    }
 }

@@ -17,126 +17,134 @@
 package com.aheidelbacher.algostorm.android
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.media.AudioManager
+import android.content.res.AssetFileDescriptor
 import android.media.MediaPlayer
-import android.media.SoundPool
-import android.os.Build
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
+
+import java.io.IOException
 
 class AndroidAudioDriver(context: Context) : AudioDriver {
-    private data class Resources(
-            val context: Context,
-            var mediaPlayer: MediaPlayer? = null,
-            var musicVolume: Float = 1F,
-            val soundPool: SoundPool =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                SoundPool.Builder().setMaxStreams(3).build()
-            else
-                SoundPool(3, AudioManager.STREAM_MUSIC, 0),
-            val soundIds: MutableMap<String, Int> = hashMapOf(),
-            var soundVolume: Float = 1F
-    )
+    private var context: Context? = context
+    private val musicPool = hashMapOf<Resource, AssetFileDescriptor>()
+    private var musicPlayer: MediaPlayer? = null
+    private var musicVolume: Float = 1F
+    private val soundPool: MutableMap<Resource, AssetFileDescriptor> = hashMapOf()
+    private val soundPlayers: MutableSet<MediaPlayer> = hashSetOf()
+    private var soundVolume: Float = 1F
 
-    private var resources: Resources? = Resources(context = context)
-
-    private val Resource.fdPath: String
-        get() = uri.replace('/', '_')
-
-    private fun Resources.installResource(resource: Resource) {
-        val path = resource.fdPath
-        if (path !in context.fileList()) {
-            resource.inputStream().use { src ->
-                context.openFileOutput(path, MODE_PRIVATE).use { dst ->
-                    src.copyTo(out = dst)
-                }
+    private fun Context.openAssetFd(resource: Resource): AssetFileDescriptor =
+            try {
+                assets.openFd(resource.path)
+            } catch (e: IOException) {
+                throw InvalidResourceException(e)
             }
+
+    private fun createMediaPlayer(
+            assetFd: AssetFileDescriptor,
+            volume: Float,
+            loop: Boolean
+    ): MediaPlayer = MediaPlayer().apply {
+        with(assetFd) {
+            setDataSource(fileDescriptor, startOffset, declaredLength)
         }
+        prepare()
+        isLooping = loop
+        setVolume(volume, volume)
     }
 
     override fun loadMusic(resource: Resource) {
-        resources?.apply {
-            installResource(resource)
+        checkNotNull(context).apply {
+            musicPool[resource] = openAssetFd(resource)
         }
     }
 
     override fun loadSound(resource: Resource) {
-        resources?.apply {
-            installResource(resource)
-            val path = resource.fdPath
-            soundIds[path] = soundPool.load(resource.fdPath, 1)
+        checkNotNull(context).apply {
+            soundPool[resource] = openAssetFd(resource)
         }
     }
 
     override fun setMusicVolume(volume: Float) {
         require(volume in 0F..1F) { "Invalid music volume $volume!" }
-        resources?.apply {
-            musicVolume = volume
-            mediaPlayer?.setVolume(volume, volume)
-        }
+        checkNotNull(context)
+        musicVolume = volume
+        musicPlayer?.setVolume(volume, volume)
     }
 
     override fun setSoundVolume(volume: Float) {
         require(volume in 0F..1F) { "Invalid sound volume $volume!" }
-        resources?.apply {
-            soundVolume = volume
-        }
+        checkNotNull(context)
+        soundVolume = volume
+        soundPlayers.forEach { it.setVolume(volume, volume) }
     }
 
     override fun pauseMusic() {
-        resources?.mediaPlayer?.pause()
+        checkNotNull(context)
+        musicPlayer?.pause()
     }
 
     override fun pauseSounds() {
-        resources?.soundPool?.autoPause()
+        checkNotNull(context)
+        soundPlayers.forEach(MediaPlayer::pause)
     }
 
     override fun playMusic(resource: Resource, loop: Boolean) {
-        resources?.apply {
-            mediaPlayer?.release()
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(resource.fdPath)
-                prepare()
-                isLooping = loop
-                setVolume(musicVolume, musicVolume)
-                start()
-            }
+        checkNotNull(context)
+        val assetFd = requireNotNull(musicPool[resource])
+        musicPlayer?.release()
+        val player = createMediaPlayer(assetFd, musicVolume, loop)
+        player.setOnCompletionListener {
+            it.release()
+            musicPlayer = null
         }
+        musicPlayer = player
+        player.start()
     }
 
     override fun playSound(resource: Resource) {
-        resources?.apply {
-            val id = requireNotNull(soundIds[resource.fdPath])
-            soundPool.play(id, soundVolume, soundVolume, 1, 0, 1F) - 1
+        checkNotNull(context)
+        val assetFd = requireNotNull(soundPool[resource])
+        val player = createMediaPlayer(assetFd, soundVolume, false)
+        soundPlayers += player
+        player.setOnCompletionListener {
+            it.release()
+            soundPlayers -= it
         }
+        player.start()
     }
 
     override fun resumeMusic() {
-        resources?.mediaPlayer?.start()
+        checkNotNull(context)
+        musicPlayer?.start()
     }
 
     override fun resumeSounds() {
-        resources?.soundPool?.autoResume()
+        checkNotNull(context)
+        soundPlayers.forEach(MediaPlayer::start)
     }
 
     override fun stopMusic() {
-        resources?.apply {
-            mediaPlayer?.release()
-            mediaPlayer = null
-        }
+        checkNotNull(context)
+        musicPlayer?.release()
+        musicPlayer = null
     }
 
     override fun stopSounds() {
-        //resources?.soundPool?.stop(0)
+        checkNotNull(context)
+        soundPlayers.forEach(MediaPlayer::release)
+        soundPlayers.clear()
     }
 
     override fun release() {
-        resources?.apply {
-            mediaPlayer?.release()
-            soundPool.release()
+        if (context != null) {
+            stopMusic()
+            stopSounds()
+            musicPool.clear()
+            soundPool.clear()
+            context = null
         }
-        resources = null
     }
 }

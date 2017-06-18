@@ -21,6 +21,11 @@ import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
+import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
+
+import java.io.InputStream
+import java.io.OutputStream
 
 class MainActivity : AndroidClient() {
     override val contentLayoutId: Int
@@ -33,9 +38,21 @@ class MainActivity : AndroidClient() {
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
             inputDriver: InputDriver
-    ): Engine = SokobanEngine(
+    ): Engine = object : Engine(
             audioDriver = audioDriver,
             graphicsDriver = graphicsDriver,
-            inputDriver = inputDriver
-    )
+            inputDriver = inputDriver,
+            scriptDriver = KotlinScriptDriver(),
+            serializationDriver = JsonDriver
+    ) {
+        override val millisPerUpdate: Int = 25
+        override fun onInit(inputStream: InputStream?) {}
+        override fun onStart() {}
+        override fun onHandleInput() {}
+        override fun onUpdate() {}
+        override fun onRender() {}
+        override fun onStop() {}
+        override fun onSerializeState(outputStream: OutputStream) {}
+        override fun onShutdown() {}
+    }
 }

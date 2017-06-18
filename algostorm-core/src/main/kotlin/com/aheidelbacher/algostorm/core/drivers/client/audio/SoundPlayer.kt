@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.core.drivers.client.audio
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 
 /**
  * A sound player which should be used for short sound effects (each loaded
