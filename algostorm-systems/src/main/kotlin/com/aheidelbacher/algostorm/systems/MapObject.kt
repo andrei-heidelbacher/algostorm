@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.systems
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.ecs.EntityPool
 import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf

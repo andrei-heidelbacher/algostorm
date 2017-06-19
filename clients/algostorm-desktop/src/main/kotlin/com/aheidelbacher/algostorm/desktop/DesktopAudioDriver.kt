@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algostorm.desktop
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 
 class DesktopAudioDriver : AudioDriver {
     override fun loadMusic(resource: Resource) {

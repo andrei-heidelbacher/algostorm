@@ -18,8 +18,8 @@ package com.aheidelbacher.algostorm.systems
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
@@ -50,14 +50,14 @@ class MapObjectTest {
     }
 
     val serializationDriver = JsonDriver
-    val inputStream = resourceOf("/mapObject.json").inputStream()
+    val inputStream = javaClass.getResourceAsStream("/mapObject.json")
     val mapObject = mapObject {
         width = 2
         height = 2
         tileWidth = 24
         tileHeight = 24
         backgroundColor = Color("#FFFFFF5f")
-        tileSet(resourceOf("/tileSet.json"))
+        tileSet(resourceOf("tileSet.json"))
         var id = 1
         for (x in 0..width - 1) {
             for (y in 0..height - 1) {
@@ -76,10 +76,13 @@ class MapObjectTest {
 
     @Test fun testMapObjectSerialization() {
         val bos = ByteArrayOutputStream()
+        println("hello")
         serializationDriver.writeValue(bos, mapObject)
+        println("hello2")
         val actualMapObject = serializationDriver.readValue<MapObject>(
                 src = bos.toByteArray().inputStream()
         )
+        println("hello3")
         assertEquals(mapObject, actualMapObject)
     }
 }

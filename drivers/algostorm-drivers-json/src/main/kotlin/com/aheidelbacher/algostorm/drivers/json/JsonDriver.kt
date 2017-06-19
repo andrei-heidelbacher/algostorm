@@ -31,8 +31,8 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.core.ecs.Component
 import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
@@ -81,7 +81,7 @@ object JsonDriver : SerializationDriver {
         get() = "json"
 
     private val resourceSerializer = serializer<Resource> { value, gen ->
-        gen.writeString("$value")
+        gen.writeString(value.uri)
     }
 
     private val resourceDeserializer = deserializer { p ->

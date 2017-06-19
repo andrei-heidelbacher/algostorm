@@ -18,11 +18,11 @@ package com.aheidelbacher.algostorm.drivers.json
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Image
+import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
@@ -37,13 +37,13 @@ import java.io.IOException
 class JsonDriverTest : SerializationDriverTest() {
     override val driver = JsonDriver
     override val inputStream =
-            resourceOf("/data.${driver.format}").inputStream()
+            javaClass.getResourceAsStream("/data.${driver.format}")
     override val data = DataMock(
             primitiveField = 1,
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = resourceOf("/data.${driver.format}"),
+            resource = resourceOf("data.${driver.format}"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(
@@ -53,7 +53,7 @@ class JsonDriverTest : SerializationDriverTest() {
             tileSets = listOf(TileSet.Companion(
                     name = "world",
                     image = Image(
-                            resource = resourceOf("/data.${driver.format}"),
+                            resource = resourceOf("data.${driver.format}"),
                             width = 288,
                             height = 240
                     ),
@@ -67,15 +67,14 @@ class JsonDriverTest : SerializationDriverTest() {
 
     @Test(expected = IOException::class)
     fun testLoadPrefabWithInvalidComponentThrows() {
-        driver.readValue<Prefab>(
-                src = resourceOf("/invalidComponentPrefab.json").inputStream()
-        )
+        val src = javaClass.getResourceAsStream("/invalidComponentPrefab.json")
+        driver.readValue<Prefab>(src)
     }
 
     @Test(expected = IOException::class)
     fun testLoadPrefabWithNonExistingComponentThrows() {
-        driver.readValue<Prefab>(
-                src = resourceOf("/nonExistingComponentPrefab.json").inputStream()
-        )
+        val src = javaClass
+                .getResourceAsStream("/nonExistingComponentPrefab.json")
+        driver.readValue<Prefab>(src)
     }
 }

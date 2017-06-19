@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algostorm.core.drivers.client.graphics2d
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 
 /**
  * A tile set used for rendering.

@@ -16,13 +16,12 @@
 
 package com.aheidelbacher.sokoban.core
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
-import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.SCHEMA
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
@@ -38,8 +37,6 @@ import com.aheidelbacher.algostorm.systems.graphics2d.Animation
 import com.aheidelbacher.algostorm.systems.graphics2d.AnimationService
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraService
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.Follow
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.Scroll
 import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.UpdateCamera
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService
 import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService.Render
@@ -47,9 +44,7 @@ import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
 import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
 import com.aheidelbacher.algostorm.systems.physics2d.Body
 import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService.FindPath
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsService
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsService.TransformIntent
 import com.aheidelbacher.algostorm.systems.physics2d.Position
 
 import java.io.InputStream
@@ -81,7 +76,7 @@ class SokobanEngine(
             height = 8
             tileWidth = 64
             tileHeight = 64
-            tileSet(Resource("$SCHEMA/sokoban_tileset.json"))
+            tileSet(resourceOf("assets/sokoban_tileset.json"))
 
             fun floor(x: Int, y: Int) = prefabOf(
                     Position(x, y),
@@ -142,11 +137,13 @@ class SokobanEngine(
             entity(Id(1), player(3, 3))
         }
         val tileSetCollection = map.tileSets.map { resource ->
-            resource.inputStream().use { src ->
-                val tileSet = serializationDriver.readValue<TileSet>(src)
-                graphicsDriver.loadImage(tileSet.image.resource)
-                tileSet
-            }
+            javaClass.getResourceAsStream("/assets/${resource.path}")
+                    .use { src ->
+                        val tileSet = serializationDriver
+                                .readValue<TileSet>(src)
+                        graphicsDriver.loadImage(tileSet.image.resource)
+                        tileSet
+                    }
         }.let(::TileSetCollection)
         services = listOf(
                 RenderingService(

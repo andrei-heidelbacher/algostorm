@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algostorm.desktop
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
 
 import javafx.application.Platform
 import javafx.scene.canvas.Canvas
@@ -41,7 +41,9 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
         get() = gc.canvas.height.toInt()
 
     override fun loadImage(resource: Resource) {
-        resource.inputStream().use { src -> bitmaps[resource] = Image(src) }
+        javaClass.getResourceAsStream("/assets/${resource.path}").use { src ->
+            bitmaps[resource] = Image(src)
+        }
     }
 
     private fun checkIsLocked() {

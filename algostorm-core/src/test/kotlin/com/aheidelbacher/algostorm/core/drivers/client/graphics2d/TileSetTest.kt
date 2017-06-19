@@ -18,15 +18,15 @@ package com.aheidelbacher.algostorm.core.drivers.client.graphics2d
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.drivers.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Image
+import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 
 import kotlin.test.assertEquals
 
 class TileSetTest {
     private val name = "world"
-    private val image = Image(resourceOf("/resource.txt"), 288, 240)
+    private val image = Image(resourceOf("resource.txt"), 288, 240)
     private val tileWidth = 24
     private val tileHeight = 24
     private val animations =

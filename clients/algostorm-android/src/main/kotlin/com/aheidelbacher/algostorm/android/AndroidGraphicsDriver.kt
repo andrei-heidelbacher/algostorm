@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.android
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -23,18 +24,20 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.SurfaceHolder
 
-import com.aheidelbacher.algostorm.core.drivers.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
+import com.aheidelbacher.algostorm.core.drivers.io.Resource
+import java.io.IOException
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AndroidGraphicsDriver(
-        surfaceHolder: SurfaceHolder,
-        private val scale: Float
+        context: Context,
+        surfaceHolder: SurfaceHolder
 ) : GraphicsDriver {
-    companion object {
+    /*companion object {
         private val bitmaps = ConcurrentHashMap<Resource, Bitmap>()
 
         fun loadBitmap(resource: Resource) {
@@ -52,11 +55,14 @@ class AndroidGraphicsDriver(
          * @return the requested bitmap, or `null` if it wasn't loaded
          */
         fun getBitmap(resource: Resource): Bitmap? = bitmaps[resource]
-    }
+    }*/
 
+    private var context: Context? = context
     private var surfaceHolder: SurfaceHolder? = surfaceHolder
     private var canvas: Canvas? = null
     private val isLocked = AtomicBoolean(false)
+    private val scale = context.resources.displayMetrics.density
+    private val bitmaps = ConcurrentHashMap<Resource, Bitmap>()
 
     private val srcRect = Rect()
     private val dstRect = Rect()
@@ -76,7 +82,13 @@ class AndroidGraphicsDriver(
     }
 
     override fun loadImage(resource: Resource) {
-        Companion.loadBitmap(resource)
+        val stream = try {
+            checkNotNull(context).assets.open(resource.path)
+        } catch (e: IOException) {
+            throw InvalidResourceException(e)
+        }
+        bitmaps[resource] = BitmapFactory.decodeStream(stream)
+                ?: throw InvalidResourceException("")
     }
 
     override fun save() {
@@ -116,7 +128,7 @@ class AndroidGraphicsDriver(
             dh: Int
     ) {
         checkIsLocked()
-        val bitmap = requireNotNull(getBitmap(resource))
+        val bitmap = requireNotNull(bitmaps[resource])
         srcRect.set(sx, sy, sx + sw, sy + sh)
         dstRect.set(dx, dy, dx + dw, dy + dh)
         canvas?.drawBitmap(bitmap, srcRect, dstRect, null)
@@ -164,6 +176,7 @@ class AndroidGraphicsDriver(
         get() = surfaceHolder?.surface?.isValid ?: false
 
     override fun lockCanvas() {
+        checkNotNull(context)
         check(isCanvasReady) { "Canvas is not ready!" }
         check(isLocked.compareAndSet(false, true)) { "Canvas already locked!" }
         surfaceHolder?.apply {
@@ -174,6 +187,7 @@ class AndroidGraphicsDriver(
     }
 
     override fun unlockAndPostCanvas() {
+        checkNotNull(context)
         check(isLocked.compareAndSet(true, false)) { "Canvas is not locked!" }
         canvas?.let { surfaceHolder?.unlockCanvasAndPost(it) }
         canvas = null

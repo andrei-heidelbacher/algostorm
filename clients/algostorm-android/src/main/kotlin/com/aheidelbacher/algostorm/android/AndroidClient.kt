@@ -75,8 +75,8 @@ abstract class AndroidClient : Activity() {
                 ?: "autosave.json"
         val density = resources.displayMetrics.density
         audioDriver = AndroidAudioDriver(this)
-        graphicsDriver = AndroidGraphicsDriver(surfaceView.holder, density * 2)
-        inputDriver = AndroidInputDriver(this, density * 2)
+        graphicsDriver = AndroidGraphicsDriver(this, surfaceView.holder)
+        inputDriver = AndroidInputDriver(this, density)
         engine = createEngine(audioDriver, graphicsDriver, inputDriver)
         engine.init(savedInstanceState?.let { openFileInput(saveFileName) })
         surfaceView.setOnTouchListener(inputDriver)
