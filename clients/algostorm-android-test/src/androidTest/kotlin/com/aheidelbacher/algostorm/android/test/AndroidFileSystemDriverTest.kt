@@ -48,7 +48,7 @@ class AndroidFileSystemDriverTest {
             }
 
     @Test fun testGetRawResource() {
-        val path = "sokoban_tileset.png"
+        val path = "tileset.png"
         val resource = resourceOf(path)
         val expected = context.assets.open(path).use { it.readBytes() }
         val actual = fileSystemDriver.getRawResource(resource)
@@ -59,7 +59,7 @@ class AndroidFileSystemDriverTest {
     }
 
     @Test fun testGetInvalidResourceThrows() {
-        val path = "sokoban_tileset"
+        val path = "tileset"
         val resource = resourceOf(path)
         assertFailsWith<InvalidResourceException> {
             fileSystemDriver.getRawResource(resource)

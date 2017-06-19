@@ -21,9 +21,14 @@ import android.media.AudioManager
 import android.support.test.InstrumentationRegistry
 
 import com.aheidelbacher.algostorm.android.AndroidAudioDriver
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
+import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -33,8 +38,114 @@ class AndroidAudioDriverTest {
     private val audioManager = context.getSystemService(AUDIO_SERVICE)
             as AudioManager
 
-    @Test fun testPlayMusic() {
-        assertFalse(audioManager.isMusicActive)
+    private val music = resourceOf("music.mp3")
+    private val sounds = setOf(
+            resourceOf("sound-1.wav"),
+            resourceOf("sound-2.wav")
+    )
+
+    private fun sleep() {
+        Thread.sleep(200)
+    }
+
+    private fun assertAudioIsActive() {
+        sleep()
         assertTrue(audioManager.isMusicActive)
+    }
+
+    private fun assertAudioIsNotActive() {
+        sleep()
+        assertFalse(audioManager.isMusicActive)
+    }
+
+    @Before fun loadResources() {
+        audioDriver.loadMusic(music)
+        sounds.forEach(audioDriver::loadSound)
+        assertAudioIsNotActive()
+    }
+
+    @Test fun testLoadNonExistingMusicThrows() {
+        val path = "non-existing.mp3"
+        val resource = resourceOf(path)
+        assertFailsWith<InvalidResourceException> {
+            audioDriver.loadMusic(resource)
+        }
+    }
+
+    @Test fun testLoadInvalidMusicThrows() {
+        val path = "tileset.mp3"
+        val resource = resourceOf(path)
+        assertFailsWith<InvalidResourceException> {
+            audioDriver.loadMusic(resource)
+        }
+    }
+
+    @Test fun testPlayMusic() {
+        audioDriver.playMusic(music)
+        assertAudioIsActive()
+    }
+
+    @Test fun testPauseMusic() {
+        audioDriver.playMusic(music)
+        audioDriver.pauseMusic()
+        assertAudioIsNotActive()
+    }
+
+    @Test fun testResumeMusic() {
+        audioDriver.playMusic(music)
+        audioDriver.pauseMusic()
+        audioDriver.resumeMusic()
+        assertAudioIsActive()
+    }
+
+    @Test fun testStopMusic() {
+        audioDriver.playMusic(music)
+        audioDriver.stopMusic()
+        assertAudioIsNotActive()
+    }
+
+    @Test fun testLoadNonExistingSoundThrows() {
+        val path = "non-existing.mp3"
+        val resource = resourceOf(path)
+        assertFailsWith<InvalidResourceException> {
+            audioDriver.loadSound(resource)
+        }
+    }
+
+    @Test fun testLoadInvalidSoundThrows() {
+        val path = "tileset.mp3"
+        val resource = resourceOf(path)
+        assertFailsWith<InvalidResourceException> {
+            audioDriver.loadSound(resource)
+        }
+    }
+
+    @Test fun testPlaySounds() {
+        sounds.forEach(audioDriver::playSound)
+        assertAudioIsActive()
+    }
+
+    @Test fun testPauseSounds() {
+        sounds.forEach(audioDriver::playSound)
+        audioDriver.pauseSounds()
+        assertAudioIsNotActive()
+    }
+
+    @Test fun testResumeSounds() {
+        sounds.forEach(audioDriver::playSound)
+        audioDriver.pauseSounds()
+        audioDriver.resumeSounds()
+        assertAudioIsActive()
+    }
+
+    @Test fun testStopSounds() {
+        sounds.forEach(audioDriver::playSound)
+        audioDriver.stopSounds()
+        assertAudioIsNotActive()
+    }
+
+    @After fun release() {
+        audioDriver.release()
+        assertAudioIsNotActive()
     }
 }
