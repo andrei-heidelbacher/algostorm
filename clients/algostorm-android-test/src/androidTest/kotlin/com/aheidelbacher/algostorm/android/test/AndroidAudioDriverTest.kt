@@ -33,6 +33,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AndroidAudioDriverTest {
+    companion object {
+        private const val TIMEOUT = 1000L
+        private const val STEP = 100L
+    }
+
     private val context = InstrumentationRegistry.getTargetContext()
     private val audioDriver = AndroidAudioDriver(context)
     private val audioManager = context.getSystemService(AUDIO_SERVICE)
@@ -44,17 +49,21 @@ class AndroidAudioDriverTest {
             resourceOf("sound-2.wav")
     )
 
-    private fun sleep() {
-        Thread.sleep(200)
-    }
-
     private fun assertAudioIsActive() {
-        sleep()
+        var steps = TIMEOUT / STEP
+        while (!audioManager.isMusicActive && steps > 0) {
+            Thread.sleep(STEP)
+            steps--
+        }
         assertTrue(audioManager.isMusicActive)
     }
 
     private fun assertAudioIsNotActive() {
-        sleep()
+        var steps = TIMEOUT / STEP
+        while (audioManager.isMusicActive && steps > 0) {
+            Thread.sleep(STEP)
+            steps--
+        }
         assertFalse(audioManager.isMusicActive)
     }
 

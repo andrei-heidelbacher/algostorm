@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
+import java.io.InputStream
 
 abstract class AndroidClient : Activity() {
     companion object {
@@ -45,12 +47,35 @@ abstract class AndroidClient : Activity() {
         }
     }
 
+    private inner class InitEngine : AsyncTask<InputStream?, Int, Unit>() {
+        override fun doInBackground(vararg params: InputStream?) {
+            val src = params.first()
+            engine.init(src)
+        }
+
+        override fun onPostExecute(result: Unit?) {
+            super.onPostExecute(result)
+            setContentView(contentLayoutId)
+            (findViewById(surfaceViewContainerLayoutId) as ViewGroup)
+                    .addView(surfaceView)
+            isInitialized = true
+            if (isActivityRunning) {
+                engine.start()
+            }
+        }
+    }
+
     private lateinit var saveFileName: String
     private lateinit var surfaceView: SurfaceView
     private lateinit var audioDriver: AndroidAudioDriver
     private lateinit var graphicsDriver: AndroidGraphicsDriver
     private lateinit var inputDriver: AndroidInputDriver
     private lateinit var engine: Engine
+
+    private var isInitialized = false
+    private var isActivityRunning = false
+
+    protected abstract val splashLayoutId: Int
 
     protected abstract val contentLayoutId: Int
 
@@ -64,12 +89,10 @@ abstract class AndroidClient : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(contentLayoutId)
+        setContentView(splashLayoutId)
         surfaceView = SurfaceView(this).apply {
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
-        (findViewById(surfaceViewContainerLayoutId) as ViewGroup)
-                .addView(surfaceView)
         saveFileName = savedInstanceState?.getString(EXTRA_SAVE_FILE_NAME)
                 ?: intent.getStringExtra(EXTRA_SAVE_FILE_NAME)
                 ?: "autosave.json"
@@ -77,14 +100,19 @@ abstract class AndroidClient : Activity() {
         audioDriver = AndroidAudioDriver(this)
         graphicsDriver = AndroidGraphicsDriver(this, surfaceView.holder)
         inputDriver = AndroidInputDriver(this, density)
+        val src = savedInstanceState?.let { openFileInput(saveFileName) }
         engine = createEngine(audioDriver, graphicsDriver, inputDriver)
-        engine.init(savedInstanceState?.let { openFileInput(saveFileName) })
         surfaceView.setOnTouchListener(inputDriver)
+
+        InitEngine().execute(src)
     }
 
     override fun onResume() {
         super.onResume()
-        engine.start()
+        isActivityRunning = true
+        if (isInitialized) {
+            engine.start()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -94,7 +122,10 @@ abstract class AndroidClient : Activity() {
 
     override fun onPause() {
         super.onPause()
-        engine.stop()
+        isActivityRunning = false
+        if (isInitialized) {
+            engine.stop()
+        }
         openFileOutput(saveFileName, Context.MODE_PRIVATE).use {
             engine.serializeState(it)
         }

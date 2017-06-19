@@ -28,11 +28,9 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class MainActivity : AndroidClient() {
-    override val contentLayoutId: Int
-        get() = R.layout.activity_main
-
-    override val surfaceViewContainerLayoutId: Int
-        get() = R.id.surfaceViewContainer
+    override val splashLayoutId: Int = R.layout.activity_main_splash
+    override val contentLayoutId: Int = R.layout.activity_main
+    override val surfaceViewContainerLayoutId: Int = R.id.surfaceViewContainer
 
     override fun createEngine(
             audioDriver: AudioDriver,
@@ -46,7 +44,9 @@ class MainActivity : AndroidClient() {
             serializationDriver = JsonDriver
     ) {
         override val millisPerUpdate: Int = 25
-        override fun onInit(inputStream: InputStream?) {}
+        override fun onInit(inputStream: InputStream?) {
+            Thread.sleep(2000)
+        }
         override fun onStart() {}
         override fun onHandleInput() {}
         override fun onUpdate() {}
