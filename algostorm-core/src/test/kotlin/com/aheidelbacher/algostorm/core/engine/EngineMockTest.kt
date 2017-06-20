@@ -18,8 +18,6 @@ package com.aheidelbacher.algostorm.core.engine
 
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 
 import java.io.ByteArrayOutputStream
@@ -29,25 +27,21 @@ import kotlin.test.assertEquals
 class EngineMockTest : EngineTest() {
     override val engine = EngineMock()
 
-    /*@Test(timeout = MAX_TIME_LIMIT)
-    fun testSerializeState() {
+    @Test fun testSerializeState() {
         engine.start()
-        repeat(100) {
-            val bos = ByteArrayOutputStream()
-            engine.serializeState(bos)
-            val state = SerializationDriver().readValue<EngineMock.State>(
-                    src = bos.toByteArray().inputStream()
-            )
-            assertEquals(engine.serializedState, state)
-        }
-        engine.stop()
-    }*/
+        Thread.sleep(50)
+        engine.stop(TIMEOUT)
+        val bos = ByteArrayOutputStream()
+        engine.serializeState(bos)
+        val actual = bos.toByteArray().inputStream().read()
+        assertEquals(engine.state, actual)
+    }
 
-    @Test(timeout = MAX_TIME_LIMIT)
-    fun testClearState() {
+    @Test fun testClearState() {
         engine.start()
         Thread.sleep(1000)
+        engine.stop(TIMEOUT)
         engine.shutdown()
-        assertEquals(0, engine.state.values.size)
+        assertEquals(-1, engine.state)
     }
 }

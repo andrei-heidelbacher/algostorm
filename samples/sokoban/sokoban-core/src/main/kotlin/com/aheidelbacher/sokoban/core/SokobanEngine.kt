@@ -21,6 +21,7 @@ import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
@@ -29,7 +30,6 @@ import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.drivers.json.JsonDriver
-import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.systems.Update
@@ -53,13 +53,13 @@ import java.io.OutputStream
 class SokobanEngine(
         audioDriver: AudioDriver,
         graphicsDriver: GraphicsDriver,
-        inputDriver: InputDriver
+        inputDriver: InputDriver,
+        fileSystemDriver: FileSystemDriver
 ) : Engine(
         audioDriver = audioDriver,
         graphicsDriver = graphicsDriver,
         inputDriver = inputDriver,
-        scriptDriver = KotlinScriptDriver(),
-        serializationDriver = JsonDriver
+        fileSystemDriver = fileSystemDriver
 ) {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
@@ -70,7 +70,7 @@ class SokobanEngine(
 
     override fun onInit(inputStream: InputStream?) {
         map = inputStream?.let {
-            serializationDriver.readValue<MapObject>(it)
+            JsonDriver.readValue<MapObject>(it)
         } ?: mapObject {
             width = 8
             height = 8
@@ -139,8 +139,7 @@ class SokobanEngine(
         val tileSetCollection = map.tileSets.map { resource ->
             javaClass.getResourceAsStream("/assets/${resource.path}")
                     .use { src ->
-                        val tileSet = serializationDriver
-                                .readValue<TileSet>(src)
+                        val tileSet = JsonDriver.readValue<TileSet>(src)
                         graphicsDriver.loadImage(tileSet.image.resource)
                         tileSet
                     }
@@ -167,11 +166,15 @@ class SokobanEngine(
         )
     }
 
+    override fun onError(cause: Exception) {
+        cause.printStackTrace()
+    }
+
     override fun onStart() {
         services.forEach { it.start(eventBus) }
     }
 
-    override fun onRender() {
+    private fun onRender() {
         if (graphicsDriver.isCanvasReady) {
             graphicsDriver.lockCanvas()
             eventBus.post(Render(camera.x, camera.y))
@@ -180,7 +183,7 @@ class SokobanEngine(
         }
     }
 
-    override fun onHandleInput() {
+    private fun onHandleInput() {
         /*inputListener.pollMostRecent(object {
             override fun onScroll(dx: Int, dy: Int) {
                 eventBus.post(Scroll(dx, dy))
@@ -201,13 +204,15 @@ class SokobanEngine(
     }
 
     override fun onUpdate() {
+        onRender()
+        onHandleInput()
         eventBus.post(Update(millisPerUpdate))
         eventBus.post(UpdateCamera)
         eventBus.publishPosts()
     }
 
     override fun onSerializeState(outputStream: OutputStream) {
-        serializationDriver.writeValue(outputStream, map)
+        JsonDriver.writeValue(outputStream, map)
     }
 
     override fun onStop() {

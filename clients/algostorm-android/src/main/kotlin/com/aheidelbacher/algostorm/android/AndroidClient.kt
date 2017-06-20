@@ -29,7 +29,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
+
 import java.io.InputStream
 
 abstract class AndroidClient : Activity() {
@@ -70,6 +72,7 @@ abstract class AndroidClient : Activity() {
     private lateinit var audioDriver: AndroidAudioDriver
     private lateinit var graphicsDriver: AndroidGraphicsDriver
     private lateinit var inputDriver: AndroidInputDriver
+    private lateinit var fileSystemDriver: AndroidFileSystemDriver
     private lateinit var engine: Engine
 
     private var isInitialized = false
@@ -84,7 +87,8 @@ abstract class AndroidClient : Activity() {
     protected abstract fun createEngine(
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver
+            inputDriver: InputDriver,
+            fileSystemDriver: FileSystemDriver
     ): Engine
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +105,12 @@ abstract class AndroidClient : Activity() {
         graphicsDriver = AndroidGraphicsDriver(this, surfaceView.holder)
         inputDriver = AndroidInputDriver(this, density)
         val src = savedInstanceState?.let { openFileInput(saveFileName) }
-        engine = createEngine(audioDriver, graphicsDriver, inputDriver)
+        engine = createEngine(
+                audioDriver = audioDriver,
+                graphicsDriver = graphicsDriver,
+                inputDriver = inputDriver,
+                fileSystemDriver = fileSystemDriver
+        )
         surfaceView.setOnTouchListener(inputDriver)
 
         InitEngine().execute(src)
@@ -124,7 +133,7 @@ abstract class AndroidClient : Activity() {
         super.onPause()
         isActivityRunning = false
         if (isInitialized) {
-            engine.stop()
+            engine.stop(1000)
         }
         openFileOutput(saveFileName, Context.MODE_PRIVATE).use {
             engine.serializeState(it)

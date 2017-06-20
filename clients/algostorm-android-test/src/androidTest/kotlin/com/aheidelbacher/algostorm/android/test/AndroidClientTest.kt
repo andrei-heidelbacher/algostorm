@@ -21,17 +21,19 @@ import android.support.test.rule.ActivityTestRule
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import org.junit.After
 
+import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
 
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@Ignore
 class AndroidClientTest {
     @Rule
     @JvmField val rule = ActivityTestRule(MainActivity::class.java)

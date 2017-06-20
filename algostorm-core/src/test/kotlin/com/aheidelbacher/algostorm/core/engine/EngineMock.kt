@@ -19,8 +19,7 @@ package com.aheidelbacher.algostorm.core.engine
 import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverStub
 import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverStub
 import com.aheidelbacher.algostorm.test.engine.input.InputDriverStub
-import com.aheidelbacher.algostorm.test.engine.script.ScriptDriverStub
-import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverStub
+import com.aheidelbacher.algostorm.test.engine.io.FileSystemDriverStub
 
 import java.io.InputStream
 import java.io.OutputStream
@@ -29,50 +28,26 @@ class EngineMock : Engine(
         AudioDriverStub(),
         GraphicsDriverStub(),
         InputDriverStub(),
-        ScriptDriverStub(),
-        SerializationDriverStub()
+        FileSystemDriverStub()
 ) {
-    data class State(val values: List<Int>)
-
-    private var i = 0
-    private var registeredValues = mutableListOf<Int>()
-    private var stage = 0
-    val state: State = State(registeredValues)
-
-    override var millisPerUpdate: Int = 25
-
-    override fun onInit(inputStream: InputStream?) {}
-
-    override fun onStart() {}
-
-    override fun onStop() {}
-
-    override fun onShutdown() {
-        i = 0
-        registeredValues.clear()
-    }
-
-    override fun onRender() {
-        require(stage == 0) { "Invalid render call!" }
-        stage = 1
-    }
-
-    override fun onHandleInput() {
-        require(stage == 1) { "Invalid handle input call!" }
-        stage = 2
-    }
-
-    override fun onUpdate() {
-        require(stage == 2) { "Invalid update call!" }
-        stage = 0
-        registeredValues.add(i++)
-    }
-
-    @Volatile lateinit var serializedState: State
+    var state: Int = 0
         private set
 
+    override var millisPerUpdate: Int = 25
+    override fun onError(cause: Exception) {}
+    override fun onInit(inputStream: InputStream?) {}
+    override fun onStart() {}
+    override fun onStop() {}
+
+    override fun onUpdate() {
+        state++
+    }
+
     override fun onSerializeState(outputStream: OutputStream) {
-        serializedState = State(registeredValues.toList())
-        serializationDriver.writeValue(outputStream, serializedState)
+        outputStream.write(state)
+    }
+
+    override fun onShutdown() {
+        state = -1
     }
 }

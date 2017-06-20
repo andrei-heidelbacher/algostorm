@@ -20,13 +20,10 @@ import com.aheidelbacher.algostorm.core.drivers.Driver
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
-import com.aheidelbacher.algostorm.core.drivers.script.ScriptDriver
-import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
 
 import kotlin.concurrent.thread
 import kotlin.system.measureNanoTime
@@ -43,20 +40,17 @@ import kotlin.system.measureNanoTime
  * of the engine and initialization of the state happen-before any other method
  * call.
  *
+ * @constructor initializes this engine's drivers
  * @property audioDriver the driver that handles playing music and sound effects
  * @property graphicsDriver the driver that handles drawing to the screen
  * @property inputDriver the driver that handles reading input from the user
- * @property scriptDriver the driver that handles running scripts
- * @property serializationDriver the driver that handles the serialization and
- * deserialization of the game state
- * @constructor initializes this engine's drivers
+ * @property fileSystemDriver the driver that handles files and resources
  */
 abstract class Engine(
         protected val audioDriver: AudioDriver,
         protected val graphicsDriver: GraphicsDriver,
         protected val inputDriver: InputDriver,
-        protected val scriptDriver: ScriptDriver,
-        protected val serializationDriver: SerializationDriver
+        protected val fileSystemDriver: FileSystemDriver
 ) {
     companion object {
         /** Name of the engine thread. */
@@ -65,153 +59,123 @@ abstract class Engine(
 
     /** The status of an engine. */
     enum class Status {
-        UNINITIALIZED, RUNNING, STOPPING, STOPPED
+        UNINITIALIZED, RUNNING, STOPPING, STOPPED, SHUTDOWN
     }
 
-    private val stateLock = Any()
-    private val statusLock = Any()
     private var process: Thread? = null
-    private val internalStatus = AtomicReference(Status.STOPPED)
-    private val internalShutdownStatus = AtomicBoolean(false)
 
     /** The current status of this engine. */
-    val status: Status
-        get() = internalStatus.get()
-
-    /** The current shutdown status of this engine. */
-    val isShutdown: Boolean
-        get() = internalShutdownStatus.get()
+    @Volatile var status: Status = Status.UNINITIALIZED
+        private set
 
     /**
-     * The number of milliseconds spent in an update cycle and the resolution of
-     * an atomic time unit.
-     *
-     * Must be positive.
+     * The positive number of milliseconds spent in an update cycle and the
+     * resolution of an atomic time unit.
      */
     protected abstract val millisPerUpdate: Int
 
     /**
-     * The entry point into the initialization logic for starting the engine
+     * The entry point into the initialization logic of the engine.
+     *
+     * This method is invoked after the engine is created and before the engine
+     * can be started.
+     */
+    protected abstract fun onInit(inputStream: InputStream?): Unit
+
+    /**
+     * The entry point into the initialization logic after starting the engine
      * thread.
      *
-     * This method is invoked right after starting the private engine thread.
-     * The call to this method is synchronized with the state lock.
+     * This method is invoked right after starting the private engine thread and
+     * is run on the engine thread.
      */
     protected abstract fun onStart(): Unit
-
-    /**
-     * The entry point into the rendering logic.
-     *
-     * This method is invoked right before [onHandleInput]. The call to this
-     * method is synchronized with the state lock.
-     */
-    protected abstract fun onRender(): Unit
-
-    /**
-     * The entry point into the input-handling logic.
-     *
-     * This method is invoked right before [onUpdate]. The call to this method
-     * is synchronized with the state lock.
-     */
-    protected abstract fun onHandleInput(): Unit
 
     /**
      * The entry point into the game logic.
      *
      * This method is invoked at most once every [millisPerUpdate] while this
-     * engine is running. The call to this method is synchronized with the state
-     * lock.
+     * engine is running and is run on the engine thread.
      */
     protected abstract fun onUpdate(): Unit
 
     /**
-     * Retrieves the current game state and serializes it to the given stream.
+     * The entry point into the clean-up logic before stopping the private
+     * engine thread.
      *
-     * The call to this method is synchronized with the state lock.
+     * This method is invoked right before the engine thread is stopped and is
+     * run on the engine thread.
+     */
+    protected abstract fun onStop(): Unit
+
+    /**
+     * The entry point into the error handling logic when an exception occurs on
+     * the engine thread.
+     *
+     * This method is invoke right before the engine thread terminates and is
+     * run on the engine thread.
+     *
+     * @param cause the error which occurred on the engine thread
+     */
+    protected abstract fun onError(cause: Exception): Unit
+
+    /**
+     * Retrieves the current game state and serializes it to the given stream.
      *
      * @param outputStream the stream to which the game state is written
      */
     protected abstract fun onSerializeState(outputStream: OutputStream): Unit
 
     /**
-     * The entry point into the clean-up logic for stopping the private engine
-     * thread.
-     *
-     * This method is invoked right before [stop] returns. The call to this
-     * method is synchronized with the state lock.
-     */
-    protected abstract fun onStop(): Unit
-
-    /**
      * The entry point into the clean-up logic for shutting down the engine.
      *
      * This method is invoked right before [shutdown] releases this engine's
-     * drivers. The call to this method is synchronized with the state lock.
+     * drivers.
      */
     protected abstract fun onShutdown(): Unit
 
-    protected abstract fun onInit(inputStream: InputStream?): Unit
+    @Throws(Exception::class)
+    private fun run() {
+        onStart()
+        while (status == Status.RUNNING) {
+            val elapsedMillis = measureNanoTime(this::onUpdate) / 1000000
+            check(elapsedMillis >= 0) { "Elapsed time can't be negative!" }
+            val updateMillis = millisPerUpdate
+            check(updateMillis > 0) { "Update time must be positive!" }
+            val sleepMillis = updateMillis - elapsedMillis
+            if (sleepMillis > 0) {
+                Thread.sleep(sleepMillis)
+            }
+        }
+        onStop()
+    }
 
     fun init(inputStream: InputStream?) {
+        check(status == Status.UNINITIALIZED) { "Engine already initialized!" }
         onInit(inputStream)
-        internalStatus.compareAndSet(Status.UNINITIALIZED, Status.STOPPED)
+        status = Status.STOPPED
     }
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread.
      *
-     * The engine thread automatically sets the `status` to `Status.STOPPED`
-     * after terminating (either normally or exceptionally).
-     *
      * While this engine is running, at most once every [millisPerUpdate]
-     * milliseconds, it will invoke, in order, the following methods:
-     * [onRender], [onHandleInput] and [onUpdate]. These calls are synchronized
-     * with the state lock.
+     * milliseconds, it will invoke the [onUpdate] method on the engine thread.
      *
      * Time is measured using [measureNanoTime]. If, at any point, the measured
-     * time or `millisPerUpdate` is negative, the engine thread throws an
+     * time or [millisPerUpdate] is negative, the engine thread throws an
      * [IllegalStateException] and terminates.
      *
-     * @throws IllegalStateException if the `status` is not `Status.STOPPED` or
-     * if [isShutdown] is `true`
+     * @throws IllegalStateException if the `status` is not `Status.STOPPED`
      */
     fun start() {
-        synchronized(statusLock) {
-            check(!internalShutdownStatus.get()) {
-                "Can't start the engine if it has been shutdown!"
-            }
-            check(internalStatus.compareAndSet(
-                    Status.STOPPED,
-                    Status.RUNNING
-            )) { "Can't start the engine if it isn't stopped!" }
-            process = thread(name = NAME) {
-                try {
-                    synchronized(stateLock) {
-                        onStart()
-                    }
-                    while (status == Status.RUNNING) {
-                        val elapsedMillis = measureNanoTime {
-                            synchronized(stateLock) {
-                                onRender()
-                                onHandleInput()
-                                onUpdate()
-                            }
-                        } / 1000000
-                        check(elapsedMillis >= 0) {
-                            "Elapsed time millis can't be negative!"
-                        }
-                        val updateMillis = millisPerUpdate
-                        check(updateMillis > 0) {
-                            "Millis spent in an update cycle must be positive!"
-                        }
-                        val sleepMillis = updateMillis - elapsedMillis
-                        if (sleepMillis > 0) {
-                            Thread.sleep(sleepMillis)
-                        }
-                    }
-                } finally {
-                    internalStatus.set(Status.STOPPED)
-                }
+        check(status == Status.STOPPED) { "Engine can't start if not stopped!" }
+        status = Status.RUNNING
+        process = thread(name = NAME) {
+            try {
+                run()
+            } catch (e: Exception) {
+                onError(e)
             }
         }
     }
@@ -222,16 +186,20 @@ abstract class Engine(
      * @param outputStream the stream to which the game state is written
      */
     fun serializeState(outputStream: OutputStream) {
-        synchronized(stateLock) {
-            onSerializeState(outputStream)
+        check(status == Status.STOPPED) {
+            "Can't serialize state if engine isn't stopped!"
         }
+        onSerializeState(outputStream)
     }
 
     /**
      * Sets the engine [status] to [Status.STOPPING] and then joins the engine
-     * thread to the current thread.
+     * thread to the current thread, waiting at most [timeoutMillis]
+     * milliseconds.
      *
      * If the join succeeds, the `status` will be set to `Status.STOPPED`.
+     *
+     * The timeout must be positive.
      *
      * @throws InterruptedException if the current thread is interrupted while
      * waiting for this engine to stop
@@ -239,48 +207,37 @@ abstract class Engine(
      * because the engine thread can't join itself
      */
     @Throws(InterruptedException::class)
-    fun stop() {
-        synchronized(statusLock) {
-            internalStatus.compareAndSet(Status.RUNNING, Status.STOPPING)
-            check(process != Thread.currentThread()) {
-                "Engine can't stop itself!"
-            }
-            process?.join()
-            process = null
+    fun stop(timeoutMillis: Int) {
+        require(timeoutMillis > 0) { "Timeout must be positive!" }
+        check(status == Status.RUNNING || status == Status.STOPPING) {
+            "Engine can't stop if not running or stopping!"
         }
-        synchronized(stateLock) {
-            onStop()
-        }
+        status = Status.STOPPING
+        check(process != Thread.currentThread()) { "Engine can't stop itself!" }
+        process?.join(timeoutMillis.toLong())
+        process = null
+        status = Status.STOPPED
     }
 
     /**
-     * Sets the [isShutdown] flag to `true`, stops this engine, performs
-     * clean-up logic and releases this engine's drivers, in this order.
+     * Performs clean-up logic and releases this engine's drivers.
      *
-     * The drivers passed in the constructor are released while holding the
-     * state lock.
+     * The engine `status` must be `Status.STOPPED`.
      *
-     * @throws IllegalStateException if this engine is already shutdown
-     * @throws InterruptedException if the current thread is interrupted while
-     * waiting for this engine to stop
+     * @throws IllegalStateException if this engine is not stopped
      */
     @Throws(InterruptedException::class)
     fun shutdown() {
-        synchronized(statusLock) {
-            check(internalShutdownStatus.compareAndSet(false, true)) {
-                "Can't shutdown the engine multiple times!"
-            }
-            stop()
+        check(status == Status.STOPPED) {
+            "Engine can't shutdown if not stopped!"
         }
-        synchronized(stateLock) {
-            onShutdown()
-            listOf(
-                    audioDriver,
-                    graphicsDriver,
-                    inputDriver,
-                    scriptDriver,
-                    serializationDriver
-            ).forEach(Driver::release)
-        }
+        onShutdown()
+        listOf(
+                audioDriver,
+                graphicsDriver,
+                inputDriver,
+                fileSystemDriver
+        ).forEach(Driver::release)
+        status = Status.SHUTDOWN
     }
 }

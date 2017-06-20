@@ -19,6 +19,7 @@ package com.aheidelbacher.algostorm.desktop
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
 
 import javafx.application.Application
@@ -31,7 +32,8 @@ abstract class DesktopClient : Application() {
     abstract fun createEngine(
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver
+            inputDriver: InputDriver,
+            fileSystemDriver: FileSystemDriver
     ): Engine
 
     override fun start(primaryStage: Stage) {
@@ -43,7 +45,8 @@ abstract class DesktopClient : Application() {
         val engine = createEngine(
                 audioDriver = DesktopAudioDriver(),
                 graphicsDriver = DesktopGraphicsDriver(canvas),
-                inputDriver = DesktopInputDriver()
+                inputDriver = DesktopInputDriver(),
+                fileSystemDriver = DesktopFileSystemDriver()
         )
         primaryStage.scene = Scene(root, 600.0, 600.0)
         primaryStage.show()

@@ -20,9 +20,8 @@ import com.aheidelbacher.algostorm.android.AndroidClient
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
-import com.aheidelbacher.algostorm.drivers.kts.KotlinScriptDriver
 
 import java.io.InputStream
 import java.io.OutputStream
@@ -35,22 +34,21 @@ class MainActivity : AndroidClient() {
     override fun createEngine(
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver
+            inputDriver: InputDriver,
+            fileSystemDriver: FileSystemDriver
     ): Engine = object : Engine(
             audioDriver = audioDriver,
             graphicsDriver = graphicsDriver,
             inputDriver = inputDriver,
-            scriptDriver = KotlinScriptDriver(),
-            serializationDriver = JsonDriver
+            fileSystemDriver = fileSystemDriver
     ) {
         override val millisPerUpdate: Int = 25
+        override fun onError(cause: Exception) {}
         override fun onInit(inputStream: InputStream?) {
             Thread.sleep(2000)
         }
         override fun onStart() {}
-        override fun onHandleInput() {}
         override fun onUpdate() {}
-        override fun onRender() {}
         override fun onStop() {}
         override fun onSerializeState(outputStream: OutputStream) {}
         override fun onShutdown() {}

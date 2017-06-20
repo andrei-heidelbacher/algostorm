@@ -19,6 +19,7 @@ package com.aheidelbacher.sokoban.desktop
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.desktop.DesktopClient
 import com.aheidelbacher.sokoban.core.SokobanEngine
@@ -33,6 +34,12 @@ class SokobanClient : DesktopClient() {
     override fun createEngine(
             audioDriver: AudioDriver,
             graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver
-    ): Engine = SokobanEngine(audioDriver, graphicsDriver, inputDriver)
+            inputDriver: InputDriver,
+            fileSystemDriver: FileSystemDriver
+    ): Engine = SokobanEngine(
+            audioDriver = audioDriver,
+            graphicsDriver = graphicsDriver,
+            inputDriver = inputDriver,
+            fileSystemDriver = fileSystemDriver
+    )
 }

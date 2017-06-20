@@ -24,8 +24,6 @@ import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.engine.Engine.Status
 
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 /**
  * An abstract test class for an [Engine].
@@ -36,7 +34,8 @@ import kotlin.test.assertTrue
 @Ignore
 abstract class EngineTest {
     companion object {
-        const val MAX_TIME_LIMIT: Long = 5000
+        /** The timeout used for stopping and shutting down the engine. */
+        const val TIMEOUT: Int = 500
     }
 
     /** The engine instance that should be tested. */
@@ -46,48 +45,44 @@ abstract class EngineTest {
         engine.init(null)
     }
 
-    @Test(timeout = MAX_TIME_LIMIT)
-    fun testStartAndInstantStop() {
+    @Test fun testStartAndInstantStop() {
         assertEquals(Status.STOPPED, engine.status)
-        assertFalse(engine.isShutdown)
         engine.start()
         assertEquals(Status.RUNNING, engine.status)
-        engine.stop()
+        engine.stop(TIMEOUT)
         assertEquals(Status.STOPPED, engine.status)
-        assertFalse(engine.isShutdown)
     }
 
-    @Test(timeout = MAX_TIME_LIMIT)
-    fun testStartAndInstantShutdown() {
-        assertFalse(engine.isShutdown)
+    @Test fun testStartAndInstantShutdown() {
         engine.start()
+        engine.stop(TIMEOUT)
         engine.shutdown()
-        assertTrue(engine.isShutdown)
     }
 
-    @Test(expected = IllegalStateException::class, timeout = MAX_TIME_LIMIT)
+    @Test(expected = IllegalStateException::class)
     fun testStartTwiceShouldThrow() {
         engine.start()
         engine.start()
     }
 
-    @Test(expected = IllegalStateException::class, timeout = MAX_TIME_LIMIT)
+    @Test(expected = IllegalStateException::class)
     fun testShutdownTwiceShouldThrow() {
+        engine.stop(TIMEOUT)
         engine.shutdown()
         engine.shutdown()
     }
 
-    @Test(timeout = MAX_TIME_LIMIT)
-    fun testStopMultipleTimesShouldNotThrow() {
+    @Test(expected = IllegalStateException::class)
+    fun testStopMultipleTimesShouldThrow() {
         engine.start()
-        repeat(10) { engine.stop() }
+        engine.stop(TIMEOUT)
+        engine.stop(TIMEOUT)
     }
 
-    @Test(timeout = MAX_TIME_LIMIT)
-    fun testRunOneSecondThenShutdownShouldNotThrow() {
+    @Test fun testRunOneSecondThenShutdownShouldNotThrow() {
         engine.start()
         Thread.sleep(1000)
-        engine.stop()
+        engine.stop(TIMEOUT)
         engine.shutdown()
     }
 }
