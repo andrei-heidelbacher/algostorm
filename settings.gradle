@@ -13,5 +13,5 @@ include ':clients:algostorm-android',
         ':clients:algostorm-desktop'
 
 include ':samples:sokoban:sokoban-core',
-        //':samples:sokoban:sokoban-android',
+        ':samples:sokoban:sokoban-android',
         ':samples:sokoban:sokoban-desktop'

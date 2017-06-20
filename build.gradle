@@ -89,6 +89,7 @@ configure(subprojects.findAll {
     it.name.contains('android') && !it.name.endsWith('algostorm-android')
 }) {
     apply plugin: 'com.android.application'
+    apply plugin: 'kotlin-android-extensions'
 }
 
 configure(subprojects.findAll { it.name.contains('android') }) {

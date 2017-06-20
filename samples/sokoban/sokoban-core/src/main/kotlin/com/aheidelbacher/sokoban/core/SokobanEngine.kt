@@ -137,7 +137,7 @@ class SokobanEngine(
             entity(Id(1), player(3, 3))
         }
         val tileSetCollection = map.tileSets.map { resource ->
-            javaClass.getResourceAsStream("/assets/${resource.path}")
+            javaClass.getResourceAsStream("/${resource.path}")
                     .use { src ->
                         val tileSet = JsonDriver.readValue<TileSet>(src)
                         graphicsDriver.loadImage(tileSet.image.resource)
