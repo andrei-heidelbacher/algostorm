@@ -67,8 +67,8 @@ class SokobanEngine(
 
     override val millisPerUpdate: Int = 30
 
-    override fun onInit(inputStream: InputStream?) {
-        map = inputStream?.let {
+    override fun onInit(src: InputStream?) {
+        map = src?.let {
             JsonDriver.deserialize<MapObject>(it)
         } ?: mapObject {
             width = 8
@@ -210,15 +210,15 @@ class SokobanEngine(
         eventBus.publishPosts()
     }
 
-    override fun onSerializeState(outputStream: OutputStream) {
-        JsonDriver.serialize(outputStream, map)
+    override fun onSerializeState(out: OutputStream) {
+        JsonDriver.serialize(out, map)
     }
 
     override fun onStop() {
         services.forEach { it.stop() }
     }
 
-    override fun onShutdown() {
+    override fun onRelease() {
         map.entityPool.clear()
     }
 }

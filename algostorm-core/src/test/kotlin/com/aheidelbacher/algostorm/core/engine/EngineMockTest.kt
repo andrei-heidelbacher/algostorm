@@ -41,7 +41,7 @@ class EngineMockTest : EngineTest() {
         engine.start()
         Thread.sleep(1000)
         engine.stop(TIMEOUT)
-        engine.shutdown()
+        engine.release()
         assertEquals(-1, engine.state)
     }
 }

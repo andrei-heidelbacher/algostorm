@@ -142,7 +142,7 @@ abstract class AndroidClient : Activity() {
 
     override fun onDestroy() {
         surfaceView.setOnTouchListener(null)
-        engine.shutdown()
+        engine.release()
         super.onDestroy()
     }
 }

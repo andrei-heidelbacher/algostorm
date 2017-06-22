@@ -34,7 +34,7 @@ import kotlin.system.measureNanoTime
  * All changes to the game state outside of this engine's thread may lead to
  * inconsistent state and concurrency issues. Thus, the engine state should
  * remain private to the engine and modified only in the [onUpdate] and
- * [onShutdown] methods.
+ * [onRelease] methods.
  *
  * All the engine methods are thread safe as long as the complete construction
  * of the engine and initialization of the state happen-before any other method
@@ -59,7 +59,7 @@ abstract class Engine(
 
     /** The status of an engine. */
     enum class Status {
-        UNINITIALIZED, RUNNING, STOPPING, STOPPED, SHUTDOWN
+        UNINITIALIZED, RUNNING, STOPPING, STOPPED, RELEASED
     }
 
     private var process: Thread? = null
@@ -80,7 +80,7 @@ abstract class Engine(
      * This method is invoked after the engine is created and before the engine
      * can be started.
      */
-    protected abstract fun onInit(inputStream: InputStream?): Unit
+    protected abstract fun onInit(src: InputStream?): Unit
 
     /**
      * The entry point into the initialization logic after starting the engine
@@ -122,17 +122,16 @@ abstract class Engine(
     /**
      * Retrieves the current game state and serializes it to the given stream.
      *
-     * @param outputStream the stream to which the game state is written
+     * @param out the stream to which the game state is written
      */
-    protected abstract fun onSerializeState(outputStream: OutputStream): Unit
+    protected abstract fun onSerializeState(out: OutputStream): Unit
 
     /**
-     * The entry point into the clean-up logic for shutting down the engine.
+     * The entry point into the clean-up logic for releasing the engine.
      *
-     * This method is invoked right before [shutdown] releases this engine's
-     * drivers.
+     * This method is invoked right before this engine's drivers are released.
      */
-    protected abstract fun onShutdown(): Unit
+    protected abstract fun onRelease(): Unit
 
     @Throws(Exception::class)
     private fun run() {
@@ -227,17 +226,17 @@ abstract class Engine(
      * @throws IllegalStateException if this engine is not stopped
      */
     @Throws(InterruptedException::class)
-    fun shutdown() {
+    fun release() {
         check(status == Status.STOPPED) {
-            "Engine can't shutdown if not stopped!"
+            "Engine can't be released if not stopped!"
         }
-        onShutdown()
+        onRelease()
         listOf(
                 audioDriver,
                 graphicsDriver,
                 inputDriver,
                 fileSystemDriver
         ).forEach(Driver::release)
-        status = Status.SHUTDOWN
+        status = Status.RELEASED
     }
 }

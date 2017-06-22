@@ -54,7 +54,7 @@ configure(subprojects.findAll { !it.name.contains('android') }) {
 
     // after upgrading to Studio 3.0 and android plugin 3.0, move this to all subprojects
     dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
         testImplementation "junit:junit:$junit_version"

@@ -44,13 +44,13 @@ class MainActivity : AndroidClient() {
     ) {
         override val millisPerUpdate: Int = 25
         override fun onError(cause: Exception) {}
-        override fun onInit(inputStream: InputStream?) {
+        override fun onInit(src: InputStream?) {
             Thread.sleep(2000)
         }
         override fun onStart() {}
         override fun onUpdate() {}
         override fun onStop() {}
-        override fun onSerializeState(outputStream: OutputStream) {}
-        override fun onShutdown() {}
+        override fun onSerializeState(out: OutputStream) {}
+        override fun onRelease() {}
     }
 }

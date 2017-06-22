@@ -35,7 +35,7 @@ class EngineMock : Engine(
 
     override var millisPerUpdate: Int = 25
     override fun onError(cause: Exception) {}
-    override fun onInit(inputStream: InputStream?) {}
+    override fun onInit(src: InputStream?) {}
     override fun onStart() {}
     override fun onStop() {}
 
@@ -43,11 +43,11 @@ class EngineMock : Engine(
         state++
     }
 
-    override fun onSerializeState(outputStream: OutputStream) {
-        outputStream.write(state)
+    override fun onSerializeState(out: OutputStream) {
+        out.write(state)
     }
 
-    override fun onShutdown() {
+    override fun onRelease() {
         state = -1
     }
 }

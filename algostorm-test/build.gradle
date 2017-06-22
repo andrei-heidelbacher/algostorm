@@ -1,7 +1,7 @@
 apply plugin: 'maven'
 
 dependencies {
-    api project(':algostorm-core')
+    api "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     api "junit:junit:$junit_version"
-    implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    api project(':algostorm-core')
 }

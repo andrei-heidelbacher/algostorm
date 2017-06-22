@@ -56,7 +56,7 @@ abstract class EngineTest {
     @Test fun testStartAndInstantShutdown() {
         engine.start()
         engine.stop(TIMEOUT)
-        engine.shutdown()
+        engine.release()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -66,10 +66,10 @@ abstract class EngineTest {
     }
 
     @Test(expected = IllegalStateException::class)
-    fun testShutdownTwiceShouldThrow() {
+    fun testReleaseTwiceShouldThrow() {
         engine.stop(TIMEOUT)
-        engine.shutdown()
-        engine.shutdown()
+        engine.release()
+        engine.release()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -79,10 +79,10 @@ abstract class EngineTest {
         engine.stop(TIMEOUT)
     }
 
-    @Test fun testRunOneSecondThenShutdownShouldNotThrow() {
+    @Test fun testRunOneSecondThenReleaseShouldNotThrow() {
         engine.start()
         Thread.sleep(1000)
         engine.stop(TIMEOUT)
-        engine.shutdown()
+        engine.release()
     }
 }
