@@ -16,7 +16,6 @@
 
 package com.aheidelbacher.algostorm.systems.script
 
-import com.aheidelbacher.algostorm.core.drivers.script.ScriptEngine
 import com.aheidelbacher.algostorm.core.event.Request
 import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
@@ -28,7 +27,7 @@ import kotlin.reflect.KClass
  *
  * @property scriptEngine the engine used to execute scripts
  */
-class ScriptingService(private val scriptEngine: ScriptEngine) : Service() {
+class ScriptingService(/*private val scriptEngine: ScriptEngine*/) : Service() {
     /**
      * A request to execute the script function with the given `name` and
      * arguments.
@@ -67,15 +66,15 @@ class ScriptingService(private val scriptEngine: ScriptEngine) : Service() {
     }
 
     @Subscribe fun onRunScript(request: RunScript) {
-        scriptEngine.runScript(request.name, *request.args.toTypedArray())
+        //scriptEngine.runScript(request.name, *request.args.toTypedArray())
         request.complete(Unit)
     }
 
     @Subscribe fun onInvokeScript(request: InvokeScript) {
-        request.complete(scriptEngine.invokeScript(
+        /*request.complete(scriptEngine.invokeScript(
                 request.name,
                 request.returnType,
                 *request.args.toTypedArray()
-        ))
+        ))*/
     }
 }

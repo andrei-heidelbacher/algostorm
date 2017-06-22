@@ -17,9 +17,9 @@
 package com.aheidelbacher.algostorm.core.ecs
 
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.util.Properties
 import java.util.ServiceConfigurationError
+
 import kotlin.reflect.KClass
 
 object ComponentLibrary {
@@ -40,13 +40,7 @@ object ComponentLibrary {
             components[name] = type.kotlin as KClass<out Component>
         }
         components
-    } catch (e: IOException) {
-        throw ServiceConfigurationError(e.message)
-    } catch (e: ClassCastException) {
-        throw ServiceConfigurationError(e.message)
-    } catch (e: ClassNotFoundException) {
-        throw ServiceConfigurationError(e.message)
-    } catch (e: IllegalArgumentException) {
+    } catch (e: Exception) {
         throw ServiceConfigurationError(e.message)
     }
 
@@ -55,4 +49,9 @@ object ComponentLibrary {
     operator fun get(name: String): KClass<out Component>? = nameToType[name]
 
     operator fun get(type: KClass<out Component>): String? = typeToName[type]
+
+    operator fun contains(name: String): Boolean = name in nameToType
+
+    operator fun contains(type: KClass<out Component>): Boolean =
+            type in typeToName
 }

@@ -1,9 +1,9 @@
 /*
- * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.drivers.json
+package com.aheidelbacher.algostorm.core.drivers.serialization
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
@@ -33,11 +33,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
-import com.aheidelbacher.algostorm.core.drivers.serialization.SerializationDriver
 import com.aheidelbacher.algostorm.core.ecs.Component
 import com.aheidelbacher.algostorm.core.ecs.ComponentLibrary
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
+import com.fasterxml.jackson.core.JsonProcessingException
 
 import java.io.IOException
 import java.io.InputStream
@@ -45,8 +45,8 @@ import java.io.OutputStream
 
 import kotlin.reflect.KClass
 
-/** A JSON serialization driver using the Jackson external library. */
-object JsonDriver : SerializationDriver {
+/** A JSON serialization and deserialization driver. */
+object JsonDriver {
     private fun <T : Any> serializer(
             serialize: (T, JsonGenerator) -> Unit
     ): JsonSerializer<T> = object : JsonSerializer<T>() {
@@ -77,11 +77,8 @@ object JsonDriver : SerializationDriver {
         ): Any? = deserialize(key)
     }
 
-    override val format: String
-        get() = "json"
-
-    private val resourceSerializer = serializer<Resource> { value, gen ->
-        gen.writeString(value.uri)
+    private val resourceSerializer = serializer<Resource> { (uri), gen ->
+        gen.writeString(uri)
     }
 
     private val resourceDeserializer = deserializer { p ->
@@ -116,7 +113,7 @@ object JsonDriver : SerializationDriver {
         gen.writeStartObject()
         value.components.forEach { component ->
             val name = ComponentLibrary[component::class]
-                    ?: throw IOException("'$component' is not registered!")
+                    ?: throw JsonException("'$component' is not registered!")
             gen.writeFieldName(name)
             gen.writeObject(component)
         }
@@ -127,7 +124,7 @@ object JsonDriver : SerializationDriver {
         val components = arrayListOf<Component>()
         p.codec.readTree<JsonNode>(p).fields().forEach { (name, value) ->
             val type = ComponentLibrary[name]
-                    ?: throw IOException("'$name' is not a component name!")
+                    ?: throw JsonException("'$name' is not a component name!")
             val component = value.traverse(p.codec).readValueAs(type.java)
             components.add(component)
         }
@@ -153,18 +150,40 @@ object JsonDriver : SerializationDriver {
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
-    /** This method may be called, even if this driver was released. */
-    @Throws(IOException::class)
-    override fun writeValue(out: OutputStream, value: Any) {
-        objectMapper.writeValue(out, value)
+    /**
+     * Serializes the given object to the given stream.
+     *
+     * @param out the stream to which the given object is serialized
+     * @param value the object which should be serialized
+     * @throws JsonException if there are any serialization errors
+     * @throws IOException if there were any output related errors
+     */
+    fun serialize(out: OutputStream, value: Any) {
+        try {
+            objectMapper.writeValue(out, value)
+        } catch (e: JsonProcessingException) {
+            throw JsonException(e)
+        }
     }
 
-    /** This method may be called, even if this driver was released. */
-    @Throws(IOException::class)
-    override fun <T : Any> readValue(src: InputStream, type: KClass<T>): T =
-            objectMapper.readValue(src, type.java)
+    /**
+     * Deserializes an object of the given `type` from the given stream.
+     *
+     * @param T the type of the deserialized object; must not be generic
+     * @param src the stream from which the object is deserialized
+     * @param type the class object of the deserialized object
+     * @return the deserialized object
+     * @throws JsonException if there are any deserialization errors
+     * @throws IOException if there are any input related errors
+     */
+    fun <T : Any> deserialize(src: InputStream, type: KClass<T>): T = try {
+        objectMapper.readValue(src, type.java)
+    } catch (e: JsonProcessingException) {
+        throw JsonException(e)
+    }
 
-    /** This operation has no effect. */
-    override fun release() {}
+    /** Utility deserialization method. */
+    inline fun <reified T : Any> deserialize(src: InputStream): T =
+            deserialize(src, T::class)
 }
 

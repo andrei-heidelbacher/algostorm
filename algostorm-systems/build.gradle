@@ -6,6 +6,4 @@ dependencies {
     api project(':algostorm-core')
 
     testImplementation project(':algostorm-test')
-    testImplementation project(':drivers:algostorm-drivers-json')
-    testImplementation project(':drivers:algostorm-drivers-kts')
 }

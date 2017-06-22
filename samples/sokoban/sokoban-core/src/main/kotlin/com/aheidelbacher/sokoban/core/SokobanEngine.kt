@@ -23,13 +23,12 @@ import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
-import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Service
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.JsonDriver
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.systems.Update
@@ -70,7 +69,7 @@ class SokobanEngine(
 
     override fun onInit(inputStream: InputStream?) {
         map = inputStream?.let {
-            JsonDriver.readValue<MapObject>(it)
+            JsonDriver.deserialize<MapObject>(it)
         } ?: mapObject {
             width = 8
             height = 8
@@ -139,7 +138,7 @@ class SokobanEngine(
         val tileSetCollection = map.tileSets.map { resource ->
             javaClass.getResourceAsStream("/${resource.path}")
                     .use { src ->
-                        val tileSet = JsonDriver.readValue<TileSet>(src)
+                        val tileSet = JsonDriver.deserialize<TileSet>(src)
                         graphicsDriver.loadImage(tileSet.image.resource)
                         tileSet
                     }
@@ -212,7 +211,7 @@ class SokobanEngine(
     }
 
     override fun onSerializeState(outputStream: OutputStream) {
-        JsonDriver.writeValue(outputStream, map)
+        JsonDriver.serialize(outputStream, map)
     }
 
     override fun onStop() {

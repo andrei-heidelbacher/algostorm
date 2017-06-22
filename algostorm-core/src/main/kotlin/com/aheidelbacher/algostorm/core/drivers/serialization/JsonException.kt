@@ -1,9 +1,9 @@
 /*
- * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +16,9 @@
 
 package com.aheidelbacher.algostorm.core.drivers.serialization
 
-import com.aheidelbacher.algostorm.core.drivers.Driver
+import java.io.IOException
 
-/** A driver that offers serialization and deserialization services. */
-interface SerializationDriver : Driver, Serializer, Deserializer {
-    /** The format used to serialize and deserialize objects. */
-    override val format: String
+class JsonException : IOException {
+    constructor(message: String) : super(message)
+    constructor(cause: Throwable) : super(cause)
 }

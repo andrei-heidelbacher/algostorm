@@ -20,11 +20,10 @@ import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
-import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
-import com.aheidelbacher.algostorm.drivers.json.JsonDriver
+import com.aheidelbacher.algostorm.core.drivers.serialization.JsonDriver
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
 
@@ -68,7 +67,7 @@ class MapObjectTest {
     }
 
     @Test fun testMapObjectDeserialization() {
-        val actualMapObject = serializationDriver.readValue<MapObject>(
+        val actualMapObject = serializationDriver.deserialize<MapObject>(
                 src = inputStream
         )
         assertEquals(mapObject, actualMapObject)
@@ -77,9 +76,9 @@ class MapObjectTest {
     @Test fun testMapObjectSerialization() {
         val bos = ByteArrayOutputStream()
         println("hello")
-        serializationDriver.writeValue(bos, mapObject)
+        serializationDriver.serialize(bos, mapObject)
         println("hello2")
-        val actualMapObject = serializationDriver.readValue<MapObject>(
+        val actualMapObject = serializationDriver.deserialize<MapObject>(
                 src = bos.toByteArray().inputStream()
         )
         println("hello3")

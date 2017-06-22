@@ -1,9 +1,9 @@
 /*
- * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,46 +14,45 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algostorm.drivers.json
+package com.aheidelbacher.algostorm.core.drivers.serialization
 
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Image
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
-import com.aheidelbacher.algostorm.core.drivers.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.core.drivers.serialization.DataMock.InnerDataMock
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.aheidelbacher.algostorm.test.ecs.ComponentMock
-import com.aheidelbacher.algostorm.test.engine.serialization.DataMock
-import com.aheidelbacher.algostorm.test.engine.serialization.DataMock.InnerDataMock
-import com.aheidelbacher.algostorm.test.engine.serialization.SerializationDriverTest
 
-import java.io.IOException
+import java.io.ByteArrayOutputStream
 
-class JsonDriverTest : SerializationDriverTest() {
-    override val driver = JsonDriver
-    override val inputStream =
-            javaClass.getResourceAsStream("/data.${driver.format}")
-    override val data = DataMock(
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+
+class JsonDriverTest {
+    private val driver = JsonDriver
+    private val inputStream = javaClass.getResourceAsStream("/data.json")
+    private val data = DataMock(
             primitiveField = 1,
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = resourceOf("data.${driver.format}"),
+            resource = resourceOf("data.json"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(
                     Id(1) to prefabOf(ComponentMock(1)),
                     Id(2) to prefabOf(ComponentMock(2))
             ),
-            tileSets = listOf(TileSet.Companion(
+            tileSets = listOf(Companion(
                     name = "world",
                     image = Image(
-                            resource = resourceOf("data.${driver.format}"),
+                            resource = resourceOf("data.json"),
                             width = 288,
                             height = 240
                     ),
@@ -65,16 +64,21 @@ class JsonDriverTest : SerializationDriverTest() {
             ))
     )
 
-    @Test(expected = IOException::class)
-    fun testLoadPrefabWithInvalidComponentThrows() {
-        val src = javaClass.getResourceAsStream("/invalidComponentPrefab.json")
-        driver.readValue<Prefab>(src)
+    @Test fun `test data deserialization`() {
+        assertEquals(data, driver.deserialize<DataMock>(inputStream))
     }
 
-    @Test(expected = IOException::class)
-    fun testLoadPrefabWithNonExistingComponentThrows() {
-        val src = javaClass
-                .getResourceAsStream("/nonExistingComponentPrefab.json")
-        driver.readValue<Prefab>(src)
+    @Test fun `test data serialization`() {
+        val byteStream = ByteArrayOutputStream()
+        driver.serialize(byteStream, data)
+        val inputStream = byteStream.toByteArray().inputStream()
+        assertEquals(data, driver.deserialize<DataMock>(inputStream))
+    }
+
+    @Test fun `test load prefab with invalid component throws`() {
+        val src = javaClass.getResourceAsStream("/invalid_prefab.json")
+        assertFailsWith<JsonException> {
+            driver.deserialize<Prefab>(src)
+        }
     }
 }

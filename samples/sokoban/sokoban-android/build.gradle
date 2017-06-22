@@ -13,6 +13,7 @@ android {
 }
 
 dependencies {
+    compile project(':algostorm-core')
     compile project(':clients:algostorm-android')
     compile project(':samples:sokoban:sokoban-core')
 }
