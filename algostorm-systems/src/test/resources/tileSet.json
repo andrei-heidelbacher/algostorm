@@ -1,6 +1,6 @@
 { "columns":12,
   "image": {
-    "resource": "res:///image.png",
+    "source": "res:///image.png",
     "width": 288,
     "height": 240
   },
@@ -9,14 +9,9 @@
   "spacing":0,
   "tileCount":120,
   "tileHeight":24,
-  "tiles":
-  [
+  "animations":
     {
-      "id": 2
-    },
-    {
-      "id": 1,
-      "animation": [
+      "tile:idle": [
         {
           "tileId": 1,
           "duration": 250
@@ -26,7 +21,6 @@
           "duration": 250
         }
       ]
-    }
-  ],
+    },
   "tileWidth":24
 }

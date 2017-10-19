@@ -18,8 +18,7 @@ package com.aheidelbacher.algostorm.core.drivers.client.graphics2d
 
 import com.aheidelbacher.algostorm.core.drivers.Driver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
-
-import java.io.IOException
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 
 /**
  * A driver that offers drawing services.
@@ -31,17 +30,16 @@ import java.io.IOException
  */
 interface GraphicsDriver : Driver, Canvas {
     /**
-     * Synchronously loads the given image `resource`, making it available to
-     * future calls of [drawImage].
+     * Synchronously loads the given `bitmap`, making it available to future
+     * calls of [drawBitmap].
      *
-     * If the same resource is loaded multiple times, this method has no effect.
+     * If the same bitmap is loaded multiple times, this method has no effect.
      *
-     * @param resource the image resource which should be loaded
-     * @throws IOException if any error occurs when parsing and loading the
-     * `resource`
+     * @param bitmap the bitmap resource which should be loaded
+     * @throws InvalidResourceException if any error occurs when parsing and
+     * loading the `bitmap`
      */
-    @Throws(IOException::class)
-    fun loadImage(resource: Resource): Unit
+    fun loadBitmap(bitmap: Resource<Bitmap>)
 
     /** Whether the canvas is ready to be drawn onto. */
     val isCanvasReady: Boolean
@@ -51,7 +49,7 @@ interface GraphicsDriver : Driver, Canvas {
      *
      * @throws IllegalStateException if the canvas is already locked
      */
-    fun lockCanvas(): Unit
+    fun lockCanvas()
 
     /**
      * Unlocks this driver's canvas and posts all the changes made since the
@@ -59,5 +57,5 @@ interface GraphicsDriver : Driver, Canvas {
      *
      * @throws IllegalStateException if the canvas is not locked
      */
-    fun unlockAndPostCanvas(): Unit
+    fun unlockAndPostCanvas()
 }

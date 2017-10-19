@@ -19,12 +19,19 @@ package com.aheidelbacher.algostorm.core.drivers.io
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 interface FileSystem {
+    companion object {
+        inline fun <reified T : Any> FileSystem.loadResource(
+                resource: Resource<T>
+        ): T = loadResource(resource, T::class)
+    }
+
     /**
      * @throws InvalidResourceException
      */
-    fun getRawResource(resource: Resource): ByteArray
+    fun <T : Any> loadResource(resource: Resource<T>, type: KClass<T>): T
 
     /**
      * @throws FileNotFoundException

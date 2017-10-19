@@ -18,8 +18,11 @@ package com.aheidelbacher.algostorm.test.engine.input
 
 import com.aheidelbacher.algostorm.core.drivers.client.input.Input
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver.GestureInterpreter
 
 class InputDriverStub : InputDriver {
     override fun read(): Input? = null
+    override fun write(input: Input) {}
     override fun release() {}
+    override fun setGestureInterpreter(interpreter: GestureInterpreter?) {}
 }

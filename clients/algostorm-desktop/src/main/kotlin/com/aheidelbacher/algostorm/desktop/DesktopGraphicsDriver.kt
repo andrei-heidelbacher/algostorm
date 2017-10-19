@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.desktop
 
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Bitmap
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
@@ -27,7 +28,7 @@ import javafx.scene.paint.Color.rgb
 
 class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
     private val gc = canvas.graphicsContext2D
-    private val bitmaps = hashMapOf<Resource, Image>()
+    private val bitmaps = hashMapOf<Resource<Bitmap>, Image>()
     private val drawCalls = arrayListOf<() -> Unit>()
     private var isLocked = false
 
@@ -40,9 +41,9 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
     override val height: Int
         get() = gc.canvas.height.toInt()
 
-    override fun loadImage(resource: Resource) {
-        javaClass.getResourceAsStream("/assets/${resource.path}").use { src ->
-            bitmaps[resource] = Image(src)
+    override fun loadBitmap(bitmap: Resource<Bitmap>) {
+        javaClass.getResourceAsStream("/assets/${bitmap.path}").use { src ->
+            bitmaps[bitmap] = Image(src)
         }
     }
 
@@ -84,8 +85,8 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
         drawCalls.add { gc.restore() }
     }
 
-    override fun drawImage(
-            resource: Resource,
+    override fun drawBitmap(
+            bitmap: Resource<Bitmap>,
             sx: Int,
             sy: Int,
             sw: Int,
@@ -96,10 +97,10 @@ class DesktopGraphicsDriver(canvas: Canvas) : GraphicsDriver {
             dh: Int
     ) {
         checkIsLocked()
-        val bitmap = requireNotNull(bitmaps[resource])
+        val image = requireNotNull(bitmaps[bitmap])
         drawCalls.add {
             gc.drawImage(
-                    bitmap,
+                    image,
                     1.0 * sx,
                     1.0 * sy,
                     1.0 * sw,

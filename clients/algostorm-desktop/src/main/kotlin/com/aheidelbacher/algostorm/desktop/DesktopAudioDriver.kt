@@ -17,13 +17,14 @@
 package com.aheidelbacher.algostorm.desktop
 
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioStream
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
 
 class DesktopAudioDriver : AudioDriver {
-    override fun loadMusic(resource: Resource) {
+    override fun loadMusic(music: Resource<AudioStream>) {
     }
 
-    override fun playMusic(resource: Resource, loop: Boolean) {
+    override fun playMusic(music: Resource<AudioStream>, loop: Boolean) {
     }
 
     override fun pauseMusic() {
@@ -38,10 +39,10 @@ class DesktopAudioDriver : AudioDriver {
     override fun setMusicVolume(volume: Float) {
     }
 
-    override fun loadSound(resource: Resource) {
+    override fun loadSound(sound: Resource<AudioStream>) {
     }
 
-    override fun playSound(resource: Resource) {
+    override fun playSound(sound: Resource<AudioStream>) {
     }
 
     override fun pauseSounds() {

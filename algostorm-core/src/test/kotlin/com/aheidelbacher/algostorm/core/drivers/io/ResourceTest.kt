@@ -27,33 +27,32 @@ import kotlin.test.assertFailsWith
 class ResourceTest {
     @Test fun `test invalid schema throws`() {
         assertFailsWith<IllegalArgumentException> {
-            Resource("res:/path")
+            Resource<Any>("res:/path")
         }
     }
 
     @Test fun `test relative path throws`() {
         assertFailsWith<IllegalArgumentException> {
-            Resource("${SCHEMA}path")
+            Resource<Any>("${SCHEMA}path")
         }
     }
 
     @Test fun `test directory path throws`() {
         assertFailsWith<IllegalArgumentException> {
-            Resource("$SCHEMA/path/")
+            Resource<Any>("$SCHEMA/path/")
         }
     }
 
     @Test fun `test multiple file separators throws`() {
         assertFailsWith<IllegalArgumentException> {
-            Resource("$SCHEMA/path//file")
+            Resource<Any>("$SCHEMA/path//file")
         }
     }
 
     @Test fun `test resourceOf relative path builds correct uri`() {
         val path = "resource.txt"
-        assertEquals(
-                expected = Resource("$SCHEMA/$path"),
-                actual = resourceOf(path)
-        )
+        val expected = Resource<Any>("$SCHEMA/$path")
+        val actual = resourceOf<Any>(path)
+        assertEquals(expected, actual)
     }
 }

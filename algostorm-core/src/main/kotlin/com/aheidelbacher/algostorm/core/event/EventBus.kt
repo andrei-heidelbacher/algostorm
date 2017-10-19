@@ -104,7 +104,7 @@ interface EventBus {
      * However, if any non-public or static method is annotated, it will be
      * ignored instead of throwing an exception.
      */
-    fun subscribe(subscriber: Subscriber): Unit
+    fun subscribe(subscriber: Subscriber)
 
     /**
      * Unregisters the given `subscriber` from this event bus.
@@ -112,7 +112,7 @@ interface EventBus {
      * @param subscriber the object that should be unsubscribed from events
      * posted to this event bus
      */
-    fun unsubscribe(subscriber: Subscriber): Unit
+    fun unsubscribe(subscriber: Subscriber)
 
     /**
      * Posts the given `event` and notifies all subscribers.
@@ -122,7 +122,7 @@ interface EventBus {
      *
      * @param event the event that should be posted
      */
-    fun post(event: Event): Unit
+    fun post(event: Event)
 
     /**
      * Immediately publishes the given `request` and returns its result.
@@ -138,5 +138,5 @@ interface EventBus {
     /**
      * Blocks until all posted events have been handled by their subscribers.
      */
-    fun publishPosts(): Unit
+    fun publishPosts()
 }

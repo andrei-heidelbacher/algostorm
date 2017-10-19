@@ -29,23 +29,23 @@ interface SoundPlayer {
      * @param volume a value between `0` (mute) and `1` (maximum volume)
      * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
-    fun setSoundVolume(volume: Float): Unit
+    fun setSoundVolume(volume: Float)
 
     /**
-     * Asynchronously plays the given sound `resource`.
+     * Asynchronously plays the given `sound`.
      *
-     * @param resource the sound resource which should be played
+     * @param sound the sound resource which should be played
      * @throws IllegalArgumentException if the `resource` was not loaded by the
      * audio driver
      */
-    fun playSound(resource: Resource): Unit
+    fun playSound(sound: Resource<AudioStream>)
 
     /** Pauses all of the currently playing sounds. */
-    fun pauseSounds(): Unit
+    fun pauseSounds()
 
     /** Asynchronously resumes all the paused sounds. */
-    fun resumeSounds(): Unit
+    fun resumeSounds()
 
     /** Stops all of the currently playing sounds. */
-    fun stopSounds(): Unit
+    fun stopSounds()
 }

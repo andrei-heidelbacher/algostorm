@@ -19,7 +19,7 @@ package com.aheidelbacher.algostorm.test.event
 import org.junit.Ignore
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.core.event.EventBus
+/*import com.aheidelbacher.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Service
 
 @Ignore
@@ -39,4 +39,4 @@ abstract class ServiceTest {
         service.stop()
         service.stop()
     }
-}
+}*/

@@ -16,17 +16,36 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-interface Camera {
-    companion object {
-        operator fun invoke(x: Int, y: Int): Camera = CameraImpl(x, y)
+class Camera {
+    var width: Int = 0
+        private set
+
+    var height: Int = 0
+        private set
+
+    var x: Int = 0
+        private set
+
+    var y: Int = 0
+        private set
+
+    fun focusOn(x: Int, y: Int) {
+        this.x = x - width / 2
+        this.y = y - height / 2
     }
 
-    private data class CameraImpl(
-            override var x: Int,
-            override var y: Int
-    ) : Camera
+    fun translate(dx: Int, dy: Int) {
+        x += dx
+        y += dy
+    }
 
-    var x: Int
-
-    var y: Int
+    fun resize(width: Int, height: Int) {
+        require(width >= 0)
+        require(height >= 0)
+        val centerX = x + this.width / 2
+        val centerY = y + this.height / 2
+        this.width = width
+        this.height = height
+        focusOn(centerX, centerY)
+    }
 }

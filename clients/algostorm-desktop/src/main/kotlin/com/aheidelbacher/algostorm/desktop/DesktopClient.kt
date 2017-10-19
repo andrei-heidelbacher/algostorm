@@ -50,7 +50,7 @@ abstract class DesktopClient : Application() {
         )
         primaryStage.scene = Scene(root, 600.0, 600.0)
         primaryStage.show()
-        engine.init(null)
+        engine.init(emptyMap())
         engine.start()
     }
 }

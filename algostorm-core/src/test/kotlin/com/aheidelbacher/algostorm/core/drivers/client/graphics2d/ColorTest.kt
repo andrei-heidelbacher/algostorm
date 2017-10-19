@@ -82,8 +82,18 @@ class ColorTest {
         assertEquals(argbRed, rgbRed)
     }
 
-    @Test fun testToString() {
-        val color = Color("#FF00FF")
-        assertEquals("#ffff00ff", color.toString())
+    @Test fun testRgbToString() {
+        val color = Color("#0A00FF")
+        assertEquals("#ff0a00ff", color.toString())
+    }
+
+    @Test fun testArgbToString() {
+        val color = Color("#0AFF00FF")
+        assertEquals("#0aff00ff", color.toString())
+    }
+
+    @Test fun testArgbIntOverflowToString() {
+        val color = Color("#FFFFFFFF")
+        assertEquals("#ffffffff", color.toString())
     }
 }

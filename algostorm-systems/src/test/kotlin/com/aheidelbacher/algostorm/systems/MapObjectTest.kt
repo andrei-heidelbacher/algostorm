@@ -40,17 +40,17 @@ class MapObjectTest {
             assertEquals(expected.tileHeight, actual.tileHeight)
             assertEquals(expected.backgroundColor, actual.backgroundColor)
             assertEquals(expected.tileSets, actual.tileSets)
-            val expectedEntities = expected.entityPool.group.entities
+            val expectedEntities = expected.entityPool.entities
                     .associate { it.id to it.toPrefab() }
-            val actualEntities = actual.entityPool.group.entities
+            val actualEntities = actual.entityPool.entities
                     .associate { it.id to it.toPrefab() }
             assertEquals(expectedEntities, actualEntities)
         }
     }
 
-    val serializationDriver = JsonDriver
-    val inputStream = javaClass.getResourceAsStream("/mapObject.json")
-    val mapObject = mapObject {
+    private val serializationDriver = JsonDriver
+    private val inputStream = javaClass.getResourceAsStream("/mapObject.json")
+    private val mapObject = mapObject {
         width = 2
         height = 2
         tileWidth = 24
@@ -58,8 +58,8 @@ class MapObjectTest {
         backgroundColor = Color("#FFFFFF5f")
         tileSet(resourceOf("tileSet.json"))
         var id = 1
-        for (x in 0..width - 1) {
-            for (y in 0..height - 1) {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
                 entity(Id(id), prefabOf(ComponentMock(id)))
                 id += 1
             }

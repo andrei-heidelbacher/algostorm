@@ -30,7 +30,7 @@
     {
       "name":"world",
       "image": {
-        "resource": "res:///data.json",
+        "source": "res:///data.json",
         "width": 288,
         "height": 240
       },

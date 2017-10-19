@@ -43,7 +43,7 @@ abstract class EntityRef protected constructor(
      */
     data class Id(val value: Int) {
         init {
-            require(value > 0) { "$this must be positive!" }
+            require(value > 0) { "'$value' must be positive!" }
         }
 
         /** Returns the [value] of this id. */
@@ -80,6 +80,6 @@ abstract class EntityRef protected constructor(
      * Two entity references are equal if and only if they were both created by
      * the same entity pool and their ids are equal.
      */
-    final override fun equals(other: Any?): Boolean = other is EntityRef
-            && id == other.id && owner === other.owner
+    final override fun equals(other: Any?): Boolean =
+            other is EntityRef && id == other.id && owner === other.owner
 }

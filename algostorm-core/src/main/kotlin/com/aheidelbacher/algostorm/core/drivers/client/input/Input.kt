@@ -16,16 +16,10 @@
 
 package com.aheidelbacher.algostorm.core.drivers.client.input
 
-sealed class Input {
-    class Scroll(val dx: Int, val dy: Int) : Input()
-
-    class Touch(val dx: Int, val dy: Int) : Input()
-
-    /**
-     * Base type of an input action.
-     *
-     * Events should be immutable data classes. The type of an action is denoted
-     * by its kotlin class object.
-     */
-    abstract class Action : Input()
-}
+/**
+ * Base type of an input action.
+ *
+ * Input actions should be immutable data classes. The type of an action is
+ * denoted by its kotlin class object.
+ */
+interface Input

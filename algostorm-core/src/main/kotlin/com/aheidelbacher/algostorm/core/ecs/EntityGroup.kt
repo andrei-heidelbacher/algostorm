@@ -23,9 +23,8 @@ import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 interface EntityGroup {
     companion object {
         /** Returns the current state of the entities in this group. */
-        fun EntityGroup.getSnapshot(): Map<Id, Prefab> = entities.associate {
-            it.id to it.toPrefab()
-        }
+        fun EntityGroup.getSnapshot(): Map<Id, Prefab> =
+                entities.associate { it.id to it.toPrefab() }
     }
 
     /** A read-only view of the entities in this group. */

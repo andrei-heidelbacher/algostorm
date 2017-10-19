@@ -18,34 +18,31 @@ package com.aheidelbacher.algostorm.core.drivers.client.audio
 
 import com.aheidelbacher.algostorm.core.drivers.Driver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
-
-import java.io.IOException
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 
 /** A driver that offers audio services. */
 interface AudioDriver : Driver, MusicPlayer, SoundPlayer {
     /**
-     * Synchronously loads the given music `resource`, making it available to
-     * future calls of [playMusic].
+     * Synchronously loads the given `music`, making it available to future
+     * calls of [playMusic].
      *
-     * If the same resource is loaded multiple times, this method has no effect.
+     * If the same music is loaded multiple times, this method has no effect.
      *
-     * @param resource the music resource which should be loaded
-     * @throws IOException if any error occurs when parsing and loading the
-     * `resource`
+     * @param music the music resource which should be loaded
+     * @throws InvalidResourceException if any error occurs when parsing and
+     * loading the `music`
      */
-    @Throws(IOException::class)
-    fun loadMusic(resource: Resource): Unit
+    fun loadMusic(music: Resource<AudioStream>)
 
     /**
-     * Synchronously loads the given sound `resource`, making it available to
-     * future calls of [playSound].
+     * Synchronously loads the given `sound`, making it available to future
+     * calls of [playSound].
      *
-     * If the same resource is loaded multiple times, this method has no effect.
+     * If the same music is loaded multiple times, this method has no effect.
      *
-     * @param resource the sound resource which should be loaded
-     * @throws IOException if any error occurs when parsing and loading the
+     * @param sound the sound resource which should be loaded
+     * @throws InvalidResourceException if any error occurs when parsing and loading the
      * `resource`
      */
-    @Throws(IOException::class)
-    fun loadSound(resource: Resource): Unit
+    fun loadSound(sound: Resource<AudioStream>)
 }

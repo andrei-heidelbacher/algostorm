@@ -16,10 +16,9 @@
 
 package com.aheidelbacher.algostorm.systems.graphics2d
 
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Companion.clearFlags
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Frame
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet.Viewport
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Companion.clearFlags
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Frame
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet.Viewport
 
 class TileSetCollection(tileSets: List<TileSet>) {
     @Transient private val viewports = arrayListOf<Viewport>()
@@ -32,9 +31,9 @@ class TileSetCollection(tileSets: List<TileSet>) {
             require(tileSet.name !in tileSetNames) {
                 "Multiple tile sets with the same name ${tileSet.name}!"
             }
-            tileSetNames.add(tileSet.name)
+            tileSetNames += tileSet.name
             for (tileId in 0 until tileSet.tileCount) {
-                viewports.add(tileSet.getViewport(tileId))
+                viewports += tileSet.getViewport(tileId)
             }
             for ((animation, frames) in tileSet.animations) {
                 require(animation !in animations) {

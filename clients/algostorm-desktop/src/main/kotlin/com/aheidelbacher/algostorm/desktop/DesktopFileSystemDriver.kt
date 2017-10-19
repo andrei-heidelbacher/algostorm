@@ -18,14 +18,26 @@ package com.aheidelbacher.algostorm.desktop
 
 import com.aheidelbacher.algostorm.core.drivers.io.File
 import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
+import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
+import com.aheidelbacher.algostorm.core.drivers.serialization.JsonDriver
+import java.io.FileNotFoundException
+import java.io.IOException
 
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 class DesktopFileSystemDriver : FileSystemDriver {
-    override fun getRawResource(resource: Resource): ByteArray {
-        TODO("not implemented")
+    override fun <T : Any> loadResource(
+            resource: Resource<T>,
+            type: KClass<T>
+    ): T = try {
+        val src = javaClass.classLoader.getResourceAsStream(resource.path)
+                ?: throw FileNotFoundException("'${resource.path}' doesn't exist!")
+        src.use { JsonDriver.deserialize(src, type) }
+    } catch (e: IOException) {
+        throw InvalidResourceException(e)
     }
 
     override fun openFileInput(file: File): InputStream {

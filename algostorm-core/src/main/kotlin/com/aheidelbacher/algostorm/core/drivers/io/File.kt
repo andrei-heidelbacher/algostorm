@@ -31,4 +31,6 @@ data class File(val uri: String) {
 
     val path: String
         get() = uri.removePrefix("$SCHEMA/")
+
+    override fun toString(): String = uri
 }

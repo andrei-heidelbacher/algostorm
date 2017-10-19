@@ -20,7 +20,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import com.aheidelbacher.algostorm.test.event.EventMock
+/*import com.aheidelbacher.algostorm.test.event.EventMock
 import com.aheidelbacher.algostorm.test.event.RequestMock
 import com.aheidelbacher.algostorm.test.event.ServiceTest
 import com.aheidelbacher.algostorm.test.event.SubscriberMock
@@ -131,4 +131,4 @@ class ServiceImplTest : ServiceTest() {
     @After fun removeSubscriberMock() {
         eventBus.unsubscribe(subscriberMock)
     }
-}
+}*/

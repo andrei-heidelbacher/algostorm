@@ -16,41 +16,15 @@
 
 package com.aheidelbacher.algostorm.android.test
 
-import com.aheidelbacher.algostorm.android.AndroidClient
-import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
-import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
-import com.aheidelbacher.algostorm.core.engine.Engine
+import com.aheidelbacher.algostorm.android.ClientActivity
 
-import java.io.InputStream
-import java.io.OutputStream
+class MainActivity : ClientActivity() {
+    override val splashLayoutId: Int
+        get() = R.layout.activity_main_splash
 
-class MainActivity : AndroidClient() {
-    override val splashLayoutId: Int = R.layout.activity_main_splash
-    override val contentLayoutId: Int = R.layout.activity_main
-    override val surfaceViewContainerLayoutId: Int = R.id.surfaceViewContainer
+    override val clientLayoutId: Int
+        get() = R.layout.activity_main_client
 
-    override fun createEngine(
-            audioDriver: AudioDriver,
-            graphicsDriver: GraphicsDriver,
-            inputDriver: InputDriver,
-            fileSystemDriver: FileSystemDriver
-    ): Engine = object : Engine(
-            audioDriver = audioDriver,
-            graphicsDriver = graphicsDriver,
-            inputDriver = inputDriver,
-            fileSystemDriver = fileSystemDriver
-    ) {
-        override val millisPerUpdate: Int = 25
-        override fun onError(cause: Exception) {}
-        override fun onInit(src: InputStream?) {
-            Thread.sleep(2000)
-        }
-        override fun onStart() {}
-        override fun onUpdate() {}
-        override fun onStop() {}
-        override fun onSerializeState(out: OutputStream) {}
-        override fun onRelease() {}
-    }
+    override val surfaceViewId: Int
+        get() = R.id.clientSurfaceView
 }

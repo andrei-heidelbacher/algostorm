@@ -31,32 +31,32 @@ data class Color(val color: Int) {
      */
     constructor(code: String) : this (code.let {
         require((code.length == 7 || code.length == 9) && code[0] == '#') {
-            "Invalid color code $code format!"
+            "Color '$code' has invalid format!"
         }
         val argbCode = code.drop(1)
         require(argbCode.none { Character.digit(it, 16) == -1 }) {
-            "Color $code contains invalid characters!"
+            "Color '$code' contains invalid characters!"
         }
-        val argb = java.lang.Long.parseLong(argbCode, 16).toInt()
-        if (code.length == 9) argb else argb or (255 shl 24)
+        val argb = argbCode.toLong(16).toInt()
+        if (code.length == 9) argb else argb or (0xFF shl 24)
     })
 
     /** The alpha component of this color (a value between `0` and `255). */
     val a: Int
-        get() = color shr 24 and 255
+        get() = color shr 24 and 0xFF
 
     /** The red component of this color (a value between `0` and `255`). */
     val r: Int
-        get() = color shr 16 and 255
+        get() = color shr 16 and 0xFF
 
     /** The green component of this color (a value between `0` and `255`). */
     val g: Int
-        get() = color shr 8 and 255
+        get() = color shr 8 and 0xFF
 
     /** The blue component of this color (a value between `0` and `255`). */
     val b: Int
-        get() = color and 255
+        get() = color and 0xFF
 
     /** Returns the color in `#AARRGGBB` format. */
-    override fun toString(): String = "#${Integer.toHexString(color)}"
+    override fun toString(): String = "#${String.format("%08x", color)}"
 }

@@ -22,7 +22,7 @@ import com.aheidelbacher.algostorm.core.event.Event
 /**
  * An event which signals that the given entity has been transformed.
  *
- * Only the [PhysicsService] should post this event.
+ * Only the [PhysicsSystem] should post this event.
  *
  * @property entityId the id of the transformed entity
  * @property dx the horizontal translation amount in tiles

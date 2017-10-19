@@ -42,7 +42,7 @@ abstract class EngineTest {
     protected abstract val engine: Engine
 
     @Before fun init() {
-        engine.init(null)
+        engine.init(emptyMap())
     }
 
     @Test fun testStartAndInstantStop() {

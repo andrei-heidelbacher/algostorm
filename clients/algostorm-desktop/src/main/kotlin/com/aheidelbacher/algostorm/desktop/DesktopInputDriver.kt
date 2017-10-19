@@ -18,10 +18,14 @@ package com.aheidelbacher.algostorm.desktop
 
 import com.aheidelbacher.algostorm.core.drivers.client.input.Input
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver.GestureInterpreter
 
 class DesktopInputDriver : InputDriver {
     override fun read(): Input? = null
 
-    override fun release() {
-    }
+    override fun write(input: Input) {}
+
+    override fun release() {}
+
+    override fun setGestureInterpreter(interpreter: GestureInterpreter?) {}
 }

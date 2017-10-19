@@ -22,25 +22,29 @@ import android.media.MediaPlayer
 
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioStream
 import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 
 import java.io.IOException
 
-class AndroidAudioDriver(context: Context) : AudioDriver {
-    private var context: Context? = context
-    private val musicPool = hashMapOf<Resource, AssetFileDescriptor>()
+class AndroidAudioDriver(private val context: Context) : AudioDriver {
     private var musicPlayer: MediaPlayer? = null
-    private var musicVolume: Float = 1F
-    private val soundPool: MutableMap<Resource, AssetFileDescriptor> = hashMapOf()
-    private val soundPlayers: MutableSet<MediaPlayer> = hashSetOf()
-    private var soundVolume: Float = 1F
+    private var musicVolume = 1F
+    private val musicPool =
+            hashMapOf<Resource<AudioStream>, AssetFileDescriptor>()
 
-    private fun Context.openAssetFd(resource: Resource): AssetFileDescriptor =
-            try {
-                assets.openFd(resource.path)
-            } catch (e: IOException) {
-                throw InvalidResourceException(e)
-            }
+    private val soundPlayers = hashSetOf<MediaPlayer>()
+    private var soundVolume = 1F
+    private val soundPool =
+            hashMapOf<Resource<AudioStream>, AssetFileDescriptor>()
+
+    private fun openAssetFd(
+            resource: Resource<AudioStream>
+    ): AssetFileDescriptor = try {
+        context.assets.openFd(resource.path)
+    } catch (e: IOException) {
+        throw InvalidResourceException(e)
+    }
 
     private fun createMediaPlayer(
             assetFd: AssetFileDescriptor,
@@ -55,45 +59,38 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         setVolume(volume, volume)
     }
 
-    override fun loadMusic(resource: Resource) {
-        checkNotNull(context).apply {
-            musicPool[resource] = openAssetFd(resource)
-        }
+    override fun loadMusic(music: Resource<AudioStream>) {
+        musicPool[music] = openAssetFd(music)
     }
 
-    override fun loadSound(resource: Resource) {
-        checkNotNull(context).apply {
-            soundPool[resource] = openAssetFd(resource)
-        }
+    override fun loadSound(sound: Resource<AudioStream>) {
+        soundPool[sound] = openAssetFd(sound)
     }
 
     override fun setMusicVolume(volume: Float) {
-        require(volume in 0F..1F) { "Invalid music volume $volume!" }
-        checkNotNull(context)
+        require(volume in 0F..1F) { "Invalid volume '$volume'!" }
         musicVolume = volume
         musicPlayer?.setVolume(volume, volume)
     }
 
     override fun setSoundVolume(volume: Float) {
-        require(volume in 0F..1F) { "Invalid sound volume $volume!" }
-        checkNotNull(context)
+        require(volume in 0F..1F) { "Invalid volume '$volume'!" }
         soundVolume = volume
         soundPlayers.forEach { it.setVolume(volume, volume) }
     }
 
     override fun pauseMusic() {
-        checkNotNull(context)
         musicPlayer?.pause()
     }
 
     override fun pauseSounds() {
-        checkNotNull(context)
         soundPlayers.forEach(MediaPlayer::pause)
     }
 
-    override fun playMusic(resource: Resource, loop: Boolean) {
-        checkNotNull(context)
-        val assetFd = requireNotNull(musicPool[resource])
+    override fun playMusic(music: Resource<AudioStream>, loop: Boolean) {
+        val assetFd = requireNotNull(musicPool[music]) {
+            "'$music' not loaded!"
+        }
         musicPlayer?.release()
         val player = createMediaPlayer(assetFd, musicVolume, loop)
         player.setOnCompletionListener {
@@ -104,9 +101,10 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
         player.start()
     }
 
-    override fun playSound(resource: Resource) {
-        checkNotNull(context)
-        val assetFd = requireNotNull(soundPool[resource])
+    override fun playSound(sound: Resource<AudioStream>) {
+        val assetFd = requireNotNull(soundPool[sound]) {
+            "'$sound' not loaded!"
+        }
         val player = createMediaPlayer(assetFd, soundVolume, false)
         soundPlayers += player
         player.setOnCompletionListener {
@@ -117,34 +115,27 @@ class AndroidAudioDriver(context: Context) : AudioDriver {
     }
 
     override fun resumeMusic() {
-        checkNotNull(context)
         musicPlayer?.start()
     }
 
     override fun resumeSounds() {
-        checkNotNull(context)
         soundPlayers.forEach(MediaPlayer::start)
     }
 
     override fun stopMusic() {
-        checkNotNull(context)
         musicPlayer?.release()
         musicPlayer = null
     }
 
     override fun stopSounds() {
-        checkNotNull(context)
         soundPlayers.forEach(MediaPlayer::release)
         soundPlayers.clear()
     }
 
     override fun release() {
-        if (context != null) {
-            stopMusic()
-            stopSounds()
-            musicPool.clear()
-            soundPool.clear()
-            context = null
-        }
+        stopMusic()
+        stopSounds()
+        musicPool.clear()
+        soundPool.clear()
     }
 }

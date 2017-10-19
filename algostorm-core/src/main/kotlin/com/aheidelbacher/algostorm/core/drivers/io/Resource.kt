@@ -19,10 +19,11 @@ package com.aheidelbacher.algostorm.core.drivers.io
 /**
  * A bundled resource used by various drivers.
  *
+ * @param T the type of this resource
  * @property uri the URI of this resource
  * @throws IllegalArgumentException if `uri` doesn't match `^res://(/[^/]+)+$`
  */
-data class Resource(val uri: String) {
+data class Resource<T>(val uri: String) {
     companion object {
         /** The schema used to identify resource URIs. */
         const val SCHEMA: String = "res://"
@@ -35,7 +36,8 @@ data class Resource(val uri: String) {
          *
          * @throws IllegalArgumentException if the given `path` is invalid
          */
-        fun resourceOf(path: String): Resource = Resource("$SCHEMA/$path")
+        fun <T> resourceOf(path: String): Resource<T> =
+                Resource("$SCHEMA/$path")
     }
 
     init {
@@ -45,4 +47,6 @@ data class Resource(val uri: String) {
     /** The path of this resource relative to the resources root directory. */
     val path: String
         get() = uri.removePrefix("$SCHEMA/")
+
+    override fun toString(): String = uri
 }

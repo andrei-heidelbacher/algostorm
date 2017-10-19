@@ -31,25 +31,25 @@ interface MusicPlayer {
      * @param volume a value between `0` (mute) and `1` (maximum volume)
      * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
-    fun setMusicVolume(volume: Float): Unit
+    fun setMusicVolume(volume: Float)
 
     /**
      * Stops the previously playing music and asynchronously plays the given
-     * music `resource`.
+     * `music`.
      *
-     * @param resource the music resource which should be played
+     * @param music the music resource which should be played
      * @param loop whether the music should be looped or not
      * @throws IllegalArgumentException if the given `resource` was not loaded
      * by the audio driver
      */
-    fun playMusic(resource: Resource, loop: Boolean = false): Unit
+    fun playMusic(music: Resource<AudioStream>, loop: Boolean = false)
 
     /**
      * Pauses the currently playing music.
      *
      * If no music resource is currently playing, this method has no effect.
      */
-    fun pauseMusic(): Unit
+    fun pauseMusic()
 
     /**
      * Asynchronously resumes the currently paused music.
@@ -57,12 +57,12 @@ interface MusicPlayer {
      * If no music resource was previously paused or if it was stopped, this
      * method has no effect.
      */
-    fun resumeMusic(): Unit
+    fun resumeMusic()
 
     /**
      * Stops the currently playing music.
      *
      * If no music resource is currently playing, this method has no effect.
      */
-    fun stopMusic(): Unit
+    fun stopMusic()
 }

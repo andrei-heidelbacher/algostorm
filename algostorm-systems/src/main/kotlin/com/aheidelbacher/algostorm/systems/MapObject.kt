@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet
 
 import kotlin.properties.Delegates
 
@@ -31,7 +32,7 @@ class MapObject private constructor(
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
-        val tileSets: List<Resource>,
+        val tileSets: List<Resource<TileSet>>,
         private var entities: Map<Id, Prefab>,
         val backgroundColor: Color?,
         val version: String
@@ -42,17 +43,17 @@ class MapObject private constructor(
                     Builder().apply(init).build()
         }
 
-        var width: Int by Delegates.notNull<Int>()
-        var height: Int by Delegates.notNull<Int>()
-        var tileWidth: Int by Delegates.notNull<Int>()
-        var tileHeight: Int by Delegates.notNull<Int>()
-        private val tileSets: MutableList<Resource> = arrayListOf()
+        var width: Int by Delegates.notNull()
+        var height: Int by Delegates.notNull()
+        var tileWidth: Int by Delegates.notNull()
+        var tileHeight: Int by Delegates.notNull()
+        private val tileSets = arrayListOf<Resource<TileSet>>()
         private val initialEntities = hashMapOf<Id, Prefab>()
         private val entities = arrayListOf<Prefab>()
         var backgroundColor: Color? = null
         var version: String = "1.0"
 
-        fun tileSet(resource: Resource) {
+        fun tileSet(resource: Resource<TileSet>) {
             tileSets.add(resource)
         }
 
@@ -81,7 +82,7 @@ class MapObject private constructor(
     @Transient val entityPool: EntityPool = entityPoolOf(entities)
 
     fun updateSnapshot() {
-        entities = entityPool.group.entities.associate {
+        entities = entityPool.entities.associate {
             it.id to it.toPrefab()
         }
     }

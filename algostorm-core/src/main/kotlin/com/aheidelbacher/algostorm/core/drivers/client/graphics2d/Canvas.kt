@@ -31,7 +31,7 @@ interface Canvas {
      *
      * Initially, the stack is empty.
      */
-    fun save(): Unit
+    fun save()
 
     /**
      * Translates the current transform by `dx, dy`
@@ -39,7 +39,7 @@ interface Canvas {
      * @param dx value to translate horizontally
      * @param dy value to translate vertically (positive is down)
      */
-    fun translate(dx: Float, dy: Float): Unit
+    fun translate(dx: Float, dy: Float)
 
     /**
      * Scales the current transform by `sx, sy`
@@ -47,14 +47,14 @@ interface Canvas {
      * @param sx value to scale horizontally
      * @param sy value to scale vertically
      */
-    fun scale(sx: Float, sy: Float): Unit
+    fun scale(sx: Float, sy: Float)
 
     /**
      * Rotates the current transform by `degrees`.
      *
      * @param degrees value in degrees to rotate
      */
-    fun rotate(degrees: Float): Unit
+    fun rotate(degrees: Float)
 
     /**
      * Pops the state off the stack, setting the current transform to the value
@@ -62,13 +62,13 @@ interface Canvas {
      *
      * @throws IllegalStateException if the stack is empty
      */
-    fun restore(): Unit
+    fun restore()
 
     /**
-     * Draws the given viewport from the image `resource` to the specified
-     * canvas location.
+     * Draws the given viewport from the `bitmap` to the specified canvas
+     * location.
      *
-     * @param resource the image resource
+     * @param bitmap the bitmap resource
      * @param sx the horizontal coordinate in pixels of the top-left corner of
      * the bitmap viewport
      * @param sy the vertical coordinate in pixels of the top-left corner of the
@@ -84,8 +84,8 @@ interface Canvas {
      * @throws IllegalArgumentException if the image `resource` was not loaded
      * by the graphics driver
      */
-    fun drawImage(
-            resource: Resource,
+    fun drawBitmap(
+            bitmap: Resource<Bitmap>,
             sx: Int,
             sy: Int,
             sw: Int,
@@ -94,7 +94,7 @@ interface Canvas {
             dy: Int,
             dw: Int,
             dh: Int
-    ): Unit
+    )
 
     /**
      * Draws the given colored rectangle to this canvas.
@@ -107,12 +107,12 @@ interface Canvas {
      * @param w the width in pixels of the rectangle
      * @param h the height in pixels of the rectangle
      */
-    fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int): Unit
+    fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int)
 
     /**
      * Fills the entire canvas with the given `color`.
      *
      * @param color the color which should fill the canvas
      */
-    fun drawColor(color: Color) : Unit
+    fun drawColor(color: Color)
 }

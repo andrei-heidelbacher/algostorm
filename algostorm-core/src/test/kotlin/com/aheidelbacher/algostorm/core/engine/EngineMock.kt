@@ -16,36 +16,38 @@
 
 package com.aheidelbacher.algostorm.core.engine
 
-import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverStub
-import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverStub
-import com.aheidelbacher.algostorm.test.engine.input.InputDriverStub
-import com.aheidelbacher.algostorm.test.engine.io.FileSystemDriverStub
+import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 
-import java.io.InputStream
-import java.io.OutputStream
-
-class EngineMock : Engine(
-        AudioDriverStub(),
-        GraphicsDriverStub(),
-        InputDriverStub(),
-        FileSystemDriverStub()
+class EngineMock(
+        audioDriver: AudioDriver,
+        graphicsDriver: GraphicsDriver,
+        inputDriver: InputDriver,
+        fileSystemDriver: FileSystemDriver
+) : Engine(
+        audioDriver = audioDriver,
+        graphicsDriver = graphicsDriver,
+        inputDriver = inputDriver,
+        fileSystemDriver = fileSystemDriver
 ) {
     var state: Int = 0
         private set
 
     override var millisPerUpdate: Int = 25
-    override fun onError(cause: Exception) {}
-    override fun onInit(src: InputStream?) {}
+
+    override fun onInit(args: Map<String, Any?>) {}
+
     override fun onStart() {}
-    override fun onStop() {}
 
     override fun onUpdate() {
         state++
     }
 
-    override fun onSerializeState(out: OutputStream) {
-        out.write(state)
-    }
+    override fun onStop() {}
+
+    override fun onError(cause: Exception) {}
 
     override fun onRelease() {
         state = -1

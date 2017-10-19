@@ -19,35 +19,48 @@ package com.aheidelbacher.sokoban.core
 import com.aheidelbacher.algostorm.core.drivers.client.audio.AudioDriver
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
+import com.aheidelbacher.algostorm.core.drivers.client.input.Input
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
+import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver.GestureInterpreter
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystem.Companion.loadResource
 import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.prefabOf
+import com.aheidelbacher.algostorm.core.ecs.System
+import com.aheidelbacher.algostorm.core.ecs.System.Companion.ENTITY_POOL
 import com.aheidelbacher.algostorm.core.engine.Engine
 import com.aheidelbacher.algostorm.core.event.EventBus
-import com.aheidelbacher.algostorm.core.event.Service
-import com.aheidelbacher.algostorm.core.drivers.serialization.JsonDriver
+import com.aheidelbacher.algostorm.systems.EventSystem.Companion.EVENT_BUS
 import com.aheidelbacher.algostorm.systems.MapObject
 import com.aheidelbacher.algostorm.systems.MapObject.Builder.Companion.mapObject
 import com.aheidelbacher.algostorm.systems.Update
 import com.aheidelbacher.algostorm.systems.graphics2d.Animation
-import com.aheidelbacher.algostorm.systems.graphics2d.AnimationService
+import com.aheidelbacher.algostorm.systems.graphics2d.AnimationSystem
 import com.aheidelbacher.algostorm.systems.graphics2d.Camera
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraService
-import com.aheidelbacher.algostorm.systems.graphics2d.CameraService.UpdateCamera
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService
-import com.aheidelbacher.algostorm.systems.graphics2d.RenderingService.Render
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Follow
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.Scroll
+import com.aheidelbacher.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
+import com.aheidelbacher.algostorm.systems.graphics2d.GraphicsSystem.Companion.CAMERA
+import com.aheidelbacher.algostorm.systems.graphics2d.GraphicsSystem.Companion.CANVAS
+import com.aheidelbacher.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_HEIGHT
+import com.aheidelbacher.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_SET_COLLECTION
+import com.aheidelbacher.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_WIDTH
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Companion.BACKGROUND
+import com.aheidelbacher.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.systems.graphics2d.Sprite
+import com.aheidelbacher.algostorm.systems.graphics2d.TileSet
 import com.aheidelbacher.algostorm.systems.graphics2d.TileSetCollection
+import com.aheidelbacher.algostorm.systems.input.InputSystem.Companion.INPUT_DRIVER
+import com.aheidelbacher.algostorm.systems.input.InputSystem.HandleInput
 import com.aheidelbacher.algostorm.systems.physics2d.Body
-import com.aheidelbacher.algostorm.systems.physics2d.PathFindingService
-import com.aheidelbacher.algostorm.systems.physics2d.PhysicsService
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem
+import com.aheidelbacher.algostorm.systems.physics2d.PathFindingSystem.FindPath
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.TransformIntent
 import com.aheidelbacher.algostorm.systems.physics2d.Position
-
-import java.io.InputStream
-import java.io.OutputStream
 
 class SokobanEngine(
         audioDriver: AudioDriver,
@@ -62,20 +75,26 @@ class SokobanEngine(
 ) {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
-    private val camera = Camera(0, 0)
-    private lateinit var services: List<Service>
+    private val camera = Camera()
+    private val systems = listOf(
+            RenderingSystem(),
+            CameraSystem(),
+            PhysicsSystem(),
+            PathFindingSystem(),
+            AnimationSystem(),
+            InputInterpretingSystem()
+    )
 
     override val millisPerUpdate: Int = 30
 
-    override fun onInit(src: InputStream?) {
-        map = src?.let {
-            JsonDriver.deserialize<MapObject>(it)
-        } ?: mapObject {
+    override fun onInit(args: Map<String, Any?>) {
+        Thread.sleep(1000)
+        map = mapObject {
             width = 8
             height = 8
             tileWidth = 64
             tileHeight = 64
-            tileSet(resourceOf("assets/sokoban_tileset.json"))
+            tileSet(resourceOf("sokoban_tileset.json"))
 
             fun floor(x: Int, y: Int) = prefabOf(
                     Position(x, y),
@@ -136,33 +155,23 @@ class SokobanEngine(
             entity(Id(1), player(3, 3))
         }
         val tileSetCollection = map.tileSets.map { resource ->
-            javaClass.getResourceAsStream("/${resource.path}")
-                    .use { src ->
-                        val tileSet = JsonDriver.deserialize<TileSet>(src)
-                        graphicsDriver.loadImage(tileSet.image.resource)
-                        tileSet
-                    }
+            fileSystemDriver.loadResource(resource)
+        }.onEach { tileSet ->
+            graphicsDriver.loadBitmap(tileSet.image.source)
         }.let(::TileSetCollection)
-        services = listOf(
-                RenderingService(
-                        map.entityPool.group,
-                        map.tileWidth,
-                        map.tileHeight,
-                        Color("#FF000000"),
-                        tileSetCollection,
-                        graphicsDriver
-                ),
-                CameraService(
-                        map.entityPool.group,
-                        map.tileWidth,
-                        map.tileHeight,
-                        camera,
-                        Id(1)
-                ),
-                PhysicsService(map.entityPool.group),
-                PathFindingService(map.entityPool.group),
-                AnimationService(map.entityPool.group, tileSetCollection)
+        val context = mapOf(
+                ENTITY_POOL to map.entityPool,
+                EVENT_BUS to eventBus,
+                TILE_WIDTH to map.tileWidth,
+                TILE_HEIGHT to map.tileHeight,
+                BACKGROUND to Color("#FF000000"),
+                TILE_SET_COLLECTION to tileSetCollection,
+                CAMERA to camera,
+                CANVAS to graphicsDriver,
+                INPUT_DRIVER to inputDriver
         )
+        systems.forEach { it.initialize(context) }
+        eventBus.post(Follow(Id(1)))
     }
 
     override fun onError(cause: Exception) {
@@ -170,7 +179,7 @@ class SokobanEngine(
     }
 
     override fun onStart() {
-        services.forEach { it.start(eventBus) }
+        systems.forEach(System::start)
     }
 
     private fun onRender() {
@@ -182,40 +191,16 @@ class SokobanEngine(
         }
     }
 
-    private fun onHandleInput() {
-        /*inputListener.pollMostRecent(object {
-            override fun onScroll(dx: Int, dy: Int) {
-                eventBus.post(Scroll(dx, dy))
-            }
-
-            override fun onTouch(x: Int, y: Int) {
-                val tx = (x + camera.x - graphicsDriver.width / 2) /
-                        map.tileWidth
-                val ty = (y + camera.y - graphicsDriver.height / 2) /
-                        map.tileHeight
-                val path = eventBus.request(FindPath(Id(1), tx, ty))
-                path?.let { eventBus.post(Follow(Id(1))) }
-                path?.forEach { d ->
-                    eventBus.post(TransformIntent(Id(1), d.dx, d.dy))
-                }
-            }
-        })*/
-    }
-
     override fun onUpdate() {
         onRender()
-        onHandleInput()
+        eventBus.post(HandleInput)
         eventBus.post(Update(millisPerUpdate))
         eventBus.post(UpdateCamera)
         eventBus.publishPosts()
     }
 
-    override fun onSerializeState(out: OutputStream) {
-        JsonDriver.serialize(out, map)
-    }
-
     override fun onStop() {
-        services.forEach { it.stop() }
+        systems.forEach(System::stop)
     }
 
     override fun onRelease() {

@@ -19,4 +19,12 @@ package com.aheidelbacher.algostorm.core.drivers.client.input
 import com.aheidelbacher.algostorm.core.drivers.Driver
 
 /** A driver that allows reading input events. */
-interface InputDriver : Driver, InputSource
+interface InputDriver : Driver, InputSource, InputWriter {
+    interface GestureInterpreter {
+        fun onScroll(dx: Int, dy: Int): Input?
+
+        fun onTouch(x: Int, y: Int): Input?
+    }
+
+    fun setGestureInterpreter(interpreter: GestureInterpreter?)
+}

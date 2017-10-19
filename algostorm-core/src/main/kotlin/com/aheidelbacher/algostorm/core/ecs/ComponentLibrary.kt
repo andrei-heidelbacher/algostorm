@@ -16,42 +16,29 @@
 
 package com.aheidelbacher.algostorm.core.ecs
 
-import java.io.FileNotFoundException
-import java.util.Properties
-import java.util.ServiceConfigurationError
+import java.util.ServiceLoader
 
 import kotlin.reflect.KClass
 
-object ComponentLibrary {
-    private val serviceFile = "/META-INF/components.properties"
-    private val nameToType = try {
-        val stream = javaClass.getResourceAsStream(serviceFile)
-                ?: throw FileNotFoundException("'$serviceFile' not found!")
-        val properties = Properties()
-        properties.load(stream)
-        val components = hashMapOf<String, KClass<out Component>>()
-        for (name in properties.propertyNames()) {
-            val typeName = properties.getProperty(name as String)
-            val type = Class.forName(typeName)
-            require(Component::class.java.isAssignableFrom(type)) {
-                "'$typeName' is not a component!"
-            }
-            @Suppress("unchecked_cast")
-            components[name] = type.kotlin as KClass<out Component>
-        }
-        components
-    } catch (e: Exception) {
-        throw ServiceConfigurationError(e.message)
+interface ComponentLibrary {
+    companion object {
+        private val typeToName =
+                ServiceLoader.load(ComponentLibrary::class.java)
+                        .flatMap { it.components.entries }
+                        .map { (k, v) -> k to v }
+                        .toMap()
+
+        private val nameToType = typeToName.map { (k, v) -> v to k }.toMap()
+
+        operator fun get(name: String): KClass<out Component>? = nameToType[name]
+
+        operator fun get(type: KClass<out Component>): String? = typeToName[type]
+
+        operator fun contains(name: String): Boolean = name in nameToType
+
+        operator fun contains(type: KClass<out Component>): Boolean =
+                type in typeToName
     }
 
-    private val typeToName = nameToType.map { (k, v) -> v to k }.toMap()
-
-    operator fun get(name: String): KClass<out Component>? = nameToType[name]
-
-    operator fun get(type: KClass<out Component>): String? = typeToName[type]
-
-    operator fun contains(name: String): Boolean = name in nameToType
-
-    operator fun contains(type: KClass<out Component>): Boolean =
-            type in typeToName
+    val components: Map<KClass<out Component>, String>
 }

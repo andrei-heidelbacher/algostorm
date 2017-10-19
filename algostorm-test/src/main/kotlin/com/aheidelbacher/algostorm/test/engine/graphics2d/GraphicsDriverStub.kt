@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algostorm.test.engine.graphics2d
 
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Bitmap
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
@@ -24,15 +25,15 @@ class GraphicsDriverStub : GraphicsDriver {
     override val height: Int = 0
     override val width: Int = 0
     override val isCanvasReady: Boolean = false
-    override fun loadImage(resource: Resource) {}
+    override fun loadBitmap(bitmap: Resource<Bitmap>) {}
     override fun lockCanvas() {}
     override fun save() {}
     override fun translate(dx: Float, dy: Float) {}
     override fun scale(sx: Float, sy: Float) {}
     override fun rotate(degrees: Float) {}
     override fun restore() {}
-    override fun drawImage(
-            resource: Resource,
+    override fun drawBitmap(
+            bitmap: Resource<Bitmap>,
             sx: Int,
             sy: Int,
             sw: Int,

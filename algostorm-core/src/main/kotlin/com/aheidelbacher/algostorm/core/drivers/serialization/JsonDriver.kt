@@ -77,12 +77,12 @@ object JsonDriver {
         ): Any? = deserialize(key)
     }
 
-    private val resourceSerializer = serializer<Resource> { (uri), gen ->
-        gen.writeString(uri)
+    private val resourceSerializer = serializer<Resource<*>> { resource, gen ->
+        gen.writeString(resource.uri)
     }
 
     private val resourceDeserializer = deserializer { p ->
-        Resource(p.codec.readValue<String>(p, String::class.java))
+        Resource<Any?>(p.codec.readValue<String>(p, String::class.java))
     }
 
     private val colorSerializer = serializer<Color> { value, gen ->

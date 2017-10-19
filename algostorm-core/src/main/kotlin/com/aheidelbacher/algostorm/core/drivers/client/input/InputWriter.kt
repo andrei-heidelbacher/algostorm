@@ -17,5 +17,5 @@
 package com.aheidelbacher.algostorm.core.drivers.client.input
 
 interface InputWriter {
-    fun write(input: Input): Unit
+    fun write(input: Input)
 }

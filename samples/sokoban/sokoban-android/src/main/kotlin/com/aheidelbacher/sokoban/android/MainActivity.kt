@@ -16,12 +16,15 @@
 
 package com.aheidelbacher.sokoban.android
 
-import android.app.Activity
-import android.os.Bundle
+import com.aheidelbacher.algostorm.android.ClientActivity
 
-class MainActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-    }
+class MainActivity : ClientActivity() {
+    override val splashLayoutId: Int
+        get() = R.layout.activity_main_splash
+
+    override val clientLayoutId: Int
+        get() = R.layout.activity_main_client
+
+    override val surfaceViewId: Int
+        get() = R.id.clientSurfaceView
 }

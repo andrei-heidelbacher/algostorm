@@ -17,7 +17,6 @@
 package com.aheidelbacher.algostorm.core.drivers.serialization
 
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
-import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.TileSet
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
 import com.aheidelbacher.algostorm.core.ecs.Prefab
@@ -27,11 +26,10 @@ data class DataMock(
         val primitiveFloatField: Float,
         val innerData: InnerDataMock,
         val list: List<Int>,
-        val resource: Resource,
+        val resource: Resource<Any>,
         val color: Color,
         val id: Id,
-        val prefabs: Map<Id, Prefab>,
-        val tileSets: List<TileSet>
+        val prefabs: Map<Id, Prefab>
 ) {
     data class InnerDataMock(val field: String)
 }

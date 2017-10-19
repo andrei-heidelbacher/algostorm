@@ -17,12 +17,11 @@
 package com.aheidelbacher.algostorm.core.ecs
 
 import com.aheidelbacher.algostorm.core.ecs.EntityRef.Id
-import com.aheidelbacher.algostorm.core.ecs.Prefab.Companion.toPrefab
 
 import kotlin.reflect.KClass
 
 /** A collection of unique entities. */
-interface EntityPool {
+interface EntityPool : MutableEntityGroup {
     companion object {
         /**
          * Returns a default implementation of an entity pool.
@@ -36,129 +35,141 @@ interface EntityPool {
         fun entityPoolOf(vararg entities: Pair<Id, Prefab>): EntityPool =
                 entityPoolOf(mapOf(*entities))
 
-        /** Returns the current state of the entities in this pool. */
-        fun EntityPool.getSnapshot(): Map<Id, Prefab> =
-                group.entities.associate { it.id to it.toPrefab() }
+        private class EntityPoolImpl(entities: Map<Id, Prefab>) : EntityPool {
+            private inner class EntityRefImpl(
+                    id: Id,
+                    components: Collection<Component>
+            ) : MutableEntityRef(this@EntityPoolImpl, id) {
+                private val componentMap =
+                        hashMapOf<KClass<out Component>, Component>()
+                        //components.associateByTo(hashMapOf()) { it::class }
 
-        private class EntityRefImpl(
-                private val entityPool: EntityPoolImpl,
-                id: Id,
-                prefab: Prefab
-        ) : MutableEntityRef(entityPool, id) {
-            private val componentTable = prefab.components.associateByTo(
-                    hashMapOf<KClass<out Component>, Component>()
-            ) { it.javaClass.kotlin }
+                init {
+                    for (component in components) {
+                        require(component::class !in componentMap) {
+                            "Duplicated component type '${component::class}'!"
+                        }
+                        componentMap[component::class] = component
+                    }
+                }
 
-            override val components: Collection<Component>
-                get() = componentTable.values
+                override val components: Collection<Component>
+                    get() = componentMap.values
 
-            override fun <T : Component> get(type: KClass<T>): T? =
-                    type.java.cast(componentTable[type])
+                @Suppress("unchecked_cast")
+                override fun <T : Component> get(type: KClass<T>): T? =
+                        componentMap[type] as T?
 
-            override fun <T : Component> remove(type: KClass<T>): T? {
-                val component = type.java.cast(componentTable.remove(type))
-                entityPool.onChanged(this)
-                return component
+                @Suppress("unchecked_cast")
+                override fun <T : Component> remove(type: KClass<T>): T? {
+                    val component = componentMap.remove(type) as T?
+                    rootGroup.onChanged(this)
+                    return component
+                }
+
+                override fun set(component: Component) {
+                    componentMap[component::class] = component
+                    rootGroup.onChanged(this)
+                }
             }
 
-            override fun set(component: Component) {
-                componentTable[component.javaClass.kotlin] = component
-                entityPool.onChanged(this)
-            }
-        }
+            private class EntityGroupImpl(
+                    filter: (EntityRef) -> Boolean
+            ) : MutableEntityGroup {
+                private var filter: ((EntityRef) -> Boolean)? = filter
+                private val entityMap = hashMapOf<Id, EntityRefImpl>()
+                private val groups = hashSetOf<EntityGroupImpl>()
 
-        private class EntityGroupImpl(
-                filter: (EntityRef) -> Boolean
-        ) : MutableEntityGroup {
-            private var filter: ((EntityRef) -> Boolean)? = filter
-            private val entityTable = hashMapOf<Id, EntityRefImpl>()
-            private val groups = hashSetOf<EntityGroupImpl>()
+                override val isValid: Boolean
+                    get() = filter != null
+
+                override val entities: Iterable<EntityRefImpl>
+                    get() = entityMap.values
+
+                override fun get(id: Id): EntityRefImpl? = entityMap[id]
+
+                override fun addGroup(
+                        filter: (EntityRef) -> Boolean
+                ): EntityGroupImpl {
+                    check(isValid) {
+                        "Can't add group when '$this' is invalid!"
+                    }
+                    val subgroup = EntityGroupImpl(filter)
+                    groups += subgroup
+                    entityMap.values.forEach(subgroup::onChanged)
+                    return subgroup
+                }
+
+                override fun removeGroup(group: EntityGroup): Boolean =
+                        if (group is EntityGroupImpl && group in groups) {
+                            group.onCleared()
+                            groups -= group
+                            true
+                        } else false
+
+                internal fun onChanged(entity: EntityRefImpl) {
+                    if (checkNotNull(filter).invoke(entity)) {
+                        entityMap[entity.id] = entity
+                        groups.forEach { it.onChanged(entity) }
+                    } else {
+                        onRemoved(entity)
+                    }
+                }
+
+                internal fun onRemoved(entity: EntityRefImpl) {
+                    if (entityMap.remove(entity.id) != null) {
+                        groups.forEach { it.onRemoved(entity) }
+                    }
+                }
+
+                internal fun onCleared() {
+                    groups.forEach(EntityGroupImpl::onCleared)
+                    groups.clear()
+                    entityMap.clear()
+                    filter = null
+                }
+            }
+
+            private var nextId = 1
+            private val rootGroup = EntityGroupImpl { true }
+
+            init {
+                for ((id, prefab) in entities) {
+                    nextId = maxOf(nextId, id.value + 1)
+                    rootGroup.onChanged(EntityRefImpl(id, prefab.components))
+                }
+            }
+
+            override val entities: Iterable<MutableEntityRef>
+                get() = rootGroup.entities
 
             override val isValid: Boolean
-                get() = filter != null
+                get() = rootGroup.isValid
 
-            override val entities: Iterable<EntityRefImpl>
-                get() = entityTable.values
-
-            override fun get(id: Id): EntityRefImpl? = entityTable[id]
+            override fun get(id: Id): MutableEntityRef? = rootGroup[id]
 
             override fun addGroup(
                     filter: (EntityRef) -> Boolean
-            ): EntityGroupImpl {
-                check(isValid) { "Can't add group when $this is invalid!" }
-                val subgroup = EntityGroupImpl(filter)
-                groups.add(subgroup)
-                entityTable.forEach { subgroup.onChanged(it.value) }
-                return subgroup
-            }
+            ): MutableEntityGroup = rootGroup.addGroup(filter)
 
-            override fun removeGroup(group: EntityGroup): Boolean {
-                if (group is EntityGroupImpl && group in groups) {
-                    group.onCleared()
-                    groups.remove(group)
-                    return true
-                }
-                return false
-            }
+            override fun removeGroup(group: EntityGroup): Boolean =
+                    rootGroup.removeGroup(group)
 
-            fun onChanged(entity: EntityRefImpl) {
-                if (checkNotNull(filter).invoke(entity)) {
-                    entityTable[entity.id] = entity
-                    groups.forEach { it.onChanged(entity) }
-                } else {
-                    onRemoved(entity)
-                }
-            }
-
-            fun onRemoved(entity: EntityRefImpl) {
-                if (entityTable.remove(entity.id) != null) {
-                    groups.forEach { it.onRemoved(entity) }
-                }
-            }
-
-            fun onCleared() {
-                groups.forEach { it.onCleared() }
-                groups.clear()
-                entityTable.clear()
-                filter = null
-            }
-        }
-
-        private class EntityPoolImpl(
-                entities: Map<Id, Prefab>
-        ) : EntityPool {
-            private var nextId = 1 + (entities.keys.map(Id::value).max() ?: 0)
-            override val group = EntityGroupImpl { true }
-
-            init {
-                entities.forEach {
-                    group.onChanged(EntityRefImpl(this, it.key, it.value))
-                }
-            }
-
-            override fun create(prefab: Prefab): EntityRefImpl {
-                check(nextId > 0) { "Too many entities created in $this!" }
-                val entity = EntityRefImpl(this, Id(nextId++), prefab)
-                group.onChanged(entity)
+            override fun create(prefab: Prefab): MutableEntityRef {
+                check(nextId > 0) { "Too many entities created in '$this'!" }
+                val entity = EntityRefImpl(Id(nextId++), prefab.components)
+                rootGroup.onChanged(entity)
                 return entity
             }
 
-            override fun remove(id: Id): Boolean = group[id]?.apply {
-                group.onRemoved(this)
-            } != null
+            override fun remove(id: Id): Boolean =
+                    rootGroup[id]?.apply(rootGroup::onRemoved) != null
 
             override fun clear() {
-                group.entities.toList().forEach { group.onRemoved(it) }
-            }
-
-            fun onChanged(entity: EntityRefImpl) {
-                group.onChanged(entity)
+                rootGroup.entities.toList().forEach(rootGroup::onRemoved)
             }
         }
     }
-
-    /** The entity group containing all the entities in this pool. */
-    val group: MutableEntityGroup
 
     /**
      * Creates an entity from the given `prefab`, adds it to this pool and
@@ -183,5 +194,5 @@ interface EntityPool {
     fun remove(id: Id): Boolean
 
     /** Removes all the entities from this pool. */
-    fun clear(): Unit
+    fun clear()
 }

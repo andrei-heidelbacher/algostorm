@@ -17,12 +17,13 @@
 package com.aheidelbacher.algostorm.android
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.Bitmap as AndroidBitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.SurfaceHolder
+import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Bitmap
 
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.Color
 import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
@@ -33,36 +34,12 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-class AndroidGraphicsDriver(
-        context: Context,
-        surfaceHolder: SurfaceHolder
-) : GraphicsDriver {
-    /*companion object {
-        private val bitmaps = ConcurrentHashMap<Resource, Bitmap>()
-
-        fun loadBitmap(resource: Resource) {
-            if (resource !in bitmaps) {
-                resource.inputStream().use { src ->
-                    bitmaps[resource] = BitmapFactory.decodeStream(src)
-                }
-            }
-        }
-
-        /**
-         * Retrieves the requested bitmap.
-         *
-         * @param resource the requested image resource
-         * @return the requested bitmap, or `null` if it wasn't loaded
-         */
-        fun getBitmap(resource: Resource): Bitmap? = bitmaps[resource]
-    }*/
-
-    private var context: Context? = context
-    private var surfaceHolder: SurfaceHolder? = surfaceHolder
+class AndroidGraphicsDriver(private val context: Context) : GraphicsDriver {
+    private var surfaceHolder: SurfaceHolder? = null
     private var canvas: Canvas? = null
     private val isLocked = AtomicBoolean(false)
-    private val scale = context.resources.displayMetrics.density
-    private val bitmaps = ConcurrentHashMap<Resource, Bitmap>()
+    private val scale by lazy { context.resources.displayMetrics.density }
+    private val bitmaps = ConcurrentHashMap<Resource<Bitmap>, AndroidBitmap>()
 
     private val srcRect = Rect()
     private val dstRect = Rect()
@@ -81,13 +58,21 @@ class AndroidGraphicsDriver(
         check(isLocked.get()) { "Canvas is not locked!" }
     }
 
-    override fun loadImage(resource: Resource) {
+    fun attachSurface(holder: SurfaceHolder) {
+        surfaceHolder = holder
+    }
+
+    fun detachSurface() {
+        surfaceHolder = null
+    }
+
+    override fun loadBitmap(bitmap: Resource<Bitmap>) {
         val stream = try {
-            checkNotNull(context).assets.open(resource.path)
+            context.assets.open(bitmap.path)
         } catch (e: IOException) {
             throw InvalidResourceException(e)
         }
-        bitmaps[resource] = BitmapFactory.decodeStream(stream)
+        bitmaps[bitmap] = BitmapFactory.decodeStream(stream)
                 ?: throw InvalidResourceException("")
     }
 
@@ -116,8 +101,8 @@ class AndroidGraphicsDriver(
         canvas?.restore()
     }
 
-    override fun drawImage(
-            resource: Resource,
+    override fun drawBitmap(
+            bitmap: Resource<Bitmap>,
             sx: Int,
             sy: Int,
             sw: Int,
@@ -128,10 +113,12 @@ class AndroidGraphicsDriver(
             dh: Int
     ) {
         checkIsLocked()
-        val bitmap = requireNotNull(bitmaps[resource])
+        val androidBitmap = requireNotNull(bitmaps[bitmap]) {
+            "'$bitmap' not loaded!"
+        }
         srcRect.set(sx, sy, sx + sw, sy + sh)
         dstRect.set(dx, dy, dx + dw, dy + dh)
-        canvas?.drawBitmap(bitmap, srcRect, dstRect, null)
+        canvas?.drawBitmap(androidBitmap, srcRect, dstRect, null)
     }
 
     /*override fun drawBitmap(
@@ -176,9 +163,10 @@ class AndroidGraphicsDriver(
         get() = surfaceHolder?.surface?.isValid ?: false
 
     override fun lockCanvas() {
-        checkNotNull(context)
-        check(isCanvasReady) { "Canvas is not ready!" }
-        check(isLocked.compareAndSet(false, true)) { "Canvas already locked!" }
+        check(isCanvasReady) { "Canvas not ready!" }
+        check(isLocked.compareAndSet(false, true)) {
+            "Canvas already locked!"
+        }
         surfaceHolder?.apply {
             canvas = lockCanvas()
             height = surfaceFrame.height().pxToDp.toInt()
@@ -187,8 +175,9 @@ class AndroidGraphicsDriver(
     }
 
     override fun unlockAndPostCanvas() {
-        checkNotNull(context)
-        check(isLocked.compareAndSet(true, false)) { "Canvas is not locked!" }
+        check(isLocked.compareAndSet(true, false)) {
+            "Canvas not locked!"
+        }
         canvas?.let { surfaceHolder?.unlockCanvasAndPost(it) }
         canvas = null
     }

@@ -35,6 +35,7 @@ abstract class Request<T> {
      * @return the result of this request
      * @throws IllegalStateException if this request is not completed
      */
+    @Suppress("unchecked_cast")
     fun get(): T {
         check(isCompleted) { "$this was not completed!" }
         return result as T

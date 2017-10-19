@@ -22,5 +22,5 @@ import com.aheidelbacher.algostorm.test.ecs.MutableEntityGroupTest
 class EntityGroupImplTest : MutableEntityGroupTest() {
     override fun createGroup(
             entities: Map<EntityRef.Id, Prefab>
-    ): MutableEntityGroup = entityPoolOf(entities).group
+    ): MutableEntityGroup = entityPoolOf(entities)
 }

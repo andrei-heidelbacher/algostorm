@@ -22,9 +22,6 @@ import com.aheidelbacher.algostorm.core.drivers.client.graphics2d.GraphicsDriver
 import com.aheidelbacher.algostorm.core.drivers.client.input.InputDriver
 import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 
-import java.io.InputStream
-import java.io.OutputStream
-
 import kotlin.concurrent.thread
 import kotlin.system.measureNanoTime
 
@@ -80,7 +77,7 @@ abstract class Engine(
      * This method is invoked after the engine is created and before the engine
      * can be started.
      */
-    protected abstract fun onInit(src: InputStream?): Unit
+    protected abstract fun onInit(args: Map<String, Any?>)
 
     /**
      * The entry point into the initialization logic after starting the engine
@@ -89,7 +86,7 @@ abstract class Engine(
      * This method is invoked right after starting the private engine thread and
      * is run on the engine thread.
      */
-    protected abstract fun onStart(): Unit
+    protected abstract fun onStart()
 
     /**
      * The entry point into the game logic.
@@ -97,7 +94,7 @@ abstract class Engine(
      * This method is invoked at most once every [millisPerUpdate] while this
      * engine is running and is run on the engine thread.
      */
-    protected abstract fun onUpdate(): Unit
+    protected abstract fun onUpdate()
 
     /**
      * The entry point into the clean-up logic before stopping the private
@@ -106,32 +103,25 @@ abstract class Engine(
      * This method is invoked right before the engine thread is stopped and is
      * run on the engine thread.
      */
-    protected abstract fun onStop(): Unit
+    protected abstract fun onStop()
 
     /**
      * The entry point into the error handling logic when an exception occurs on
      * the engine thread.
      *
-     * This method is invoke right before the engine thread terminates and is
+     * This method is invoked right before the engine thread terminates and is
      * run on the engine thread.
      *
      * @param cause the error which occurred on the engine thread
      */
-    protected abstract fun onError(cause: Exception): Unit
-
-    /**
-     * Retrieves the current game state and serializes it to the given stream.
-     *
-     * @param out the stream to which the game state is written
-     */
-    protected abstract fun onSerializeState(out: OutputStream): Unit
+    protected abstract fun onError(cause: Exception)
 
     /**
      * The entry point into the clean-up logic for releasing the engine.
      *
      * This method is invoked right before this engine's drivers are released.
      */
-    protected abstract fun onRelease(): Unit
+    protected abstract fun onRelease()
 
     @Throws(Exception::class)
     private fun run() {
@@ -149,9 +139,9 @@ abstract class Engine(
         onStop()
     }
 
-    fun init(inputStream: InputStream?) {
+    fun init(args: Map<String, Any?>) {
         check(status == Status.UNINITIALIZED) { "Engine already initialized!" }
-        onInit(inputStream)
+        onInit(args)
         status = Status.STOPPED
     }
 
@@ -177,18 +167,6 @@ abstract class Engine(
                 onError(e)
             }
         }
-    }
-
-    /**
-     * Serializes the game state to the given stream.
-     *
-     * @param outputStream the stream to which the game state is written
-     */
-    fun serializeState(outputStream: OutputStream) {
-        check(status == Status.STOPPED) {
-            "Can't serialize state if engine isn't stopped!"
-        }
-        onSerializeState(outputStream)
     }
 
     /**
@@ -225,7 +203,6 @@ abstract class Engine(
      *
      * @throws IllegalStateException if this engine is not stopped
      */
-    @Throws(InterruptedException::class)
     fun release() {
         check(status == Status.STOPPED) {
             "Engine can't be released if not stopped!"

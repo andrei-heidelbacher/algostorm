@@ -19,23 +19,20 @@ package com.aheidelbacher.algostorm.core.engine
 import org.junit.Test
 
 import com.aheidelbacher.algostorm.test.engine.EngineTest
-
-import java.io.ByteArrayOutputStream
+import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverStub
+import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverStub
+import com.aheidelbacher.algostorm.test.engine.input.InputDriverStub
+import com.aheidelbacher.algostorm.test.engine.io.FileSystemDriverStub
 
 import kotlin.test.assertEquals
 
 class EngineMockTest : EngineTest() {
-    override val engine = EngineMock()
-
-    @Test fun testSerializeState() {
-        engine.start()
-        Thread.sleep(50)
-        engine.stop(TIMEOUT)
-        val bos = ByteArrayOutputStream()
-        engine.serializeState(bos)
-        val actual = bos.toByteArray().inputStream().read()
-        assertEquals(engine.state, actual)
-    }
+    override val engine = EngineFactory.create(
+            audioDriver = AudioDriverStub(),
+            graphicsDriver = GraphicsDriverStub(),
+            inputDriver = InputDriverStub(),
+            fileSystemDriver = FileSystemDriverStub()
+    ) as EngineMock
 
     @Test fun testClearState() {
         engine.start()

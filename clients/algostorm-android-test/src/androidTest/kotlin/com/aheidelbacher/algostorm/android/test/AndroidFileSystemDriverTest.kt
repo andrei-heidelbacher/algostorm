@@ -21,6 +21,7 @@ import android.support.test.InstrumentationRegistry
 
 import com.aheidelbacher.algostorm.android.AndroidFileSystemDriver
 import com.aheidelbacher.algostorm.core.drivers.io.File.Companion.fileOf
+import com.aheidelbacher.algostorm.core.drivers.io.FileSystem.Companion.loadResource
 import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 import com.aheidelbacher.algostorm.core.drivers.io.Resource.Companion.resourceOf
 
@@ -33,6 +34,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class AndroidFileSystemDriverTest {
+    data class RawResource(val content: String)
+
     private val context = InstrumentationRegistry.getTargetContext()
     private val fileSystemDriver = AndroidFileSystemDriver(context)
 
@@ -48,21 +51,26 @@ class AndroidFileSystemDriverTest {
             }
 
     @Test fun testGetRawResource() {
-        val path = "tileset.png"
-        val resource = resourceOf(path)
-        val expected = context.assets.open(path).use { it.readBytes() }
-        val actual = fileSystemDriver.getRawResource(resource)
-        assertEquals(expected.size, actual.size)
-        for (i in expected.indices) {
-            assertEquals(expected[i], actual[i])
+        val path = "raw.json"
+        val resource = resourceOf<RawResource>(path)
+        val expected = RawResource("raw-resource")
+        val actual = fileSystemDriver.loadResource(resource)
+        assertEquals(expected, actual)
+    }
+
+    @Test fun testGetNonExistingResourceThrows() {
+        val path = "tileset"
+        val resource = resourceOf<RawResource>(path)
+        assertFailsWith<InvalidResourceException> {
+            fileSystemDriver.loadResource(resource)
         }
     }
 
-    @Test fun testGetInvalidResourceThrows() {
-        val path = "tileset"
-        val resource = resourceOf(path)
+    @Test fun testGetInvalidRawResourceThrows() {
+        val path = "tileset.png"
+        val resource = resourceOf<RawResource>(path)
         assertFailsWith<InvalidResourceException> {
-            fileSystemDriver.getRawResource(resource)
+            fileSystemDriver.loadResource(resource)
         }
     }
 
@@ -94,33 +102,6 @@ class AndroidFileSystemDriverTest {
         }
         val actual = readFile(path)
         assertEquals(expected, actual)
-    }
-
-    @Test fun testGetRawResourceAfterReleaseThrows() {
-        val path = "resource.png"
-        val resource = resourceOf(path)
-        fileSystemDriver.release()
-        assertFailsWith<IllegalStateException> {
-            fileSystemDriver.getRawResource(resource)
-        }
-    }
-
-    @Test fun testOpenFileInputAfterReleaseThrows() {
-        val path = "file.txt"
-        val file = fileOf(path)
-        fileSystemDriver.release()
-        assertFailsWith<IllegalStateException> {
-            fileSystemDriver.openFileInput(file)
-        }
-    }
-
-    @Test fun testOpenFileOutputAfterReleaseThrows() {
-        val path = "file.txt"
-        val file = fileOf(path)
-        fileSystemDriver.release()
-        assertFailsWith<IllegalStateException> {
-            fileSystemDriver.openFileOutput(file)
-        }
     }
 
     @After fun release() {

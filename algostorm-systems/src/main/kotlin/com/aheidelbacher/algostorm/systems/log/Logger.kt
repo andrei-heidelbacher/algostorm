@@ -34,7 +34,7 @@ interface Logger {
         operator fun invoke(eventFilter: ((Event) -> Boolean)? = null): Logger =
                 object : Logger {
                     override fun log(event: Event) {
-                        if (eventFilter?.invoke(event) ?: true) {
+                        if (eventFilter?.invoke(event) != false) {
                             println(event)
                         }
                     }

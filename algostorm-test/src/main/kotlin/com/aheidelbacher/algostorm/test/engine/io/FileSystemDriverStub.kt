@@ -24,11 +24,14 @@ import com.aheidelbacher.algostorm.core.drivers.io.Resource
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 class FileSystemDriverStub : FileSystemDriver {
     override fun release() {}
     override fun openFileInput(file: File): InputStream = throw IOException()
     override fun openFileOutput(file: File): OutputStream = throw IOException()
-    override fun getRawResource(resource: Resource): ByteArray =
-            throw InvalidResourceException(resource.path)
+    override fun <T : Any> loadResource(
+            resource: Resource<T>,
+            type: KClass<T>
+    ): T = throw InvalidResourceException(resource.path)
 }

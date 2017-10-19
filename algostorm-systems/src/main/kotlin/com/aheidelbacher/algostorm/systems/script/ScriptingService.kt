@@ -17,8 +17,8 @@
 package com.aheidelbacher.algostorm.systems.script
 
 import com.aheidelbacher.algostorm.core.event.Request
-import com.aheidelbacher.algostorm.core.event.Service
 import com.aheidelbacher.algostorm.core.event.Subscribe
+import com.aheidelbacher.algostorm.systems.EventSystem
 
 import kotlin.reflect.KClass
 
@@ -27,7 +27,9 @@ import kotlin.reflect.KClass
  *
  * @property scriptEngine the engine used to execute scripts
  */
-class ScriptingService(/*private val scriptEngine: ScriptEngine*/) : Service() {
+class ScriptingService : EventSystem() {
+    //private val scriptEngine: ScriptEngine
+
     /**
      * A request to execute the script function with the given `name` and
      * arguments.

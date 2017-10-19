@@ -26,4 +26,8 @@ class InputSocket : InputSource, InputWriter {
     override fun write(input: Input) {
         queue.add(input)
     }
+
+    fun clear() {
+        queue.clear()
+    }
 }

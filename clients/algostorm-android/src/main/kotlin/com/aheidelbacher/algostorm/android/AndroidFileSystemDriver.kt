@@ -18,31 +18,37 @@ package com.aheidelbacher.algostorm.android
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+
 import com.aheidelbacher.algostorm.core.drivers.io.File
 import com.aheidelbacher.algostorm.core.drivers.io.FileSystemDriver
 import com.aheidelbacher.algostorm.core.drivers.io.InvalidResourceException
 import com.aheidelbacher.algostorm.core.drivers.io.Resource
+import com.aheidelbacher.algostorm.core.drivers.serialization.JsonDriver
+import java.io.FileNotFoundException
+
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-class AndroidFileSystemDriver(context: Context) : FileSystemDriver {
-    private var context: Context? = context
+import kotlin.reflect.KClass
 
-    override fun getRawResource(resource: Resource): ByteArray = try {
-        checkNotNull(context).assets.open(resource.path)
-                .use { it.readBytes() }
+class AndroidFileSystemDriver(private val context: Context) : FileSystemDriver {
+    override fun <T : Any> loadResource(
+            resource: Resource<T>, type: KClass<T>
+    ): T = try {
+        context.assets.open(resource.path).use { src ->
+            JsonDriver.deserialize(src, type)
+        }
     } catch (e: IOException) {
         throw InvalidResourceException(e)
     }
 
     override fun openFileInput(file: File): InputStream =
-            checkNotNull(context).openFileInput(file.path)
+            context.openFileInput(file.path)
 
     override fun openFileOutput(file: File): OutputStream =
-            checkNotNull(context).openFileOutput(file.path, MODE_PRIVATE)
+            context.openFileOutput(file.path, MODE_PRIVATE)
+                    ?: throw FileNotFoundException("'$file' doesn't exist!")
 
-    override fun release() {
-        context = null
-    }
+    override fun release() {}
 }

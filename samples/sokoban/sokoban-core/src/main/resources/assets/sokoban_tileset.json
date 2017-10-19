@@ -5,7 +5,7 @@
   "image": {
     "width": 832,
     "height": 512,
-    "resource": "res:///sokoban_tileset.png"
+    "source": "res:///sokoban_tileset.png"
   },
   "margin": 0,
   "spacing": 0,
@@ -15,19 +15,19 @@
     "player:idle": [
       {
         "tileId": 52,
-        "durationMillis": 250
+        "duration": 250
       },
       {
         "tileId": 53,
-        "durationMillis": 250
+        "duration": 250
       },
       {
         "tileId": 52,
-        "durationMillis": 250
+        "duration": 250
       },
       {
         "tileId": 54,
-        "durationMillis": 250
+        "duration": 250
       }
     ]
   }

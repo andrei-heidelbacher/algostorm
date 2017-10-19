@@ -32,7 +32,7 @@ abstract class MutableEntityRef protected constructor(
      *
      * @param component the new value of the component type
      */
-    abstract fun set(component: Component): Unit
+    abstract fun set(component: Component)
 
     /**
      * Removes the component with the specified `type` and returns it.

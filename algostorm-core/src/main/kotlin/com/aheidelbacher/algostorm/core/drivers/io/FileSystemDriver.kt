@@ -18,7 +18,4 @@ package com.aheidelbacher.algostorm.core.drivers.io
 
 import com.aheidelbacher.algostorm.core.drivers.Driver
 
-/**
- *
- */
 interface FileSystemDriver : FileSystem, Driver
