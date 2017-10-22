@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<manifest package="com.aheidelbacher.algostorm.android"
+<manifest package="com.andreihh.algostorm.android"
   xmlns:android="http://schemas.android.com/apk/res/android">
   <application
     android:allowBackup="true"

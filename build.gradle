@@ -24,8 +24,8 @@ buildscript {
 }
 
 allprojects {
-    group 'com.aheidelbacher'
-    version '0.1.66'
+    group 'com.andreihh'
+    version '0.2.0'
 
     repositories {
         mavenCentral()

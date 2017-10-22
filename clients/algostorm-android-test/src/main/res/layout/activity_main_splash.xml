@@ -21,7 +21,7 @@
   android:id="@+id/mainActivitySplash"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="com.aheidelbacher.algostorm.android.test.MainActivity">
+  tools:context="com.aheidelbacher.algostorm.android.test.com.andreihh.algostorm.android.test.MainActivity">
   <ImageView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
