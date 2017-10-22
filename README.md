@@ -1,8 +1,8 @@
 ## Algostorm
 
-[![](https://jitpack.io/v/andrei-heidelbacher/algostorm.svg)](https://jitpack.io/#andrei-heidelbacher/algostorm)
-[![Build Status](https://travis-ci.org/andrei-heidelbacher/algostorm.png)](https://travis-ci.org/andrei-heidelbacher/algostorm)
-[![codecov](https://codecov.io/gh/andrei-heidelbacher/algostorm/branch/master/graph/badge.svg)](https://codecov.io/gh/andrei-heidelbacher/algostorm)
+[![](https://jitpack.io/v/andreihh/algostorm.svg)](https://jitpack.io/#andreihh/algostorm)
+[![Build Status](https://travis-ci.org/andreihh/algostorm.png)](https://travis-ci.org/andreihh/algostorm)
+[![codecov](https://codecov.io/gh/andreihh/algostorm/branch/master/graph/badge.svg)](https://codecov.io/gh/andreihh/algostorm)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Algostorm is a 2d grid-based game engine for the JVM. It is designed for
