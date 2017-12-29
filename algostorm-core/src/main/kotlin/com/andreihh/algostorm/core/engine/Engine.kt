@@ -16,16 +16,12 @@
 
 package com.andreihh.algostorm.core.engine
 
-import com.andreihh.algostorm.core.drivers.Driver
-import com.andreihh.algostorm.core.drivers.audio.AudioDriver
-import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
-import com.andreihh.algostorm.core.drivers.input.InputDriver
-import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
 import com.andreihh.algostorm.core.engine.Engine.Status.RELEASED
 import com.andreihh.algostorm.core.engine.Engine.Status.RUNNING
 import com.andreihh.algostorm.core.engine.Engine.Status.STOPPED
 import com.andreihh.algostorm.core.engine.Engine.Status.STOPPING
 import com.andreihh.algostorm.core.engine.Engine.Status.UNINITIALIZED
+import java.util.ServiceLoader
 import kotlin.concurrent.thread
 import kotlin.system.measureNanoTime
 
@@ -34,25 +30,16 @@ import kotlin.system.measureNanoTime
  *
  * All changes to the game state outside of this engine's thread may lead to
  * inconsistent state and concurrency issues. Thus, the engine state should
- * remain private to the engine and modified only in the [onUpdate] and
- * [onRelease] methods.
+ * remain private to the engine and modified only in the [Handler.onUpdate] and
+ * [Handler.onRelease] methods.
  *
  * All the engine methods are thread safe as long as the complete construction
  * of the engine and initialization of the state happen-before any other method
  * call.
  *
- * @constructor initializes this engine's drivers
- * @property audioDriver the driver that handles playing music and sound effects
- * @property graphicsDriver the driver that handles drawing to the screen
- * @property inputDriver the driver that handles reading input from the user
- * @property fileSystemDriver the driver that handles files and resources
+ * @property platform the platform of this engine
  */
-abstract class Engine(
-        protected val audioDriver: AudioDriver,
-        protected val graphicsDriver: GraphicsDriver,
-        protected val inputDriver: InputDriver,
-        protected val fileSystemDriver: FileSystemDriver
-) {
+class Engine(private val platform: Platform) {
     companion object {
         /** Name of the engine thread. */
         const val NAME: String = "ALGOSTORM"
@@ -63,101 +50,45 @@ abstract class Engine(
         UNINITIALIZED, RUNNING, STOPPING, STOPPED, RELEASED
     }
 
-    private var process: Thread? = null
-
     /** The current status of this engine. */
     @Volatile var status: Status = UNINITIALIZED
         private set
 
-    /**
-     * The positive number of milliseconds spent in an update cycle and the
-     * resolution of an atomic time unit.
-     */
-    protected abstract val millisPerUpdate: Int
-
-    /**
-     * The entry point into the initialization logic of the engine.
-     *
-     * This method is invoked after the engine is created and before the engine
-     * can be started.
-     */
-    protected abstract fun onInit(args: Map<String, Any?>)
-
-    /**
-     * The entry point into the initialization logic after starting the engine
-     * thread.
-     *
-     * This method is invoked right after starting the private engine thread and
-     * is run on the engine thread.
-     */
-    protected abstract fun onStart()
-
-    /**
-     * The entry point into the game logic.
-     *
-     * This method is invoked at most once every [millisPerUpdate] while this
-     * engine is running and is run on the engine thread.
-     */
-    protected abstract fun onUpdate()
-
-    /**
-     * The entry point into the clean-up logic before stopping the private
-     * engine thread.
-     *
-     * This method is invoked right before the engine thread is stopped and is
-     * run on the engine thread.
-     */
-    protected abstract fun onStop()
-
-    /**
-     * The entry point into the error handling logic when an exception occurs on
-     * the engine thread.
-     *
-     * This method is invoked right before the engine thread terminates and is
-     * run on the engine thread.
-     *
-     * @param cause the error which occurred on the engine thread
-     */
-    protected abstract fun onError(cause: Exception)
-
-    /**
-     * The entry point into the clean-up logic for releasing the engine.
-     *
-     * This method is invoked right before this engine's drivers are released.
-     */
-    protected abstract fun onRelease()
+    private val handler = ServiceLoader.load(Handler::class.java).first()
+    private var process: Thread? = null
 
     @Throws(Exception::class)
     private fun run() {
-        onStart()
+        handler.onStart()
         while (status == RUNNING) {
-            val elapsedMillis = measureNanoTime(this::onUpdate) / 1000000
+            val elapsedMillis = measureNanoTime(handler::onUpdate) / 1000000
             check(elapsedMillis >= 0) { "Elapsed time can't be negative!" }
-            val updateMillis = millisPerUpdate
+            val updateMillis = handler.millisPerUpdate
             check(updateMillis > 0) { "Update time must be positive!" }
             val sleepMillis = updateMillis - elapsedMillis
             if (sleepMillis > 0) {
                 Thread.sleep(sleepMillis)
             }
         }
-        onStop()
+        handler.onStop()
     }
 
     fun init(args: Map<String, Any?>) {
         check(status == UNINITIALIZED) { "Engine already initialized!" }
-        onInit(args)
+        handler.onInit(platform, args)
         status = STOPPED
     }
 
     /**
      * Sets the [status] to [Status.RUNNING] and starts the engine thread.
      *
-     * While this engine is running, at most once every [millisPerUpdate]
-     * milliseconds, it will invoke the [onUpdate] method on the engine thread.
+     * While this engine is running, at most once every
+     * [Handler.millisPerUpdate] milliseconds, it will invoke the
+     * [Handler.onUpdate] method on the engine thread.
      *
      * Time is measured using [measureNanoTime]. If, at any point, the measured
-     * time or [millisPerUpdate] is negative, the engine thread throws an
-     * [IllegalStateException] and terminates.
+     * time or [Handler.millisPerUpdate] is negative, the engine thread throws
+     * an [IllegalStateException] and terminates.
      *
      * @throws IllegalStateException if the `status` is not `Status.STOPPED`
      */
@@ -168,7 +99,7 @@ abstract class Engine(
             try {
                 run()
             } catch (e: Exception) {
-                onError(e)
+                handler.onError(e)
             }
         }
     }
@@ -209,9 +140,8 @@ abstract class Engine(
      */
     fun release() {
         check(status == STOPPED) { "Engine can't be released if not stopped!" }
-        onRelease()
-        listOf(audioDriver, graphicsDriver, inputDriver, fileSystemDriver)
-                .forEach(Driver::release)
+        handler.onRelease()
+        platform.release()
         status = RELEASED
     }
 }

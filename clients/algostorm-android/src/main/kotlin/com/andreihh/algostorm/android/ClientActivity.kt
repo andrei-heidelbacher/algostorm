@@ -107,13 +107,13 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
         loaderManager.initLoader(0, savedInstanceState, this)
     }
 
-    override fun onStart() {
+    override fun onResume() {
         isRunning = true
         engineHolder?.start()
         super.onStart()
     }
 
-    override fun onStop() {
+    override fun onPause() {
         engineHolder?.stop()
         isRunning = false
         super.onStop()

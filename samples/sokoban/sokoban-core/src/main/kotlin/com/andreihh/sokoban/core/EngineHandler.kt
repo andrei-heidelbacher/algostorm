@@ -16,15 +16,11 @@
 
 package com.andreihh.sokoban.core
 
-import com.andreihh.algostorm.core.drivers.audio.AudioDriver
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
-import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
-import com.andreihh.algostorm.core.drivers.input.InputDriver
-import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
 import com.andreihh.algostorm.core.ecs.System
 import com.andreihh.algostorm.core.ecs.System.Companion.ENTITY_POOL
-import com.andreihh.algostorm.core.engine.Engine
+import com.andreihh.algostorm.core.engine.Handler
 import com.andreihh.algostorm.core.event.EventBus
 import com.andreihh.algostorm.systems.EventSystem.Companion.EVENT_BUS
 import com.andreihh.algostorm.systems.MapObject
@@ -52,17 +48,7 @@ import com.andreihh.algostorm.systems.physics2d.PathFindingSystem
 import com.andreihh.algostorm.systems.physics2d.PhysicsSystem
 import com.andreihh.algostorm.systems.physics2d.Position
 
-class SokobanEngine(
-        audioDriver: AudioDriver,
-        graphicsDriver: GraphicsDriver,
-        inputDriver: InputDriver,
-        fileSystemDriver: FileSystemDriver
-) : Engine(
-        audioDriver = audioDriver,
-        graphicsDriver = graphicsDriver,
-        inputDriver = inputDriver,
-        fileSystemDriver = fileSystemDriver
-) {
+class EngineHandler : Handler() {
     private val eventBus = EventBus()
     private lateinit var map: MapObject
     private val camera = Camera()

@@ -19,7 +19,8 @@ package com.andreihh.algostorm.android
 import android.content.Context
 import android.os.Bundle
 import android.view.SurfaceView
-import com.andreihh.algostorm.core.engine.EngineFactory
+import com.andreihh.algostorm.core.engine.Engine
+import com.andreihh.algostorm.core.engine.Platform
 
 class EngineHolder(context: Context) {
     private val appContext = context.applicationContext
@@ -27,12 +28,10 @@ class EngineHolder(context: Context) {
     private val graphicsDriver = AndroidGraphicsDriver(appContext)
     private val inputDriver = AndroidInputDriver(appContext)
     private val fileSystemDriver = AndroidFileSystemDriver(appContext)
-    private val engine = EngineFactory.create(
-            audioDriver,
-            graphicsDriver,
-            inputDriver,
-            fileSystemDriver
-    )
+    private val platform =
+            Platform(audioDriver, graphicsDriver, inputDriver, fileSystemDriver)
+
+    private val engine = Engine(platform)
 
     private fun Bundle.toMap(): Map<String, Any?> =
             keySet().associate { it to get(it) }

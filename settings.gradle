@@ -6,9 +6,7 @@ include ':algostorm-core',
         ':algostorm-test'
 
 include ':clients:algostorm-android',
-        ':clients:algostorm-android-test',
-        ':clients:algostorm-desktop'
+        ':clients:algostorm-android-test'
 
 include ':samples:sokoban:sokoban-core',
-        ':samples:sokoban:sokoban-android',
-        ':samples:sokoban:sokoban-desktop'
+        ':samples:sokoban:sokoban-android'

@@ -54,6 +54,10 @@ class MapObject private constructor(
             tileSets += TileSet.Builder().apply(init).build()
         }
 
+        fun tileSet(tileSet: TileSet) {
+            tileSets += tileSet
+        }
+
         fun entity(id: Id, init: EntityRef.Builder.() -> Unit) {
             initialEntities[id] = EntityRef.Builder().apply(init).build()
         }

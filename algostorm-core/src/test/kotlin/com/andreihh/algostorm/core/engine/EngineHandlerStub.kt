@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.engine
+package com.andreihh.algostorm.core.engine
 
-import com.andreihh.algostorm.core.drivers.audio.AudioDriver
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
-import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
-import com.andreihh.algostorm.core.drivers.input.InputDriver
-import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
-import com.andreihh.algostorm.core.engine.Engine
+import com.andreihh.algostorm.core.engine.Handler
 
-class EngineStub(
-        audioDriver: AudioDriver,
-        graphicsDriver: GraphicsDriver,
-        inputDriver: InputDriver,
-        fileSystemDriver: FileSystemDriver
-) : Engine(
-        audioDriver = audioDriver,
-        graphicsDriver = graphicsDriver,
-        inputDriver = inputDriver,
-        fileSystemDriver = fileSystemDriver
-) {
+class EngineHandlerStub : Handler() {
     override val millisPerUpdate: Int
         get() = 25
 
@@ -49,7 +35,7 @@ class EngineStub(
 
     override fun onStop() {}
 
-    override fun onError(cause: Exception) {}
-
     override fun onRelease() {}
+
+    override fun onError(cause: Exception) {}
 }

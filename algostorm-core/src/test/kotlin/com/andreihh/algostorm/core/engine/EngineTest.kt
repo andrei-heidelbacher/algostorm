@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.engine
+package com.andreihh.algostorm.core.engine
 
-import com.andreihh.algostorm.core.engine.Engine
 import com.andreihh.algostorm.core.engine.Engine.Status
+import com.andreihh.algostorm.test.drivers.audio.AudioDriverStub
+import com.andreihh.algostorm.test.drivers.graphics2d.GraphicsDriverStub
+import com.andreihh.algostorm.test.drivers.input.InputDriverStub
+import com.andreihh.algostorm.test.drivers.io.FileSystemDriverStub
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -29,15 +31,19 @@ import kotlin.test.assertEquals
  * In order to test common functionality to all engines, you may implement this
  * class and provide a concrete engine instance to test.
  */
-@Ignore
-abstract class EngineTest {
+class EngineTest {
     companion object {
         /** The timeout used for stopping and shutting down the engine. */
         const val TIMEOUT: Int = 500
     }
 
     /** The engine instance that should be tested. */
-    protected abstract val engine: Engine
+    private val engine = Engine(Platform(
+            AudioDriverStub(),
+            GraphicsDriverStub(),
+            InputDriverStub(),
+            FileSystemDriverStub()
+    ))
 
     @Before fun init() {
         engine.init(emptyMap())

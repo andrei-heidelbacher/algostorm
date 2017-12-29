@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,40 +16,28 @@
 
 package com.andreihh.algostorm.core.engine
 
+import com.andreihh.algostorm.core.drivers.Driver
 import com.andreihh.algostorm.core.drivers.audio.AudioDriver
 import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
 import com.andreihh.algostorm.core.drivers.input.InputDriver
 import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
 
-class EngineMock(
-        audioDriver: AudioDriver,
-        graphicsDriver: GraphicsDriver,
-        inputDriver: InputDriver,
-        fileSystemDriver: FileSystemDriver
-) : Engine(
-        audioDriver = audioDriver,
-        graphicsDriver = graphicsDriver,
-        inputDriver = inputDriver,
-        fileSystemDriver = fileSystemDriver
+/**
+ *
+ *
+ * @property audioDriver the driver that handles playing music and sound effects
+ * @property graphicsDriver the driver that handles drawing to the screen
+ * @property inputDriver the driver that handles reading input from the user
+ * @property fileSystemDriver the driver that handles files and resources
+ */
+class Platform(
+        val audioDriver: AudioDriver,
+        val graphicsDriver: GraphicsDriver,
+        val inputDriver: InputDriver,
+        val fileSystemDriver: FileSystemDriver
 ) {
-    var state: Int = 0
-        private set
-
-    override var millisPerUpdate: Int = 25
-
-    override fun onInit(args: Map<String, Any?>) {}
-
-    override fun onStart() {}
-
-    override fun onUpdate() {
-        state++
-    }
-
-    override fun onStop() {}
-
-    override fun onError(cause: Exception) {}
-
-    override fun onRelease() {
-        state = -1
+    fun release() {
+        listOf(audioDriver, graphicsDriver, inputDriver, fileSystemDriver)
+                .forEach(Driver::release)
     }
 }
