@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityGroup
-import com.andreihh.algostorm.core.ecs.EntityGroup.Companion.getSnapshot
-import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -31,15 +26,17 @@ import kotlin.test.assertTrue
 
 @Ignore
 abstract class EntityGroupTest {
-    private lateinit var initialEntities: Map<Id, Prefab>
+    private lateinit var initialEntities: Map<Id, Collection<Component>>
     private lateinit var group: EntityGroup
 
-    protected open fun createInitialEntities(): Map<Id, Prefab> =
+    protected open fun createInitialEntities(): Map<Id, Collection<Component>> =
             (1 until 1000).associate {
-                Id(it) to prefabOf(ComponentMock(it))
+                Id(it) to setOf(ComponentMock(it))
             }
 
-    protected abstract fun createGroup(entities: Map<Id, Prefab>): EntityGroup
+    protected abstract fun createGroup(
+            entities: Map<Id, Collection<Component>>
+    ): EntityGroup
 
     @Before fun initGroup() {
         initialEntities = createInitialEntities()
@@ -47,7 +44,11 @@ abstract class EntityGroupTest {
     }
 
     @Test fun testGetSnapshotReturnsSameEntities() {
-        assertEquals(initialEntities, group.getSnapshot())
+        assertEquals(
+                expected = initialEntities,
+                actual = group.entities
+                        .associate { it.id to it.components.toSet() }
+        )
     }
 
     @Test fun testGroupIsValid() {
@@ -69,7 +70,8 @@ abstract class EntityGroupTest {
         val subgroup = group.addGroup { it.id.value % 2 == 1 }
         assertEquals(
                 expected = initialEntities.filter { it.key.value % 2 == 1 },
-                actual = subgroup.getSnapshot()
+                actual = subgroup.entities
+                        .associate { it.id to it.components.toSet() }
         )
     }
 

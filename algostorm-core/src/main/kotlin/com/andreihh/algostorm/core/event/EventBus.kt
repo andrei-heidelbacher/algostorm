@@ -25,71 +25,36 @@ import java.util.LinkedList
  * from certain topics and allows to [post] an event to the bus or make a
  * [request] and notify its subscribers.
  */
-interface EventBus {
-    companion object {
-        /** Returns the default implementation of an event bus. */
-        operator fun invoke(): EventBus = EventBusImpl()
+class EventBus {
+    private val eventQueue = LinkedList<Event>()
+    private val subscribers =
+            hashMapOf<Subscriber, List<Pair<Method, Class<*>>>>()
 
-        private fun Method.validateHandler() {
-            require(Modifier.isFinal(modifiers)) { "$name is not final!" }
-            require(returnType.name == "void") {
-                "$name doesn't return Unit/void!"
-            }
-            require(parameterTypes.size == 1) {
-                "$name doesn't receive a single parameter!"
-            }
-            val parameterType = parameterTypes[0]
-            require(Event::class.java.isAssignableFrom(parameterType)
-                    || Request::class.java.isAssignableFrom(parameterType)) {
-                "$name doesn't receive an Event or Request as parameter!"
-            }
-            require(typeParameters.isEmpty()) { "$name is a generic method!" }
-            require(parameterType.typeParameters.isEmpty()) {
-                "$name receives a generic parameter!"
-            }
+    private fun Method.validateHandler() {
+        require(Modifier.isFinal(modifiers)) { "$name is not final!" }
+        require(returnType.name == "void") {
+            "$name doesn't return Unit/void!"
         }
+        require(parameterTypes.size == 1) {
+            "$name doesn't receive a single parameter!"
+        }
+        val parameterType = parameterTypes[0]
+        require(Event::class.java.isAssignableFrom(parameterType)
+                || Request::class.java.isAssignableFrom(parameterType)) {
+            "$name doesn't receive an Event or Request as parameter!"
+        }
+        require(typeParameters.isEmpty()) { "$name is a generic method!" }
+        require(parameterType.typeParameters.isEmpty()) {
+            "$name receives a generic parameter!"
+        }
+    }
 
-        private class EventBusImpl : EventBus {
-            private val eventQueue = LinkedList<Event>()
-            private val subscribers =
-                    hashMapOf<Subscriber, List<Pair<Method, Class<*>>>>()
-
-            override fun subscribe(subscriber: Subscriber) {
-                val handlers = subscriber.javaClass.methods.filter {
-                    it.isAnnotationPresent(Subscribe::class.java)
-                }.apply { forEach { it.validateHandler() } }
-                subscribers[subscriber] = handlers.map {
-                    it to it.parameterTypes[0]
+    private fun <T : Any> publish(value: T) {
+        for ((subscriber, handlers) in subscribers) {
+            for ((handler, parameterType) in handlers) {
+                if (parameterType.isInstance(value)) {
+                    handler.invoke(subscriber, value)
                 }
-            }
-
-            override fun unsubscribe(subscriber: Subscriber) {
-                subscribers.remove(subscriber)
-            }
-
-            override fun post(event: Event) {
-                eventQueue.add(event)
-            }
-
-            private fun <T : Any> publish(value: T) {
-                for ((subscriber, handlers) in subscribers) {
-                    for ((handler, parameterType) in handlers) {
-                        if (parameterType.isInstance(value)) {
-                            handler.invoke(subscriber, value)
-                        }
-                    }
-                }
-            }
-
-            override fun publishPosts() {
-                while (eventQueue.isNotEmpty()) {
-                    publish(eventQueue.remove())
-                }
-            }
-
-            override fun <T> request(request: Request<T>): T {
-                publish(request)
-                return request.get()
             }
         }
     }
@@ -104,7 +69,14 @@ interface EventBus {
      * However, if any non-public or static method is annotated, it will be
      * ignored instead of throwing an exception.
      */
-    fun subscribe(subscriber: Subscriber)
+    fun subscribe(subscriber: Subscriber) {
+        val handlers = subscriber.javaClass.methods.filter {
+            it.isAnnotationPresent(Subscribe::class.java)
+        }.apply { forEach { it.validateHandler() } }
+        subscribers[subscriber] = handlers.map {
+            it to it.parameterTypes[0]
+        }
+    }
 
     /**
      * Unregisters the given `subscriber` from this event bus.
@@ -112,7 +84,9 @@ interface EventBus {
      * @param subscriber the object that should be unsubscribed from events
      * posted to this event bus
      */
-    fun unsubscribe(subscriber: Subscriber)
+    fun unsubscribe(subscriber: Subscriber) {
+        subscribers.remove(subscriber)
+    }
 
     /**
      * Posts the given `event` and notifies all subscribers.
@@ -122,7 +96,9 @@ interface EventBus {
      *
      * @param event the event that should be posted
      */
-    fun post(event: Event)
+    fun post(event: Event) {
+        eventQueue.add(event)
+    }
 
     /**
      * Immediately publishes the given `request` and returns its result.
@@ -133,10 +109,17 @@ interface EventBus {
      * @throws IllegalStateException if the `request` was not completed or if it
      * was completed more than once
      */
-    fun <T> request(request: Request<T>): T
+    fun <T> request(request: Request<T>): T {
+        publish(request)
+        return request.get()
+    }
 
     /**
      * Blocks until all posted events have been handled by their subscribers.
      */
-    fun publishPosts()
+    fun publishPosts() {
+        while (eventQueue.isNotEmpty()) {
+            publish(eventQueue.remove())
+        }
+    }
 }

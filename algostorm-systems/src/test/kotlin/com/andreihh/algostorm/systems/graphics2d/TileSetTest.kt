@@ -16,7 +16,7 @@
 
 package com.andreihh.algostorm.systems.graphics2d
 
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
+import com.andreihh.algostorm.core.drivers.io.Resource
 import com.andreihh.algostorm.core.drivers.serialization.JsonDriver
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Frame
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Image
@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 
 class TileSetTest {
     private val name = "world"
-    private val image = Image(resourceOf("image.png"), 288, 240)
+    private val image = Image(Resource.of("image.png"), 288, 240)
     private val tileWidth = 24
     private val tileHeight = 24
     private val animations = mapOf("tile:idle" to listOf(

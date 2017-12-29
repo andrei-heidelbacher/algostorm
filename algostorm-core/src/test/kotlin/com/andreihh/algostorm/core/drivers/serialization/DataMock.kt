@@ -18,8 +18,8 @@ package com.andreihh.algostorm.core.drivers.serialization
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
 import com.andreihh.algostorm.core.drivers.io.Resource
+import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
 
 data class DataMock(
         val primitiveField: Int,
@@ -29,7 +29,7 @@ data class DataMock(
         val resource: Resource<Any>,
         val color: Color,
         val id: Id,
-        val prefabs: Map<Id, Prefab>
+        val prefabs: Map<Id, Set<Component>>
 ) {
     data class InnerDataMock(val field: String)
 }

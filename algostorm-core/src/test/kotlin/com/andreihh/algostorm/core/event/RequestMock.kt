@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.event
 
-import com.andreihh.algostorm.core.ecs.Component
-import com.andreihh.algostorm.core.ecs.ComponentLibrary
-import kotlin.reflect.KClass
-
-class Components : ComponentLibrary {
-    override val components: Map<KClass<out Component>, String> =
-            mapOf(ComponentMock::class to "ComponentMock")
-}
+class RequestMock : Request<Int>()

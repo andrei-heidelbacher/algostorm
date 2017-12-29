@@ -16,10 +16,10 @@
 
 package com.andreihh.algostorm.systems.lifecycle
 
+import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityPool
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
 import com.andreihh.algostorm.core.ecs.MutableEntityRef
-import com.andreihh.algostorm.core.ecs.Prefab
 import com.andreihh.algostorm.core.event.Request
 import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.EventSystem
@@ -33,12 +33,11 @@ class LifecycleSystem : EventSystem() {
     private val entityPool: EntityPool by context(ENTITY_POOL)
 
     /**
-     * A request to create an entity from the given [prefab].
+     * A request to create an entity from the given [components].
      *
-     * @property prefab the prefab containing the initial components of the
-     * entity
+     * @property components the initial components of the entity
      */
-    class Create(val prefab: Prefab) : Request<MutableEntityRef>()
+    class Create(val components: Collection<Component>) : Request<MutableEntityRef>()
 
     /**
      * A request to delete the entity with the given [id].
@@ -49,7 +48,7 @@ class LifecycleSystem : EventSystem() {
 
     @Subscribe
     fun onCreate(request: Create) {
-        request.complete(entityPool.create(request.prefab))
+        request.complete(entityPool.create(request.components))
     }
 
     @Subscribe

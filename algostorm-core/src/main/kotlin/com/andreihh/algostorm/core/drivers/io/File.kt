@@ -22,7 +22,7 @@ data class File(val uri: String) {
 
         private val regex = Regex("$SCHEMA(/[^/]+)+")
 
-        fun fileOf(path: String): File = File("$SCHEMA/$path")
+        fun of(path: String): File = File("$SCHEMA/$path")
     }
 
     init {

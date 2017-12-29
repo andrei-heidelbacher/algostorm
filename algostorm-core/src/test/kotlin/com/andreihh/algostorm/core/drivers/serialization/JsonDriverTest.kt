@@ -17,12 +17,11 @@
 package com.andreihh.algostorm.core.drivers.serialization
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
+import com.andreihh.algostorm.core.drivers.io.Resource
 import com.andreihh.algostorm.core.drivers.serialization.DataMock.InnerDataMock
+import com.andreihh.algostorm.core.ecs.Component
+import com.andreihh.algostorm.core.ecs.ComponentMock
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.andreihh.algostorm.test.ecs.ComponentMock
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import kotlin.test.assertEquals
@@ -36,12 +35,12 @@ class JsonDriverTest {
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = resourceOf("data.json"),
+            resource = Resource.of("data.json"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(
-                    Id(1) to prefabOf(ComponentMock(1)),
-                    Id(2) to prefabOf(ComponentMock(2))
+                    Id(1) to setOf(ComponentMock(1)),
+                    Id(2) to setOf(ComponentMock(2))
             )
     )
 
@@ -59,7 +58,7 @@ class JsonDriverTest {
     @Test fun `test load prefab with invalid component throws`() {
         val src = javaClass.getResourceAsStream("/invalid_prefab.json")
         assertFailsWith<JsonException> {
-            driver.deserialize<Prefab>(src)
+            driver.deserialize<Collection<Component>>(src)
         }
     }
 }

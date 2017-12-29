@@ -34,6 +34,11 @@ abstract class EntityRef protected constructor(
         private val owner: EntityPool,
         val id: Id
 ) {
+    companion object {
+        fun entityTemplate(init: Builder.() -> Unit): Collection<Component> =
+                Builder().apply(init).build()
+    }
+
     /**
      * An entity id.
      *
@@ -48,6 +53,16 @@ abstract class EntityRef protected constructor(
 
         /** Returns the [value] of this id. */
         override fun toString(): String = "$value"
+    }
+
+    class Builder {
+        private val components = arrayListOf<Component>()
+
+        operator fun Component.unaryPlus() {
+            components += this
+        }
+
+        fun build(): Collection<Component> = components.toList()
     }
 
     /** An immutable view of this entity's components. */

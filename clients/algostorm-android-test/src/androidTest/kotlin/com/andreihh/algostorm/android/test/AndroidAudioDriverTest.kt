@@ -23,7 +23,6 @@ import com.andreihh.algostorm.android.AndroidAudioDriver
 import com.andreihh.algostorm.core.drivers.audio.AudioStream
 import com.andreihh.algostorm.core.drivers.io.InvalidResourceException
 import com.andreihh.algostorm.core.drivers.io.Resource
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -42,10 +41,10 @@ class AndroidAudioDriverTest {
     private val audioManager = context.getSystemService(AUDIO_SERVICE)
             as AudioManager
 
-    private val music = resourceOf<AudioStream>("music.mp3")
+    private val music = Resource.of<AudioStream>("music.mp3")
     private val sounds = setOf<Resource<AudioStream>>(
-            resourceOf("sound-1.wav"),
-            resourceOf("sound-2.wav")
+            Resource.of("sound-1.wav"),
+            Resource.of("sound-2.wav")
     )
 
     private fun assertAudioIsActive() {
@@ -74,7 +73,7 @@ class AndroidAudioDriverTest {
 
     @Test fun testLoadNonExistingMusicThrows() {
         val path = "non-existing.mp3"
-        val resource = resourceOf<AudioStream>(path)
+        val resource = Resource.of<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
             audioDriver.loadMusic(resource)
         }
@@ -82,7 +81,7 @@ class AndroidAudioDriverTest {
 
     @Test fun testLoadInvalidMusicThrows() {
         val path = "tileset.mp3"
-        val resource = resourceOf<AudioStream>(path)
+        val resource = Resource.of<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
             audioDriver.loadMusic(resource)
         }
@@ -114,7 +113,7 @@ class AndroidAudioDriverTest {
 
     @Test fun testLoadNonExistingSoundThrows() {
         val path = "non-existing.mp3"
-        val resource = resourceOf<AudioStream>(path)
+        val resource = Resource.of<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
             audioDriver.loadSound(resource)
         }
@@ -122,7 +121,7 @@ class AndroidAudioDriverTest {
 
     @Test fun testLoadInvalidSoundThrows() {
         val path = "tileset.mp3"
-        val resource = resourceOf<AudioStream>(path)
+        val resource = Resource.of<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
             audioDriver.loadSound(resource)
         }

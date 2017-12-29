@@ -16,12 +16,10 @@
 
 package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
-import com.andreihh.algostorm.test.ecs.MutableEntityRefTest
-
 class EntityRefImplTest : MutableEntityRefTest() {
-    private val entityPool = entityPoolOf()
+    private val entityPool = EntityPool.of(emptyMap())
 
-    override fun createEntity(prefab: Prefab): MutableEntityRef =
-            entityPool.create(prefab)
+    override fun createEntity(
+            components: Collection<Component>
+    ): MutableEntityRef = entityPool.create(components)
 }

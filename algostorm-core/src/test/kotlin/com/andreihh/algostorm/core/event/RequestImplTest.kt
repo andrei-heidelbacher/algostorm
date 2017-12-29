@@ -16,8 +16,6 @@
 
 package com.andreihh.algostorm.core.event
 
-import com.andreihh.algostorm.test.event.RequestTest
-
 class RequestImplTest : RequestTest<Int>() {
     class RequestImpl : Request<Int>()
 

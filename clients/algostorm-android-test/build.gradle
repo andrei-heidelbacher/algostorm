@@ -1,6 +1,6 @@
 android {
     defaultConfig {
-        applicationId "com.aheidelbacher.algostorm.android.test"
+        applicationId "com.andreihh.algostorm.android.test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -11,8 +11,8 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'NOTICE.txt'
-        exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
         exclude 'META-INF/DEPENDENCIES'
     }
 }

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.event
+package com.andreihh.algostorm.core.event
 
-import com.andreihh.algostorm.core.event.Request
 import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals

@@ -16,11 +16,8 @@
 
 package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
-import com.andreihh.algostorm.test.ecs.MutableEntityGroupTest
-
 class EntityGroupImplTest : MutableEntityGroupTest() {
     override fun createGroup(
-            entities: Map<EntityRef.Id, Prefab>
-    ): MutableEntityGroup = entityPoolOf(entities)
+            entities: Map<EntityRef.Id, Collection<Component>>
+    ): MutableEntityGroup = EntityPool.of(entities)
 }

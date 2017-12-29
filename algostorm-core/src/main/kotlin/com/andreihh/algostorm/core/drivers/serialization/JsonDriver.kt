@@ -19,20 +19,23 @@ package com.andreihh.algostorm.core.drivers.serialization
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
 import com.andreihh.algostorm.core.drivers.io.Resource
 import com.andreihh.algostorm.core.ecs.Component
-import com.andreihh.algostorm.core.ecs.ComponentLibrary
+import com.andreihh.algostorm.core.ecs.EntityPool
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
 import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.KeyDeserializer
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTypeResolverBuilder
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -106,29 +109,45 @@ object JsonDriver {
         Id(key.toInt())
     }
 
-    private val prefabSerializer = serializer<Prefab> { value, gen ->
+    private val entityPoolSerializer = serializer<EntityPool> { value, gen ->
         gen.writeStartObject()
-        value.components.forEach { component ->
-            val name = ComponentLibrary[component::class]
-                    ?: throw JsonException("'$component' is not registered!")
-            gen.writeFieldName(name)
-            gen.writeObject(component)
+        for (entity in value.entities) {
+            gen.writeFieldName("${entity.id.value}")
+            gen.writeStartArray()
+            entity.components.forEach(gen::writeObject)
+            gen.writeEndArray()
         }
         gen.writeEndObject()
     }
 
-    private val prefabDeserializer = deserializer { p ->
-        val components = arrayListOf<Component>()
-        p.codec.readTree<JsonNode>(p).fields().forEach { (name, value) ->
-            val type = ComponentLibrary[name]
-                    ?: throw JsonException("'$name' is not a component name!")
-            val component = value.traverse(p.codec).readValueAs(type.java)
-            components.add(component)
+    private val entityPoolDeserializer = deserializer { p ->
+        val entities = hashMapOf<Id, Collection<Component>>()
+        for ((id, components) in p.codec.readTree<JsonNode>(p).fields()) {
+            val cp = components.traverse(p.codec)
+            val entityComponents = arrayListOf<Component>()
+            for (component in cp.codec.readTree<JsonNode>(cp).elements()) {
+                entityComponents += component.traverse(cp.codec)
+                        .readValueAs(Component::class.java)
+            }
+            entities[Id(id.toInt())] = entityComponents
         }
-        Prefab(components)
+        EntityPool.of(entities)
     }
 
+    private val typeResolver =
+            object : DefaultTypeResolverBuilder(OBJECT_AND_NON_CONCRETE) {
+                override fun useForType(t: JavaType): Boolean =
+                        Component::class.java.isAssignableFrom(t.rawClass)
+            }.init(JsonTypeInfo.Id.CLASS, null)
+                    .inclusion(JsonTypeInfo.As.PROPERTY)
+                    .typeProperty("@class")
+
     private val objectMapper = jacksonObjectMapper().apply {
+        enable(SerializationFeature.INDENT_OUTPUT)
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+        setDefaultTyping(typeResolver)
         registerModule(SimpleModule().apply {
             addSerializer(Resource::class.java, resourceSerializer)
             addDeserializer(Resource::class.java, resourceDeserializer)
@@ -138,13 +157,9 @@ object JsonDriver {
             addDeserializer(Id::class.java, idDeserializer)
             addKeySerializer(Id::class.java, idKeySerializer)
             addKeyDeserializer(Id::class.java, idKeyDeserializer)
-            addSerializer(Prefab::class.java, prefabSerializer)
-            addDeserializer(Prefab::class.java, prefabDeserializer)
+            addSerializer(EntityPool::class.java, entityPoolSerializer)
+            addDeserializer(EntityPool::class.java, entityPoolDeserializer)
         })
-        enable(SerializationFeature.INDENT_OUTPUT)
-        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
     /**

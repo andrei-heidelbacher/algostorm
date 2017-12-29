@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityGroup.Companion.getSnapshot
-import com.andreihh.algostorm.core.ecs.EntityPool
-import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.toPrefab
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -44,13 +38,14 @@ abstract class EntityPoolTest {
         }
     }
 
-    protected abstract fun createInitialEntities(): Map<Id, Prefab>
+    protected abstract fun createInitialEntities(
+    ): Map<Id, Collection<Component>>
 
     protected abstract fun createEntityPool(
-            entities: Map<Id, Prefab>
+            entities: Map<Id, Collection<Component>>
     ): EntityPool
 
-    protected lateinit var initialEntities: Map<Id, Prefab>
+    protected lateinit var initialEntities: Map<Id, Collection<Component>>
     protected lateinit var entityPool: EntityPool
 
     @Before fun init() {
@@ -59,19 +54,23 @@ abstract class EntityPoolTest {
     }
 
     @Test fun testGetSnapshotReturnsSameEntities() {
-        assertEquals(initialEntities, entityPool.getSnapshot())
+        assertEquals(
+                expected = initialEntities,
+                actual = entityPool.entities
+                        .associate { it.id to it.components.toSet() }
+        )
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun createDuplicatedComponentTypeShouldThrow() {
-        entityPool.create(prefabOf(ComponentMock(1), ComponentMock(2)))
+        entityPool.create(setOf(ComponentMock(1), ComponentMock(2)))
     }
 
     @Test fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
                 expected = initialEntities,
                 actual = entityPool.entities.associate {
-                    it.id to it.toPrefab()
+                    it.id to it.components.toSet()
                 }
         )
     }
@@ -82,9 +81,12 @@ abstract class EntityPoolTest {
     }
 
     @Test fun getExistingShouldReturnEqualEntity() {
-        for ((id, prefab) in initialEntities) {
+        for ((id, components) in initialEntities) {
             assertEquals(id, entityPool[id]?.id)
-            assertEquals(prefab, entityPool[id]?.toPrefab())
+            assertEquals(
+                    expected = components.toSet(),
+                    actual = entityPool[id]?.components?.toSet()
+            )
         }
     }
 
@@ -119,7 +121,7 @@ abstract class EntityPoolTest {
 
     @Test fun getAfterCreateShouldReturnEqualEntity() {
         val maxId = initialEntities.keys.maxBy { it.value }?.value ?: 0
-        val entity = entityPool.create(prefabOf(ComponentMock(maxId + 1)))
+        val entity = entityPool.create(setOf(ComponentMock(maxId + 1)))
         assertEquals(entity, entityPool[entity.id])
     }
 

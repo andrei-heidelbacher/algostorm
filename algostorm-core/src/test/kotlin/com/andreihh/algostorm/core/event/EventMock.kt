@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.event
-
-import com.andreihh.algostorm.core.event.Event
+package com.andreihh.algostorm.core.event
 
 /**
  * An event that should be used for testing purposes.

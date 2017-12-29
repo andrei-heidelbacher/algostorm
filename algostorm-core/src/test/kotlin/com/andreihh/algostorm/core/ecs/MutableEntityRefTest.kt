@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.MutableEntityRef
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 abstract class MutableEntityRefTest : EntityRefTest() {
-    override abstract fun createEntity(prefab: Prefab): MutableEntityRef
+    override abstract fun createEntity(
+            components: Collection<Component>
+    ): MutableEntityRef
 
     @Test fun testGetComponentAfterRemoveReturnsNull() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id), TestComponent(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
         entity.remove(TestComponent::class)
         assertNull(entity[TestComponent::class])
     }
 
     @Test fun testContainsComponentAfterRemoveReturnsNull() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id), TestComponent(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
         entity.remove(TestComponent::class)
         assertFalse(TestComponent::class in entity)
     }
@@ -46,8 +45,8 @@ abstract class MutableEntityRefTest : EntityRefTest() {
     @Test fun testGetComponentAfterSetReturnsEqualComponent() {
         val oldId = 7
         val id = 9
-        val prefab = prefabOf(ComponentMock(oldId))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(oldId))
+        val entity = createEntity(components)
         entity.set(ComponentMock(id))
         assertEquals(ComponentMock(id), entity[ComponentMock::class])
     }

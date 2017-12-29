@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
-
-import com.andreihh.algostorm.core.ecs.Component
+package com.andreihh.algostorm.core.ecs
 
 data class ComponentMock(val id: Int) : Component

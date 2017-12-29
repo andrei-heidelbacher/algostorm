@@ -6,28 +6,57 @@
   "version": "1.0",
   "backgroundColor": "#ffffff5f",
   "tileSets": [
-    "res:///tileSet.json"
+    {
+      "columns": 12,
+      "image": {
+        "source": "res:///image.png",
+        "width": 288,
+        "height": 240
+      },
+      "margin": 0,
+      "name": "world",
+      "spacing": 0,
+      "tileCount": 120,
+      "tileHeight": 24,
+      "animations": {
+        "tile:idle": [
+          {
+            "tileId": 1,
+            "duration": 250
+          },
+          {
+            "tileId": 2,
+            "duration": 250
+          }
+        ]
+      },
+      "tileWidth": 24
+    }
   ],
-  "entities": {
-    "1": {
-      "ComponentMock": {
+  "entityPool": {
+    "1": [
+      {
+        "@class": "com.andreihh.algostorm.systems.MapObjectTest$ComponentMock",
         "id": 1
       }
-    },
-    "2": {
-      "ComponentMock": {
+    ],
+    "2": [
+      {
+        "@class": "com.andreihh.algostorm.systems.MapObjectTest$ComponentMock",
         "id": 2
       }
-    },
-    "3": {
-      "ComponentMock": {
+    ],
+    "3": [
+      {
+        "@class": "com.andreihh.algostorm.systems.MapObjectTest$ComponentMock",
         "id": 3
       }
-    },
-    "4": {
-      "ComponentMock": {
+    ],
+    "4": [
+      {
+        "@class": "com.andreihh.algostorm.systems.MapObjectTest$ComponentMock",
         "id": 4
       }
-    }
+    ]
   }
 }

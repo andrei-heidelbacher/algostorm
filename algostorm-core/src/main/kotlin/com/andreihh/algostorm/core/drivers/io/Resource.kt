@@ -36,7 +36,7 @@ data class Resource<T>(val uri: String) {
          *
          * @throws IllegalArgumentException if the given `path` is invalid
          */
-        fun <T> resourceOf(path: String): Resource<T> =
+        fun <T> of(path: String): Resource<T> =
                 Resource("$SCHEMA/$path")
     }
 

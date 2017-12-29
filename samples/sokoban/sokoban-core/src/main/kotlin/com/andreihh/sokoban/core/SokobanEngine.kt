@@ -20,11 +20,8 @@ import com.andreihh.algostorm.core.drivers.audio.AudioDriver
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
 import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
 import com.andreihh.algostorm.core.drivers.input.InputDriver
-import com.andreihh.algostorm.core.drivers.io.FileSystem.Companion.loadResource
 import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
 import com.andreihh.algostorm.core.ecs.System
 import com.andreihh.algostorm.core.ecs.System.Companion.ENTITY_POOL
 import com.andreihh.algostorm.core.engine.Engine
@@ -48,7 +45,6 @@ import com.andreihh.algostorm.systems.graphics2d.RenderingSystem
 import com.andreihh.algostorm.systems.graphics2d.RenderingSystem.Companion.BACKGROUND
 import com.andreihh.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.andreihh.algostorm.systems.graphics2d.Sprite
-import com.andreihh.algostorm.systems.graphics2d.TileSetCollection
 import com.andreihh.algostorm.systems.input.InputSystem.Companion.INPUT_DRIVER
 import com.andreihh.algostorm.systems.input.InputSystem.HandleInput
 import com.andreihh.algostorm.systems.physics2d.Body
@@ -88,9 +84,11 @@ class SokobanEngine(
             height = 8
             tileWidth = 64
             tileHeight = 64
-            tileSet(resourceOf("sokoban_tileset.json"))
+            tileSet {
 
-            fun floor(x: Int, y: Int) = prefabOf(
+            }
+
+            fun floor(x: Int, y: Int) = setOf(
                     Position(x, y),
                     Sprite(
                             width = tileWidth,
@@ -101,7 +99,7 @@ class SokobanEngine(
                     )
             )
 
-            fun wall(x: Int, y: Int) = prefabOf(
+            fun wall(x: Int, y: Int) = setOf(
                     Position(x, y),
                     Sprite(
                             width = tileWidth,
@@ -113,7 +111,7 @@ class SokobanEngine(
                     Body.STATIC
             )
 
-            fun player(x: Int, y: Int) = prefabOf(
+            fun player(x: Int, y: Int) = setOf(
                     Position(x, y),
                     Animation("player", "idle", 0, true),
                     Sprite(
@@ -148,11 +146,8 @@ class SokobanEngine(
             }
             entity(Id(1), player(3, 3))
         }
-        val tileSetCollection = map.tileSets.map { resource ->
-            fileSystemDriver.loadResource(resource)
-        }.onEach { tileSet ->
-            graphicsDriver.loadBitmap(tileSet.image.source)
-        }.let(::TileSetCollection)
+        map.tileSets.forEach { graphicsDriver.loadBitmap(it.image.source) }
+        val tileSetCollection = map.tileSets
         val context = mapOf(
                 ENTITY_POOL to map.entityPool,
                 EVENT_BUS to eventBus,

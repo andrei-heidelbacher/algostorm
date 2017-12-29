@@ -20,8 +20,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-/*import com.andreihh.algostorm.test.event.EventMock
-import com.andreihh.algostorm.test.event.RequestMock
+/*import com.andreihh.algostorm.core.event.EventMock
+import com.andreihh.algostorm.core.event.RequestMock
 import com.andreihh.algostorm.test.event.ServiceTest
 import com.andreihh.algostorm.test.event.SubscriberMock
 

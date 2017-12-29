@@ -20,7 +20,9 @@ import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.clearFlags
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Frame
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Viewport
 
-class TileSetCollection(tileSets: List<TileSet>) {
+data class TileSetCollection(
+        private val tileSets: List<TileSet>
+) : List<TileSet> by tileSets {
     @Transient private val viewports = arrayListOf<Viewport>()
     @Transient private val animations = hashMapOf<String, List<Frame>>()
 

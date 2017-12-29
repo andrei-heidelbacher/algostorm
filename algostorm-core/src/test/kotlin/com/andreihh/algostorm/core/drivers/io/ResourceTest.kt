@@ -17,7 +17,6 @@
 package com.andreihh.algostorm.core.drivers.io
 
 import com.andreihh.algostorm.core.drivers.io.Resource.Companion.SCHEMA
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -50,7 +49,7 @@ class ResourceTest {
     @Test fun `test resourceOf relative path builds correct uri`() {
         val path = "resource.txt"
         val expected = Resource<Any>("$SCHEMA/$path")
-        val actual = resourceOf<Any>(path)
+        val actual = Resource.of<Any>(path)
         assertEquals(expected, actual)
     }
 }

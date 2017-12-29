@@ -16,23 +16,19 @@
 
 package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
-import com.andreihh.algostorm.test.ecs.ComponentMock
-import com.andreihh.algostorm.test.ecs.EntityPoolTest
 
 class EntityPoolImplTest : EntityPoolTest() {
     companion object {
         const val ENTITY_COUNT: Int = 1000
     }
 
-    override fun createInitialEntities(): Map<Id, Prefab> =
+    override fun createInitialEntities(): Map<Id, Collection<Component>> =
             (1 until ENTITY_COUNT).associate {
-                Id(it) to prefabOf(ComponentMock(it))
+                Id(it) to setOf(ComponentMock(it))
             }
 
     override fun createEntityPool(
-            entities: Map<Id, Prefab>
-    ): EntityPool = entityPoolOf(entities)
+            entities: Map<Id, Collection<Component>>
+    ): EntityPool = EntityPool.of(entities)
 }

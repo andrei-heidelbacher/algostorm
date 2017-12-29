@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.Component
-import com.andreihh.algostorm.core.ecs.EntityRef
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.emptyPrefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.prefabOf
 import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -32,50 +27,52 @@ import kotlin.test.assertTrue
 abstract class EntityRefTest {
     data class TestComponent(val id: Int) : Component
 
-    protected abstract fun createEntity(prefab: Prefab): EntityRef
+    protected abstract fun createEntity(
+            components: Collection<Component>
+    ): EntityRef
 
     @Test fun testEqualsSameEntityReturnsTrue() {
-        val entity = createEntity(emptyPrefab())
+        val entity = createEntity(emptySet())
         assertTrue(entity == entity)
     }
 
     @Test fun testEqualsAnyReturnsFalse() {
-        val entity = createEntity(emptyPrefab())
+        val entity = createEntity(emptySet())
         assertFalse(entity == Any())
     }
 
     @Test fun testComponentsAreEqualToPrefabComponents() {
         val id = 153
-        val prefab = prefabOf(ComponentMock(id), TestComponent(id))
-        val entity = createEntity(prefab)
-        assertEquals(prefab.components, entity.components.toSet())
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
+        assertEquals(components, entity.components.toSet())
     }
 
     @Test fun testGetComponentReturnsEqualComponent() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id), TestComponent(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
         assertEquals(ComponentMock(id), entity[ComponentMock::class])
     }
 
     @Test fun testGetAbsentComponentReturnsNull() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id))
+        val entity = createEntity(components)
         assertNull(entity[TestComponent::class])
     }
 
     @Test fun testContainsComponentReturnsTrue() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id), TestComponent(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
         assertTrue(ComponentMock::class in entity)
     }
 
     @Test fun testContainsAbsentComponentReturnsFalse() {
         val id = 9
-        val prefab = prefabOf(ComponentMock(id))
-        val entity = createEntity(prefab)
+        val components = setOf(ComponentMock(id))
+        val entity = createEntity(components)
         assertFalse(TestComponent::class in entity)
     }
 }

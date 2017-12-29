@@ -16,8 +16,6 @@
 
 package com.andreihh.algostorm.core.event
 
-import com.andreihh.algostorm.test.event.EventBusTest
-
 class EventBusImplTest : EventBusTest() {
     override val eventBus = EventBus()
 }

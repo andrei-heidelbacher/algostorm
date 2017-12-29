@@ -19,10 +19,10 @@ package com.andreihh.algostorm.android.test
 import android.content.Context.MODE_PRIVATE
 import android.support.test.InstrumentationRegistry
 import com.andreihh.algostorm.android.AndroidFileSystemDriver
-import com.andreihh.algostorm.core.drivers.io.File.Companion.fileOf
+import com.andreihh.algostorm.core.drivers.io.File
 import com.andreihh.algostorm.core.drivers.io.FileSystem.Companion.loadResource
 import com.andreihh.algostorm.core.drivers.io.InvalidResourceException
-import com.andreihh.algostorm.core.drivers.io.Resource.Companion.resourceOf
+import com.andreihh.algostorm.core.drivers.io.Resource
 import org.junit.After
 import org.junit.Test
 import java.io.FileNotFoundException
@@ -48,7 +48,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testGetRawResource() {
         val path = "raw.json"
-        val resource = resourceOf<RawResource>(path)
+        val resource = Resource.of<RawResource>(path)
         val expected = RawResource("raw-resource")
         val actual = fileSystemDriver.loadResource(resource)
         assertEquals(expected, actual)
@@ -56,7 +56,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testGetNonExistingResourceThrows() {
         val path = "tileset"
-        val resource = resourceOf<RawResource>(path)
+        val resource = Resource.of<RawResource>(path)
         assertFailsWith<InvalidResourceException> {
             fileSystemDriver.loadResource(resource)
         }
@@ -64,7 +64,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testGetInvalidRawResourceThrows() {
         val path = "tileset.png"
-        val resource = resourceOf<RawResource>(path)
+        val resource = Resource.of<RawResource>(path)
         assertFailsWith<InvalidResourceException> {
             fileSystemDriver.loadResource(resource)
         }
@@ -72,7 +72,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testOpenFileInput() {
         val path = "test-file-input.txt"
-        val file = fileOf(path)
+        val file = File.of(path)
         val expected = "Hello, world!\n"
         writeFile(path, expected)
         val actual = fileSystemDriver.openFileInput(file).bufferedReader().use {
@@ -83,7 +83,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testOpenNonExistingFileInputThrows() {
         val path = "non-existing.txt"
-        val file = fileOf(path)
+        val file = File.of(path)
         assertFailsWith<FileNotFoundException> {
             fileSystemDriver.openFileInput(file)
         }
@@ -91,7 +91,7 @@ class AndroidFileSystemDriverTest {
 
     @Test fun testOpenFileOutput() {
         val path = "test-file-output.txt"
-        val file = fileOf(path)
+        val file = File.of(path)
         val expected = "Hello, world!\n"
         fileSystemDriver.openFileOutput(file).bufferedWriter().use {
             it.write(expected)

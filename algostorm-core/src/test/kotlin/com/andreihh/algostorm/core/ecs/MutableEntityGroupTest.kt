@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.ecs
+package com.andreihh.algostorm.core.ecs
 
-import com.andreihh.algostorm.core.ecs.EntityRef
-import com.andreihh.algostorm.core.ecs.MutableEntityGroup
-import com.andreihh.algostorm.core.ecs.Prefab
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -30,7 +27,7 @@ abstract class MutableEntityGroupTest : EntityGroupTest() {
     private lateinit var group: MutableEntityGroup
 
     override abstract fun createGroup(
-            entities: Map<EntityRef.Id, Prefab>
+            entities: Map<EntityRef.Id, Collection<Component>>
     ): MutableEntityGroup
 
     @Before fun initMutableGroup() {

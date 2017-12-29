@@ -1,13 +1,13 @@
 android {
     defaultConfig {
-        applicationId "com.aheidelbacher.sokoban"
+        applicationId "com.andreihh.sokoban"
     }
 
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'NOTICE.txt'
-        exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
         exclude 'META-INF/DEPENDENCIES'
     }
 }

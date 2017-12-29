@@ -17,16 +17,9 @@
 package com.andreihh.algostorm.core.ecs
 
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.toPrefab
 
 /** A read-only view group of filtered read-only entities. */
 interface EntityGroup {
-    companion object {
-        /** Returns the current state of the entities in this group. */
-        fun EntityGroup.getSnapshot(): Map<Id, Prefab> =
-                entities.associate { it.id to it.toPrefab() }
-    }
-
     /** A read-only view of the entities in this group. */
     val entities: Iterable<EntityRef>
 

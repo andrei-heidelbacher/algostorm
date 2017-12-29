@@ -15,16 +15,18 @@
   "color": "#ff00FF00",
   "id": 17,
   "prefabs": {
-    "1": {
-      "ComponentMock": {
+    "1": [
+      {
+        "@class": "com.andreihh.algostorm.core.ecs.ComponentMock",
         "id": 1
       }
-    },
-    "2": {
-      "ComponentMock": {
+    ],
+    "2": [
+      {
+        "@class": "com.andreihh.algostorm.core.ecs.ComponentMock",
         "id": 2
       }
-    }
+    ]
   },
   "tileSets": [
     {

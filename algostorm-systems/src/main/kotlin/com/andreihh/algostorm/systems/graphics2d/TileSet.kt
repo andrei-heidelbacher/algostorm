@@ -18,6 +18,7 @@ package com.andreihh.algostorm.systems.graphics2d
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Bitmap
 import com.andreihh.algostorm.core.drivers.io.Resource
+import kotlin.properties.Delegates
 
 /**
  * A tile set used for rendering.
@@ -75,6 +76,9 @@ data class TileSet(
 
         /** Clears all flag bits. */
         fun Int.clearFlags(): Int = and(0x0FFFFFFF)
+
+        fun tileSet(init: Builder.() -> Unit): TileSet =
+                Builder().apply(init).build()
     }
 
     /**
@@ -148,6 +152,52 @@ data class TileSet(
 
         override fun toString(): String =
                 "${image.source}[$x, $y, ${x + width}, ${y + height}]"
+    }
+
+    class Builder {
+        lateinit var name: String
+        private lateinit var image: Image
+        var tileWidth: Int by Delegates.notNull()
+        var tileHeight: Int by Delegates.notNull()
+        var margin: Int = 0
+        var spacing: Int = 0
+        private val animations = hashMapOf<String, List<Frame>>()
+
+        fun image(init: ImageBuilder.() -> Unit) {
+            image = ImageBuilder().apply(init).build()
+        }
+
+        fun animation(name: String, init: AnimationBuilder.() -> Unit) {
+            animations[name] = AnimationBuilder().apply(init).build()
+        }
+
+        fun build(): TileSet = TileSet(
+                name = name,
+                image = image,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
+                margin = margin,
+                spacing = spacing,
+                animations = animations.toMap()
+        )
+    }
+
+    class ImageBuilder {
+        lateinit var source: String
+        var width: Int by Delegates.notNull()
+        var height: Int by Delegates.notNull()
+
+        fun build(): Image = Image(Resource(source), width, height)
+    }
+
+    class AnimationBuilder {
+        private val frames = arrayListOf<Frame>()
+
+        fun frame(tileId: Int, duration: Int) {
+            frames += Frame(tileId, duration)
+        }
+
+        fun build(): List<Frame> = frames.toList()
     }
 
     private fun checkAnimation(animationName: String, frames: List<Frame>) {

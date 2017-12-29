@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.test.event
+package com.andreihh.algostorm.core.event
 
 /*import com.andreihh.algostorm.core.event.EventBus
 import com.aheidelbacher.algostorm.core.event.Service

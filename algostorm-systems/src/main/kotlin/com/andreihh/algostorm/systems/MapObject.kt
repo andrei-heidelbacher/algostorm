@@ -17,12 +17,10 @@
 package com.andreihh.algostorm.systems
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
-import com.andreihh.algostorm.core.drivers.io.Resource
+import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityPool
-import com.andreihh.algostorm.core.ecs.EntityPool.Companion.entityPoolOf
+import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.Prefab
-import com.andreihh.algostorm.core.ecs.Prefab.Companion.toPrefab
 import com.andreihh.algostorm.systems.graphics2d.TileSet
 import kotlin.properties.Delegates
 
@@ -31,8 +29,8 @@ class MapObject private constructor(
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
-        val tileSets: List<Resource<TileSet>>,
-        private var entities: Map<Id, Prefab>,
+        val tileSets: List<TileSet>,
+        val entityPool: EntityPool,
         val backgroundColor: Color?,
         val version: String
 ) {
@@ -46,22 +44,30 @@ class MapObject private constructor(
         var height: Int by Delegates.notNull()
         var tileWidth: Int by Delegates.notNull()
         var tileHeight: Int by Delegates.notNull()
-        private val tileSets = arrayListOf<Resource<TileSet>>()
-        private val initialEntities = hashMapOf<Id, Prefab>()
-        private val entities = arrayListOf<Prefab>()
+        private val tileSets = arrayListOf<TileSet>()
+        private val initialEntities = hashMapOf<Id, Collection<Component>>()
+        private val entities = arrayListOf<Collection<Component>>()
         var backgroundColor: Color? = null
         var version: String = "1.0"
 
-        fun tileSet(resource: Resource<TileSet>) {
-            tileSets.add(resource)
+        fun tileSet(init: TileSet.Builder.() -> Unit) {
+            tileSets += TileSet.Builder().apply(init).build()
         }
 
-        fun entity(id: Id, prefab: Prefab) {
-            initialEntities[id] = prefab
+        fun entity(id: Id, init: EntityRef.Builder.() -> Unit) {
+            initialEntities[id] = EntityRef.Builder().apply(init).build()
         }
 
-        fun entity(prefab: Prefab) {
-            entities.add(prefab)
+        fun entity(id: Id, components: Collection<Component>) {
+            initialEntities[id] = components
+        }
+
+        fun entity(init: EntityRef.Builder.() -> Unit) {
+            entities += EntityRef.Builder().apply(init).build()
+        }
+
+        fun entity(components: Collection<Component>) {
+            entities += components
         }
 
         fun build(): MapObject = MapObject(
@@ -70,20 +76,11 @@ class MapObject private constructor(
                 tileWidth = tileWidth,
                 tileHeight = tileHeight,
                 tileSets = tileSets.toList(),
-                entities = initialEntities,
+                entityPool = EntityPool.of(initialEntities),
                 backgroundColor = backgroundColor,
                 version = version
         ).apply {
             this@Builder.entities.forEach { entityPool.create(it) }
         }
     }
-
-    @Transient val entityPool: EntityPool = entityPoolOf(entities)
-
-    fun updateSnapshot() {
-        entities = entityPool.entities.associate {
-            it.id to it.toPrefab()
-        }
-    }
-
 }

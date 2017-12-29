@@ -17,7 +17,6 @@
 package com.andreihh.algostorm.core.drivers.io
 
 import com.andreihh.algostorm.core.drivers.io.File.Companion.SCHEMA
-import com.andreihh.algostorm.core.drivers.io.File.Companion.fileOf
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -51,7 +50,7 @@ class FileTest {
         val path = "resource.txt"
         assertEquals(
                 expected = File("$SCHEMA/$path"),
-                actual = fileOf(path)
+                actual = File.of(path)
         )
     }
 }
