@@ -18,8 +18,8 @@ package com.andreihh.algostorm.systems.lifecycle
 
 import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityPool
+import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.MutableEntityRef
 import com.andreihh.algostorm.core.event.Request
 import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.EventSystem
@@ -37,7 +37,7 @@ class LifecycleSystem : EventSystem() {
      *
      * @property components the initial components of the entity
      */
-    class Create(val components: Collection<Component>) : Request<MutableEntityRef>()
+    class Create(val components: Collection<Component>) : Request<EntityRef>()
 
     /**
      * A request to delete the entity with the given [id].

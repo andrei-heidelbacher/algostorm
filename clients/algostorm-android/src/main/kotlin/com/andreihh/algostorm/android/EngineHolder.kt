@@ -19,6 +19,7 @@ package com.andreihh.algostorm.android
 import android.content.Context
 import android.os.Bundle
 import android.view.SurfaceView
+import com.andreihh.algostorm.core.drivers.input.Input
 import com.andreihh.algostorm.core.engine.Engine
 import com.andreihh.algostorm.core.engine.Platform
 
@@ -38,6 +39,10 @@ class EngineHolder(context: Context) {
 
     fun init(args: Bundle) {
         engine.init(args.toMap())
+    }
+
+    fun sendInput(input: Input) {
+        inputDriver.write(input)
     }
 
     fun attachSurface(surfaceView: SurfaceView) {

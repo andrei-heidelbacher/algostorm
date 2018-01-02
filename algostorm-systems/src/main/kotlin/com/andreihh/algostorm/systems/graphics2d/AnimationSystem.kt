@@ -16,34 +16,23 @@
 
 package com.andreihh.algostorm.systems.graphics2d
 
+import com.andreihh.algostorm.core.ecs.EntityGroup
+import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.MutableEntityGroup
-import com.andreihh.algostorm.core.ecs.MutableEntityRef
 import com.andreihh.algostorm.core.event.Request
 import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.Update
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Frame
 
 class AnimationSystem : GraphicsSystem() {
-    private val group: MutableEntityGroup by context(ENTITY_POOL)
+    private val entities: EntityGroup by context(ENTITY_POOL)
+    private val animated = entities.filter { Animation::class in it }
 
     class Animate(
             val entityId: Id,
             val animation: String,
             val loop: Boolean
     ) : Request<Unit>()
-
-    private lateinit var animated: MutableEntityGroup
-
-    override fun onStart() {
-        super.onStart()
-        animated = group.addGroup { Animation::class in it }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        group.removeGroup(animated)
-    }
 
     @Subscribe
     fun onAnimate(request: Animate) {
@@ -63,7 +52,7 @@ class AnimationSystem : GraphicsSystem() {
         }
     }
 
-    private fun MutableEntityRef.update(deltaMillis: Int) {
+    private fun EntityRef.update(deltaMillis: Int) {
         val animation = get(Animation::class) ?: return
         val frames = tileSetCollection.getAnimation(animation.animation)
                 ?: return
@@ -85,6 +74,6 @@ class AnimationSystem : GraphicsSystem() {
 
     @Subscribe
     fun onUpdate(event: Update) {
-        animated.entities.forEach { it.update(event.elapsedMillis) }
+        animated.forEach { it.update(event.elapsedMillis) }
     }
 }

@@ -46,7 +46,7 @@ class RenderingSystem : GraphicsSystem() {
         const val BACKGROUND: String = "BACKGROUND"
     }
 
-    private val group: EntityGroup by context(ENTITY_POOL)
+    private val entities: EntityGroup by context(ENTITY_POOL)
     private val background: Color by context(BACKGROUND)
     private val canvas: Canvas by context(CANVAS)
     private val camera: Camera by context(CAMERA)
@@ -65,29 +65,19 @@ class RenderingSystem : GraphicsSystem() {
         }
     }
 
-    private lateinit var renderableGroup: EntityGroup
+    private val renderable =
+        entities.filter { it.sprite != null && it.position != null }
+
     private var sortedEntities = emptyArray<Node>()
 
-    override fun onStart() {
-        super.onStart()
-        renderableGroup = group.addGroup {
-            it.sprite != null && it.position != null
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        group.removeGroup(renderableGroup)
-    }
-
     private fun updateSortedOrder() {
-        val size = renderableGroup.entities.count()
+        val size = renderable.count()
         val isChanged = size != sortedEntities.size || sortedEntities.any {
-            it.id !in renderableGroup
+            it.id !in renderable
         }
         if (isChanged) {
             val entities = arrayOfNulls<Node?>(size)
-            renderableGroup.entities.forEachIndexed { i, entityRef ->
+            renderable.forEachIndexed { i, entityRef ->
                 entities[i] = Node(
                         id = entityRef.id,
                         position = checkNotNull(entityRef.position),
@@ -97,7 +87,7 @@ class RenderingSystem : GraphicsSystem() {
             sortedEntities = entities.requireNoNulls()
         } else {
             sortedEntities.forEach {
-                val entity = checkNotNull(renderableGroup[it.id])
+                val entity = checkNotNull(renderable[it.id])
                 it.position = checkNotNull(entity.position)
                 it.sprite = checkNotNull(entity.sprite)
             }

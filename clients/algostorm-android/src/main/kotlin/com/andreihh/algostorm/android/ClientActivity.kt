@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.Loader
 import android.os.Bundle
 import android.view.SurfaceView
+import com.andreihh.algostorm.core.drivers.input.Input
 
 abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     companion object {
@@ -80,6 +81,10 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
 
     private var engineHolder: EngineHolder? = null
     private var isRunning = false
+
+    protected fun sendInput(input: Input) {
+        engineHolder?.sendInput(input)
+    }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<EngineHolder> =
             EngineLoader(context = this, bundle = args ?: intent.extras)

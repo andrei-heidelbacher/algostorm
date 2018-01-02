@@ -18,16 +18,16 @@ package com.andreihh.algostorm.core.ecs
 
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@Ignore
-abstract class EntityPoolTest {
+class EntityPoolTest {
     companion object {
+        const val ENTITY_COUNT: Int = 1000
+
         fun assertEquals(expected: EntityRef?, actual: EntityRef?) {
             kotlin.test.assertEquals(expected?.hashCode(), actual?.hashCode())
             kotlin.test.assertEquals(expected, actual)
@@ -38,15 +38,17 @@ abstract class EntityPoolTest {
         }
     }
 
-    protected abstract fun createInitialEntities(
-    ): Map<Id, Collection<Component>>
+    private fun createInitialEntities(): Map<Id, Collection<Component>> =
+        (1 until ENTITY_COUNT).associate {
+            Id(it) to setOf(ComponentMock(it))
+        }
 
-    protected abstract fun createEntityPool(
-            entities: Map<Id, Collection<Component>>
-    ): EntityPool
+    private fun createEntityPool(
+        entities: Map<Id, Collection<Component>>
+    ): EntityPool = EntityPool.of(entities)
 
-    protected lateinit var initialEntities: Map<Id, Collection<Component>>
-    protected lateinit var entityPool: EntityPool
+    private lateinit var initialEntities: Map<Id, Collection<Component>>
+    private lateinit var entityPool: EntityPool
 
     @Before fun init() {
         initialEntities = createInitialEntities()
@@ -56,8 +58,7 @@ abstract class EntityPoolTest {
     @Test fun testGetSnapshotReturnsSameEntities() {
         assertEquals(
                 expected = initialEntities,
-                actual = entityPool.entities
-                        .associate { it.id to it.components.toSet() }
+                actual = entityPool.associate { it.id to it.components.toSet() }
         )
     }
 
@@ -69,9 +70,7 @@ abstract class EntityPoolTest {
     @Test fun entitiesShouldReturnAllExistingEntities() {
         assertEquals(
                 expected = initialEntities,
-                actual = entityPool.entities.associate {
-                    it.id to it.components.toSet()
-                }
+                actual = entityPool.associate { it.id to it.components.toSet() }
         )
     }
 
@@ -133,14 +132,14 @@ abstract class EntityPoolTest {
     }
 
     @Test fun filterGroupShouldContainFilteredEntities() {
-        val subgroup = entityPool.addGroup { it.id.value % 2 == 1 }
+        val subgroup = entityPool.filter { it.id.value % 2 == 1 }
         assertEquals(
-                expected = entityPool.entities.filter {
+                expected = entityPool.filter {
                     it.id.value % 2 == 1
                 }.associateBy {
                     it.id to it.components.toSet()
                 },
-                actual = subgroup.entities.associateBy {
+                actual = subgroup.associateBy {
                     it.id to it.components.toSet()
                 }
         )

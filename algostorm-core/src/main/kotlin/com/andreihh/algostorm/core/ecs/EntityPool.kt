@@ -17,138 +17,32 @@
 package com.andreihh.algostorm.core.ecs
 
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import kotlin.reflect.KClass
 
 /** A collection of unique entities. */
-class EntityPool(
-        entities: Map<Id, Collection<Component>>
-) : MutableEntityGroup {
-    companion object {
-        /**
-         * Returns an entity pool containing the given `entities`.
-         *
-         * @param entities the initial entities contained by the pool
-         * @return the entity pool
-         */
-        fun of(entities: Map<Id, Collection<Component>>): EntityPool =
-                EntityPool(entities)
-    }
-
-    private inner class EntityRefImpl(
-            id: Id,
-            components: Collection<Component>
-    ) : MutableEntityRef(this@EntityPool, id) {
-        private val componentMap = hashMapOf<KClass<out Component>, Component>()
-
-        init {
-            for (component in components) {
-                require(component::class !in componentMap) {
-                    "Duplicated component type '${component::class}'!"
-                }
-                componentMap[component::class] = component
-            }
-        }
-
-        override val components: Collection<Component>
-            get() = componentMap.values
-
-        @Suppress("unchecked_cast")
-        override fun <T : Component> get(type: KClass<T>): T? =
-                componentMap[type] as T?
-
-        @Suppress("unchecked_cast")
-        override fun <T : Component> remove(type: KClass<T>): T? {
-            val component = componentMap.remove(type) as T?
-            rootGroup.onChanged(this)
-            return component
-        }
-
-        override fun set(component: Component) {
-            componentMap[component::class] = component
-            rootGroup.onChanged(this)
-        }
-    }
-
-    private class EntityGroupImpl(
-            filter: (EntityRef) -> Boolean
-    ) : MutableEntityGroup {
-        private var filter: ((EntityRef) -> Boolean)? = filter
-        private val entityMap = hashMapOf<Id, EntityRefImpl>()
-        private val groups = hashSetOf<EntityGroupImpl>()
-
-        override val isValid: Boolean
-            get() = filter != null
-
-        override val entities: Iterable<EntityRefImpl>
-            get() = entityMap.values
-
-        override fun get(id: Id): EntityRefImpl? = entityMap[id]
-
-        override fun addGroup(
-                filter: (EntityRef) -> Boolean
-        ): EntityGroupImpl {
-            check(isValid) {
-                "Can't add group when '$this' is invalid!"
-            }
-            val subgroup = EntityGroupImpl(filter)
-            groups += subgroup
-            entityMap.values.forEach(subgroup::onChanged)
-            return subgroup
-        }
-
-        override fun removeGroup(group: EntityGroup): Boolean =
-                if (group is EntityGroupImpl && group in groups) {
-                    group.onCleared()
-                    groups -= group
-                    true
-                } else false
-
-        internal fun onChanged(entity: EntityRefImpl) {
-            if (checkNotNull(filter).invoke(entity)) {
-                entityMap[entity.id] = entity
-                groups.forEach { it.onChanged(entity) }
-            } else {
-                onRemoved(entity)
-            }
-        }
-
-        internal fun onRemoved(entity: EntityRefImpl) {
-            if (entityMap.remove(entity.id) != null) {
-                groups.forEach { it.onRemoved(entity) }
-            }
-        }
-
-        internal fun onCleared() {
-            groups.forEach(EntityGroupImpl::onCleared)
-            groups.clear()
-            entityMap.clear()
-            filter = null
-        }
-    }
-
+class EntityPool : EntityGroup {
     private var nextId = 1
-    private val rootGroup = EntityGroupImpl { true }
+    private val entityMap = hashMapOf<Id, EntityRef>()
 
-    init {
-        for ((id, components) in entities) {
-            nextId = maxOf(nextId, id.value + 1)
-            rootGroup.onChanged(EntityRefImpl(id, components))
+    override fun iterator(): Iterator<EntityRef> = entityMap.values.iterator()
+
+    override fun get(id: Id): EntityRef? = entityMap[id]
+
+    override fun filter(predicate: (EntityRef) -> Boolean): EntityGroup =
+        Group(parent = this, predicate = predicate)
+
+    private fun create(id: Id, components: Collection<Component>): EntityRef {
+        check(id !in entityMap) { "Id '$id' is already used!" }
+        val entity = EntityRef(id)
+        for (component in components) {
+            require(component::class !in entity) {
+                "Duplicated component type '${component::class}'!"
+            }
+            entity.set(component)
         }
+        nextId = maxOf(nextId, id.value + 1)
+        entityMap[id] = entity
+        return entity
     }
-
-    override val entities: Iterable<MutableEntityRef>
-        get() = rootGroup.entities
-
-    override val isValid: Boolean
-        get() = rootGroup.isValid
-
-    override fun get(id: Id): MutableEntityRef? = rootGroup[id]
-
-    override fun addGroup(filter: (EntityRef) -> Boolean): MutableEntityGroup =
-            rootGroup.addGroup(filter)
-
-    override fun removeGroup(group: EntityGroup): Boolean =
-            rootGroup.removeGroup(group)
 
     /**
      * Creates an entity from the given `components`, adds it to this pool and
@@ -162,11 +56,9 @@ class EntityPool(
      * @throws IllegalArgumentException if there are duplicated component types
      * @throws IllegalStateException if there are too many entities in this pool
      */
-    fun create(components: Collection<Component>): MutableEntityRef {
+    fun create(components: Collection<Component>): EntityRef {
         check(nextId > 0) { "Too many entities created in '$this'!" }
-        val entity = EntityRefImpl(Id(nextId++), components)
-        rootGroup.onChanged(entity)
-        return entity
+        return create(Id(nextId++), components)
     }
 
     /**
@@ -176,11 +68,40 @@ class EntityPool(
      * @return `true` if the entity was removed, `false` if it didn't exist in
      * this pool
      */
-    fun remove(id: Id): Boolean =
-            rootGroup[id]?.apply(rootGroup::onRemoved) != null
+    fun remove(id: Id): Boolean = entityMap.remove(id) != null
 
     /** Removes all the entities from this pool. */
     fun clear() {
-        rootGroup.entities.toList().forEach(rootGroup::onRemoved)
+        entityMap.clear()
+    }
+
+    companion object {
+        /**
+         * Returns an entity pool containing the given initial [entities].
+         *
+         * @throws IllegalArgumentException if there is an entity with
+         * duplicated component types
+         */
+        fun of(entities: Map<Id, Collection<Component>>): EntityPool {
+            val pool = EntityPool()
+            for ((id, components) in entities) {
+                pool.create(id, components)
+            }
+            return pool
+        }
+    }
+
+    private class Group(
+        private val parent: EntityGroup,
+        private val predicate: (EntityRef) -> Boolean
+    ) : EntityGroup {
+
+        override fun iterator(): Iterator<EntityRef> =
+            parent.asSequence().filter(predicate).iterator()
+
+        override fun get(id: Id): EntityRef? = parent[id]?.takeIf(predicate)
+
+        override fun filter(predicate: (EntityRef) -> Boolean): EntityGroup =
+            Group(parent = this, predicate = predicate)
     }
 }

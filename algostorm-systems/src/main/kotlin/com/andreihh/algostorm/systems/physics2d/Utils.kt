@@ -18,8 +18,6 @@ package com.andreihh.algostorm.systems.physics2d
 
 import com.andreihh.algostorm.core.ecs.EntityGroup
 import com.andreihh.algostorm.core.ecs.EntityRef
-import com.andreihh.algostorm.core.ecs.MutableEntityGroup
-import com.andreihh.algostorm.core.ecs.MutableEntityRef
 import com.andreihh.algostorm.systems.physics2d.Body.KINEMATIC
 import com.andreihh.algostorm.systems.physics2d.Body.STATIC
 import com.andreihh.algostorm.systems.physics2d.Body.TRIGGER
@@ -72,11 +70,6 @@ fun EntityRef.overlaps(other: EntityRef): Boolean = position.let { p ->
 }
 
 fun EntityGroup.getEntitiesAt(x: Int, y: Int): List<EntityRef> =
-        Position(x, y).let { position ->
-            entities.filter { entity -> entity.position == position }
-        }
-
-fun MutableEntityGroup.getEntitiesAt(x: Int, y: Int): List<MutableEntityRef> =
-        Position(x, y).let { position ->
-            entities.filter { entity -> entity.position == position }
-        }
+    Position(x, y).let { position ->
+        filterTo(arrayListOf()) { entity -> entity.position == position }
+    }

@@ -16,10 +16,9 @@
 
 package com.andreihh.algostorm.systems.physics2d
 
+import com.andreihh.algostorm.core.ecs.EntityGroup
 import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.ecs.MutableEntityGroup
-import com.andreihh.algostorm.core.ecs.MutableEntityRef
 import com.andreihh.algostorm.core.event.Event
 import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.EventSystem
@@ -48,7 +47,7 @@ class PhysicsSystem : EventSystem() {
          * @throws IllegalStateException if this entity is a [Body] or if it
          * doesn't have a [Position]
          */
-        fun MutableEntityRef.transform(dx: Int, dy: Int) {
+        fun EntityRef.transform(dx: Int, dy: Int) {
             check(!isBody) { "Can't transform $this directly if it's a body!" }
             val newPosition = position?.transformed(dx, dy)
                     ?: error("Can't transform $this without position!")
@@ -56,7 +55,7 @@ class PhysicsSystem : EventSystem() {
         }
     }
 
-    private val group: MutableEntityGroup by context(ENTITY_POOL)
+    private val entities: EntityGroup by context(ENTITY_POOL)
 
     /**
      * An event which signals a transformation that should be applied on the
@@ -72,16 +71,15 @@ class PhysicsSystem : EventSystem() {
             val dy: Int
     ) : Event
 
-    private lateinit var kinematicBodies: MutableEntityGroup
+    private val kinematicBodies: EntityGroup =
+        entities.filter { it.position != null && it.isKinematic }
+
     private lateinit var staticBodies: Map<Position, EntityRef>
 
     override fun onStart() {
         super.onStart()
-        kinematicBodies = group.addGroup {
-            it.position != null && it.isKinematic
-        }
         val map = hashMapOf<Position, EntityRef>()
-        for (entity in group.entities) {
+        for (entity in entities) {
             val position = entity.position
             if (entity.isStatic && position != null) {
                 map[position] = entity
@@ -92,7 +90,6 @@ class PhysicsSystem : EventSystem() {
 
     override fun onStop() {
         super.onStop()
-        group.removeGroup(kinematicBodies)
         staticBodies = emptyMap()
     }
 
@@ -125,7 +122,7 @@ class PhysicsSystem : EventSystem() {
         } else {
             entity.set(nextPosition)
             post(Transformed(entity.id, event.dx, event.dy))
-            val trigger = group.getEntitiesAt(nx, ny).filter {
+            val trigger = entities.getEntitiesAt(nx, ny).filter {
                 it != entity && it.isTrigger
             }
             post(trigger.map { Triggered(entity.id, it.id) })

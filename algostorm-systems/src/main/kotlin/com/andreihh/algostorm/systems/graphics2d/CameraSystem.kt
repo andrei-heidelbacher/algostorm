@@ -24,7 +24,7 @@ import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.physics2d.position
 
 class CameraSystem : GraphicsSystem() {
-    private val group: EntityGroup by context(ENTITY_POOL)
+    private val entities: EntityGroup by context(ENTITY_POOL)
     private val camera: Camera by context(CAMERA)
     private val canvas: Canvas by context(CANVAS)
     private var followedEntityId: Id? = null
@@ -44,7 +44,7 @@ class CameraSystem : GraphicsSystem() {
     fun onUpdateCamera(event: UpdateCamera) {
         camera.resize(canvas.width, canvas.height)
         val id = followedEntityId ?: return
-        val entity = group[id] ?: return
+        val entity = entities[id] ?: return
         val (tx, ty) = entity.position ?: return
         val x = tileWidth * tx + tileWidth / 2
         val y = tileHeight * ty + tileHeight / 2

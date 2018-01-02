@@ -48,32 +48,32 @@ import kotlin.reflect.KClass
 /** A JSON serialization and deserialization driver. */
 object JsonDriver {
     private fun <T : Any> serializer(
-            serialize: (T, JsonGenerator) -> Unit
+        serialize: (T, JsonGenerator) -> Unit
     ): JsonSerializer<T> = object : JsonSerializer<T>() {
         override fun serialize(
-                value: T,
-                gen: JsonGenerator,
-                serializers: SerializerProvider?
+            value: T,
+            gen: JsonGenerator,
+            serializers: SerializerProvider?
         ) {
             serialize(value, gen)
         }
     }
 
     private fun <T : Any> deserializer(
-            deserialize: (JsonParser) -> T
+        deserialize: (JsonParser) -> T
     ): JsonDeserializer<T> = object : JsonDeserializer<T>() {
         override fun deserialize(
-                p: JsonParser,
-                ctxt: DeserializationContext?
+            p: JsonParser,
+            ctxt: DeserializationContext?
         ): T = deserialize(p)
     }
 
     private fun keyDeserializer(
-            deserialize: (String) -> Any?
+        deserialize: (String) -> Any?
     ): KeyDeserializer = object : KeyDeserializer() {
         override fun deserializeKey(
-                key: String,
-                ctxt: DeserializationContext?
+            key: String,
+            ctxt: DeserializationContext?
         ): Any? = deserialize(key)
     }
 
@@ -111,7 +111,7 @@ object JsonDriver {
 
     private val entityPoolSerializer = serializer<EntityPool> { value, gen ->
         gen.writeStartObject()
-        for (entity in value.entities) {
+        for (entity in value) {
             gen.writeFieldName("${entity.id.value}")
             gen.writeStartArray()
             entity.components.forEach(gen::writeObject)
@@ -127,7 +127,7 @@ object JsonDriver {
             val entityComponents = arrayListOf<Component>()
             for (component in cp.codec.readTree<JsonNode>(cp).elements()) {
                 entityComponents += component.traverse(cp.codec)
-                        .readValueAs(Component::class.java)
+                    .readValueAs(Component::class.java)
             }
             entities[Id(id.toInt())] = entityComponents
         }
@@ -135,12 +135,12 @@ object JsonDriver {
     }
 
     private val typeResolver =
-            object : DefaultTypeResolverBuilder(OBJECT_AND_NON_CONCRETE) {
-                override fun useForType(t: JavaType): Boolean =
-                        Component::class.java.isAssignableFrom(t.rawClass)
-            }.init(JsonTypeInfo.Id.CLASS, null)
-                    .inclusion(JsonTypeInfo.As.PROPERTY)
-                    .typeProperty("@class")
+        object : DefaultTypeResolverBuilder(OBJECT_AND_NON_CONCRETE) {
+            override fun useForType(t: JavaType): Boolean =
+                Component::class.java.isAssignableFrom(t.rawClass)
+        }.init(JsonTypeInfo.Id.CLASS, null)
+            .inclusion(JsonTypeInfo.As.PROPERTY)
+            .typeProperty("@class")
 
     private val objectMapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
@@ -196,6 +196,6 @@ object JsonDriver {
 
     /** Utility deserialization method. */
     inline fun <reified T : Any> deserialize(src: InputStream): T =
-            deserialize(src, T::class)
+        deserialize(src, T::class)
 }
 

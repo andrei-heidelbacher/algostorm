@@ -1,9 +1,9 @@
 /*
- * Copyright 2017 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,22 +16,21 @@
 
 package com.andreihh.algostorm.core.ecs
 
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@Ignore
-abstract class EntityRefTest {
+class EntityRefTest {
     data class TestComponent(val id: Int) : Component
 
-    protected abstract fun createEntity(
-            components: Collection<Component>
-    ): EntityRef
+    private val entityPool = EntityPool()
+    private fun createEntity(components: Collection<Component>): EntityRef =
+        entityPool.create(components)
 
-    @Test fun testEqualsSameEntityReturnsTrue() {
+    @Test
+    fun testEqualsSameEntityReturnsTrue() {
         val entity = createEntity(emptySet())
         assertTrue(entity == entity)
     }
@@ -74,5 +73,29 @@ abstract class EntityRefTest {
         val components = setOf(ComponentMock(id))
         val entity = createEntity(components)
         assertFalse(TestComponent::class in entity)
+    }
+    @Test fun testGetComponentAfterRemoveReturnsNull() {
+        val id = 9
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
+        entity.remove(TestComponent::class)
+        assertNull(entity[TestComponent::class])
+    }
+
+    @Test fun testContainsComponentAfterRemoveReturnsNull() {
+        val id = 9
+        val components = setOf(ComponentMock(id), TestComponent(id))
+        val entity = createEntity(components)
+        entity.remove(TestComponent::class)
+        assertFalse(TestComponent::class in entity)
+    }
+
+    @Test fun testGetComponentAfterSetReturnsEqualComponent() {
+        val oldId = 7
+        val id = 9
+        val components = setOf(ComponentMock(oldId))
+        val entity = createEntity(components)
+        entity.set(ComponentMock(id))
+        assertEquals(ComponentMock(id), entity[ComponentMock::class])
     }
 }

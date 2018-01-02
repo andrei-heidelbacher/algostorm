@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2018 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.core.ecs
+package com.andreihh.algostorm.android.test
 
-class EntityGroupImplTest : MutableEntityGroupTest() {
-    override fun createGroup(
-            entities: Map<EntityRef.Id, Collection<Component>>
-    ): MutableEntityGroup = EntityPool.of(entities)
+import com.andreihh.algostorm.core.engine.Handler
+
+class EngineHandler : Handler() {
+    override val millisPerUpdate: Int get() = 25
+    override fun onInit(args: Map<String, Any?>) {}
+    override fun onStart() {}
+    override fun onUpdate() {}
+    override fun onStop() {}
+    override fun onRelease() {}
+    override fun onError(cause: Exception) {}
 }

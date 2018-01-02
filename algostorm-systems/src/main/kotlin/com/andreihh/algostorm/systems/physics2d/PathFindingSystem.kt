@@ -95,7 +95,7 @@ class PathFindingSystem : EventSystem() {
         }
     }
 
-    private val group: EntityGroup by context(ENTITY_POOL)
+    private val entities: EntityGroup by context(ENTITY_POOL)
 
     class FindPath(
             val sourceId: Id,
@@ -107,9 +107,9 @@ class PathFindingSystem : EventSystem() {
 
     @Subscribe
     fun onFindPath(request: FindPath) {
-        val colliders = group.entities.filter { it.isCollider }
+        val colliders = entities.filter { it.isCollider }
                 .mapNotNullTo(hashSetOf(), EntityRef::position)
-        val source = checkNotNull(group[request.sourceId]?.position)
+        val source = checkNotNull(entities[request.sourceId]?.position)
         val destination = Position(request.destinationX, request.destinationY)
         request.complete(findPath(source, destination, request.directions) {
             it in colliders
