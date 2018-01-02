@@ -71,8 +71,8 @@ class PhysicsSystem : EventSystem() {
             val dy: Int
     ) : Event
 
-    private val kinematicBodies: EntityGroup =
-        entities.filter { it.position != null && it.isKinematic }
+    private val kinematicBodies: EntityGroup
+        get() = entities.filter { it.position != null && it.isKinematic }
 
     private lateinit var staticBodies: Map<Position, EntityRef>
 

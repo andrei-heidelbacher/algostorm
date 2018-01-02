@@ -26,7 +26,7 @@ import com.andreihh.algostorm.systems.graphics2d.TileSet.Frame
 
 class AnimationSystem : GraphicsSystem() {
     private val entities: EntityGroup by context(ENTITY_POOL)
-    private val animated = entities.filter { Animation::class in it }
+    private val animated get() = entities.filter { Animation::class in it }
 
     class Animate(
             val entityId: Id,

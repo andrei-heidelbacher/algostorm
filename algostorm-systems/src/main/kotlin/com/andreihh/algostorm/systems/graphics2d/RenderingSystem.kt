@@ -65,8 +65,8 @@ class RenderingSystem : GraphicsSystem() {
         }
     }
 
-    private val renderable =
-        entities.filter { it.sprite != null && it.position != null }
+    private val renderable
+        get() = entities.filter { it.sprite != null && it.position != null }
 
     private var sortedEntities = emptyArray<Node>()
 
