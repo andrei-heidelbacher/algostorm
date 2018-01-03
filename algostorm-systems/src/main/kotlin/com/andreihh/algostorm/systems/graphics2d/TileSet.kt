@@ -64,7 +64,7 @@ data class TileSet(
 
         val Int.flags: Int get() = and(0x70000000)
 
-        fun Int.applyFlags(flags: Int): Int = or(flags.flags)
+        fun Int.applyFlags(flags: Int): Int = xor(flags.flags)
 
         /** Flips this tile id horizontally. */
         fun Int.flipHorizontally(): Int = xor(0x40000000)

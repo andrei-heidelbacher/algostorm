@@ -63,7 +63,7 @@ class AnimationSystem : GraphicsSystem() {
         if (elapsedMillis >= totalDuration && animation.loop) {
             set(animation.copy(elapsedMillis = elapsedMillis % totalDuration))
         } else {
-            set(animation.copy(elapsedMillis = Math.min(elapsedMillis, totalDuration)))
+            set(animation.copy(elapsedMillis = minOf(elapsedMillis, totalDuration)))
         }
         var t = elapsedMillis
         var i = 0
@@ -71,7 +71,9 @@ class AnimationSystem : GraphicsSystem() {
             t -= frames[i].duration
             i++
         } while (t >= 0 && i < frames.size)
-        set(sprite.copy(gid = frames[i - 1].tileId))
+        val flags = sprite.gid.flags
+        val newGid = frames[i - 1].tileId.applyFlags(flags)
+        set(sprite.copy(gid = newGid))
     }
 
     @Subscribe
