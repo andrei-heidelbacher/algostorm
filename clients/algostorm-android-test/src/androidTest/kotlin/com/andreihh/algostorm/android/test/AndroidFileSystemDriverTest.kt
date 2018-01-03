@@ -20,9 +20,6 @@ import android.content.Context.MODE_PRIVATE
 import android.support.test.InstrumentationRegistry
 import com.andreihh.algostorm.android.AndroidFileSystemDriver
 import com.andreihh.algostorm.core.drivers.io.File
-import com.andreihh.algostorm.core.drivers.io.FileSystem.Companion.loadResource
-import com.andreihh.algostorm.core.drivers.io.InvalidResourceException
-import com.andreihh.algostorm.core.drivers.io.Resource
 import org.junit.After
 import org.junit.Test
 import java.io.FileNotFoundException
@@ -30,68 +27,41 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class AndroidFileSystemDriverTest {
-    data class RawResource(val content: String)
-
     private val context = InstrumentationRegistry.getTargetContext()
     private val fileSystemDriver = AndroidFileSystemDriver(context)
 
+    private val String.local: String get() = removePrefix("user:///")
+
     private fun writeFile(path: String, content: String) {
-        context.openFileOutput(path, MODE_PRIVATE).bufferedWriter().use {
-            it.write(content)
-        }
+        context.openFileOutput(path.local, MODE_PRIVATE)
+            .bufferedWriter().use { it.write(content) }
     }
 
     private fun readFile(path: String): String =
-            context.openFileInput(path).bufferedReader().use {
-                it.readText()
-            }
-
-    @Test fun testGetRawResource() {
-        val path = "raw.json"
-        val resource = Resource.of<RawResource>(path)
-        val expected = RawResource("raw-resource")
-        val actual = fileSystemDriver.loadResource(resource)
-        assertEquals(expected, actual)
-    }
-
-    @Test fun testGetNonExistingResourceThrows() {
-        val path = "tileset"
-        val resource = Resource.of<RawResource>(path)
-        assertFailsWith<InvalidResourceException> {
-            fileSystemDriver.loadResource(resource)
-        }
-    }
-
-    @Test fun testGetInvalidRawResourceThrows() {
-        val path = "tileset.png"
-        val resource = Resource.of<RawResource>(path)
-        assertFailsWith<InvalidResourceException> {
-            fileSystemDriver.loadResource(resource)
-        }
-    }
+        context.openFileInput(path.local)
+            .bufferedReader().use { it.readText() }
 
     @Test fun testOpenFileInput() {
-        val path = "test-file-input.txt"
-        val file = File.of(path)
+        val path = "user:///test-file-input.txt"
+        val file = File(path)
         val expected = "Hello, world!\n"
         writeFile(path, expected)
-        val actual = fileSystemDriver.openFileInput(file).bufferedReader().use {
-            it.readText()
-        }
+        val actual = fileSystemDriver.openFileInput(file)
+            .bufferedReader().use { it.readText() }
         assertEquals(expected, actual)
     }
 
     @Test fun testOpenNonExistingFileInputThrows() {
-        val path = "non-existing.txt"
-        val file = File.of(path)
+        val path = "user:///non-existing.txt"
+        val file = File(path)
         assertFailsWith<FileNotFoundException> {
             fileSystemDriver.openFileInput(file)
         }
     }
 
     @Test fun testOpenFileOutput() {
-        val path = "test-file-output.txt"
-        val file = File.of(path)
+        val path = "user:///test-file-output.txt"
+        val file = File(path)
         val expected = "Hello, world!\n"
         fileSystemDriver.openFileOutput(file).bufferedWriter().use {
             it.write(expected)

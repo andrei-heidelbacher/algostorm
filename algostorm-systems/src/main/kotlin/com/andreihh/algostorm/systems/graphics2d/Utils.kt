@@ -18,6 +18,8 @@ package com.andreihh.algostorm.systems.graphics2d
 
 import com.andreihh.algostorm.core.ecs.EntityRef
 
+val EntityRef.hasSprite: Boolean get() = contains(Sprite::class)
+
 /** The `Sprite` component of this entity. */
-val EntityRef.sprite: Sprite?
-    get() = get(Sprite::class)
+val EntityRef.sprite: Sprite
+    get() = checkNotNull(get(Sprite::class))

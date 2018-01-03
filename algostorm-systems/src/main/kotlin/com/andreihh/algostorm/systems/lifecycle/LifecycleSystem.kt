@@ -30,7 +30,7 @@ import com.andreihh.algostorm.systems.EventSystem
  * @property entityPool the entity pool used to create and delete entities
  */
 class LifecycleSystem : EventSystem() {
-    private val entityPool: EntityPool by context(ENTITY_POOL)
+    private val entityPool by context<EntityPool>(ENTITY_POOL)
 
     /**
      * A request to create an entity from the given [components].

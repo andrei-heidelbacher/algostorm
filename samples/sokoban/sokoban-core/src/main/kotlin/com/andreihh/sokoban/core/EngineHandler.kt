@@ -33,7 +33,7 @@ import com.andreihh.algostorm.systems.graphics2d.CameraSystem
 import com.andreihh.algostorm.systems.graphics2d.CameraSystem.Follow
 import com.andreihh.algostorm.systems.graphics2d.CameraSystem.UpdateCamera
 import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.CAMERA
-import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.CANVAS
+import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.GRAPHICS_DRIVER
 import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_HEIGHT
 import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_SET_COLLECTION
 import com.andreihh.algostorm.systems.graphics2d.GraphicsSystem.Companion.TILE_WIDTH
@@ -135,14 +135,14 @@ class EngineHandler : Handler() {
         map.tileSets.forEach { graphicsDriver.loadBitmap(it.image.source) }
         val tileSetCollection = map.tileSets
         val context = mapOf(
-                ENTITY_POOL to map.entityPool,
+                ENTITY_POOL to map.entities,
                 EVENT_BUS to eventBus,
                 TILE_WIDTH to map.tileWidth,
                 TILE_HEIGHT to map.tileHeight,
                 BACKGROUND to Color("#FF000000"),
                 TILE_SET_COLLECTION to tileSetCollection,
                 CAMERA to camera,
-                CANVAS to graphicsDriver,
+                GRAPHICS_DRIVER to graphicsDriver,
                 INPUT_DRIVER to inputDriver
         )
         systems.forEach { it.initialize(context) }
@@ -179,7 +179,7 @@ class EngineHandler : Handler() {
     }
 
     override fun onRelease() {
-        map.entityPool.clear()
+        map.entities.clear()
     }
 }
 

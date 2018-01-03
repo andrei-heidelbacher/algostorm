@@ -33,7 +33,8 @@
       "tileWidth": 24
     }
   ],
-  "entityPool": {
+  "sounds": [],
+  "entities": {
     "1": [
       {
         "@class": "com.andreihh.algostorm.systems.MapObjectTest$ComponentMock",

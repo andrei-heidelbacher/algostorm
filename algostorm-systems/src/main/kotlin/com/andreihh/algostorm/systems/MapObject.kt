@@ -16,7 +16,9 @@
 
 package com.andreihh.algostorm.systems
 
+import com.andreihh.algostorm.core.drivers.audio.AudioStream
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
+import com.andreihh.algostorm.core.drivers.io.Resource
 import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityPool
 import com.andreihh.algostorm.core.ecs.EntityRef
@@ -25,14 +27,15 @@ import com.andreihh.algostorm.systems.graphics2d.TileSet
 import kotlin.properties.Delegates
 
 class MapObject private constructor(
-        val width: Int,
-        val height: Int,
-        val tileWidth: Int,
-        val tileHeight: Int,
-        val tileSets: List<TileSet>,
-        val entityPool: EntityPool,
-        val backgroundColor: Color?,
-        val version: String
+    val width: Int,
+    val height: Int,
+    val tileWidth: Int,
+    val tileHeight: Int,
+    val tileSets: List<TileSet>,
+    val sounds: List<Resource<AudioStream>>,
+    val entities: EntityPool,
+    val backgroundColor: Color?,
+    val version: String
 ) {
     class Builder {
         companion object {
@@ -45,6 +48,7 @@ class MapObject private constructor(
         var tileWidth: Int by Delegates.notNull()
         var tileHeight: Int by Delegates.notNull()
         private val tileSets = arrayListOf<TileSet>()
+        private val sounds = arrayListOf<Resource<AudioStream>>()
         private val initialEntities = hashMapOf<Id, Collection<Component>>()
         private val entities = arrayListOf<Collection<Component>>()
         var backgroundColor: Color? = null
@@ -56,6 +60,14 @@ class MapObject private constructor(
 
         fun tileSet(tileSet: TileSet) {
             tileSets += tileSet
+        }
+
+        fun sound(resource: String) {
+            sounds += Resource(resource)
+        }
+
+        fun sound(resource: Resource<AudioStream>) {
+            sounds += resource
         }
 
         fun entity(id: Id, init: EntityRef.Builder.() -> Unit) {
@@ -75,16 +87,16 @@ class MapObject private constructor(
         }
 
         fun build(): MapObject = MapObject(
-                width = width,
-                height = height,
-                tileWidth = tileWidth,
-                tileHeight = tileHeight,
-                tileSets = tileSets.toList(),
-                entityPool = EntityPool.of(initialEntities),
-                backgroundColor = backgroundColor,
-                version = version
-        ).apply {
-            this@Builder.entities.forEach { entityPool.create(it) }
-        }
+            width = width,
+            height = height,
+            tileWidth = tileWidth,
+            tileHeight = tileHeight,
+            tileSets = tileSets.toList(),
+            sounds = sounds.toList(),
+            entities = EntityPool.of(initialEntities)
+                .apply { entities.forEach { create(it) } },
+            backgroundColor = backgroundColor,
+            version = version
+        )
     }
 }

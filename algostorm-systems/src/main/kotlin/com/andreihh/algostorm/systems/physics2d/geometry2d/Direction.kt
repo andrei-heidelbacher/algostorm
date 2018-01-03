@@ -41,5 +41,16 @@ enum class Direction(val dx: Int, val dy: Int) {
          * south, south-west, west, north-west.
          */
         val ORDINAL: List<Direction> = values().asList()
+
+        fun from(dx: Int, dy: Int): Direction? = when {
+            dx == 0 && dy < 0 -> N
+            dx > 0 && dy < 0 -> NE
+            dx > 0 && dy == 0 -> E
+            dx > 0 && dy > 0 -> SE
+            dx == 0 && dy > 0 -> SW
+            dx < 0 && dy == 0 -> W
+            dx < 0 && dy < 0 -> NW
+            else -> null
+        }
     }
 }

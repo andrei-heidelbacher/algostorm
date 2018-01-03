@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 
 class TileSetTest {
     private val name = "world"
-    private val image = Image(Resource.of("image.png"), 288, 240)
+    private val image = Image(Resource("res:///image.png"), 288, 240)
     private val tileWidth = 24
     private val tileHeight = 24
     private val animations = mapOf("tile:idle" to listOf(

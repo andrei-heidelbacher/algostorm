@@ -35,7 +35,7 @@ class JsonDriverTest {
             innerData = InnerDataMock("non-empty"),
             list = listOf(1, 2, 3, 4, 5),
             primitiveFloatField = 1.5F,
-            resource = Resource.of("data.json"),
+            resource = Resource("res:///data.json"),
             color = Color("#ff00ff00"),
             id = Id(17),
             prefabs = mapOf(

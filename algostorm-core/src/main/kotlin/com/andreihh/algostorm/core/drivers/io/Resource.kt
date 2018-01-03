@@ -29,15 +29,6 @@ data class Resource<T>(val uri: String) {
         const val SCHEMA: String = "res://"
 
         private val regex = Regex("$SCHEMA(/[^/]+)+")
-
-        /**
-         * Returns the resource located at the given `path`, relative to the
-         * resources root directory.
-         *
-         * @throws IllegalArgumentException if the given `path` is invalid
-         */
-        fun <T> of(path: String): Resource<T> =
-                Resource("$SCHEMA/$path")
     }
 
     init {
@@ -45,8 +36,7 @@ data class Resource<T>(val uri: String) {
     }
 
     /** The path of this resource relative to the resources root directory. */
-    val path: String
-        get() = uri.removePrefix("$SCHEMA/")
+    val path: String get() = uri.removePrefix("$SCHEMA/")
 
     override fun toString(): String = uri
 }

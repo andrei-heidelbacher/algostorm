@@ -19,21 +19,16 @@ package com.andreihh.algostorm.systems.audio
 import com.andreihh.algostorm.core.drivers.audio.AudioStream
 import com.andreihh.algostorm.core.drivers.audio.SoundPlayer
 import com.andreihh.algostorm.core.drivers.io.Resource
-import com.andreihh.algostorm.core.event.Request
+import com.andreihh.algostorm.core.event.Event
 import com.andreihh.algostorm.core.event.Subscribe
-import com.andreihh.algostorm.systems.EventSystem
 
 /**
  * A system which handles playing short sound effects.
  *
  * @property soundPlayer the sound player used to play short sound effects
  */
-class SoundSystem : EventSystem() {
-    companion object {
-        const val SOUND_PLAYER: String = "SOUND_PLAYER"
-    }
-
-    private val soundPlayer: SoundPlayer by context(SOUND_PLAYER)
+class SoundSystem : AudioSystem() {
+    private val soundPlayer by context<SoundPlayer>(AUDIO_DRIVER)
 
     /**
      * A request to set the sound effects volume to the given value.
@@ -41,7 +36,7 @@ class SoundSystem : EventSystem() {
      * @property volume the new value of the volume
      * @throws IllegalArgumentException if `volume` is not in the range `0..1`
      */
-    class SetSoundVolume(val volume: Float) : Request<Unit>() {
+    class SetSoundVolume(val volume: Float) : Event {
         init {
             require(volume in 0F..1F) { "Invalid sound volume $volume!" }
         }
@@ -52,7 +47,7 @@ class SoundSystem : EventSystem() {
      *
      * @property sound the sound resource which should be played
      */
-    class PlaySoundEffect(val sound: Resource<AudioStream>) : Request<Unit>()
+    class PlaySoundEffect(val sound: Resource<AudioStream>) : Event
 
     override fun onStart() {
         super.onStart()
@@ -68,22 +63,20 @@ class SoundSystem : EventSystem() {
      * After receiving a [SetSoundVolume] request, the volume of the sounds is
      * modified accordingly.
      *
-     * @param request the request
+     * @param event the request
      */
     @Subscribe
-    fun onSetVolume(request: SetSoundVolume) {
-        soundPlayer.setSoundVolume(request.volume)
-        request.complete(Unit)
+    fun onSetVolume(event: SetSoundVolume) {
+        soundPlayer.setSoundVolume(event.volume)
     }
 
     /**
      * After receiving a [PlaySoundEffect] request, the given sound is played.
      *
-     * @param request the request
+     * @param event the request
      */
     @Subscribe
-    fun onPlaySoundEffect(request: PlaySoundEffect) {
-        soundPlayer.playSound(request.sound)
-        request.complete(Unit)
+    fun onPlaySoundEffect(event: PlaySoundEffect) {
+        soundPlayer.playSound(event.sound)
     }
 }

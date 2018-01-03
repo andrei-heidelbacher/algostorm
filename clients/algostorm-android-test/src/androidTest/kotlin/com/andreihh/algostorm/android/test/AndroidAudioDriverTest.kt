@@ -41,10 +41,10 @@ class AndroidAudioDriverTest {
     private val audioManager = context.getSystemService(AUDIO_SERVICE)
             as AudioManager
 
-    private val music = Resource.of<AudioStream>("music.mp3")
+    private val music = Resource<AudioStream>("res:///music.mp3")
     private val sounds = setOf<Resource<AudioStream>>(
-            Resource.of("sound-1.wav"),
-            Resource.of("sound-2.wav")
+            Resource("res:///sound-1.wav"),
+            Resource("res:///sound-2.wav")
     )
 
     private fun assertAudioIsActive() {
@@ -66,24 +66,24 @@ class AndroidAudioDriverTest {
     }
 
     @Before fun loadResources() {
-        audioDriver.loadMusic(music)
-        sounds.forEach(audioDriver::loadSound)
+        audioDriver.loadAudioStream(music)
+        sounds.forEach(audioDriver::loadAudioStream)
         assertAudioIsNotActive()
     }
 
-    @Test fun testLoadNonExistingMusicThrows() {
-        val path = "non-existing.mp3"
-        val resource = Resource.of<AudioStream>(path)
+    @Test fun testLoadNonExistingAudioStreamThrows() {
+        val path = "res:///non-existing.mp3"
+        val resource = Resource<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
-            audioDriver.loadMusic(resource)
+            audioDriver.loadAudioStream(resource)
         }
     }
 
-    @Test fun testLoadInvalidMusicThrows() {
-        val path = "tileset.mp3"
-        val resource = Resource.of<AudioStream>(path)
+    @Test fun testLoadInvalidAudioStreamThrows() {
+        val path = "res:///tileset.mp3"
+        val resource = Resource<AudioStream>(path)
         assertFailsWith<InvalidResourceException> {
-            audioDriver.loadMusic(resource)
+            audioDriver.loadAudioStream(resource)
         }
     }
 
@@ -109,22 +109,6 @@ class AndroidAudioDriverTest {
         audioDriver.playMusic(music)
         audioDriver.stopMusic()
         assertAudioIsNotActive()
-    }
-
-    @Test fun testLoadNonExistingSoundThrows() {
-        val path = "non-existing.mp3"
-        val resource = Resource.of<AudioStream>(path)
-        assertFailsWith<InvalidResourceException> {
-            audioDriver.loadSound(resource)
-        }
-    }
-
-    @Test fun testLoadInvalidSoundThrows() {
-        val path = "tileset.mp3"
-        val resource = Resource.of<AudioStream>(path)
-        assertFailsWith<InvalidResourceException> {
-            audioDriver.loadSound(resource)
-        }
     }
 
     @Test fun testPlaySounds() {

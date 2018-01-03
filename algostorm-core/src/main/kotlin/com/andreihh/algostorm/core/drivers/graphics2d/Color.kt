@@ -42,20 +42,16 @@ data class Color(val color: Int) {
     })
 
     /** The alpha component of this color (a value between `0` and `255). */
-    val a: Int
-        get() = color shr 24 and 0xFF
+    val a: Int get() = color shr 24 and 0xFF
 
     /** The red component of this color (a value between `0` and `255`). */
-    val r: Int
-        get() = color shr 16 and 0xFF
+    val r: Int get() = color shr 16 and 0xFF
 
     /** The green component of this color (a value between `0` and `255`). */
-    val g: Int
-        get() = color shr 8 and 0xFF
+    val g: Int get() = color shr 8 and 0xFF
 
     /** The blue component of this color (a value between `0` and `255`). */
-    val b: Int
-        get() = color and 0xFF
+    val b: Int get() = color and 0xFF
 
     /** Returns the color in `#AARRGGBB` format. */
     override fun toString(): String = "#${String.format("%08x", color)}"

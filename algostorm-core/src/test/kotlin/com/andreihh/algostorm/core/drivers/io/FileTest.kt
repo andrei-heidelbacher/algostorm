@@ -45,12 +45,4 @@ class FileTest {
             File("$SCHEMA/path//file")
         }
     }
-
-    @Test fun `test fileOf relative path builds correct uri`() {
-        val path = "resource.txt"
-        assertEquals(
-                expected = File("$SCHEMA/$path"),
-                actual = File.of(path)
-        )
-    }
 }

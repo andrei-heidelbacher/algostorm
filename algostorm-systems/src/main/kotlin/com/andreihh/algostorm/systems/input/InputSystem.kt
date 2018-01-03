@@ -57,7 +57,7 @@ abstract class InputSystem : EventSystem(), GestureInterpreter {
         var input: Input?
         do {
             input = inputDriver.read()
-            input?.let(this::onInput)
+            input?.let(::onInput)
         } while (input != null)
     }
 }

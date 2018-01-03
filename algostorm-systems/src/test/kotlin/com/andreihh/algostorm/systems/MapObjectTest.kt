@@ -34,9 +34,9 @@ class MapObjectTest {
             assertEquals(expected.tileHeight, actual.tileHeight)
             assertEquals(expected.backgroundColor, actual.backgroundColor)
             assertEquals(expected.tileSets, actual.tileSets)
-            val expectedEntities = expected.entityPool
+            val expectedEntities = expected.entities
                     .associate { it.id to it.components.toSet() }
-            val actualEntities = actual.entityPool
+            val actualEntities = actual.entities
                     .associate { it.id to it.components.toSet() }
             assertEquals(expectedEntities, actualEntities)
         }

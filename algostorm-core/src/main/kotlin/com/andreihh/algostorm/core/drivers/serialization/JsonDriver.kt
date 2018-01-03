@@ -17,6 +17,7 @@
 package com.andreihh.algostorm.core.drivers.serialization
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
+import com.andreihh.algostorm.core.drivers.io.File
 import com.andreihh.algostorm.core.drivers.io.Resource
 import com.andreihh.algostorm.core.ecs.Component
 import com.andreihh.algostorm.core.ecs.EntityPool
@@ -85,33 +86,41 @@ object JsonDriver {
         Resource<Any?>(p.codec.readValue<String>(p, String::class.java))
     }
 
-    private val colorSerializer = serializer<Color> { value, gen ->
-        gen.writeString("$value")
+    private val fileSerializer = serializer<File> { file, gen ->
+        gen.writeString(file.uri)
+    }
+
+    private val fileDeserializer = deserializer { p ->
+        File(p.codec.readValue<String>(p, String::class.java))
+    }
+
+    private val colorSerializer = serializer<Color> { color, gen ->
+        gen.writeString("$color")
     }
 
     private val colorDeserializer = deserializer { p ->
         Color(p.codec.readValue<String>(p, String::class.java))
     }
 
-    private val idSerializer = serializer<Id> { value, gen ->
-        gen.writeNumber(value.value)
+    private val idSerializer = serializer<Id> { id, gen ->
+        gen.writeNumber(id.value)
     }
 
     private val idDeserializer = deserializer { p ->
         Id(p.codec.readValue<Int>(p, Int::class.java))
     }
 
-    private val idKeySerializer = serializer<Id> { value, gen ->
-        gen.writeFieldName("$value")
+    private val idKeySerializer = serializer<Id> { id, gen ->
+        gen.writeFieldName("$id")
     }
 
-    private val idKeyDeserializer = keyDeserializer { key ->
-        Id(key.toInt())
+    private val idKeyDeserializer = keyDeserializer { id ->
+        Id(id.toInt())
     }
 
-    private val entityPoolSerializer = serializer<EntityPool> { value, gen ->
+    private val entityPoolSerializer = serializer<EntityPool> { entities, gen ->
         gen.writeStartObject()
-        for (entity in value) {
+        for (entity in entities) {
             gen.writeFieldName("${entity.id.value}")
             gen.writeStartArray()
             entity.components.forEach(gen::writeObject)
@@ -122,14 +131,14 @@ object JsonDriver {
 
     private val entityPoolDeserializer = deserializer { p ->
         val entities = hashMapOf<Id, Collection<Component>>()
-        for ((id, components) in p.codec.readTree<JsonNode>(p).fields()) {
-            val cp = components.traverse(p.codec)
-            val entityComponents = arrayListOf<Component>()
+        for ((id, rawComponents) in p.codec.readTree<JsonNode>(p).fields()) {
+            val cp = rawComponents.traverse(p.codec)
+            val components = arrayListOf<Component>()
             for (component in cp.codec.readTree<JsonNode>(cp).elements()) {
-                entityComponents += component.traverse(cp.codec)
+                components += component.traverse(cp.codec)
                     .readValueAs(Component::class.java)
             }
-            entities[Id(id.toInt())] = entityComponents
+            entities[Id(id.toInt())] = components
         }
         EntityPool.of(entities)
     }
@@ -151,6 +160,8 @@ object JsonDriver {
         registerModule(SimpleModule().apply {
             addSerializer(Resource::class.java, resourceSerializer)
             addDeserializer(Resource::class.java, resourceDeserializer)
+            addSerializer(File::class.java, fileSerializer)
+            addDeserializer(File::class.java, fileDeserializer)
             addSerializer(Color::class.java, colorSerializer)
             addDeserializer(Color::class.java, colorDeserializer)
             addSerializer(Id::class.java, idSerializer)

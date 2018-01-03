@@ -46,10 +46,10 @@ class RenderingSystem : GraphicsSystem() {
         const val BACKGROUND: String = "BACKGROUND"
     }
 
-    private val entities: EntityGroup by context(ENTITY_POOL)
-    private val background: Color by context(BACKGROUND)
-    private val canvas: Canvas by context(CANVAS)
-    private val camera: Camera by context(CAMERA)
+    private val entities by context<EntityGroup>(ENTITY_POOL)
+    private val background by context<Color>(BACKGROUND)
+    private val canvas by context<Canvas>(GRAPHICS_DRIVER)
+    private val camera by context<Camera>(CAMERA)
 
     private data class Node(
             val id: Id,
@@ -66,7 +66,7 @@ class RenderingSystem : GraphicsSystem() {
     }
 
     private val renderable
-        get() = entities.filter { it.sprite != null && it.position != null }
+        get() = entities.filter { it.hasSprite && it.position != null }
 
     private var sortedEntities = emptyArray<Node>()
 
@@ -81,7 +81,7 @@ class RenderingSystem : GraphicsSystem() {
                 entities[i] = Node(
                         id = entityRef.id,
                         position = checkNotNull(entityRef.position),
-                        sprite = checkNotNull(entityRef.sprite)
+                        sprite = entityRef.sprite
                 )
             }
             sortedEntities = entities.requireNoNulls()
@@ -89,7 +89,7 @@ class RenderingSystem : GraphicsSystem() {
             sortedEntities.forEach {
                 val entity = checkNotNull(renderable[it.id])
                 it.position = checkNotNull(entity.position)
-                it.sprite = checkNotNull(entity.sprite)
+                it.sprite = entity.sprite
             }
         }
         val isSorted = (0 until sortedEntities.size - 1).none {
@@ -132,15 +132,10 @@ class RenderingSystem : GraphicsSystem() {
                 translate(0F, 1F * height)
             }
             drawBitmap(
-                    bitmap = viewport.image.source,
-                    sx = viewport.x,
-                    sy = viewport.y,
-                    sw = viewport.width,
-                    sh = viewport.height,
-                    dx = x,
-                    dy = y,
-                    dw = width,
-                    dh = height
+                bitmap = viewport.image.source,
+                sx = viewport.x, sy = viewport.y,
+                sw = viewport.width, sh = viewport.height,
+                dx = x, dy = y, dw = width, dh = height
             )
             restore()
         }

@@ -18,19 +18,18 @@ package com.andreihh.algostorm.core.drivers.io
 
 data class File(val uri: String) {
     companion object {
+        /** The schema used to identify file URIs. */
         const val SCHEMA: String = "user://"
 
         private val regex = Regex("$SCHEMA(/[^/]+)+")
-
-        fun of(path: String): File = File("$SCHEMA/$path")
     }
 
     init {
         require(uri.matches(regex)) { "Invalid file '$uri'!" }
     }
 
-    val path: String
-        get() = uri.removePrefix("$SCHEMA/")
+    /** The path of this file relative to the app's local directory. */
+    val path: String get() = uri.removePrefix("$SCHEMA/")
 
     override fun toString(): String = uri
 }

@@ -80,7 +80,7 @@ class RenderingSystemTest {
     @Test fun testRenderingOrder() {
         for (x in 0 until width) {
             for (y in 0 until height) {
-                map.entityPool.create(prefabOf(
+                map.entities.create(prefabOf(
                         Position(x, y),
                         Sprite(
                                 width = tileWidth,
@@ -115,7 +115,7 @@ class RenderingSystemTest {
     }
 
     /*@Test fun testRenderColoredObjects() {
-        map.entityPool.create(prefabOf(
+        map.entities.create(prefabOf(
                 Sprite(
                         width = tileWidth,
                         height = tileHeight,
@@ -140,7 +140,7 @@ class RenderingSystemTest {
     }*/
 
     @Test fun testRenderFlippedHorizontallyObject() {
-        map.entityPool.create(prefabOf(
+        map.entities.create(prefabOf(
                 Sprite(
                         width = tileWidth,
                         height = tileHeight,
@@ -167,7 +167,7 @@ class RenderingSystemTest {
     }
 
     @Test fun testRenderFlippedVerticallyObject() {
-        map.entityPool.create(prefabOf(
+        map.entities.create(prefabOf(
                 Sprite(
                         width = tileWidth,
                         height = tileHeight,
@@ -194,7 +194,7 @@ class RenderingSystemTest {
     }
 
     @Test fun testRenderFlippedDiagonallyObject() {
-        map.entityPool.create(prefabOf(
+        map.entities.create(prefabOf(
                 Sprite(
                         width = tileWidth,
                         height = tileHeight,

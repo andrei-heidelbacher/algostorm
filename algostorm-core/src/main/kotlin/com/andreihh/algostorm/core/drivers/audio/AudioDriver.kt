@@ -23,26 +23,14 @@ import com.andreihh.algostorm.core.drivers.io.InvalidResourceException
 /** A driver that offers audio services. */
 interface AudioDriver : Driver, MusicPlayer, SoundPlayer {
     /**
-     * Synchronously loads the given `music`, making it available to future
-     * calls of [playMusic].
+     * Synchronously loads the given audio stream `resource`, making it
+     * available to future calls of [playMusic] and [playSound].
      *
-     * If the same music is loaded multiple times, this method has no effect.
+     * If the same resource is loaded multiple times, this method has no effect.
      *
-     * @param music the music resource which should be loaded
+     * @param resource the sound resource which should be loaded
      * @throws InvalidResourceException if any error occurs when parsing and
-     * loading the `music`
+     * loading the `resource`
      */
-    fun loadMusic(music: Resource<AudioStream>)
-
-    /**
-     * Synchronously loads the given `sound`, making it available to future
-     * calls of [playSound].
-     *
-     * If the same music is loaded multiple times, this method has no effect.
-     *
-     * @param sound the sound resource which should be loaded
-     * @throws InvalidResourceException if any error occurs when parsing and loading the
-     * `resource`
-     */
-    fun loadSound(sound: Resource<AudioStream>)
+    fun loadAudioStream(resource: Resource<AudioStream>)
 }

@@ -19,20 +19,22 @@ package com.andreihh.algostorm.systems.graphics2d
 import com.andreihh.algostorm.core.ecs.EntityGroup
 import com.andreihh.algostorm.core.ecs.EntityRef
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
-import com.andreihh.algostorm.core.event.Request
+import com.andreihh.algostorm.core.event.Event
 import com.andreihh.algostorm.core.event.Subscribe
 import com.andreihh.algostorm.systems.Update
 import com.andreihh.algostorm.systems.graphics2d.TileSet.Frame
+import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.flags
+import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.applyFlags
 
 class AnimationSystem : GraphicsSystem() {
     private val entities: EntityGroup by context(ENTITY_POOL)
     private val animated get() = entities.filter { Animation::class in it }
 
     class Animate(
-            val entityId: Id,
-            val animation: String,
-            val loop: Boolean
-    ) : Request<Unit>()
+        val entityId: Id,
+        val animation: String,
+        val loop: Boolean
+    ) : Event
 
     @Subscribe
     fun onAnimate(request: Animate) {
@@ -44,11 +46,11 @@ class AnimationSystem : GraphicsSystem() {
         ) ?: return
         val frames = tileSetCollection.getAnimation(animation.animation)
         if (frames != null) {
-            val sprite = entity.sprite?.copy(gid = frames.first().tileId)
-                    ?: return
+            val flags = entity.sprite.gid.flags
+            val newGid = frames.first().tileId.applyFlags(flags)
+            val sprite = entity.sprite.copy(gid = newGid)
             entity.set(animation)
             entity.set(sprite)
-            request.complete(Unit)
         }
     }
 
@@ -69,7 +71,7 @@ class AnimationSystem : GraphicsSystem() {
             t -= frames[i].duration
             i++
         } while (t >= 0 && i < frames.size)
-        set(sprite?.copy(gid = frames[i - 1].tileId) ?: return)
+        set(sprite.copy(gid = frames[i - 1].tileId))
     }
 
     @Subscribe

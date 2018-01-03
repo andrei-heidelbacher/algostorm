@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2018 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.andreihh.algostorm.core.drivers.io
+package com.andreihh.algostorm.systems.audio
 
-import java.io.FileNotFoundException
-import java.io.InputStream
-import java.io.OutputStream
+import com.andreihh.algostorm.systems.EventSystem
 
-interface FileSystem {
-    /**
-     * @throws FileNotFoundException
-     */
-    fun openFileInput(file: File): InputStream
-
-    fun openFileOutput(file: File): OutputStream
+abstract class AudioSystem : EventSystem() {
+    companion object {
+        const val AUDIO_DRIVER: String = "AUDIO_DRIVER"
+    }
 }

@@ -26,7 +26,7 @@ import com.andreihh.algostorm.systems.physics2d.position
 class CameraSystem : GraphicsSystem() {
     private val entities: EntityGroup by context(ENTITY_POOL)
     private val camera: Camera by context(CAMERA)
-    private val canvas: Canvas by context(CANVAS)
+    private val canvas: Canvas by context(GRAPHICS_DRIVER)
     private var followedEntityId: Id? = null
 
     object UpdateCamera : Event

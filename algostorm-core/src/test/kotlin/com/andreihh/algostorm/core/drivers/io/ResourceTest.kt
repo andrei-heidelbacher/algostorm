@@ -45,11 +45,4 @@ class ResourceTest {
             Resource<Any>("$SCHEMA/path//file")
         }
     }
-
-    @Test fun `test resourceOf relative path builds correct uri`() {
-        val path = "resource.txt"
-        val expected = Resource<Any>("$SCHEMA/$path")
-        val actual = Resource.of<Any>(path)
-        assertEquals(expected, actual)
-    }
 }

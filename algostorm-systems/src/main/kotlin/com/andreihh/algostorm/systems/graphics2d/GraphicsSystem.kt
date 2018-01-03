@@ -24,7 +24,7 @@ abstract class GraphicsSystem : EventSystem() {
         const val TILE_HEIGHT: String = "TILE_HEIGHT"
         const val TILE_SET_COLLECTION: String = "TILE_SET_COLLECTION"
         const val CAMERA: String = "CAMERA"
-        const val CANVAS: String = "CANVAS"
+        const val GRAPHICS_DRIVER: String = "GRAPHICS_DRIVER"
     }
 
     protected val tileWidth: Int by context(TILE_WIDTH)

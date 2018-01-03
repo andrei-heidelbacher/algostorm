@@ -21,13 +21,12 @@ import com.andreihh.algostorm.core.drivers.audio.AudioStream
 import com.andreihh.algostorm.core.drivers.io.Resource
 
 class AudioDriverStub : AudioDriver {
-    override fun loadMusic(music: Resource<AudioStream>) {}
+    override fun loadAudioStream(resource: Resource<AudioStream>) {}
     override fun setMusicVolume(volume: Float) {}
     override fun playMusic(music: Resource<AudioStream>, loop: Boolean) {}
     override fun pauseMusic() {}
     override fun resumeMusic() {}
     override fun stopMusic() {}
-    override fun loadSound(sound: Resource<AudioStream>) {}
     override fun setSoundVolume(volume: Float) {}
     override fun playSound(sound: Resource<AudioStream>) {}
     override fun pauseSounds() {}

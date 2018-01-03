@@ -54,16 +54,17 @@ data class TileSet(
 ) {
     companion object {
         /** Whether this tile id is flipped horizontally. */
-        val Int.isFlippedHorizontally: Boolean
-            get() = and(0x40000000) != 0
+        val Int.isFlippedHorizontally: Boolean get() = and(0x40000000) != 0
 
         /** Whether this tile id is flipped vertically. */
-        val Int.isFlippedVertically: Boolean
-            get() = and(0x20000000) != 0
+        val Int.isFlippedVertically: Boolean get() = and(0x20000000) != 0
 
         /** Whether this tile id is flipped diagonally. */
-        val Int.isFlippedDiagonally: Boolean
-            get() = and(0x10000000) != 0
+        val Int.isFlippedDiagonally: Boolean get() = and(0x10000000) != 0
+
+        val Int.flags: Int get() = and(0x70000000)
+
+        fun Int.applyFlags(flags: Int): Int = or(flags.flags)
 
         /** Flips this tile id horizontally. */
         fun Int.flipHorizontally(): Int = xor(0x40000000)
@@ -78,7 +79,7 @@ data class TileSet(
         fun Int.clearFlags(): Int = and(0x0FFFFFFF)
 
         fun tileSet(init: Builder.() -> Unit): TileSet =
-                Builder().apply(init).build()
+            Builder().apply(init).build()
     }
 
     /**
@@ -90,10 +91,11 @@ data class TileSet(
      * @throws IllegalArgumentException if [width] or [height] are not positive
      */
     data class Image(
-            val source: Resource<Bitmap>,
-            val width: Int,
-            val height: Int
+        val source: Resource<Bitmap>,
+        val width: Int,
+        val height: Int
     ) {
+
         init {
             require(width > 0) { "'$source': width '$width' must be positive!" }
             require(height > 0) {
@@ -262,15 +264,15 @@ data class TileSet(
     fun getViewport(tileId: Int): Viewport {
         if (tileId !in 0 until tileCount) {
             throw IndexOutOfBoundsException(
-                    "Tile id '$tileId' must be in 0..${tileCount - 1}!"
+                "Tile id '$tileId' must be in 0..${tileCount - 1}!"
             )
         }
         return Viewport(
-                image = image,
-                x = margin + (tileId % columns) * (tileWidth + spacing),
-                y = margin + (tileId / columns) * (tileHeight + spacing),
-                width = tileWidth,
-                height = tileHeight
+            image = image,
+            x = margin + (tileId % columns) * (tileWidth + spacing),
+            y = margin + (tileId / columns) * (tileHeight + spacing),
+            width = tileWidth,
+            height = tileHeight
         )
     }
 }
