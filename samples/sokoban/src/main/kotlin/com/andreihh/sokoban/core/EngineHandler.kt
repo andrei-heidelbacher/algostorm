@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017  Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
+ * Copyright 2018 Andrei Heidelbacher <andrei.heidelbacher@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -41,6 +41,10 @@ import com.andreihh.algostorm.systems.graphics2d.RenderingSystem
 import com.andreihh.algostorm.systems.graphics2d.RenderingSystem.Companion.BACKGROUND
 import com.andreihh.algostorm.systems.graphics2d.RenderingSystem.Render
 import com.andreihh.algostorm.systems.graphics2d.Sprite
+import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.flipHorizontally
+import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.flipVertically
+import com.andreihh.algostorm.systems.graphics2d.TileSet.Companion.flipDiagonally
+import com.andreihh.algostorm.systems.graphics2d.TileSetCollection
 import com.andreihh.algostorm.systems.input.InputSystem.Companion.INPUT_DRIVER
 import com.andreihh.algostorm.systems.input.InputSystem.HandleInput
 import com.andreihh.algostorm.systems.physics2d.Body
@@ -53,12 +57,12 @@ class EngineHandler : Handler() {
     private lateinit var map: MapObject
     private val camera = Camera()
     private val systems = listOf(
-            RenderingSystem(),
-            CameraSystem(),
-            PhysicsSystem(),
-            PathFindingSystem(),
-            AnimationSystem(),
-            InputInterpretingSystem()
+        RenderingSystem(),
+        CameraSystem(),
+        PhysicsSystem(),
+        PathFindingSystem(),
+        AnimationSystem(),
+        InputInterpretingSystem()
     )
 
     override val millisPerUpdate: Int = 30
@@ -70,8 +74,22 @@ class EngineHandler : Handler() {
             height = 8
             tileWidth = 64
             tileHeight = 64
+            backgroundColor = Color("#FF000000")
             tileSet {
-
+                name = "sokoban"
+                tileWidth = 64
+                tileHeight = 64
+                image {
+                    source = "res:///sokoban_tileset.png"
+                    width = 832
+                    height = 512
+                }
+                animation(name = "player:idle") {
+                    frame(tileId = 52, duration = 250)
+                    frame(tileId = 53, duration = 250)
+                    frame(tileId = 52, duration = 250)
+                    frame(tileId = 54, duration = 250)
+                }
             }
 
             fun floor(x: Int, y: Int) = setOf(
@@ -105,7 +123,7 @@ class EngineHandler : Handler() {
                             height = tileHeight,
                             z = 0,
                             priority = 1,
-                            gid = 53
+                            gid = 53.flipHorizontally().flipVertically().flipDiagonally()
                     ),
                     Body.KINEMATIC
             )
@@ -133,14 +151,13 @@ class EngineHandler : Handler() {
             entity(Id(1), player(3, 3))
         }
         map.tileSets.forEach { graphicsDriver.loadBitmap(it.image.source) }
-        val tileSetCollection = map.tileSets
         val context = mapOf(
                 ENTITY_POOL to map.entities,
                 EVENT_BUS to eventBus,
                 TILE_WIDTH to map.tileWidth,
                 TILE_HEIGHT to map.tileHeight,
-                BACKGROUND to Color("#FF000000"),
-                TILE_SET_COLLECTION to tileSetCollection,
+                BACKGROUND to map.backgroundColor,
+                TILE_SET_COLLECTION to TileSetCollection(map.tileSets),
                 CAMERA to camera,
                 GRAPHICS_DRIVER to graphicsDriver,
                 INPUT_DRIVER to inputDriver
@@ -162,6 +179,14 @@ class EngineHandler : Handler() {
             graphicsDriver.lockCanvas()
             eventBus.post(Render(camera.x, camera.y))
             eventBus.publishPosts()
+            graphicsDriver.save()
+            graphicsDriver.translate(50f, 0f)
+            graphicsDriver.translate(100f, 0f)
+            graphicsDriver.scale(-1f, 1f)
+            graphicsDriver.rotate(45f)
+            //graphicsDriver.rotate(45f)
+            graphicsDriver.drawRectangle(Color("#FFFF0000"), 100, 100)
+            graphicsDriver.restore()
             graphicsDriver.unlockAndPostCanvas()
         }
     }

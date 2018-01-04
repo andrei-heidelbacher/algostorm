@@ -65,8 +65,7 @@ interface Canvas {
     fun restore()
 
     /**
-     * Draws the given viewport from the `bitmap` to the specified canvas
-     * location.
+     * Draws the given viewport from the `bitmap` to the canvas.
      *
      * @param bitmap the bitmap resource
      * @param sx the horizontal coordinate in pixels of the top-left corner of
@@ -75,25 +74,15 @@ interface Canvas {
      * bitmap viewport which should be rendered (positive is down)
      * @param sw the width in pixels of the bitmap viewport
      * @param sh the height in pixels of the bitmap viewport
-     * @param dx the horizontal coordinate in pixels of the top-left corner of
-     * the destination location
-     * @param dy the vertical coordinate in pixels of the top-left corner of the
-     * destination location
-     * @param dw the width in pixels of the destination location
-     * @param dh the height in pixels of the destination location
+     * @param width the width in pixels of the destination location
+     * @param height the height in pixels of the destination location
      * @throws IllegalArgumentException if the image `resource` was not loaded
      * by the graphics driver
      */
     fun drawBitmap(
             bitmap: Resource<Bitmap>,
-            sx: Int,
-            sy: Int,
-            sw: Int,
-            sh: Int,
-            dx: Int,
-            dy: Int,
-            dw: Int,
-            dh: Int
+            sx: Int, sy: Int, sw: Int, sh: Int,
+            width: Int, height: Int
     )
 
     /**
@@ -107,7 +96,7 @@ interface Canvas {
      * @param w the width in pixels of the rectangle
      * @param h the height in pixels of the rectangle
      */
-    fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int)
+    fun drawRectangle(color: Color, width: Int, height: Int)
 
     /**
      * Fills the entire canvas with the given `color`.

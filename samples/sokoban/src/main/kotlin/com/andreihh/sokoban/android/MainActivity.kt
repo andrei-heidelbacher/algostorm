@@ -17,6 +17,7 @@
 package com.andreihh.sokoban.android
 
 import com.andreihh.algostorm.android.ClientActivity
+import com.andreihh.sokoban.R
 
 class MainActivity : ClientActivity() {
     override val splashLayoutId: Int

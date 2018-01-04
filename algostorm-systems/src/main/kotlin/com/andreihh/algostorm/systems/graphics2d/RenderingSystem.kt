@@ -118,24 +118,25 @@ class RenderingSystem : GraphicsSystem() {
         val viewport = tileSetCollection.getViewport(gid)
         with(canvas) {
             save()
+            translate(dx = 1F * x, dy = 1F * y)
             if (gid.isFlippedDiagonally) {
-                rotate(90F)
-                scale(1F, -1F)
-                translate(1F * width, 1F * height)
+                translate(dx = 1F * width, dy = 1F * height)
+                scale(sx = 1F, sy = -1F)
+                rotate(degrees = 90F)
             }
             if (gid.isFlippedHorizontally) {
-                scale(-1F, 1F)
-                translate(1F * width, 0F)
+                translate(dx = 1F * width, dy = 0F)
+                scale(sx = -1F, sy = 1F)
             }
             if (gid.isFlippedVertically) {
-                scale(1F, -1F)
-                translate(0F, 1F * height)
+                translate(dx = 0F, dy = 1F * height)
+                scale(sx = 1F, sy = -1F)
             }
             drawBitmap(
                 bitmap = viewport.image.source,
                 sx = viewport.x, sy = viewport.y,
                 sw = viewport.width, sh = viewport.height,
-                dx = x, dy = y, dw = width, dh = height
+                width = width, height = height
             )
             restore()
         }

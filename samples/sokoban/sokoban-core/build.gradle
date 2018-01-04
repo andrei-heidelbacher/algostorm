@@ -1,5 +1,0 @@
-dependencies {
-    api project(':algostorm-core')
-    api project(':algostorm-systems')
-}
-

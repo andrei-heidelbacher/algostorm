@@ -34,17 +34,11 @@ class GraphicsDriverStub : GraphicsDriver {
     override fun restore() {}
     override fun drawBitmap(
             bitmap: Resource<Bitmap>,
-            sx: Int,
-            sy: Int,
-            sw: Int,
-            sh: Int,
-            dx: Int,
-            dy: Int,
-            dw: Int,
-            dh: Int
+            sx: Int, sy: Int, sw: Int, sh: Int,
+            width: Int, height: Int
     ) {}
     override fun drawColor(color: Color) {}
-    override fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int) {}
+    override fun drawRectangle(color: Color, width: Int, height: Int) {}
     override fun unlockAndPostCanvas() {}
     override fun release() {}
 }

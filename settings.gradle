@@ -8,5 +8,4 @@ include ':algostorm-core',
 include ':clients:algostorm-android',
         ':clients:algostorm-android-test'
 
-include ':samples:sokoban:sokoban-core',
-        ':samples:sokoban:sokoban-android'
+include ':samples:sokoban'

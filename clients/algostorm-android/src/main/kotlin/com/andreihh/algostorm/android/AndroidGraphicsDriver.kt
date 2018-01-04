@@ -43,8 +43,7 @@ class AndroidGraphicsDriver(private val context: Context) : GraphicsDriver {
     private val dstRect = Rect()
     private val paint = Paint()
 
-    private val Int.pxToDp: Float
-        get() = toFloat() / scale
+    private val Int.pxToDp: Float get() = toFloat() / scale
 
     @Volatile override var height: Int = 0
         private set
@@ -101,21 +100,14 @@ class AndroidGraphicsDriver(private val context: Context) : GraphicsDriver {
 
     override fun drawBitmap(
             bitmap: Resource<Bitmap>,
-            sx: Int,
-            sy: Int,
-            sw: Int,
-            sh: Int,
-            dx: Int,
-            dy: Int,
-            dw: Int,
-            dh: Int
+            sx: Int, sy: Int, sw: Int, sh: Int,
+            width: Int, height: Int
     ) {
         checkIsLocked()
-        val androidBitmap = requireNotNull(bitmaps[bitmap]) {
-            "'$bitmap' not loaded!"
-        }
+        val androidBitmap =
+            requireNotNull(bitmaps[bitmap]) { "'$bitmap' not loaded!" }
         srcRect.set(sx, sy, sx + sw, sy + sh)
-        dstRect.set(dx, dy, dx + dw, dy + dh)
+        dstRect.set(0, 0, width, height)
         canvas?.drawBitmap(androidBitmap, srcRect, dstRect, null)
     }
 
@@ -151,10 +143,10 @@ class AndroidGraphicsDriver(private val context: Context) : GraphicsDriver {
         canvas?.drawColor(color.color)
     }
 
-    override fun drawRectangle(color: Color, x: Int, y: Int, w: Int, h: Int) {
+    override fun drawRectangle(color: Color, width: Int, height: Int) {
         checkIsLocked()
         paint.color = color.color
-        canvas?.drawRect(1F * x, 1F * y, 1F * w, 1F * h, paint)
+        canvas?.drawRect(0F, 0F, 1F * width, 1F * height, paint)
     }
 
     override val isCanvasReady: Boolean

@@ -14,6 +14,6 @@ android {
 
 dependencies {
     compile project(':algostorm-core')
+    compile project(':algostorm-systems')
     compile project(':clients:algostorm-android')
-    compile project(':samples:sokoban:sokoban-core')
 }
