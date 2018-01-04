@@ -47,7 +47,8 @@ enum class Direction(val dx: Int, val dy: Int) {
             dx > 0 && dy < 0 -> NE
             dx > 0 && dy == 0 -> E
             dx > 0 && dy > 0 -> SE
-            dx == 0 && dy > 0 -> SW
+            dx == 0 && dy > 0 -> S
+            dx < 0 && dy > 0 -> SW
             dx < 0 && dy == 0 -> W
             dx < 0 && dy < 0 -> NW
             else -> null
