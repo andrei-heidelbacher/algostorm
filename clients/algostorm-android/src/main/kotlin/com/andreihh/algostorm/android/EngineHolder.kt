@@ -20,8 +20,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.SurfaceView
 import com.andreihh.algostorm.core.drivers.input.Input
+import com.andreihh.algostorm.core.drivers.ui.Listener
 import com.andreihh.algostorm.core.engine.Engine
 import com.andreihh.algostorm.core.engine.Platform
+import kotlin.reflect.KClass
 
 class EngineHolder(context: Context) {
     private val appContext = context.applicationContext
@@ -29,8 +31,10 @@ class EngineHolder(context: Context) {
     private val graphicsDriver = AndroidGraphicsDriver(appContext)
     private val inputDriver = AndroidInputDriver(appContext)
     private val fileSystemDriver = AndroidFileSystemDriver(appContext)
-    private val platform =
-            Platform(audioDriver, graphicsDriver, inputDriver, fileSystemDriver)
+    private val uiDriver = AndroidUiDriver(appContext)
+    private val platform = Platform(
+        audioDriver, graphicsDriver, inputDriver, fileSystemDriver, uiDriver
+    )
 
     private val engine = Engine(platform)
 
@@ -43,6 +47,10 @@ class EngineHolder(context: Context) {
 
     fun sendInput(input: Input) {
         inputDriver.write(input)
+    }
+
+    fun <T : Any> addListener(type: KClass<T>, listener: Listener<T>) {
+        uiDriver.addListener(type, listener)
     }
 
     fun attachSurface(surfaceView: SurfaceView) {

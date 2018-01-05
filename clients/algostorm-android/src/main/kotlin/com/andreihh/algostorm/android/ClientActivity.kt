@@ -25,9 +25,12 @@ import android.content.Loader
 import android.os.Bundle
 import android.view.SurfaceView
 import com.andreihh.algostorm.core.drivers.input.Input
+import com.andreihh.algostorm.core.drivers.ui.Listener
+import kotlin.reflect.KClass
 
 abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     companion object {
+        @JvmStatic
         protected inline fun <reified T : ClientActivity> start(
                 context: Context,
                 args: Bundle
@@ -75,15 +78,22 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
         }
     }
 
+    private var engineHolder: EngineHolder? = null
+    private var isRunning = false
+
     protected abstract val splashLayoutId: Int
     protected abstract val clientLayoutId: Int
     protected abstract val surfaceViewId: Int
 
-    private var engineHolder: EngineHolder? = null
-    private var isRunning = false
-
     protected fun sendInput(input: Input) {
         engineHolder?.sendInput(input)
+    }
+
+    protected fun <T : Any> addListener(
+        type: KClass<T>,
+        listener: Listener<T>
+    ) {
+        engineHolder?.addListener(type, listener)
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<EngineHolder> =

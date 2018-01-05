@@ -21,6 +21,7 @@ import com.andreihh.algostorm.test.drivers.audio.AudioDriverStub
 import com.andreihh.algostorm.test.drivers.graphics2d.GraphicsDriverStub
 import com.andreihh.algostorm.test.drivers.input.InputDriverStub
 import com.andreihh.algostorm.test.drivers.io.FileSystemDriverStub
+import com.andreihh.algostorm.test.drivers.ui.UiDriverStub
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -42,7 +43,8 @@ class EngineTest {
             AudioDriverStub(),
             GraphicsDriverStub(),
             InputDriverStub(),
-            FileSystemDriverStub()
+            FileSystemDriverStub(),
+            UiDriverStub()
     ))
 
     @Before fun init() {

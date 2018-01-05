@@ -25,12 +25,16 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class AndroidFileSystemDriver(private val context: Context) : FileSystemDriver {
-    override fun openFileInput(file: File): InputStream =
+    override fun openInput(file: File): InputStream? = try {
         context.openFileInput(file.path)
+    } catch (e: FileNotFoundException) {
+        null
+    }
 
-    override fun openFileOutput(file: File): OutputStream =
+    override fun openOutput(file: File): OutputStream =
         context.openFileOutput(file.path, MODE_PRIVATE)
-            ?: throw FileNotFoundException("'$file' doesn't exist!")
+
+    override fun delete(file: File): Boolean = context.deleteFile(file.path)
 
     override fun release() {}
 }

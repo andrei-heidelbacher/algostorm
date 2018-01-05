@@ -22,9 +22,8 @@ import com.andreihh.algostorm.android.AndroidFileSystemDriver
 import com.andreihh.algostorm.core.drivers.io.File
 import org.junit.After
 import org.junit.Test
-import java.io.FileNotFoundException
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class AndroidFileSystemDriverTest {
     private val context = InstrumentationRegistry.getTargetContext()
@@ -34,38 +33,39 @@ class AndroidFileSystemDriverTest {
 
     private fun writeFile(path: String, content: String) {
         context.openFileOutput(path.local, MODE_PRIVATE)
-            .bufferedWriter().use { it.write(content) }
+            .bufferedWriter()
+            .use { it.write(content) }
     }
 
     private fun readFile(path: String): String =
         context.openFileInput(path.local)
-            .bufferedReader().use { it.readText() }
+            .bufferedReader()
+            .use { it.readText() }
 
-    @Test fun testOpenFileInput() {
+    @Test fun testOpenInput() {
         val path = "user:///test-file-input.txt"
         val file = File(path)
         val expected = "Hello, world!\n"
         writeFile(path, expected)
-        val actual = fileSystemDriver.openFileInput(file)
-            .bufferedReader().use { it.readText() }
+        val actual = fileSystemDriver.openInput(file)
+            ?.bufferedReader()
+            ?.use { it.readText() }
         assertEquals(expected, actual)
     }
 
     @Test fun testOpenNonExistingFileInputThrows() {
         val path = "user:///non-existing.txt"
         val file = File(path)
-        assertFailsWith<FileNotFoundException> {
-            fileSystemDriver.openFileInput(file)
-        }
+        assertNull(fileSystemDriver.openInput(file))
     }
 
-    @Test fun testOpenFileOutput() {
+    @Test fun testOpenOutput() {
         val path = "user:///test-file-output.txt"
         val file = File(path)
         val expected = "Hello, world!\n"
-        fileSystemDriver.openFileOutput(file).bufferedWriter().use {
-            it.write(expected)
-        }
+        fileSystemDriver.openOutput(file)
+            .bufferedWriter()
+            .use { it.write(expected) }
         val actual = readFile(path)
         assertEquals(expected, actual)
     }

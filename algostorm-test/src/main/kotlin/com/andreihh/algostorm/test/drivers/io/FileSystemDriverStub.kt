@@ -24,6 +24,7 @@ import java.io.OutputStream
 
 class FileSystemDriverStub : FileSystemDriver {
     override fun release() {}
-    override fun openFileInput(file: File): InputStream = throw IOException()
-    override fun openFileOutput(file: File): OutputStream = throw IOException()
+    override fun openInput(file: File): InputStream? = null
+    override fun openOutput(file: File): OutputStream = throw IOException()
+    override fun delete(file: File): Boolean = false
 }
