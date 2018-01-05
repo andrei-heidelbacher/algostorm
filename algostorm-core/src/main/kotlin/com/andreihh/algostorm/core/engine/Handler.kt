@@ -20,6 +20,7 @@ import com.andreihh.algostorm.core.drivers.audio.AudioDriver
 import com.andreihh.algostorm.core.drivers.graphics2d.GraphicsDriver
 import com.andreihh.algostorm.core.drivers.input.InputDriver
 import com.andreihh.algostorm.core.drivers.io.FileSystemDriver
+import com.andreihh.algostorm.core.drivers.ui.UiDriver
 
 abstract class Handler {
     protected lateinit var audioDriver: AudioDriver
@@ -34,6 +35,9 @@ abstract class Handler {
     protected lateinit var fileSystemDriver: FileSystemDriver
         private set
 
+    protected lateinit var uiDriver: UiDriver
+        private set
+
     /**
      * The positive number of milliseconds spent in an update cycle and the
      * resolution of an atomic time unit.
@@ -45,6 +49,7 @@ abstract class Handler {
         graphicsDriver = platform.graphicsDriver
         inputDriver = platform.inputDriver
         fileSystemDriver = platform.fileSystemDriver
+        uiDriver = platform.uiDriver
         onInit(args)
     }
 
