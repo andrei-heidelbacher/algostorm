@@ -16,4 +16,6 @@
 
 package com.andreihh.algostorm.core.drivers.ui
 
-typealias Listener<T> = (T) -> Unit
+interface Listener<in T : Any> {
+    operator fun invoke(event: T)
+}

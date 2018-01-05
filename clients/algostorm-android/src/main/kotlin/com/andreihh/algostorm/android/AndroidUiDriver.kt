@@ -18,20 +18,21 @@ package com.andreihh.algostorm.android
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import com.andreihh.algostorm.core.drivers.ui.Listener
 import com.andreihh.algostorm.core.drivers.ui.UiDriver
 import kotlin.reflect.KClass
 
 class AndroidUiDriver(context: Context) : UiDriver {
-    private val listeners = hashMapOf<KClass<*>, ArrayList<Listener<Any?>>>()
-    private val uiThreadHandler = Handler(context.mainLooper)
+    private val listeners = hashMapOf<KClass<*>, ArrayList<Listener<Any>>>()
+    private val uiThreadHandler = Handler(Looper.getMainLooper())
 
     @Suppress("unchecked_cast")
     override fun <T : Any> addListener(type: KClass<T>, listener: Listener<T>) {
         if (type !in listeners) {
             listeners[type] = arrayListOf()
         }
-        listeners.getValue(type) += listener as Listener<Any?>
+        listeners.getValue(type) += listener as Listener<Any>
     }
 
     override fun <T : Any> notify(event: T) {

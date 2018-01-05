@@ -64,8 +64,10 @@ class EngineHandler : Handler() {
         AnimationSystem(),
         InputInterpretingSystem()
     )
+    private var frames = 0
 
     override val millisPerUpdate: Int = 30
+
 
     override fun onInit(args: Map<String, Any?>) {
         Thread.sleep(1000)
@@ -179,14 +181,6 @@ class EngineHandler : Handler() {
             graphicsDriver.lockCanvas()
             eventBus.post(Render(camera.x, camera.y))
             eventBus.publishPosts()
-            graphicsDriver.save()
-            graphicsDriver.translate(50f, 0f)
-            graphicsDriver.translate(100f, 0f)
-            graphicsDriver.scale(-1f, 1f)
-            graphicsDriver.rotate(45f)
-            //graphicsDriver.rotate(45f)
-            graphicsDriver.drawRectangle(Color("#FFFF0000"), 100, 100)
-            graphicsDriver.restore()
             graphicsDriver.unlockAndPostCanvas()
         }
     }
@@ -197,6 +191,11 @@ class EngineHandler : Handler() {
         eventBus.post(Update(millisPerUpdate))
         eventBus.post(UpdateCamera)
         eventBus.publishPosts()
+        frames++
+        if (frames >= 100) {
+            frames = 0
+            uiDriver.notify(UiEvent)
+        }
     }
 
     override fun onStop() {
@@ -206,5 +205,7 @@ class EngineHandler : Handler() {
     override fun onRelease() {
         map.entities.clear()
     }
+
+    object UiEvent
 }
 

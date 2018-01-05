@@ -80,6 +80,7 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
 
     private var engineHolder: EngineHolder? = null
     private var isRunning = false
+    private val listeners = arrayListOf<Pair<KClass<*>, Listener<Any>>>()
 
     protected abstract val splashLayoutId: Int
     protected abstract val clientLayoutId: Int
@@ -89,11 +90,12 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
         engineHolder?.sendInput(input)
     }
 
+    @Suppress("unchecked_cast")
     protected fun <T : Any> addListener(
         type: KClass<T>,
         listener: Listener<T>
     ) {
-        engineHolder?.addListener(type, listener)
+        listeners += type to listener as Listener<Any>
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<EngineHolder> =
@@ -107,6 +109,9 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
         setContentView(clientLayoutId)
         val surfaceView = findViewById(surfaceViewId) as SurfaceView
         data.attachSurface(surfaceView)
+        for ((type, listener) in listeners) {
+            data.addListener(type, listener)
+        }
         if (isRunning) {
             data.start()
         }
@@ -137,6 +142,7 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     override fun onDestroy() {
         engineHolder?.detachSurface()
         engineHolder = null
+        listeners.clear()
         super.onDestroy()
     }
 }
