@@ -16,6 +16,4 @@
 
 package com.andreihh.algostorm.core.drivers.ui
 
-interface Listener<in T : Any> {
-    operator fun invoke(event: T)
-}
+interface UiEvent

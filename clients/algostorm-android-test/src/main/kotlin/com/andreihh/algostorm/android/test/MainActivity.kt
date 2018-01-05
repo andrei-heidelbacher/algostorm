@@ -17,14 +17,14 @@
 package com.andreihh.algostorm.android.test
 
 import com.andreihh.algostorm.android.ClientActivity
+import com.andreihh.algostorm.core.drivers.ui.UiEvent
+import com.andreihh.algostorm.core.drivers.ui.UiListener
 
 class MainActivity : ClientActivity() {
-    override val splashLayoutId: Int
-        get() = R.layout.activity_main_splash
-
-    override val clientLayoutId: Int
-        get() = R.layout.activity_main_client
-
-    override val surfaceViewId: Int
-        get() = R.id.clientSurfaceView
+    override val splashLayoutId: Int get() = R.layout.activity_main_splash
+    override val clientLayoutId: Int get() = R.layout.activity_main_client
+    override val surfaceViewId: Int get() = R.id.clientSurfaceView
+    override val listener: UiListener get() = object : UiListener {
+        override fun notify(event: UiEvent) {}
+    }
 }

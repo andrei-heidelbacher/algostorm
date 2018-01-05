@@ -19,32 +19,27 @@ package com.andreihh.algostorm.android
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.andreihh.algostorm.core.drivers.ui.Listener
+import com.andreihh.algostorm.core.drivers.ui.UiListener
 import com.andreihh.algostorm.core.drivers.ui.UiDriver
-import kotlin.reflect.KClass
+import com.andreihh.algostorm.core.drivers.ui.UiEvent
 
 class AndroidUiDriver(context: Context) : UiDriver {
-    private val listeners = hashMapOf<KClass<*>, ArrayList<Listener<Any>>>()
     private val uiThreadHandler = Handler(Looper.getMainLooper())
+    private var listener: UiListener? = null
 
     @Suppress("unchecked_cast")
-    override fun <T : Any> addListener(type: KClass<T>, listener: Listener<T>) {
-        if (type !in listeners) {
-            listeners[type] = arrayListOf()
-        }
-        listeners.getValue(type) += listener as Listener<Any>
+    override fun setListener(listener: UiListener) {
+        this.listener = listener
     }
 
-    override fun <T : Any> notify(event: T) {
-        val notifiedListeners = listeners[event::class]?.toList() ?: emptyList()
+    override fun notify(event: UiEvent) {
+        val notifiedListener = listener ?: return
         uiThreadHandler.post {
-            for (listener in notifiedListeners) {
-                listener.invoke(event)
-            }
+            notifiedListener.notify(event)
         }
     }
 
     override fun release() {
-        listeners.clear()
+        listener = null
     }
 }

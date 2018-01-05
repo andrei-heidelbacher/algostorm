@@ -16,10 +16,6 @@
 
 package com.andreihh.algostorm.core.drivers.ui
 
-import com.andreihh.algostorm.core.drivers.Driver
-
-interface UiDriver : Driver {
-    fun setListener(listener: UiListener)
-
+interface UiListener {
     fun notify(event: UiEvent)
 }

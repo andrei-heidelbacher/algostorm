@@ -17,6 +17,7 @@
 package com.andreihh.sokoban.core
 
 import com.andreihh.algostorm.core.drivers.graphics2d.Color
+import com.andreihh.algostorm.core.drivers.ui.UiEvent
 import com.andreihh.algostorm.core.ecs.EntityRef.Id
 import com.andreihh.algostorm.core.ecs.System
 import com.andreihh.algostorm.core.ecs.System.Companion.ENTITY_POOL
@@ -194,7 +195,7 @@ class EngineHandler : Handler() {
         frames++
         if (frames >= 100) {
             frames = 0
-            uiDriver.notify(UiEvent)
+            uiDriver.notify(object : UiEvent {})
         }
     }
 
@@ -205,7 +206,5 @@ class EngineHandler : Handler() {
     override fun onRelease() {
         map.entities.clear()
     }
-
-    object UiEvent
 }
 

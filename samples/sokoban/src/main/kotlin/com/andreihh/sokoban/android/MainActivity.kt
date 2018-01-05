@@ -19,30 +19,21 @@ package com.andreihh.sokoban.android
 import android.os.Bundle
 import android.widget.Toast
 import com.andreihh.algostorm.android.ClientActivity
-import com.andreihh.algostorm.core.drivers.ui.Listener
+import com.andreihh.algostorm.core.drivers.ui.UiListener
+import com.andreihh.algostorm.core.drivers.ui.UiEvent
 import com.andreihh.sokoban.R
-import com.andreihh.sokoban.core.EngineHandler.UiEvent
 
 class MainActivity : ClientActivity() {
-    override val splashLayoutId: Int
-        get() = R.layout.activity_main_splash
-
-    override val clientLayoutId: Int
-        get() = R.layout.activity_main_client
-
-    override val surfaceViewId: Int
-        get() = R.id.clientSurfaceView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        addListener(UiEvent::class, object : Listener<UiEvent> {
-            override fun invoke(event: UiEvent) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "100 frames elapsed",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+    override val splashLayoutId: Int get() = R.layout.activity_main_splash
+    override val clientLayoutId: Int get() = R.layout.activity_main_client
+    override val surfaceViewId: Int get() = R.id.clientSurfaceView
+    override val listener: UiListener get() = object : UiListener {
+        override fun notify(event: UiEvent) {
+            Toast.makeText(
+                this@MainActivity,
+                "100 frames elapsed",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }

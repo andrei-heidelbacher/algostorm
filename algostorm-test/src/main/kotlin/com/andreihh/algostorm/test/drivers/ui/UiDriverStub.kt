@@ -16,17 +16,13 @@
 
 package com.andreihh.algostorm.test.drivers.ui
 
-import com.andreihh.algostorm.core.drivers.ui.Listener
+import com.andreihh.algostorm.core.drivers.ui.UiListener
 import com.andreihh.algostorm.core.drivers.ui.UiDriver
+import com.andreihh.algostorm.core.drivers.ui.UiEvent
 import kotlin.reflect.KClass
 
 class UiDriverStub : UiDriver {
-    override fun <T : Any> addListener(
-        type: KClass<T>,
-        listener: Listener<T>
-    ) {}
-
-    override fun <T : Any> notify(event: T) {}
-
+    override fun setListener(listener: UiListener) {}
+    override fun notify(event: UiEvent) {}
     override fun release() {}
 }

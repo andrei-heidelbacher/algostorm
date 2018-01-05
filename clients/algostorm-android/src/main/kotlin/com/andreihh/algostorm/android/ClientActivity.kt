@@ -25,8 +25,7 @@ import android.content.Loader
 import android.os.Bundle
 import android.view.SurfaceView
 import com.andreihh.algostorm.core.drivers.input.Input
-import com.andreihh.algostorm.core.drivers.ui.Listener
-import kotlin.reflect.KClass
+import com.andreihh.algostorm.core.drivers.ui.UiListener
 
 abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     companion object {
@@ -80,22 +79,14 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
 
     private var engineHolder: EngineHolder? = null
     private var isRunning = false
-    private val listeners = arrayListOf<Pair<KClass<*>, Listener<Any>>>()
 
     protected abstract val splashLayoutId: Int
     protected abstract val clientLayoutId: Int
     protected abstract val surfaceViewId: Int
+    protected abstract val listener: UiListener
 
     protected fun sendInput(input: Input) {
         engineHolder?.sendInput(input)
-    }
-
-    @Suppress("unchecked_cast")
-    protected fun <T : Any> addListener(
-        type: KClass<T>,
-        listener: Listener<T>
-    ) {
-        listeners += type to listener as Listener<Any>
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<EngineHolder> =
@@ -109,9 +100,7 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
         setContentView(clientLayoutId)
         val surfaceView = findViewById(surfaceViewId) as SurfaceView
         data.attachSurface(surfaceView)
-        for ((type, listener) in listeners) {
-            data.addListener(type, listener)
-        }
+        data.setListener(listener)
         if (isRunning) {
             data.start()
         }
@@ -142,7 +131,6 @@ abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     override fun onDestroy() {
         engineHolder?.detachSurface()
         engineHolder = null
-        listeners.clear()
         super.onDestroy()
     }
 }
