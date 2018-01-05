@@ -26,15 +26,17 @@ import android.os.Bundle
 import android.view.SurfaceView
 import com.andreihh.algostorm.core.drivers.input.Input
 import com.andreihh.algostorm.core.drivers.ui.UiListener
+import kotlin.reflect.KClass
 
 abstract class ClientActivity : Activity(), LoaderCallbacks<EngineHolder> {
     companion object {
         @JvmStatic
-        protected inline fun <reified T : ClientActivity> start(
+        protected fun start(
                 context: Context,
-                args: Bundle
+                args: Bundle,
+                activityClass: KClass<out ClientActivity>
         ) {
-            val intent = Intent(context, T::class.java)
+            val intent = Intent(context, activityClass.java)
             intent.putExtras(args)
             context.startActivity(intent)
         }
